@@ -5,7 +5,7 @@
  */
 
 // Import core WSX types
-/// <reference types="@wsxjs/wsx-core" />
+// Types from @wsxjs/wsx-core are available globally
 
 // 图片模块声明
 declare module "*.png" {
@@ -49,13 +49,12 @@ declare module "*.wsx" {
 // Testing library extensions
 /// <reference types="@testing-library/jest-dom" />
 
-
 // 全局类型扩展 - 预留给将来添加全局类型
 declare global {
     namespace Vi {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        interface Assertion<T = any> extends jest.Matchers<void, T> {}
-        interface AsymmetricMatchersContaining extends jest.Expect {}
+        type Assertion<T = any> = jest.Matchers<void, T>;
+        type AsymmetricMatchersContaining = jest.Expect;
     }
 }
 

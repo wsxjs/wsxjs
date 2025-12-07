@@ -10,7 +10,7 @@ export default defineConfig({
         setupFiles: ["./test/setup.ts"],
         include: ["src/**/*.test.ts", "src/**/*.test.tsx", "test/**/*.test.ts"],
         typecheck: {
-            include: ["src/**/*.{ts,tsx,wsx}", "src/types.d.ts"]
+            include: ["src/**/*.{ts,tsx,wsx}", "src/types.d.ts"],
         },
         coverage: {
             provider: "v8",

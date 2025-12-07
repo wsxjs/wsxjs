@@ -189,8 +189,9 @@ export function jsx(
     }
 
     const { children, ...restProps } = props;
-    if (children !== undefined) {
-        return h(tag, restProps, children);
+    if (children !== undefined && children !== null) {
+        const childrenArray = Array.isArray(children) ? children : [children];
+        return h(tag, restProps, ...childrenArray);
     }
     return h(tag, restProps);
 }
@@ -215,8 +216,8 @@ export function jsxs(
     const { children, ...restProps } = props;
     if (Array.isArray(children)) {
         return h(tag, restProps, ...children);
-    } else if (children !== undefined) {
-        return h(tag, restProps, children);
+    } else if (children !== undefined && children !== null) {
+        return h(tag, restProps, children as JSXChildren);
     }
     return h(tag, restProps);
 }

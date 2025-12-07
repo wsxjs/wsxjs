@@ -89,6 +89,8 @@ WSX provides essential tools to make Web Components development modern and enjoy
 - ⚡ **Zero Runtime Cost** - No virtual DOM, no framework overhead, just native Web Components
 - 🔧 **Seamless Build Integration** - Vite plugin that "just works"
 - 🎨 **Native Shadow DOM** - CSS scoping using browser's built-in capabilities
+- 💡 **Reactive State System** - Lightweight reactivity based on Proxy API (`reactive`, `useState`)
+- 🌐 **Light DOM Components** - `LightComponent` for third-party library integration with full reactive support
 - 📝 **Developer Tooling** - ESLint rules, auto-registration decorators
 - 🧪 **Testing Ready** - Jest setup with Web Components mocking
 - 🎯 **Native SVG Support** - Proper namespace handling for SVG elements
@@ -221,9 +223,60 @@ Since WSX components are native Web Components, use them like any HTML element:
 
 **No framework lock-in** - Your WSX components work in React, Vue, Angular, or vanilla HTML!
 
+## Component Types
+
+WSX Framework provides three component base classes for different use cases:
+
+### WebComponent (Shadow DOM)
+Standard Web Component with Shadow DOM for style isolation:
+```tsx
+import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
+
+@autoRegister()
+export class MyButton extends WebComponent {
+  constructor() {
+    super({ styles: 'button { color: blue; }' });
+  }
+  render() {
+    return <button>Click me</button>;
+  }
+}
+```
+
+### ReactiveWebComponent (Shadow DOM + Reactive)
+Extends `WebComponent` with reactive state management:
+```tsx
+import { ReactiveWebComponent, autoRegister } from '@wsxjs/wsx-core';
+
+@autoRegister()
+export class Counter extends ReactiveWebComponent {
+  private state = this.reactive({ count: 0 });
+  render() {
+    return <div>Count: {this.state.count}</div>;
+  }
+}
+```
+
+### LightComponent (Light DOM + Reactive)
+Light DOM component with reactive support, perfect for third-party integration:
+```tsx
+import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
+
+@autoRegister()
+export class EditorDemo extends LightComponent {
+  private state = this.reactive({ content: '' });
+  render() {
+    return <div id="editor">{/* EditorJS can access this */}</div>;
+  }
+}
+```
+
+**📖 [Complete LightComponent Guide →](docs/LIGHT_COMPONENT_GUIDE.md)** - Learn when to use each component type
+
 ## Documentation
 
 - [Quick Start Guide](docs/QUICK_START.md) - Get started with WSX Framework in minutes
+- [LightComponent Guide](docs/LIGHT_COMPONENT_GUIDE.md) - Complete guide to using LightComponent
 - [JSX Support Guide](docs/JSX_SUPPORT.md) - Complete guide to JSX configuration and usage
 - [Design Documentation](docs/WSX_DESIGN.md) - Framework architecture and design decisions
 - [Development Plan](docs/WSX_PRACTICE_PLAN.md) - Development workflow and best practices

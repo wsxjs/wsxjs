@@ -5,6 +5,49 @@ All notable changes to the WSX Framework will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.6] - 2025-01-26
+
+### Added
+
+- **ReactiveWebComponent** - New base class for reactive state management
+  - Extends `WebComponent` with reactive capabilities
+  - Supports `reactive()` and `useState()` methods
+  - Automatic re-rendering on state changes
+  - Focus preservation during re-renders
+  - Debug mode for reactive state tracking
+
+- **LightComponent Reactive Support** - Full reactive state management
+  - `LightComponent` now supports the same reactive API as `ReactiveWebComponent`
+  - Perfect for third-party library integration
+  - Automatic re-rendering on state changes
+
+- **Reactive State System** - Lightweight reactivity based on Proxy API
+  - `reactive()` function for creating reactive objects
+  - `useState()` hook for state management
+  - `ReactiveDebug` utilities for debugging
+  - Independent system that works with both Shadow DOM and Light DOM
+
+- **Documentation**
+  - Complete `LightComponent` usage guide
+  - Component comparison guide (LightComponent vs ReactiveWebComponent)
+  - Reactive state system examples
+  - Enhanced architecture documentation
+
+### Changed
+
+- `LightComponent` now includes full reactive state management
+- Reactive system is independent of DOM rendering strategy
+- Improved component architecture documentation
+
+### Fixed
+
+- TypeScript type definitions for `.wsx` modules
+- Component export consistency
+
+### Breaking Changes
+
+None - all changes are backward compatible.
+
 ## [0.0.5] - 2025-01-20
 
 ### Added
