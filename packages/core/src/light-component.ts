@@ -187,13 +187,36 @@ export abstract class LightComponent extends HTMLElement {
             return;
         }
 
-        // 清空现有内容
+        // 清空现有内容（包括样式元素）
         this.innerHTML = "";
 
-        // 重新渲染JSX
+        // 重新应用样式（必须在内容之前添加，确保样式优先）
+        if (this.config.styles) {
+            const styleName = this.config.styleName || this.constructor.name;
+            // 直接创建并添加样式元素，不检查是否存在（因为 innerHTML = "" 已经清空了）
+            const styleElement = document.createElement("style");
+            styleElement.setAttribute("data-wsx-light-component", styleName);
+            styleElement.textContent = this.config.styles;
+            // 使用 prepend 或 insertBefore 确保样式在第一个位置
+            // 由于 innerHTML = "" 后 firstChild 是 null，使用 appendChild 然后调整顺序
+            this.appendChild(styleElement);
+        }
+
+        // 重新渲染JSX内容
         try {
             const content = this.render();
             this.appendChild(content);
+
+            // 确保样式元素在内容之前（如果样式存在）
+            if (this.config.styles && this.children.length > 1) {
+                const styleElement = this.querySelector(
+                    `style[data-wsx-light-component="${this.config.styleName || this.constructor.name}"]`
+                );
+                if (styleElement && styleElement !== this.firstChild) {
+                    // 将样式元素移到第一个位置
+                    this.insertBefore(styleElement, this.firstChild);
+                }
+            }
         } catch (error) {
             logger.error(`[${this.constructor.name}] Error in rerender:`, error);
             this.renderError(error);

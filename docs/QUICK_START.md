@@ -16,10 +16,13 @@ npm install @wsxjs/wsx-core @wsxjs/wsx-vite-plugin @wsxjs/eslint-plugin-wsx
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "@wsxjs/wsx-core/jsx"
+    "jsxImportSource": "@wsxjs/wsx-core",
+    "types": ["@wsxjs/wsx-core"]
   }
 }
 ```
+
+> 💡 **提示**：查看 [TypeScript 配置指南](TYPESCRIPT_SETUP.md) 了解完整的配置说明、最佳实践和常见问题解决方案。
 
 ### 2. Vite 配置
 

@@ -40,14 +40,8 @@ declare module "*.css?inline" {
 }
 
 // WSX component module declarations
-declare module "*.wsx" {
-    import { WebComponent } from "@wsxjs/wsx-core";
-    const component: typeof WebComponent;
-    export default component;
-}
-
-// Testing library extensions
-/// <reference types="@testing-library/jest-dom" />
+// Types from @wsxjs/wsx-core and @testing-library/jest-dom
+// are automatically loaded via tsconfig.json types configuration
 
 // 全局类型扩展 - 预留给将来添加全局类型
 declare global {

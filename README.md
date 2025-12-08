@@ -192,12 +192,15 @@ WSX Framework provides framework-level JSX support. Configure your `tsconfig.jso
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "@wsxjs/wsx-core/jsx"
+    "jsxImportSource": "@wsxjs/wsx-core",
+    "types": ["@wsxjs/wsx-core"]
   }
 }
 ```
 
 This enables complete JSX support without any React dependency!
+
+**📖 [Complete TypeScript Setup Guide →](docs/TYPESCRIPT_SETUP.md)** - Detailed configuration, best practices, and troubleshooting
 
 ## Usage in HTML
 
@@ -276,6 +279,7 @@ export class EditorDemo extends LightComponent {
 ## Documentation
 
 - [Quick Start Guide](docs/QUICK_START.md) - Get started with WSX Framework in minutes
+- [TypeScript Setup Guide](docs/TYPESCRIPT_SETUP.md) - Complete TypeScript configuration and best practices
 - [LightComponent Guide](docs/LIGHT_COMPONENT_GUIDE.md) - Complete guide to using LightComponent
 - [JSX Support Guide](docs/JSX_SUPPORT.md) - Complete guide to JSX configuration and usage
 - [Design Documentation](docs/WSX_DESIGN.md) - Framework architecture and design decisions

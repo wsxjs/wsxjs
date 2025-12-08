@@ -12,9 +12,9 @@ import { h } from "../src/jsx-factory";
 
 // Test implementation of LightComponent
 class TestLightComponent extends LightComponent {
-    public renderCallCount: number = 0;
-    public lastRenderData: unknown = null;
-    private _shouldError: boolean = false;
+    public renderCallCount: number;
+    public lastRenderData: unknown;
+    private _shouldError: boolean;
 
     static override get observedAttributes(): string[] {
         return ["test-attr", "disabled"];
@@ -22,6 +22,9 @@ class TestLightComponent extends LightComponent {
 
     constructor(config: any = {}) {
         super(config);
+        this.renderCallCount = 0;
+        this.lastRenderData = null;
+        this._shouldError = false;
     }
 
     render(): HTMLElement {
@@ -429,6 +432,84 @@ describe("LightComponent", () => {
 
             const errorDiv = component.querySelector("div[style*='color: red']");
             expect(errorDiv).toBeTruthy();
+        });
+
+        it("should preserve styles after rerender", () => {
+            const styles = ".test-component { color: red; background: blue; }";
+            const component = new TestLightComponent({
+                styles,
+                styleName: "test-style",
+            });
+            container.appendChild(component);
+            component.connectedCallback();
+
+            // 验证初始样式已应用
+            const initialStyleElement = component.querySelector(
+                'style[data-wsx-light-component="test-style"]'
+            );
+            expect(initialStyleElement).toBeTruthy();
+            expect(initialStyleElement?.textContent).toBe(styles);
+
+            // 执行 rerender
+            (component as any).rerender();
+
+            // 验证样式在 rerender 后仍然存在
+            const styleElementAfterRerender = component.querySelector(
+                'style[data-wsx-light-component="test-style"]'
+            );
+            expect(styleElementAfterRerender).toBeTruthy();
+            expect(styleElementAfterRerender?.textContent).toBe(styles);
+
+            // 验证只有一个样式元素（没有重复）
+            const allStyleElements = component.querySelectorAll(
+                'style[data-wsx-light-component="test-style"]'
+            );
+            expect(allStyleElements.length).toBe(1);
+        });
+
+        it("should preserve styles after multiple rerenders", () => {
+            const styles = ".test-component { color: red; }";
+            const component = new TestLightComponent({
+                styles,
+                styleName: "test-style",
+            });
+            container.appendChild(component);
+            component.connectedCallback();
+
+            // 执行多次 rerender
+            (component as any).rerender();
+            (component as any).rerender();
+            (component as any).rerender();
+
+            // 验证样式仍然存在且只有一个
+            const styleElements = component.querySelectorAll(
+                'style[data-wsx-light-component="test-style"]'
+            );
+            expect(styleElements.length).toBe(1);
+            expect(styleElements[0]?.textContent).toBe(styles);
+        });
+
+        it("should apply styles correctly when rerender is called before content is added", () => {
+            const styles = ".test-component { color: red; }";
+            const component = new TestLightComponent({
+                styles,
+                styleName: "test-style",
+            });
+            container.appendChild(component);
+            component.connectedCallback();
+
+            // 清空内容（模拟某些操作）
+            component.innerHTML = "";
+
+            // 执行 rerender
+            (component as any).rerender();
+
+            // 验证样式被正确应用
+            const styleElement = component.querySelector(
+                'style[data-wsx-light-component="test-style"]'
+            );
+            expect(styleElement).toBeTruthy();
+            expect(styleElement?.textContent).toBe(styles);
         });
     });
 

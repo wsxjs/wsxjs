@@ -3,13 +3,9 @@
     "compilerOptions": {
         "outDir": "./dist",
         "jsx": "react-jsx",
-        "jsxImportSource": "@wsxjs/wsx-core"
+        "jsxImportSource": "@wsxjs/wsx-core",
+        "types": ["@wsxjs/wsx-core", "@testing-library/jest-dom"]
     },
-    "include": [
-        "src/**/*", 
-        "src/global.d.ts",
-        "src/**/*.wsx",
-        "src/**/*.test.ts"
-    ],
+    "include": ["src/**/*", "src/global.d.ts", "src/**/*.wsx", "src/**/*.test.ts"],
     "exclude": ["dist"]
 }

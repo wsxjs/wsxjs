@@ -2,10 +2,12 @@
  * WSX TypeScript 声明文件
  * 支持 JSX 语法和其他 WSX 特性
  */
-
+import { WebComponent, LightComponent } from "../src/index";
 // WSX 文件支持 - 将 .wsx 文件视为 TypeScript 模块
+// 标准类型声明：支持 WebComponent 和 LightComponent
 declare module "*.wsx" {
-    const Component: unknown;
+    // Allow any class that extends WebComponent or LightComponent
+    const Component: new (...args: unknown[]) => WebComponent | LightComponent;
     export default Component;
 }
 
