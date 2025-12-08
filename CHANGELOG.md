@@ -5,6 +5,30 @@ All notable changes to the WSX Framework will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.7] - 2025-12-07
+
+### Fixed
+
+- **LightComponent Style Preservation** - Fixed styles being removed during rerender
+  - Styles are now correctly recreated and positioned after rerender
+  - Added comprehensive tests for style preservation scenarios
+  - Ensures styles remain in the correct position (before content) after multiple rerenders
+
+- **TypeScript Module Resolution** - Fixed `.wsx` file type declarations
+  - Standardized `.wsx` module type declarations in core package
+  - Removed duplicate declarations from examples package
+  - Improved type accuracy for WebComponent and LightComponent exports
+
+### Changed
+
+- Updated standard `.wsx` type declarations to support both `WebComponent` and `LightComponent`
+- Improved test coverage for `LightComponent` (44 tests total)
+
+### Testing
+
+- Added 3 new tests for style preservation after rerender
+- All existing tests continue to pass
+
 ## [0.0.6] - 2025-01-26
 
 ### Added
