@@ -10,25 +10,13 @@
 
 import { h, type JSXChildren } from "./jsx-factory";
 import { StyleManager } from "./styles/style-manager";
-import { reactive as createReactive, createState, reactiveWithDebug } from "./utils/reactive";
+import { BaseComponent, type BaseComponentConfig } from "./base-component";
 
 /**
  * Web Component 配置接口
  */
-export interface WebComponentConfig {
-    styles?: string; // CSS内容
-    styleName?: string; // 样式名称，用于缓存
-    debug?: boolean; // 是否启用响应式调试模式
+export interface WebComponentConfig extends BaseComponentConfig {
     preserveFocus?: boolean; // 是否在重渲染时保持焦点
-    [key: string]: unknown;
-}
-
-/**
- * Type for reactive state storage
- */
-interface ReactiveStateStorage {
-    getter: () => unknown;
-    setter: (value: unknown | ((prev: unknown) => unknown)) => void;
 }
 
 /**
@@ -45,27 +33,14 @@ interface FocusData {
 /**
  * 通用 WSX Web Component 基础抽象类
  */
-export abstract class WebComponent extends HTMLElement {
+export abstract class WebComponent extends BaseComponent {
     declare shadowRoot: ShadowRoot;
     protected config: WebComponentConfig;
-    protected connected: boolean = false;
-    private _isDebugEnabled: boolean = false;
     private _preserveFocus: boolean = true;
-    private _reactiveStates = new Map<string, ReactiveStateStorage>();
-
-    /**
-     * 子类应该重写这个方法来定义观察的属性
-     * @returns 要观察的属性名数组
-     */
-    static get observedAttributes(): string[] {
-        return [];
-    }
 
     constructor(config: WebComponentConfig = {}) {
-        super();
-
+        super(config);
         this.config = config;
-        this._isDebugEnabled = config.debug ?? false;
         this._preserveFocus = config.preserveFocus ?? true;
         this.attachShadow({ mode: "open" });
 
@@ -110,28 +85,6 @@ export abstract class WebComponent extends HTMLElement {
     }
 
     /**
-     * Web Component生命周期：属性变化
-     */
-    attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
-        this.onAttributeChanged?.(name, oldValue, newValue);
-    }
-
-    /**
-     * 可选生命周期钩子：组件已连接
-     */
-    protected onConnected?(): void;
-
-    /**
-     * 可选生命周期钩子：组件已断开
-     */
-    protected onDisconnected?(): void;
-
-    /**
-     * 可选生命周期钩子：属性已更改
-     */
-    protected onAttributeChanged?(name: string, oldValue: string, newValue: string): void;
-
-    /**
      * 查找Shadow DOM内的元素
      *
      * @param selector - CSS选择器
@@ -149,58 +102,6 @@ export abstract class WebComponent extends HTMLElement {
      */
     public querySelectorAll<T extends HTMLElement>(selector: string): NodeListOf<T> {
         return this.shadowRoot.querySelectorAll<T>(selector);
-    }
-
-    /**
-     * 创建响应式对象
-     *
-     * @param obj 要变为响应式的对象
-     * @param debugName 调试名称（可选）
-     * @returns 响应式代理对象
-     */
-    protected reactive<T extends object>(obj: T, debugName?: string): T {
-        const reactiveFn = this._isDebugEnabled ? reactiveWithDebug : createReactive;
-        const name = debugName || `${this.constructor.name}.reactive`;
-
-        return this._isDebugEnabled
-            ? reactiveFn(obj, () => this.scheduleRerender(), name)
-            : reactiveFn(obj, () => this.scheduleRerender());
-    }
-
-    /**
-     * 创建响应式状态
-     *
-     * @param key 状态标识符
-     * @param initialValue 初始值
-     * @returns [getter, setter] 元组
-     */
-    protected useState<T>(
-        key: string,
-        initialValue: T
-    ): [() => T, (value: T | ((prev: T) => T)) => void] {
-        if (!this._reactiveStates.has(key)) {
-            const [getter, setter] = createState(initialValue, () => this.scheduleRerender());
-            this._reactiveStates.set(key, {
-                getter: getter as () => unknown,
-                setter: setter as (value: unknown | ((prev: unknown) => unknown)) => void,
-            });
-        }
-
-        const state = this._reactiveStates.get(key);
-        if (!state) {
-            throw new Error(`State ${key} not found`);
-        }
-        return [state.getter as () => T, state.setter as (value: T | ((prev: T) => T)) => void];
-    }
-
-    /**
-     * 调度重渲染
-     * 这个方法被响应式系统调用，开发者通常不需要直接调用
-     */
-    protected scheduleRerender(): void {
-        if (this.connected) {
-            this.rerender();
-        }
     }
 
     /**
@@ -378,67 +279,6 @@ export abstract class WebComponent extends HTMLElement {
         );
 
         this.shadowRoot.appendChild(errorElement);
-    }
-
-    /**
-     * 获取配置值
-     *
-     * @param key - 配置键
-     * @param defaultValue - 默认值
-     * @returns 配置值
-     */
-    protected getConfig<T>(key: string, defaultValue?: T): T {
-        return (this.config[key] as T) ?? (defaultValue as T);
-    }
-
-    /**
-     * 设置配置值
-     *
-     * @param key - 配置键
-     * @param value - 配置值
-     */
-    protected setConfig(key: string, value: unknown): void {
-        this.config[key] = value;
-    }
-
-    /**
-     * 获取属性值
-     *
-     * @param name - 属性名
-     * @param defaultValue - 默认值
-     * @returns 属性值
-     */
-    protected getAttr(name: string, defaultValue = ""): string {
-        return this.getAttribute(name) || defaultValue;
-    }
-
-    /**
-     * 设置属性值
-     *
-     * @param name - 属性名
-     * @param value - 属性值
-     */
-    protected setAttr(name: string, value: string): void {
-        this.setAttribute(name, value);
-    }
-
-    /**
-     * 移除属性
-     *
-     * @param name - 属性名
-     */
-    protected removeAttr(name: string): void {
-        this.removeAttribute(name);
-    }
-
-    /**
-     * 检查是否有属性
-     *
-     * @param name - 属性名
-     * @returns 是否存在
-     */
-    protected hasAttr(name: string): boolean {
-        return this.hasAttribute(name);
     }
 }
 
