@@ -2,8 +2,9 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "outDir": "./dist",
-        "rootDir": "./src"
+        "rootDir": "./src",
+        "types": ["jest", "@types/jest"]
     },
-    "include": ["src/**/*", "types/wsx-types.d.ts"],
-    "exclude": ["dist", "**/*.test.*"]
+    "include": ["src/**/*", "types/wsx-types.d.ts", "__tests__/**/*"],
+    "exclude": ["dist"]
 }

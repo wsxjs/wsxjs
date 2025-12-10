@@ -21,6 +21,7 @@
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
+        "types": ["jest", "@types/jest", "node"],
         "baseUrl": ".",
         "paths": {
             "@wsxjs/wsx-core": ["./packages/core/src"],
@@ -31,8 +32,9 @@
     },
     "include": [
         "packages/*/src/**/*",
+        "packages/*/__tests__/**/*",
         "packages/vite-plugin/test/setup.ts",
         "packages/core/types/wsx-types.d.ts"
     ],
-    "exclude": ["node_modules", "dist", "**/*.test.*"]
+    "exclude": ["node_modules", "dist"]
 }

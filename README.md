@@ -246,16 +246,16 @@ export class MyButton extends WebComponent {
 }
 ```
 
-### ReactiveWebComponent (Shadow DOM + Reactive)
-Extends `WebComponent` with reactive state management:
+### WebComponent with Reactive State (Shadow DOM + Reactive)
+`WebComponent` includes built-in reactive state management:
 ```tsx
-import { ReactiveWebComponent, autoRegister } from '@wsxjs/wsx-core';
+import { WebComponent, state, autoRegister } from '@wsxjs/wsx-core';
 
 @autoRegister()
-export class Counter extends ReactiveWebComponent {
-  private state = this.reactive({ count: 0 });
+export class Counter extends WebComponent {
+  @state private count = 0;
   render() {
-    return <div>Count: {this.state.count}</div>;
+    return <div>Count: {this.count}</div>;
   }
 }
 ```

@@ -10,8 +10,8 @@ export type { JSXChildren } from "../src/jsx-factory";
 // 导出 WebComponent 类和配置
 export { WebComponent, type WebComponentConfig } from "../src/web-component";
 
-// 导出响应式 WebComponent 类和配置
-export { ReactiveWebComponent, type ReactiveWebComponentConfig } from "../src/reactive-component";
+// 导出响应式装饰器 (@state)
+export { state } from "../src/reactive-decorator";
 
 // 导出 LightComponent 类和配置
 export { LightComponent, type LightComponentConfig } from "../src/light-component";

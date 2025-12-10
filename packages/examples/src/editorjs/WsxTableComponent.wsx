@@ -138,7 +138,11 @@ export default class WsxTableComponent extends WebComponent {
                                                 readonly={this.isReadonly}
                                                 ref={(element) => {
                                                     if (element) {
-                                                        this.initializeHeaderInput(element as HTMLInputElement, colIndex, header);
+                                                        this.initializeHeaderInput(
+                                                            element as HTMLInputElement,
+                                                            colIndex,
+                                                            header
+                                                        );
                                                     }
                                                 }}
                                             />
@@ -169,7 +173,12 @@ export default class WsxTableComponent extends WebComponent {
                                                 }
                                                 ref={(element) => {
                                                     if (element) {
-                                                        this.initializeCellInput(element as HTMLInputElement, rowIndex, colIndex, cell);
+                                                        this.initializeCellInput(
+                                                            element as HTMLInputElement,
+                                                            rowIndex,
+                                                            colIndex,
+                                                            cell
+                                                        );
                                                     }
                                                 }}
                                                 onFocus={() => this.selectCell(rowIndex, colIndex)}
@@ -229,12 +238,21 @@ export default class WsxTableComponent extends WebComponent {
         }
     }
 
-    private initializeHeaderInput = (element: HTMLInputElement, colIndex: number, value: string) => {
+    private initializeHeaderInput = (
+        element: HTMLInputElement,
+        colIndex: number,
+        value: string
+    ) => {
         this.headerInputs.set(colIndex, element);
         element.value = value;
     };
 
-    private initializeCellInput = (element: HTMLInputElement, rowIndex: number, colIndex: number, value: string) => {
+    private initializeCellInput = (
+        element: HTMLInputElement,
+        rowIndex: number,
+        colIndex: number,
+        value: string
+    ) => {
         const key = `${rowIndex}-${colIndex}`;
         this.cellInputs.set(key, element);
         element.value = value;
@@ -261,7 +279,7 @@ export default class WsxTableComponent extends WebComponent {
 
     private updateInputElements() {
         const data = this.tableData;
-        
+
         // Update header inputs only if they're not focused
         data.headers.forEach((header, colIndex) => {
             const input = this.headerInputs.get(colIndex);
@@ -289,7 +307,10 @@ export default class WsxTableComponent extends WebComponent {
     };
 
     private addColumn = () => {
-        const newHeaders = [...this.tableData.headers, `Column ${this.tableData.headers.length + 1}`];
+        const newHeaders = [
+            ...this.tableData.headers,
+            `Column ${this.tableData.headers.length + 1}`,
+        ];
         const newRows = this.tableData.rows.map((row) => [...row, ""]);
 
         this.updateTableData({

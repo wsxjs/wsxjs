@@ -1,5 +1,9 @@
 import { defineConfig } from "vite";
 import { wsx } from "@wsxjs/wsx-vite-plugin";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
     build: {
@@ -27,4 +31,14 @@ export default defineConfig({
             jsxFragment: "Fragment",
         }),
     ],
+    // Resolve workspace packages to source files in development mode
+    // In production, Vite will use package.json exports (dist files)
+    resolve: {
+        alias:
+            process.env.NODE_ENV === "development"
+                ? {
+                      "@wsxjs/wsx-core": path.resolve(__dirname, "../core/src/index.ts"),
+                  }
+                : undefined,
+    },
 });

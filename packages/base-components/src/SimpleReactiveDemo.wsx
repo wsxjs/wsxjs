@@ -2,19 +2,20 @@
 /**
  * 简单的响应式演示组件
  * 展示 WSX 响应式状态系统的基本功能
+ * 使用 @state 装饰器自动初始化响应式状态
  */
 
-import { ReactiveWebComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
+import { WebComponent, state, autoRegister, createLogger } from "@wsxjs/wsx-core";
 
 const logger = createLogger("SimpleReactiveDemo");
 
 @autoRegister({ tagName: "simple-reactive-demo" })
-export default class SimpleReactiveDemo extends ReactiveWebComponent {
-    // 响应式状态 - 自动触发重渲染
-    private state = this.reactive({
+export default class SimpleReactiveDemo extends WebComponent {
+    // 使用 @state 装饰器 - 自动初始化为响应式状态
+    @state private state = {
         count: 0,
         message: "Click the button!",
-    });
+    };
 
     constructor() {
         super();

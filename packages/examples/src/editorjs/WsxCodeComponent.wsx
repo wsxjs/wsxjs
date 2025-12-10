@@ -1,5 +1,5 @@
 /** @jsxImportSource @wsxjs/wsx-core */
-import { ReactiveWebComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
+import { WebComponent, state, autoRegister, createLogger } from "@wsxjs/wsx-core";
 import styles from "./WsxCodeTool.css?inline";
 
 const logger = createLogger("WsxCodeComponent");
@@ -11,23 +11,15 @@ const logger = createLogger("WsxCodeComponent");
  * for the code block tool in EditorJS.
  */
 @autoRegister({ tagName: "wsx-code-component" })
-export default class WsxCodeComponent extends ReactiveWebComponent {
-    // Keep reactive state for visual properties that trigger re-renders
-    private languageState = this.useState("language", "javascript");
-    private showLineNumbersState = this.useState("showLineNumbers", true);
-    private readonlyState = this.useState("readonly", false);
+export default class WsxCodeComponent extends WebComponent {
+    // Reactive state using @state decorator - automatically initialized
+    @state private language = "javascript";
+    @state private showLineNumbers = true;
+    @state private readonly = false;
 
     // Non-reactive code content to prevent cursor issues
     private codeValue = "";
     private codeElement?: HTMLTextAreaElement;
-
-    // Getters and setters for visual properties
-    private language = () => this.languageState[0]();
-    private setLanguage = (value: string) => this.languageState[1](value);
-    private showLineNumbers = () => this.showLineNumbersState[0]();
-    private setShowLineNumbers = (value: boolean) => this.showLineNumbersState[1](value);
-    private readonly = () => this.readonlyState[0]();
-    private setReadonly = (value: boolean) => this.readonlyState[1](value);
 
     // Direct code management
     private code = () => this.codeValue;
@@ -63,13 +55,13 @@ export default class WsxCodeComponent extends ReactiveWebComponent {
                 this.setCode(newValue || "");
                 break;
             case "language":
-                this.setLanguage(newValue || "javascript");
+                this.language = newValue || "javascript";
                 break;
             case "showlinenumbers":
-                this.setShowLineNumbers(newValue === "true");
+                this.showLineNumbers = newValue === "true";
                 break;
             case "readonly":
-                this.setReadonly(newValue === "true");
+                this.readonly = newValue === "true";
                 break;
         }
     }
@@ -94,10 +86,10 @@ export default class WsxCodeComponent extends ReactiveWebComponent {
                     <div class="language-selector">
                         <label>Language:</label>
                         <select
-                            value={this.language()}
+                            value={this.language}
                             onChange={this.handleLanguageChange}
                             class="language-select"
-                            disabled={this.readonly()}
+                            disabled={this.readonly}
                         >
                             {this.languages.map((lang) => (
                                 <option key={lang} value={lang}>
@@ -111,14 +103,14 @@ export default class WsxCodeComponent extends ReactiveWebComponent {
                         <label class="checkbox-label">
                             <input
                                 type="checkbox"
-                                checked={this.showLineNumbers()}
+                                checked={this.showLineNumbers}
                                 onChange={this.handleLineNumbersToggle}
-                                disabled={this.readonly()}
+                                disabled={this.readonly}
                             />
                             Line Numbers
                         </label>
 
-                        {!this.readonly() && (
+                        {!this.readonly && (
                             <>
                                 <button
                                     onClick={this.handleFormat}
@@ -141,21 +133,21 @@ export default class WsxCodeComponent extends ReactiveWebComponent {
                 </div>
 
                 {/* Code Editor */}
-                <div class={`code-container ${this.showLineNumbers() ? "with-line-numbers" : ""}`}>
+                <div class={`code-container ${this.showLineNumbers ? "with-line-numbers" : ""}`}>
                     <textarea
                         class="code-editor"
-                        placeholder={`Enter ${this.language()} code here...`}
+                        placeholder={`Enter ${this.language} code here...`}
                         onInput={this.handleCodeChange}
                         spellcheck={false}
-                        data-language={this.language()}
-                        readonly={this.readonly()}
+                        data-language={this.language}
+                        readonly={this.readonly}
                         ref={(element) => {
                             this.codeElement = element as HTMLTextAreaElement;
                             this.initializeCodeElement();
                         }}
                     />
 
-                    {this.showLineNumbers() && (
+                    {this.showLineNumbers && (
                         <div class="line-numbers">{this.renderLineNumbers()}</div>
                     )}
                 </div>
@@ -163,10 +155,10 @@ export default class WsxCodeComponent extends ReactiveWebComponent {
                 {/* Preview */}
                 <div class="code-preview">
                     <div class="preview-header">
-                        <span>Preview ({this.language()})</span>
+                        <span>Preview ({this.language})</span>
                         <span class="char-count">{this.code().length} characters</span>
                     </div>
-                    <pre class={`language-${this.language()}`}>
+                    <pre class={`language-${this.language}`}>
                         <code>{this.code() || "// Your code will appear here"}</code>
                     </pre>
                 </div>
@@ -176,7 +168,7 @@ export default class WsxCodeComponent extends ReactiveWebComponent {
 
     private handleLanguageChange = (event: Event) => {
         const target = event.target as HTMLSelectElement;
-        this.setLanguage(target.value);
+        this.language = target.value;
         this.dispatchEvent(new CustomEvent("languagechange", { detail: target.value }));
         logger.debug(`Language changed to: ${target.value}`);
     };
@@ -189,7 +181,7 @@ export default class WsxCodeComponent extends ReactiveWebComponent {
 
     private handleLineNumbersToggle = (event: Event) => {
         const target = event.target as HTMLInputElement;
-        this.setShowLineNumbers(target.checked);
+        this.showLineNumbers = target.checked;
         this.dispatchEvent(new CustomEvent("showlinenumberschange", { detail: target.checked }));
     };
 
@@ -201,9 +193,9 @@ export default class WsxCodeComponent extends ReactiveWebComponent {
             let formatted = codeValue;
 
             // Simple formatting for demonstration
-            if (this.language() === "json") {
+            if (this.language === "json") {
                 formatted = JSON.stringify(JSON.parse(codeValue), null, 2);
-            } else if (this.language() === "javascript" || this.language() === "typescript") {
+            } else if (this.language === "javascript" || this.language === "typescript") {
                 // Simple JS formatting
                 formatted = codeValue
                     .replace(/;/g, ";\n")
@@ -260,8 +252,8 @@ export default class WsxCodeComponent extends ReactiveWebComponent {
     getData() {
         return {
             code: this.code(),
-            language: this.language(),
-            showLineNumbers: this.showLineNumbers(),
+            language: this.language,
+            showLineNumbers: this.showLineNumbers,
         };
     }
 }

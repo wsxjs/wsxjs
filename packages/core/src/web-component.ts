@@ -10,6 +10,7 @@
 
 import { h, type JSXChildren } from "./jsx-factory";
 import { StyleManager } from "./styles/style-manager";
+import { reactive as createReactive, createState, reactiveWithDebug } from "./utils/reactive";
 
 /**
  * Web Component 配置接口
@@ -17,7 +18,28 @@ import { StyleManager } from "./styles/style-manager";
 export interface WebComponentConfig {
     styles?: string; // CSS内容
     styleName?: string; // 样式名称，用于缓存
+    debug?: boolean; // 是否启用响应式调试模式
+    preserveFocus?: boolean; // 是否在重渲染时保持焦点
     [key: string]: unknown;
+}
+
+/**
+ * Type for reactive state storage
+ */
+interface ReactiveStateStorage {
+    getter: () => unknown;
+    setter: (value: unknown | ((prev: unknown) => unknown)) => void;
+}
+
+/**
+ * Type for focus data saved during rerender
+ */
+interface FocusData {
+    tagName: string;
+    className: string;
+    value?: string;
+    selectionStart?: number;
+    selectionEnd?: number;
 }
 
 /**
@@ -27,6 +49,9 @@ export abstract class WebComponent extends HTMLElement {
     declare shadowRoot: ShadowRoot;
     protected config: WebComponentConfig;
     protected connected: boolean = false;
+    private _isDebugEnabled: boolean = false;
+    private _preserveFocus: boolean = true;
+    private _reactiveStates = new Map<string, ReactiveStateStorage>();
 
     /**
      * 子类应该重写这个方法来定义观察的属性
@@ -40,6 +65,8 @@ export abstract class WebComponent extends HTMLElement {
         super();
 
         this.config = config;
+        this._isDebugEnabled = config.debug ?? false;
+        this._preserveFocus = config.preserveFocus ?? true;
         this.attachShadow({ mode: "open" });
 
         // 自动应用CSS样式
@@ -78,6 +105,7 @@ export abstract class WebComponent extends HTMLElement {
      * Web Component生命周期：从DOM断开
      */
     disconnectedCallback(): void {
+        this.connected = false;
         this.onDisconnected?.();
     }
 
@@ -124,6 +152,58 @@ export abstract class WebComponent extends HTMLElement {
     }
 
     /**
+     * 创建响应式对象
+     *
+     * @param obj 要变为响应式的对象
+     * @param debugName 调试名称（可选）
+     * @returns 响应式代理对象
+     */
+    protected reactive<T extends object>(obj: T, debugName?: string): T {
+        const reactiveFn = this._isDebugEnabled ? reactiveWithDebug : createReactive;
+        const name = debugName || `${this.constructor.name}.reactive`;
+
+        return this._isDebugEnabled
+            ? reactiveFn(obj, () => this.scheduleRerender(), name)
+            : reactiveFn(obj, () => this.scheduleRerender());
+    }
+
+    /**
+     * 创建响应式状态
+     *
+     * @param key 状态标识符
+     * @param initialValue 初始值
+     * @returns [getter, setter] 元组
+     */
+    protected useState<T>(
+        key: string,
+        initialValue: T
+    ): [() => T, (value: T | ((prev: T) => T)) => void] {
+        if (!this._reactiveStates.has(key)) {
+            const [getter, setter] = createState(initialValue, () => this.scheduleRerender());
+            this._reactiveStates.set(key, {
+                getter: getter as () => unknown,
+                setter: setter as (value: unknown | ((prev: unknown) => unknown)) => void,
+            });
+        }
+
+        const state = this._reactiveStates.get(key);
+        if (!state) {
+            throw new Error(`State ${key} not found`);
+        }
+        return [state.getter as () => T, state.setter as (value: T | ((prev: T) => T)) => void];
+    }
+
+    /**
+     * 调度重渲染
+     * 这个方法被响应式系统调用，开发者通常不需要直接调用
+     */
+    protected scheduleRerender(): void {
+        if (this.connected) {
+            this.rerender();
+        }
+    }
+
+    /**
      * 重新渲染组件
      */
     protected rerender(): void {
@@ -133,6 +213,14 @@ export abstract class WebComponent extends HTMLElement {
             );
             return;
         }
+
+        // 保存焦点状态（如果启用）
+        let focusData: FocusData | null = null;
+        if (this._preserveFocus && this.shadowRoot) {
+            const activeElement = this.shadowRoot.activeElement;
+            focusData = this.saveFocusState(activeElement);
+        }
+
         // 保存当前的 adopted stylesheets (jsdom may not support this)
         const adoptedStyleSheets = this.shadowRoot.adoptedStyleSheets || [];
 
@@ -157,6 +245,115 @@ export abstract class WebComponent extends HTMLElement {
         } catch (error) {
             console.error(`[${this.constructor.name}] Error in rerender:`, error);
             this.renderError(error);
+        }
+
+        // 恢复焦点状态
+        if (this._preserveFocus && focusData && this.shadowRoot) {
+            this.restoreFocusState(focusData);
+        }
+    }
+
+    /**
+     * 保存焦点状态
+     */
+    private saveFocusState(activeElement: Element | null): FocusData | null {
+        if (!activeElement) {
+            return null;
+        }
+
+        const focusData: FocusData = {
+            tagName: activeElement.tagName.toLowerCase(),
+            className: activeElement.className,
+        };
+
+        // Save selection/cursor position
+        if (activeElement.hasAttribute("contenteditable")) {
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                focusData.selectionStart = range.startOffset;
+                focusData.selectionEnd = range.endOffset;
+            }
+        }
+
+        // Save input/select element state
+        if (
+            activeElement instanceof HTMLInputElement ||
+            activeElement instanceof HTMLSelectElement
+        ) {
+            focusData.value = activeElement.value;
+            if ("selectionStart" in activeElement) {
+                focusData.selectionStart = activeElement.selectionStart ?? undefined;
+                focusData.selectionEnd = activeElement.selectionEnd ?? undefined;
+            }
+        }
+
+        return focusData;
+    }
+
+    /**
+     * 恢复焦点状态
+     */
+    private restoreFocusState(focusData: FocusData): void {
+        if (!focusData) return;
+
+        try {
+            let targetElement: Element | null = null;
+
+            // Try to find by className first (most specific)
+            if (focusData.className) {
+                targetElement = this.shadowRoot.querySelector(
+                    `.${focusData.className.split(" ")[0]}`
+                );
+            }
+
+            // Fallback: find by tag name
+            if (!targetElement) {
+                targetElement = this.shadowRoot.querySelector(focusData.tagName);
+            }
+
+            if (targetElement) {
+                // Restore focus - prevent page scroll
+                (targetElement as HTMLElement).focus({ preventScroll: true });
+
+                // Restore selection/cursor position
+                if (focusData.selectionStart !== undefined) {
+                    if (targetElement instanceof HTMLInputElement) {
+                        targetElement.setSelectionRange(
+                            focusData.selectionStart,
+                            focusData.selectionEnd ?? focusData.selectionStart
+                        );
+                    } else if (targetElement instanceof HTMLSelectElement) {
+                        targetElement.value = focusData.value ?? "";
+                    } else if (targetElement.hasAttribute("contenteditable")) {
+                        this.setCursorPosition(targetElement, focusData.selectionStart);
+                    }
+                }
+            }
+        } catch {
+            // Silently handle focus restoration failure
+        }
+    }
+
+    /**
+     * 设置光标位置
+     */
+    private setCursorPosition(element: Element, position: number): void {
+        try {
+            const selection = window.getSelection();
+            if (selection) {
+                const range = document.createRange();
+                const textNode = element.childNodes[0];
+                if (textNode) {
+                    const maxPos = Math.min(position, textNode.textContent?.length || 0);
+                    range.setStart(textNode, maxPos);
+                    range.setEnd(textNode, maxPos);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+        } catch {
+            // Silently handle cursor position failure
         }
     }
 

@@ -6,47 +6,39 @@
  * - 自动重渲染：状态变化时无需手动调用 rerender()
  * - 批量更新：多个状态变化会被合并为一次重渲染
  * - 原生性能：基于浏览器 Proxy API，零运行时开销
+ * - 使用 @state 装饰器：自动初始化响应式状态
  */
 
-import { ReactiveWebComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
+import { WebComponent, state, autoRegister, createLogger } from "@wsxjs/wsx-core";
 import styles from "./ReactiveCounter.css?inline";
 
 const logger = createLogger("ReactiveCounter");
 
 @autoRegister({ tagName: "reactive-counter" })
-export default class ReactiveCounter extends ReactiveWebComponent {
-    // 使用响应式对象 - 任何属性变化都会自动触发重渲染
-    private state = this.reactive({
+export default class ReactiveCounter extends WebComponent {
+    // 使用 @state 装饰器 - 自动初始化为响应式状态
+    @state private state = {
         count: 0,
         step: 1,
         message: "Hello WSX Reactive!",
         isRunning: false,
-    });
+    };
 
-    // 使用 useState API - 类似 React 的 useState
-    private themeState = this.useState("theme", "light");
-    private historyState = this.useState("history", [] as number[]);
-
-    private getTheme = this.themeState[0];
-    private setTheme = this.themeState[1];
-    private getHistory = this.historyState[0];
-    private setHistory = this.historyState[1];
+    // 使用 @state 装饰器 - 基本类型自动使用 useState
+    @state private theme = "light";
+    @state private history: number[] = [];
 
     constructor() {
         super({
             styles,
-            debug: true, // 启用调试模式
         });
 
         logger.info("ReactiveCounter initialized");
     }
 
     render() {
-        const theme = this.getTheme();
-        const history = this.getHistory();
-
         return (
-            <div class={`reactive-counter theme-${theme}`}>
+            <div class={`reactive-counter theme-${this.theme}`}>
                 <div class="header">
                     <h3>🔄 Reactive Counter</h3>
                     <p class="subtitle">{this.state.message}</p>
@@ -109,7 +101,7 @@ export default class ReactiveCounter extends ReactiveWebComponent {
                 <div class="theme-controls">
                     <label>
                         Theme:
-                        <select value={theme} onChange={this.handleThemeChange}>
+                        <select value={this.theme} onChange={this.handleThemeChange}>
                             <option value="light">Light</option>
                             <option value="dark">Dark</option>
                             <option value="blue">Blue</option>
@@ -126,11 +118,11 @@ export default class ReactiveCounter extends ReactiveWebComponent {
                     />
                 </div>
 
-                {history.length > 0 && (
+                {this.history.length > 0 && (
                     <div class="history">
                         <h4>History (last 10):</h4>
                         <div class="history-list">
-                            {history.slice(-10).map((value, index) => (
+                            {this.history.slice(-10).map((value, index) => (
                                 <span key={index} class="history-item">
                                     {value}
                                 </span>
@@ -149,9 +141,8 @@ export default class ReactiveCounter extends ReactiveWebComponent {
                             {JSON.stringify(
                                 {
                                     state: this.state,
-                                    theme: this.getTheme(),
-                                    historyLength: this.getHistory().length,
-                                    stateSnapshot: this.getStateSnapshot(),
+                                    theme: this.theme,
+                                    historyLength: this.history.length,
                                 },
                                 null,
                                 2
@@ -186,7 +177,7 @@ export default class ReactiveCounter extends ReactiveWebComponent {
 
     private handleThemeChange = (event: Event) => {
         const select = event.target as HTMLSelectElement;
-        this.setTheme(select.value);
+        this.theme = select.value;
     };
 
     private handleMessageChange = (event: Event) => {
@@ -219,12 +210,11 @@ export default class ReactiveCounter extends ReactiveWebComponent {
     }
 
     private addToHistory(value: number) {
-        const history = this.getHistory();
-        this.setHistory([...history, value]);
+        this.history = [...this.history, value];
     }
 
     private clearHistory = () => {
-        this.setHistory([]);
+        this.history = [];
     };
 
     protected onConnected(): void {

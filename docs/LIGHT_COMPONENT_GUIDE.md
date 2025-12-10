@@ -25,7 +25,6 @@
 ### 不适用场景
 
 - 需要样式隔离的 UI 组件（使用 `WebComponent`）
-- 需要完全封装的组件（使用 `ReactiveWebComponent`）
 
 ## 快速开始
 
@@ -402,13 +401,13 @@ protected onAttributeChanged(name: string, _old: string, newValue: string) {
 }
 ```
 
-## 组件对比：LightComponent vs ReactiveWebComponent
+## 组件对比：LightComponent vs WebComponent
 
 ### 核心区别
 
-| 特性 | LightComponent | ReactiveWebComponent |
-|------|---------------|---------------------|
-| **继承关系** | `HTMLElement` | `WebComponent` → `HTMLElement` |
+| 特性 | LightComponent | WebComponent |
+|------|---------------|---------------|
+| **继承关系** | `HTMLElement` | `HTMLElement` |
 | **DOM 类型** | Light DOM | Shadow DOM |
 | **样式隔离** | 作用域样式（data 属性） | 完全隔离（Shadow DOM） |
 | **响应式支持** | ✅ 完整支持 | ✅ 完整支持 |
@@ -432,7 +431,7 @@ render() {
 // DOM 结构: <my-component><div>Content</div></my-component>
 ```
 
-**ReactiveWebComponent:**
+**WebComponent:**
 ```tsx
 // 渲染到 Shadow DOM
 render() {
@@ -454,7 +453,7 @@ super({
 // 需要手动避免全局冲突
 ```
 
-**ReactiveWebComponent:**
+**WebComponent:**
 ```tsx
 // 使用 Shadow DOM 自动隔离
 super({
@@ -475,7 +474,7 @@ protected onConnected() {
 }
 ```
 
-**ReactiveWebComponent:**
+**WebComponent:**
 ```tsx
 // ⚠️ EditorJS 可能无法正常工作
 protected onConnected() {
@@ -505,7 +504,7 @@ this.querySelector('.item'); // 查询组件内部
 document.querySelector('.item'); // 可以查询全局
 ```
 
-**ReactiveWebComponent:**
+**WebComponent:**
 ```tsx
 // 查询 Shadow DOM
 this.shadowRoot.querySelector('.item'); // 查询 Shadow DOM
@@ -521,7 +520,7 @@ this.shadowRoot.querySelector('.item'); // 查询 Shadow DOM
 // 事件会自然冒泡到 document
 ```
 
-**ReactiveWebComponent:**
+**WebComponent:**
 ```tsx
 // 事件默认不冒泡到外部（Shadow DOM 边界）
 <button onClick={this.handleClick}>Click</button>
@@ -540,7 +539,7 @@ this.dispatchEvent(new CustomEvent('click', { bubbles: true, composed: true }));
 - ✅ 不需要严格的样式隔离
 - ✅ 追求更轻量的实现
 
-#### 使用 ReactiveWebComponent 当：
+#### 使用 WebComponent 当：
 
 - ✅ 构建可复用的 UI 组件（按钮、输入框等）
 - ✅ 需要完全的样式隔离
@@ -554,8 +553,8 @@ this.dispatchEvent(new CustomEvent('click', { bubbles: true, composed: true }));
 
 ```tsx
 // 两者使用相同的响应式 API
-export class Counter extends LightComponent { // 或 ReactiveWebComponent
-  private state = this.reactive({ count: 0 });
+export class Counter extends LightComponent { // 或 WebComponent
+  @state private count = 0;
   
   render() {
     return (
@@ -580,8 +579,8 @@ export class EditorWrapper extends LightComponent {
   }
 }
 
-// ReactiveWebComponent - Shadow DOM 隔离
-export class EditorWrapper extends ReactiveWebComponent {
+// WebComponent - Shadow DOM 隔离
+export class EditorWrapper extends WebComponent {
   protected onConnected() {
     // ⚠️ 只能访问 Shadow DOM 内部
     const shadowElement = this.shadowRoot.querySelector('.shadow-class');
@@ -593,15 +592,15 @@ export class EditorWrapper extends ReactiveWebComponent {
 ### 总结
 
 - **LightComponent**: 简单、轻量、适合集成，使用 Light DOM
-- **ReactiveWebComponent**: 封装、隔离、适合 UI 组件，使用 Shadow DOM
-- **共同点**: 都支持完整的响应式状态管理
+- **WebComponent**: 封装、隔离、适合 UI 组件，使用 Shadow DOM
+- **共同点**: 都支持完整的响应式状态管理（`reactive()` 和 `useState()` 方法）
 - **选择原则**: 根据是否需要样式隔离和第三方库集成来决定
 
 ## 常见问题
 
 ### Q: LightComponent 支持 Shadow DOM 吗？
 
-A: 不支持。`LightComponent` 专门设计为不使用 Shadow DOM，以便与第三方库集成。如果需要 Shadow DOM，请使用 `WebComponent` 或 `ReactiveWebComponent`。
+A: 不支持。`LightComponent` 专门设计为不使用 Shadow DOM，以便与第三方库集成。如果需要 Shadow DOM，请使用 `WebComponent`。
 
 ### Q: 样式会被全局污染吗？
 
