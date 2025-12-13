@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-router",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "description": "WSX Router - Native History API-based routing for WSX Framework",
     "type": "module",
     "main": "./dist/index.cjs",

@@ -1,29 +1,31 @@
 {
-    "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit"
+    "eslint.enable": true,
+    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+    "eslint.workingDirectories": [
+        {
+            "directory": "./packages/examples",
+            "changeProcessCWD": true
+        },
+        {
+            "directory": "./packages/core",
+            "changeProcessCWD": true
+        },
+        {
+            "directory": "./packages/eslint-plugin",
+            "changeProcessCWD": true
+        }
+    ],
+    "eslint.useFlatConfig": true,
+    "eslint.options": {
+        "overrideConfigFile": null
     },
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "typescript.enablePromptUseWorkspaceTsdk": true,
     "files.associations": {
         "*.wsx": "typescriptreact"
     },
-    "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "wsx"],
-    "search.exclude": {
-        "**/node_modules": true,
-        "**/dist": true,
-        "**/.pnpm-store": true,
-        "**/coverage": true
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "files.exclude": {
-        "**/.git": true,
-        "**/.DS_Store": true,
-        "**/node_modules": true
-    },
-    "[svg]": {
-        "editor.defaultFormatter": "jock.svg"
-    },
-    "typescript.preferences.includePackageJsonAutoImports": "on",
-    "typescript.suggest.autoImports": true
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    }
 }

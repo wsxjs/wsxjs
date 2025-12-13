@@ -38,7 +38,17 @@
             "Bash(pnpm --filter @wsxjs/wsx-examples test -- src/editorjs/__tests__/EditorJSDemo.test.ts)",
             "Bash(npx tsc:*)",
             "Bash(pnpm --filter @wsxjs/wsx-examples typecheck:*)",
-            "Bash(tree:*)"
+            "Bash(tree:*)",
+            "Bash(timeout 10s pnpm:*)",
+            "Bash(pnpm --filter @wsxjs/wsx-vite-plugin build:*)",
+            "Bash(cat:*)",
+            "Bash(curl:*)",
+            "Bash(pkill:*)",
+            "Bash(pnpm dev:*)",
+            "Bash(timeout 15s pnpm dev:*)",
+            "Bash(tee:*)",
+            "Bash(pnpm --filter @wsxjs/wsx-vite-plugin lint:*)",
+            "Bash(npx eslint:*)"
         ],
         "deny": []
     }

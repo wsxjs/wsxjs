@@ -85,83 +85,93 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
             }
 
             // 2. Use Babel to preprocess decorators
-            try {
-                const babelResult = transformSync(transformedCode, {
-                    filename: id, // Pass the actual filename so Babel knows it's .wsx
-                    presets: [
-                        [
-                            "@babel/preset-typescript",
-                            {
-                                isTSX: true, // Enable JSX syntax
-                                allExtensions: true, // Process all extensions, including .wsx
-                            },
-                        ],
-                    ],
+            const babelResult = transformSync(transformedCode, {
+                filename: id, // Pass the actual filename so Babel knows it's .wsx
+                // CRITICAL: Configure parser to preserve decorators
+                // @babel/preset-typescript should preserve decorators by default,
+                // but we explicitly enable decorator parsing to be sure
+                parserOpts: {
                     plugins: [
-                        // CRITICAL: Style injection plugin must run FIRST
-                        // This ensures _autoStyles property exists before state transformations
-                        ...(autoStyleInjection && cssFileExists
-                            ? [
-                                  [
-                                      babelPluginWSXStyle,
-                                      {
-                                          cssFileExists,
-                                          cssFilePath,
-                                          componentName,
-                                      },
-                                  ],
-                              ]
-                            : []),
-                        // Focus key generation plugin runs early to add data-wsx-key attributes
-                        // This must run before JSX is transformed to h() calls
-                        babelPluginWSXFocus,
-                        // State decorator transformation runs after style injection
-                        babelPluginWSXState,
-                        [
-                            "@babel/plugin-proposal-decorators",
-                            {
-                                version: "2023-05",
-                                decoratorsBeforeExport: true,
-                            },
-                        ],
-                        [
-                            "@babel/plugin-proposal-class-properties",
-                            {
-                                loose: false,
-                            },
-                        ],
-                        "@babel/plugin-transform-class-static-block", // Support static class blocks
+                        ["decorators", { decoratorsBeforeExport: true }], // Stage 3 decorators
+                        "typescript",
+                        "jsx",
                     ],
-                    // parserOpts not needed - @babel/preset-typescript and plugins handle it
-                });
+                },
+                presets: [
+                    [
+                        "@babel/preset-typescript",
+                        {
+                            isTSX: true, // Enable JSX syntax
+                            allExtensions: true, // Process all extensions, including .wsx
+                            // CRITICAL: onlyRemoveTypeImports only affects import statements
+                            // Decorators are preserved by default in @babel/preset-typescript
+                            // They are only removed if we explicitly configure it
+                            onlyRemoveTypeImports: false, // Remove all type-only imports
+                        },
+                    ],
+                ],
+                plugins: [
+                    // CRITICAL: Decorator plugin must run FIRST to parse decorators correctly
+                    // This ensures decorators are properly parsed before our custom plugins try to process them
+                    // However, we need to use a custom visitor that doesn't transform decorators yet
+                    // Actually, we should NOT run decorator plugin first because it transforms decorators
+                    // Instead, we rely on TypeScript preset to parse but not transform decorators
+                    // CRITICAL: Style injection plugin must run FIRST
+                    // This ensures _autoStyles property exists before state transformations
+                    ...(autoStyleInjection && cssFileExists
+                        ? [
+                              [
+                                  babelPluginWSXStyle,
+                                  {
+                                      cssFileExists,
+                                      cssFilePath,
+                                      componentName,
+                                  },
+                              ],
+                          ]
+                        : []),
+                    // Focus key generation plugin runs early to add data-wsx-key attributes
+                    // This must run before JSX is transformed to h() calls
+                    babelPluginWSXFocus,
+                    // CRITICAL: State decorator transformation must run BEFORE @babel/plugin-proposal-decorators
+                    // This allows the plugin to detect @state decorators in their original form and throw errors if needed
+                    // The plugin removes @state decorators after processing, so the decorator plugin won't see them
+                    [
+                        babelPluginWSXState,
+                        {
+                            // Pass ORIGINAL source code (before JSX import injection) to plugin
+                            // This ensures we can detect @state decorators even if they're removed by TypeScript preset
+                            originalSource: code, // Use original code, not transformedCode
+                        },
+                    ],
+                    // Decorator plugin runs after our custom plugins
+                    // This transforms remaining decorators (like @autoRegister) to runtime calls
+                    [
+                        "@babel/plugin-proposal-decorators",
+                        {
+                            version: "2023-05",
+                            decoratorsBeforeExport: true,
+                        },
+                    ],
+                    [
+                        "@babel/plugin-proposal-class-properties",
+                        {
+                            loose: false,
+                        },
+                    ],
+                    "@babel/plugin-transform-class-static-block", // Support static class blocks
+                ],
+                // parserOpts not needed - @babel/preset-typescript and plugins handle it
+            });
 
-                if (babelResult && babelResult.code) {
-                    transformedCode = babelResult.code;
-                } else {
-                    // Babel returned no code - critical error
-                    throw new Error(
-                        `[WSX Plugin] Babel transform returned no code for ${id}. ` +
-                            `@state decorators will NOT be processed and will cause runtime errors. ` +
-                            `Please check Babel configuration and plugin setup.`
-                    );
-                }
-            } catch (error) {
-                // Babel transform failed - this is critical
-                // If Babel fails, @state decorators won't be processed and will cause runtime errors
-                // Don't silently fallback - throw error to make it obvious
-                const errorMessage = error instanceof Error ? error.message : String(error);
+            if (babelResult && babelResult.code) {
+                transformedCode = babelResult.code;
+            } else {
+                // Babel returned no code - critical error
                 throw new Error(
-                    `[WSX Plugin] Babel transform failed for ${id}. ` +
+                    `[WSX Plugin] Babel transform returned no code for ${id}. ` +
                         `@state decorators will NOT be processed and will cause runtime errors. ` +
-                        `\n\n` +
-                        `Babel Error: ${errorMessage}` +
-                        `\n\n` +
-                        `This usually means:` +
-                        `\n1. Babel plugins are not installed correctly` +
-                        `\n2. Babel configuration is invalid` +
-                        `\n3. File contains syntax errors that Babel cannot parse` +
-                        `\n\n` +
-                        `Please fix the Babel error above before continuing.`
+                        `Please check Babel configuration and plugin setup.`
                 );
             }
 

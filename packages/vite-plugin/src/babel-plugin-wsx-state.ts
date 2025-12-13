@@ -31,6 +31,52 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
     return {
         name: "babel-plugin-wsx-state",
         visitor: {
+            Program: {
+                enter(_path, state) {
+                    // CRITICAL: Debug log to check state.opts
+                    console.info(
+                        `[Babel Plugin WSX State] DEBUG: state.opts keys = ${Object.keys(state.opts || {}).join(", ")}`
+                    );
+                    console.info(
+                        `[Babel Plugin WSX State] DEBUG: state.opts = ${JSON.stringify(state.opts).substring(0, 200)}`
+                    );
+
+                    // Store original source code for later checking
+                    // First try to get from plugin options (passed from vite plugin)
+                    const opts = state.opts as Record<string, unknown> | undefined;
+                    if (opts?.originalSource) {
+                        (state as Record<string, unknown>).originalSource = opts.originalSource;
+                        console.info(
+                            `[Babel Plugin WSX State] ✅ Stored original source from options (length: ${String(opts.originalSource).length})`
+                        );
+                    } else {
+                        console.warn(
+                            `[Babel Plugin WSX State] ⚠️ state.opts.originalSource not found, trying fallback...`
+                        );
+                        // Fallback: try to get from file
+                        const file = state.file;
+                        if (file) {
+                            const sourceCode = (file as unknown as Record<string, unknown>).code as
+                                | string
+                                | undefined;
+                            if (sourceCode) {
+                                (state as Record<string, unknown>).originalSource = sourceCode;
+                                console.info(
+                                    `[Babel Plugin WSX State] ✅ Stored original source from file (length: ${sourceCode.length})`
+                                );
+                            } else {
+                                console.error(
+                                    `[Babel Plugin WSX State] ❌ ERROR: Could not get original source code from state.opts or state.file!`
+                                );
+                            }
+                        } else {
+                            console.error(
+                                `[Babel Plugin WSX State] ❌ ERROR: state.file is undefined!`
+                            );
+                        }
+                    }
+                },
+            },
             ClassDeclaration(path) {
                 const classBody = path.node.body;
                 const stateProperties: Array<{
@@ -45,6 +91,13 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                 console.info(
                     `[Babel Plugin WSX State] Processing class ${path.node.id?.name || "anonymous"}, members: ${classBody.body.length}`
                 );
+
+                // CRITICAL: Log all decorators at class level to debug
+                if (path.node.decorators && path.node.decorators.length > 0) {
+                    console.info(
+                        `[Babel Plugin WSX State] Class-level decorators: ${path.node.decorators.length}`
+                    );
+                }
 
                 for (const member of classBody.body) {
                     // Debug: log member type
@@ -61,106 +114,308 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                         member.key.type === "Identifier"
                     ) {
                         // Debug: log all class properties
+                        const propertyName = member.key.name;
+                        const decoratorCount = member.decorators?.length || 0;
+                        // CRITICAL: undefined value means no initial value
+                        // TypeScript optional properties (count?) are converted to count: undefined
+                        // We should treat undefined as no initial value
+                        const hasValue =
+                            !!member.value &&
+                            !(
+                                member.value.type === "Identifier" &&
+                                (member.value as t.Identifier).name === "undefined"
+                            ) &&
+                            !(
+                                member.value.type === "UnaryExpression" &&
+                                member.value.operator === "void"
+                            );
+                        // Check if value is explicitly undefined
+                        const isUndefined = !!(
+                            member.value &&
+                            ((member.value.type === "Identifier" &&
+                                (member.value as t.Identifier).name === "undefined") ||
+                                (member.value.type === "UnaryExpression" &&
+                                    member.value.operator === "void"))
+                        );
+                        const valueType = member.value ? member.value.type : "none";
+                        const valueName =
+                            member.value && member.value.type === "Identifier"
+                                ? (member.value as t.Identifier).name
+                                : "none";
+
                         console.info(
-                            `  - Property: ${member.key.name}, decorators: ${member.decorators?.length || 0}, hasValue: ${!!member.value}`
+                            `  - Property: ${propertyName}, decorators: ${decoratorCount}, hasValue: ${hasValue}, isUndefined: ${isUndefined}, value type: ${valueType}, value name: ${valueName}`
                         );
 
-                        if (member.decorators && member.decorators.length > 0) {
-                            // Debug: log decorator names
-                            member.decorators.forEach((decorator) => {
-                                if (decorator.expression.type === "Identifier") {
-                                    console.info(`    Decorator: ${decorator.expression.name}`);
-                                } else if (
-                                    decorator.expression.type === "CallExpression" &&
-                                    decorator.expression.callee.type === "Identifier"
-                                ) {
-                                    console.debug(
-                                        `    Decorator: ${decorator.expression.callee.name}()`
+                        // Wrap the entire detection logic in try-catch to pinpoint crash location
+                        try {
+                            // CRITICAL: If property has undefined value, check source code for @state decorator
+                            // This handles the case where decorator was removed but property has undefined from optional syntax
+                            if (isUndefined) {
+                                const originalSource = (path.state as Record<string, unknown>)
+                                    ?.originalSource as string | undefined;
+                                if (originalSource) {
+                                    const propertyPattern = new RegExp(
+                                        `@state\\s+(?:private|protected|public)?\\s+${propertyName}\\s*[?;]`,
+                                        "m"
                                     );
+                                    if (propertyPattern.test(originalSource)) {
+                                        console.error(
+                                            `[Babel Plugin WSX State] ERROR: Found @state decorator in source for property '${propertyName}' but value is undefined (from optional property syntax)!`
+                                        );
+                                        const error = path.buildCodeFrameError(
+                                            `@state decorator on property '${propertyName}' requires an initial value.\n` +
+                                                `\n` +
+                                                `The property has undefined value (from optional property syntax '${propertyName}?'), ` +
+                                                `but @state decorator needs a real value to decide whether to use useState (primitive) or reactive (object/array).\n` +
+                                                `\n` +
+                                                `Examples:\n` +
+                                                `  @state private ${propertyName} = "";  // for string\n` +
+                                                `  @state private ${propertyName} = 0;  // for number\n` +
+                                                `  @state private ${propertyName} = {};  // for object\n` +
+                                                `  @state private ${propertyName} = [];  // for array\n` +
+                                                `  @state private ${propertyName} = undefined;  // explicitly undefined\n` +
+                                                `\n` +
+                                                `Current code: @state private ${propertyName}?;\n` +
+                                                `\n` +
+                                                `Fix: Change to '@state private ${propertyName} = undefined;' or provide a real initial value.`
+                                        );
+                                        console.error(
+                                            `[Babel Plugin WSX State] ERROR: ${error.message}`
+                                        );
+                                        throw error;
+                                    }
                                 }
-                            });
-                        }
-
-                        // Check if has @state decorator
-                        const hasStateDecorator = member.decorators?.some(
-                            (decorator: t.Decorator) => {
-                                if (
-                                    decorator.expression.type === "Identifier" &&
-                                    decorator.expression.name === "state"
-                                ) {
-                                    return true;
-                                }
-                                if (
-                                    decorator.expression.type === "CallExpression" &&
-                                    decorator.expression.callee.type === "Identifier" &&
-                                    decorator.expression.callee.name === "state"
-                                ) {
-                                    return true;
-                                }
-                                return false;
                             }
-                        );
 
-                        if (hasStateDecorator) {
-                            const key = member.key.name;
+                            // CRITICAL: Check ALL properties for @state decorator in source code
+                            // Even if decorators array is empty (decorators: 0), the decorator might exist in source
+                            // This is the main way to detect @state when decorators are removed before our plugin runs
 
-                            // @state decorator requires an initial value
-                            // This is opinionated: we need the value to determine if it's primitive or object/array
-                            if (!member.value) {
-                                throw path.buildCodeFrameError(
-                                    `@state decorator on property '${key}' requires an initial value.\n` +
-                                        `\n` +
-                                        `Examples:\n` +
-                                        `  @state private ${key} = "";  // for string\n` +
-                                        `  @state private ${key} = 0;  // for number\n` +
-                                        `  @state private ${key} = {};  // for object\n` +
-                                        `  @state private ${key} = [];  // for array\n` +
-                                        `  @state private ${key} = undefined;  // for optional\n`
+                            // DEBUG: Check path.state structure
+                            if (propertyName === "count") {
+                                console.info(
+                                    `[Babel Plugin WSX State] DEBUG path.state keys for '${propertyName}': ${path.state ? Object.keys(path.state).join(", ") : "null"}`
+                                );
+                                console.info(
+                                    `[Babel Plugin WSX State] DEBUG path.state.originalSource type: ${path.state ? typeof (path.state as any).originalSource : "path.state is null"}`
                                 );
                             }
 
-                            const initialValue = member.value as t.Expression;
+                            const originalSource = (path.state as Record<string, unknown>)
+                                ?.originalSource as string | undefined;
 
-                            // Determine if it's an object/array
-                            const isObject =
-                                initialValue.type === "ObjectExpression" ||
-                                initialValue.type === "ArrayExpression";
+                            if (originalSource) {
+                                // Check if there's a pattern like "@state private count?" or "@state private count;" in source
+                                // Look for @state followed by private/protected/public, then property name, then optional ? or ;
+                                const propertyPattern = new RegExp(
+                                    `@state\\s+(?:private|protected|public)?\\s+${propertyName}\\s*[?;]`,
+                                    "m"
+                                );
 
-                            // Check if it's specifically an array
-                            const isArray = initialValue.type === "ArrayExpression";
+                                const hasStateInSource = propertyPattern.test(originalSource);
+                                if (hasStateInSource) {
+                                    console.info(
+                                        `[Babel Plugin WSX State] Found @state in source for property '${propertyName}' (decorators array was empty: ${decoratorCount})`
+                                    );
+                                    // Found @state in source but decorators array is empty
+                                    // Check if it has an initial value in source (not just undefined from TypeScript)
+                                    const hasInitialValueInSource = new RegExp(
+                                        `@state\\s+(?:private|protected|public)?\\s+${propertyName}\\s*=\\s*[^;]+`,
+                                        "m"
+                                    ).test(originalSource);
 
-                            stateProperties.push({
-                                key,
-                                initialValue,
-                                isObject,
-                                isArray, // Add isArray flag
-                            });
+                                    if (!hasInitialValueInSource) {
+                                        console.error(
+                                            `[Babel Plugin WSX State] ERROR: Found @state decorator in source for property '${propertyName}' but no initial value!`
+                                        );
 
-                            // Remove @state decorator - but keep other decorators
-                            if (member.decorators) {
-                                member.decorators = member.decorators.filter(
-                                    (decorator: t.Decorator) => {
+                                        const error = path.buildCodeFrameError(
+                                            `@state decorator on property '${propertyName}' requires an initial value.\n` +
+                                                `\n` +
+                                                `The @state decorator needs a real value to decide whether to use useState (primitive) or reactive (object/array).\n` +
+                                                `\n` +
+                                                `Examples:\n` +
+                                                `  @state private ${propertyName} = "";  // for string\n` +
+                                                `  @state private ${propertyName} = 0;  // for number\n` +
+                                                `  @state private ${propertyName} = {};  // for object\n` +
+                                                `  @state private ${propertyName} = [];  // for array\n` +
+                                                `  @state private ${propertyName} = undefined;  // explicitly undefined\n` +
+                                                `\n` +
+                                                `Current code: @state private ${propertyName}?;\n` +
+                                                `\n` +
+                                                `Fix: Change to '@state private ${propertyName} = undefined;' or provide a real initial value.`
+                                        );
+                                        console.error(
+                                            `[Babel Plugin WSX State] ERROR: ${error.message}`
+                                        );
+                                        throw error;
+                                    }
+                                }
+                            } else {
+                                // Log when originalSource is not available for debugging
+                                if (propertyName === "count") {
+                                    console.warn(
+                                        `[Babel Plugin WSX State] WARNING: originalSource not available for property '${propertyName}'`
+                                    );
+                                }
+                            }
+
+                            if (member.decorators && member.decorators.length > 0) {
+                                // Debug: log decorator names
+                                member.decorators.forEach((decorator) => {
+                                    if (decorator.expression.type === "Identifier") {
+                                        console.info(`    Decorator: ${decorator.expression.name}`);
+                                    } else if (
+                                        decorator.expression.type === "CallExpression" &&
+                                        decorator.expression.callee.type === "Identifier"
+                                    ) {
+                                        console.info(
+                                            `    Decorator: ${decorator.expression.callee.name}()`
+                                        );
+                                    } else {
+                                        console.info(`    Decorator: ${decorator.expression.type}`);
+                                    }
+                                });
+                            } else {
+                                // Check if this property might have had @state decorator but it was removed
+                                // This can happen if TypeScript preset or another plugin processed it first
+                                // For now, we can't detect this case, but we log it for debugging
+                                // In the future, we might need to check the original source or use a different approach
+                            }
+
+                            // Check if has @state decorator
+                            let hasStateDecorator = false;
+                            try {
+                                hasStateDecorator =
+                                    member.decorators?.some((decorator: t.Decorator) => {
                                         if (
                                             decorator.expression.type === "Identifier" &&
                                             decorator.expression.name === "state"
                                         ) {
-                                            return false; // Remove @state decorator
+                                            return true;
                                         }
                                         if (
                                             decorator.expression.type === "CallExpression" &&
                                             decorator.expression.callee.type === "Identifier" &&
                                             decorator.expression.callee.name === "state"
                                         ) {
-                                            return false; // Remove @state() decorator
+                                            return true;
                                         }
-                                        return true; // Keep other decorators
-                                    }
+                                        return false;
+                                    }) || false;
+                            } catch (error) {
+                                console.error(
+                                    `[Babel Plugin WSX State] ERROR in hasStateDecorator check for ${propertyName}: ${error}`
                                 );
+                                throw error;
                             }
 
-                            // Remove initial value - it will be set in constructor via this.reactive()
-                            // Keep the property declaration but without initial value
-                            member.value = undefined;
+                            if (hasStateDecorator) {
+                                const key = member.key.name;
+
+                                // @state decorator requires an initial value
+                                // This is opinionated: we need the value to determine if it's primitive or object/array
+                                // CRITICAL: undefined value means no initial value
+                                // TypeScript optional properties (count?) are converted to count: undefined
+                                // We should treat undefined as no initial value
+                                const hasInitialValue = !!(
+                                    member.value &&
+                                    !(
+                                        member.value.type === "Identifier" &&
+                                        (member.value as t.Identifier).name === "undefined"
+                                    ) &&
+                                    !(
+                                        member.value.type === "UnaryExpression" &&
+                                        member.value.operator === "void"
+                                    )
+                                );
+
+                                // DEBUG: Log hasInitialValue for count
+                                if (key === "count") {
+                                    console.error(
+                                        `[Babel Plugin WSX State] DEBUG: hasInitialValue for 'count' = ${hasInitialValue}, type = ${typeof hasInitialValue}`
+                                    );
+                                    console.error(
+                                        `[Babel Plugin WSX State] DEBUG: member.value = ${member.value}, !hasInitialValue = ${!hasInitialValue}`
+                                    );
+                                }
+
+                                if (!hasInitialValue) {
+                                    // CRITICAL: This error should be thrown during build time
+                                    // If this error is not thrown, it means the plugin didn't detect the decorator
+                                    // or the file wasn't processed by Babel
+                                    const error = path.buildCodeFrameError(
+                                        `@state decorator on property '${key}' requires an initial value.\n` +
+                                            `\n` +
+                                            `Examples:\n` +
+                                            `  @state private ${key} = "";  // for string\n` +
+                                            `  @state private ${key} = 0;  // for number\n` +
+                                            `  @state private ${key} = {};  // for object\n` +
+                                            `  @state private ${key} = [];  // for array\n` +
+                                            `  @state private ${key} = undefined;  // for optional\n` +
+                                            `\n` +
+                                            `Current code: @state private ${key};\n` +
+                                            `\n` +
+                                            `This error should be caught during build time. ` +
+                                            `If you see this at runtime, it means the Babel plugin did not process this file.`
+                                    );
+                                    console.error(
+                                        `[Babel Plugin WSX State] ERROR: ${error.message}`
+                                    );
+                                    throw error;
+                                }
+
+                                const initialValue = member.value as t.Expression;
+
+                                // Determine if it's an object/array
+                                const isObject =
+                                    initialValue.type === "ObjectExpression" ||
+                                    initialValue.type === "ArrayExpression";
+
+                                // Check if it's specifically an array
+                                const isArray = initialValue.type === "ArrayExpression";
+
+                                stateProperties.push({
+                                    key,
+                                    initialValue,
+                                    isObject,
+                                    isArray, // Add isArray flag
+                                });
+
+                                // Remove @state decorator - but keep other decorators
+                                if (member.decorators) {
+                                    member.decorators = member.decorators.filter(
+                                        (decorator: t.Decorator) => {
+                                            if (
+                                                decorator.expression.type === "Identifier" &&
+                                                decorator.expression.name === "state"
+                                            ) {
+                                                return false; // Remove @state decorator
+                                            }
+                                            if (
+                                                decorator.expression.type === "CallExpression" &&
+                                                decorator.expression.callee.type === "Identifier" &&
+                                                decorator.expression.callee.name === "state"
+                                            ) {
+                                                return false; // Remove @state() decorator
+                                            }
+                                            return true; // Keep other decorators
+                                        }
+                                    );
+                                }
+
+                                // Remove initial value - it will be set in constructor via this.reactive()
+                                // Keep the property declaration but without initial value
+                                member.value = undefined;
+                            }
+                        } catch (error) {
+                            console.error(
+                                `[Babel Plugin WSX State] CRASH in member processing for '${propertyName}':`,
+                                error
+                            );
+                            console.error(`Stack trace:`, (error as Error).stack);
+                            throw error;
                         }
                     }
                 }
