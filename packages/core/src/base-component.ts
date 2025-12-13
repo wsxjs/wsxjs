@@ -229,31 +229,48 @@ export abstract class BaseComponent extends HTMLElement {
             return;
         }
 
-        // 检查是否有焦点元素（用户可能正在输入）
+        // 检查是否有需要持续输入的元素获得焦点（input、textarea、select、contenteditable）
+        // 按钮等其他元素应该立即重渲染，以反映状态变化
         const root = this.getActiveRoot();
-        let hasActiveElement = false;
+        let activeElement: HTMLElement | null = null;
 
         if (root instanceof ShadowRoot) {
-            hasActiveElement = root.activeElement !== null;
+            activeElement = root.activeElement as HTMLElement | null;
         } else {
             const docActiveElement = document.activeElement;
-            hasActiveElement = docActiveElement !== null && root.contains(docActiveElement);
+            if (docActiveElement && root.contains(docActiveElement)) {
+                activeElement = docActiveElement as HTMLElement;
+            }
         }
 
-        // 如果用户正在输入，完全跳过重渲染，只在 blur 时更新
-        // 这样可以完全避免输入时的闪烁
-        if (hasActiveElement) {
-            // 标记需要重渲染，但延迟到 blur 事件
-            this._pendingRerender = true;
+        // 只对需要持续输入的元素跳过重渲染（input、textarea、select、contenteditable）
+        // 按钮等其他元素应该立即重渲染
+        // 如果元素有 data-wsx-force-render 属性，即使是要持续输入的元素也强制重渲染
+        if (activeElement) {
+            const isInputElement =
+                activeElement instanceof HTMLInputElement ||
+                activeElement instanceof HTMLTextAreaElement ||
+                activeElement instanceof HTMLSelectElement ||
+                activeElement.hasAttribute("contenteditable");
 
-            // 清除之前的定时器（不再使用定时器，只等待 blur）
-            if (this._rerenderDebounceTimer !== null) {
-                clearTimeout(this._rerenderDebounceTimer);
-                this._rerenderDebounceTimer = null;
+            // 检查是否有强制渲染属性
+            const forceRender = activeElement.hasAttribute("data-wsx-force-render");
+
+            // 如果是输入元素且没有强制渲染属性，跳过重渲染，等待 blur 事件
+            if (isInputElement && !forceRender) {
+                // 标记需要重渲染，但延迟到 blur 事件
+                this._pendingRerender = true;
+
+                // 清除之前的定时器（不再使用定时器，只等待 blur）
+                if (this._rerenderDebounceTimer !== null) {
+                    clearTimeout(this._rerenderDebounceTimer);
+                    this._rerenderDebounceTimer = null;
+                }
+
+                // 不执行重渲染，等待 blur 事件
+                return;
             }
-
-            // 不执行重渲染，等待 blur 事件
-            return;
+            // 对于按钮等其他元素，或者有 data-wsx-force-render 属性的输入元素，继续执行重渲染（不跳过）
         }
 
         // 没有焦点元素，立即重渲染（使用 queueMicrotask 批量处理）
