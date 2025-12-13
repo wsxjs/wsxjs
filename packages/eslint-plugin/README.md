@@ -2,6 +2,192 @@
 
 ESLint plugin for WSX Framework - enforces best practices and framework-specific rules for Web Components with JSX.
 
+## Installation
+
+```bash
+npm install --save-dev @wsxjs/eslint-plugin-wsx
+# or
+pnpm add -D @wsxjs/eslint-plugin-wsx
+# or
+yarn add -D @wsxjs/eslint-plugin-wsx
+```
+
+## Setup
+
+### ESLint 9+ (Flat Config)
+
+Create or update `eslint.config.js` (or `eslint.config.mjs`):
+
+```javascript
+import js from "@eslint/js";
+import typescript from "@typescript-eslint/eslint-plugin";
+import typescriptParser from "@typescript-eslint/parser";
+import wsxPlugin from "@wsxjs/eslint-plugin-wsx";
+import globals from "globals";
+
+export default [
+    {
+        ignores: ["**/dist/", "**/node_modules/"],
+    },
+    js.configs.recommended,
+    {
+        files: ["**/*.{ts,tsx,js,jsx,wsx}"],
+        languageOptions: {
+            parser: typescriptParser,
+            parserOptions: {
+                ecmaVersion: "latest",
+                sourceType: "module",
+                ecmaFeatures: {
+                    jsx: true,
+                },
+                jsxPragma: "h",
+                jsxFragmentName: "Fragment",
+                experimentalDecorators: true, // Required for @state decorator
+                extraFileExtensions: [".wsx"],
+            },
+            globals: {
+                ...globals.browser,
+                ...globals.es2021,
+                h: "readonly",
+                Fragment: "readonly",
+            },
+        },
+        plugins: {
+            "@typescript-eslint": typescript,
+            wsx: wsxPlugin,
+        },
+        rules: {
+            ...typescript.configs.recommended.rules,
+            // WSX plugin rules
+            "wsx/render-method-required": "error",
+            "wsx/no-react-imports": "error",
+            "wsx/web-component-naming": "warn",
+            "wsx/state-requires-initial-value": "error",
+        },
+    },
+];
+```
+
+### Required Dependencies
+
+Make sure you have these peer dependencies installed:
+
+```bash
+npm install --save-dev eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser globals
+```
+
+## Rules
+
+### `wsx/render-method-required`
+
+**Error level**: `error`
+
+Ensures WSX components implement the required `render()` method.
+
+**Invalid**:
+```typescript
+class MyComponent extends WebComponent {
+    // Missing render() method
+}
+```
+
+**Valid**:
+```typescript
+class MyComponent extends WebComponent {
+    render() {
+        return <div>Hello</div>;
+    }
+}
+```
+
+### `wsx/no-react-imports`
+
+**Error level**: `error`
+
+Prevents React imports in WSX files. WSX uses its own JSX runtime.
+
+**Invalid**:
+```typescript
+import React from "react"; // ❌
+import { useState } from "react"; // ❌
+```
+
+**Valid**:
+```typescript
+import { WebComponent, state } from "@wsxjs/wsx-core"; // ✅
+```
+
+### `wsx/web-component-naming`
+
+**Error level**: `warn`
+
+Enforces proper Web Component tag naming conventions (kebab-case with at least one hyphen).
+
+**Invalid**:
+```typescript
+@autoRegister({ tagName: "mycomponent" }) // ❌ Missing hyphen
+@autoRegister({ tagName: "MyComponent" }) // ❌ Not kebab-case
+```
+
+**Valid**:
+```typescript
+@autoRegister({ tagName: "my-component" }) // ✅
+@autoRegister({ tagName: "wsx-button" }) // ✅
+```
+
+### `wsx/state-requires-initial-value`
+
+**Error level**: `error`
+
+Requires `@state` decorator properties to have initial values. This is mandatory because we need the initial value to determine if it's a primitive or object/array.
+
+**Invalid**:
+```typescript
+class MyComponent extends WebComponent {
+    @state private maskStrokeColor?: string; // ❌ Missing initial value
+}
+```
+
+**Valid**:
+```typescript
+class MyComponent extends WebComponent {
+    @state private maskStrokeColor = ""; // ✅ String
+    @state private count = 0; // ✅ Number
+    @state private user = { name: "John" }; // ✅ Object
+    @state private items = []; // ✅ Array
+    @state private optional?: string = undefined; // ✅ Optional with explicit undefined
+}
+```
+
+## Configuration Options
+
+### Disable Specific Rules
+
+If you need to disable a specific rule:
+
+```javascript
+{
+    rules: {
+        "wsx/web-component-naming": "off", // Disable naming rule
+        "wsx/state-requires-initial-value": "warn", // Change to warning
+    },
+}
+```
+
+### File-Specific Rules
+
+Apply rules only to `.wsx` files:
+
+```javascript
+{
+    files: ["**/*.wsx"],
+    rules: {
+        "wsx/render-method-required": "error",
+        "wsx/no-react-imports": "error",
+    },
+}
+```
+
 ## Testing Results
 
 ✅ **38 tests passed** with **100% code coverage**
@@ -38,6 +224,7 @@ This plugin now uses industry-standard testing practices:
 - 🔍 **render-method-required**: Ensures WSX components implement the required `render()` method
 - 🚫 **no-react-imports**: Prevents React imports in WSX files 
 - 🏷️ **web-component-naming**: Enforces proper Web Component tag naming conventions
+- ✅ **state-requires-initial-value**: Requires `@state` decorator properties to have initial values
 
 ## Framework Integration
 

@@ -48,6 +48,7 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
 
                 for (const member of classBody.body) {
                     // Debug: log member type
+
                     console.info(
                         `  - Member type: ${member.type}, key: ${member.type === "ClassProperty" || member.type === "ClassPrivateProperty" ? (member.key as any)?.name : "N/A"}`
                     );
@@ -100,8 +101,24 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                             }
                         );
 
-                        if (hasStateDecorator && member.value) {
+                        if (hasStateDecorator) {
                             const key = member.key.name;
+
+                            // @state decorator requires an initial value
+                            // This is opinionated: we need the value to determine if it's primitive or object/array
+                            if (!member.value) {
+                                throw path.buildCodeFrameError(
+                                    `@state decorator on property '${key}' requires an initial value.\n` +
+                                        `\n` +
+                                        `Examples:\n` +
+                                        `  @state private ${key} = "";  // for string\n` +
+                                        `  @state private ${key} = 0;  // for number\n` +
+                                        `  @state private ${key} = {};  // for object\n` +
+                                        `  @state private ${key} = [];  // for array\n` +
+                                        `  @state private ${key} = undefined;  // for optional\n`
+                                );
+                            }
+
                             const initialValue = member.value as t.Expression;
 
                             // Determine if it's an object/array

@@ -16,6 +16,7 @@ export const recommendedConfig: WSXConfig = {
         },
         jsxPragma: "h",
         jsxFragmentName: "Fragment",
+        experimentalDecorators: true, // Required to parse @state decorators
     },
     plugins: ["wsx"],
     rules: {
@@ -23,6 +24,7 @@ export const recommendedConfig: WSXConfig = {
         "wsx/render-method-required": "error",
         "wsx/no-react-imports": "error",
         "wsx/web-component-naming": "warn",
+        "wsx/state-requires-initial-value": "error",
 
         // TypeScript 规则（推荐）
         "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],

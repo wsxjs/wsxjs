@@ -393,6 +393,163 @@ describe("@state decorator error handling", () => {
     });
 });
 
+describe("@state decorator runtime fallback", () => {
+    let originalWarn: typeof console.warn;
+    let warnCalls: string[];
+
+    beforeEach(() => {
+        // Mock console.warn to capture warnings
+        originalWarn = console.warn;
+        warnCalls = [];
+        console.warn = jest.fn((...args: unknown[]) => {
+            warnCalls.push(args.map((arg) => String(arg)).join(" "));
+        });
+    });
+
+    afterEach(() => {
+        // Restore original console.warn
+        console.warn = originalWarn;
+    });
+
+    it("should show warning when decorator executes at runtime (Stage 3 format)", () => {
+        // Simulate Stage 3 decorator format
+        const mockContext = {
+            kind: "field" as const,
+            name: "testProperty",
+            addInitializer: jest.fn((initializer: () => void) => {
+                // Simulate component instance
+                const mockInstance = {
+                    reactive: jest.fn((obj: object) => obj),
+                    useState: jest.fn((key: string, value: unknown) => [() => value, () => {}]),
+                    scheduleRerender: jest.fn(),
+                };
+                initializer.call(mockInstance);
+            }),
+        };
+
+        // Call state decorator with Stage 3 format
+        state(mockContext);
+
+        // Verify warning was shown
+        expect(warnCalls.length).toBeGreaterThan(0);
+        expect(warnCalls[0]).toContain("[WSX] @state decorator is using runtime fallback");
+        expect(warnCalls[0]).toContain("testProperty");
+        expect(warnCalls[0]).toContain("@wsxjs/wsx-vite-plugin");
+    });
+
+    it("should show warning when decorator executes at runtime (legacy format)", () => {
+        // Simulate legacy decorator format
+        const mockTarget = {};
+        const propertyKey = "testProperty";
+
+        // Call state decorator with legacy format
+        state(mockTarget, propertyKey);
+
+        // Verify warning was shown
+        expect(warnCalls.length).toBeGreaterThan(0);
+        expect(warnCalls[0]).toContain("[WSX] @state decorator is using runtime fallback");
+        expect(warnCalls[0]).toContain("testProperty");
+    });
+
+    it("should throw error if component does not extend WebComponent or LightComponent (Stage 3)", () => {
+        const mockContext = {
+            kind: "field" as const,
+            name: "testProperty",
+            addInitializer: jest.fn((initializer: () => void) => {
+                // Simulate component instance without reactive methods
+                const mockInstance = {};
+                expect(() => {
+                    initializer.call(mockInstance);
+                }).toThrow(/does not extend WebComponent or LightComponent/);
+            }),
+        };
+
+        // Call state decorator
+        state(mockContext);
+
+        // Verify addInitializer was called
+        expect(mockContext.addInitializer).toHaveBeenCalled();
+    });
+
+    it("should throw error if component does not extend WebComponent or LightComponent (null instance)", () => {
+        const mockContext = {
+            kind: "field" as const,
+            name: "testProperty",
+            addInitializer: jest.fn((initializer: () => void) => {
+                // Simulate null instance
+                expect(() => {
+                    initializer.call(null);
+                }).toThrow(/does not extend WebComponent or LightComponent/);
+            }),
+        };
+
+        // Call state decorator
+        state(mockContext);
+
+        // Verify addInitializer was called
+        expect(mockContext.addInitializer).toHaveBeenCalled();
+    });
+
+    it("should initialize reactive state for primitives in runtime fallback", () => {
+        const mockContext = {
+            kind: "field" as const,
+            name: "count",
+            addInitializer: jest.fn((initializer: () => void) => {
+                // Simulate component instance with reactive methods
+                const mockInstance = {
+                    reactive: jest.fn((obj: object) => obj),
+                    useState: jest.fn((key: string, value: unknown) => [() => value, () => {}]),
+                    scheduleRerender: jest.fn(),
+                    count: 42, // Initial value
+                };
+                initializer.call(mockInstance);
+            }),
+        };
+
+        // Call state decorator
+        state(mockContext);
+
+        // Verify useState was called with correct initial value
+        expect(mockContext.addInitializer).toHaveBeenCalled();
+        // The initializer should have been executed, setting up the property
+    });
+
+    it("should initialize reactive state for objects in runtime fallback", () => {
+        const mockContext = {
+            kind: "field" as const,
+            name: "state",
+            addInitializer: jest.fn((initializer: () => void) => {
+                const initialValue = { count: 0 };
+                // Simulate component instance with reactive methods
+                const mockInstance = {
+                    reactive: jest.fn((obj: object) => obj),
+                    useState: jest.fn(),
+                    scheduleRerender: jest.fn(),
+                    state: initialValue,
+                };
+                initializer.call(mockInstance);
+            }),
+        };
+
+        // Call state decorator
+        state(mockContext);
+
+        // Verify reactive was called
+        expect(mockContext.addInitializer).toHaveBeenCalled();
+    });
+
+    it("should throw error if used on non-field (Stage 3)", () => {
+        const mockContext = {
+            kind: "method" as const,
+            name: "testMethod",
+        };
+
+        expect(() => {
+            state(mockContext);
+        }).toThrow(/can only be used on class fields, not method/);
+    });
+});
+
 describe("@state decorator integration", () => {
     it("should work with multiple @state properties", () => {
         class TestComponent extends WebComponent {

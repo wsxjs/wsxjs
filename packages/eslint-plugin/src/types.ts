@@ -24,6 +24,7 @@ export interface WSXConfig {
         };
         jsxPragma?: string;
         jsxFragmentName?: string;
+        experimentalDecorators?: boolean; // Required for @state decorator support
     };
     plugins?: string[];
     rules?: Record<string, unknown>;
