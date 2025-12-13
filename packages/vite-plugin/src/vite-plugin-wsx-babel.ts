@@ -137,9 +137,32 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
 
                 if (babelResult && babelResult.code) {
                     transformedCode = babelResult.code;
+                } else {
+                    // Babel returned no code - critical error
+                    throw new Error(
+                        `[WSX Plugin] Babel transform returned no code for ${id}. ` +
+                            `@state decorators will NOT be processed and will cause runtime errors. ` +
+                            `Please check Babel configuration and plugin setup.`
+                    );
                 }
-            } catch {
-                // Babel transform failed, fallback to esbuild only
+            } catch (error) {
+                // Babel transform failed - this is critical
+                // If Babel fails, @state decorators won't be processed and will cause runtime errors
+                // Don't silently fallback - throw error to make it obvious
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                throw new Error(
+                    `[WSX Plugin] Babel transform failed for ${id}. ` +
+                        `@state decorators will NOT be processed and will cause runtime errors. ` +
+                        `\n\n` +
+                        `Babel Error: ${errorMessage}` +
+                        `\n\n` +
+                        `This usually means:` +
+                        `\n1. Babel plugins are not installed correctly` +
+                        `\n2. Babel configuration is invalid` +
+                        `\n3. File contains syntax errors that Babel cannot parse` +
+                        `\n\n` +
+                        `Please fix the Babel error above before continuing.`
+                );
             }
 
             // 2.5. Ensure JSX imports still exist after Babel transformation
