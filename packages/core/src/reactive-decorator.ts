@@ -53,11 +53,24 @@ export function state(target: unknown, propertyKey: string | symbol | unknown): 
     } else {
         const propertyKeyStr = String(propertyKey);
         if (propertyKeyStr === "[object Object]") {
-            // Invalid propertyKey - likely a build configuration issue
+            // Invalid propertyKey - Babel plugin was not configured
             throw new Error(
-                `@state decorator: Invalid propertyKey. ` +
-                    `This usually means the build tool doesn't support decorators properly. ` +
-                    `Please ensure Babel plugin is configured in vite.config.ts`
+                `@state decorator: Invalid propertyKey detected. ` +
+                    `\n\n` +
+                    `The @state decorator MUST be processed by Babel plugin at compile time. ` +
+                    `It appears the Babel plugin is not configured in your build setup.` +
+                    `\n\n` +
+                    `To fix this, please:` +
+                    `\n1. Install @wsxjs/wsx-vite-plugin: npm install @wsxjs/wsx-vite-plugin` +
+                    `\n2. Configure it in vite.config.ts:` +
+                    `\n   import { wsx } from '@wsxjs/wsx-vite-plugin';` +
+                    `\n   export default defineConfig({ plugins: [wsx()] });` +
+                    `\n3. Configure TypeScript (recommended: use @wsxjs/wsx-tsconfig):` +
+                    `\n   npm install --save-dev @wsxjs/wsx-tsconfig` +
+                    `\n   Then in tsconfig.json: { "extends": "@wsxjs/wsx-tsconfig/tsconfig.base.json" }` +
+                    `\n   Or manually: { "compilerOptions": { "experimentalDecorators": true, "useDefineForClassFields": false } }` +
+                    `\n\n` +
+                    `See: https://github.com/wsxjs/wsxjs#setup for more details.`
             );
         }
         normalizedPropertyKey = propertyKeyStr;
@@ -71,8 +84,22 @@ export function state(target: unknown, propertyKey: string | symbol | unknown): 
                 : normalizedPropertyKey.toString();
         throw new Error(
             `@state decorator: Cannot access property "${propertyKeyStr}". ` +
-                `Target is ${target === null ? "null" : "undefined"}. ` +
-                `Please ensure Babel plugin is configured in vite.config.ts`
+                `Target is ${target === null ? "null" : "undefined"}.` +
+                `\n\n` +
+                `The @state decorator MUST be processed by Babel plugin at compile time. ` +
+                `It appears the Babel plugin is not configured in your build setup.` +
+                `\n\n` +
+                `To fix this, please:` +
+                `\n1. Install @wsxjs/wsx-vite-plugin: npm install @wsxjs/wsx-vite-plugin` +
+                `\n2. Configure it in vite.config.ts:` +
+                `\n   import { wsx } from '@wsxjs/wsx-vite-plugin';` +
+                `\n   export default defineConfig({ plugins: [wsx()] });` +
+                `\n3. Configure TypeScript (recommended: use @wsxjs/wsx-tsconfig):` +
+                `\n   npm install --save-dev @wsxjs/wsx-tsconfig` +
+                `\n   Then in tsconfig.json: { "extends": "@wsxjs/wsx-tsconfig/tsconfig.base.json" }` +
+                `\n   Or manually: { "compilerOptions": { "experimentalDecorators": true, "useDefineForClassFields": false } }` +
+                `\n\n` +
+                `See: https://github.com/wsxjs/wsxjs#setup for more details.`
         );
     }
 

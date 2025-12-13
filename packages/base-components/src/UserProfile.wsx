@@ -1,0 +1,247 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * UserProfile Component - WebComponent with @state object support
+ *
+ * Demonstrates:
+ * - Using @state decorator with objects in WebComponent
+ * - Object property updates trigger automatic rerender
+ * - Object replacement (entire object replacement)
+ * - Nested object updates
+ * - Shadow DOM styling
+ */
+
+import { WebComponent, state, autoRegister, createLogger } from "@wsxjs/wsx-core";
+import "./UserProfile.css";
+
+const logger = createLogger("UserProfile");
+
+interface UserPreferences {
+    theme: "light" | "dark";
+    language: string;
+    notifications: boolean;
+}
+
+interface UserProfileData {
+    name: string;
+    email: string;
+    age: number;
+    preferences: UserPreferences;
+    lastLogin: number;
+}
+
+@autoRegister({ tagName: "user-profile" })
+export default class UserProfile extends WebComponent {
+    // @state decorator with object - automatically reactive
+    @state private profile: UserProfileData = {
+        name: "John Doe",
+        email: "john@example.com",
+        age: 30,
+        preferences: {
+            theme: "light",
+            language: "en",
+            notifications: true,
+        },
+        lastLogin: Date.now(),
+    };
+    constructor() {
+        super();
+        logger.info("UserProfile initialized");
+    }
+
+    render() {
+        return (
+            <div class="user-profile">
+                <div class="profile-header">
+                    <h2>👤 User Profile (WebComponent)</h2>
+                    <p class="subtitle">Demonstrates @state decorator with objects</p>
+                </div>
+
+                <div class="profile-content">
+                    <div class="profile-section">
+                        <h3>Basic Information</h3>
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input
+                                type="text"
+                                value={this.profile.name}
+                                onInput={this.handleNameChange}
+                                onBlur={this.handleNameBlur}
+                                class="input-field"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input
+                                type="email"
+                                value={this.profile.email}
+                                onInput={this.handleEmailChange}
+                                onBlur={this.handleEmailBlur}
+                                class="input-field"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label>Age:</label>
+                            <input
+                                type="number"
+                                value={this.profile.age.toString()}
+                                onInput={this.handleAgeChange}
+                                onBlur={this.handleAgeBlur}
+                                class="input-field"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3>Preferences</h3>
+                        <div class="form-group">
+                            <label>Theme:</label>
+                            <select
+                                value={this.profile.preferences.theme}
+                                onChange={this.handleThemeChange}
+                                class="input-field"
+                            >
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Language:</label>
+                            <select
+                                value={this.profile.preferences.language}
+                                onChange={this.handleLanguageChange}
+                                class="input-field"
+                            >
+                                <option value="en">English</option>
+                                <option value="zh">中文</option>
+                                <option value="es">Español</option>
+                                <option value="fr">Français</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={this.profile.preferences.notifications}
+                                    onChange={this.handleNotificationsChange}
+                                />
+                                Enable Notifications
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="profile-actions">
+                        <button class="btn btn-primary" onClick={this.resetProfile}>
+                            Reset to Default
+                        </button>
+                        <button class="btn btn-secondary" onClick={this.updateLastLogin}>
+                            Update Last Login
+                        </button>
+                        <button class="btn btn-warning" onClick={this.replaceEntireProfile}>
+                            Replace Entire Profile
+                        </button>
+                    </div>
+
+                    <div class="profile-display">
+                        <h3>Current Profile Data</h3>
+                        <pre class="json-display">{JSON.stringify(this.profile, null, 2)}</pre>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    private handleNameChange = (event: Event) => {
+        const input = event.target as HTMLInputElement;
+        // Update non-reactive property - no rerender
+        this.profile.name = input.value;
+    };
+
+    private handleNameBlur = () => {
+        // Update reactive profile when input loses focus
+        this.profile = { ...this.profile, name: this.profile.name };
+        logger.debug("Name updated", { name: this.profile.name });
+    };
+
+    private handleEmailChange = (event: Event) => {
+        const input = event.target as HTMLInputElement;
+        // Update non-reactive property - no rerender
+        this.profile.email = input.value;
+    };
+
+    private handleEmailBlur = () => {
+        // Update reactive profile when input loses focus
+        this.profile = { ...this.profile, email: this.profile.email };
+        logger.debug("Email updated", { email: this.profile.email });
+    };
+
+    private handleAgeChange = (event: Event) => {
+        const input = event.target as HTMLInputElement;
+        // Update non-reactive property - no rerender
+        this.profile.age = parseInt(input.value, 10) || 0;
+    };
+
+    private handleAgeBlur = () => {
+        // Update reactive profile when input loses focus
+        this.profile = { ...this.profile, age: this.profile.age };
+        logger.debug("Age updated", { age: this.profile.age });
+    };
+
+    private handleThemeChange = (event: Event) => {
+        const select = event.target as HTMLSelectElement;
+        // Direct nested property update - automatically reactive
+        this.profile.preferences.theme = select.value as "light" | "dark";
+        logger.debug("Theme updated", { theme: select.value });
+    };
+
+    private handleLanguageChange = (event: Event) => {
+        const select = event.target as HTMLSelectElement;
+        // Direct nested property update - automatically reactive
+        this.profile.preferences.language = select.value;
+        logger.debug("Language updated", { language: select.value });
+    };
+
+    private handleNotificationsChange = (event: Event) => {
+        const checkbox = event.target as HTMLInputElement;
+        // Direct nested property update - automatically reactive
+        this.profile.preferences.notifications = checkbox.checked;
+        logger.debug("Notifications updated", { notifications: checkbox.checked });
+    };
+
+    private resetProfile = () => {
+        // Replace entire object - automatically wrapped in reactive
+        this.profile = {
+            name: "John Doe",
+            email: "john@example.com",
+            age: 30,
+            preferences: {
+                theme: "light",
+                language: "en",
+                notifications: true,
+            },
+            lastLogin: Date.now(),
+        };
+        logger.debug("Profile reset to default");
+    };
+
+    private updateLastLogin = () => {
+        // Update object property - automatically reactive
+        this.profile = { ...this.profile, lastLogin: Date.now() };
+        logger.debug("Last login updated", { lastLogin: this.profile.lastLogin });
+    };
+
+    private replaceEntireProfile = () => {
+        // Replace entire object - automatically wrapped in reactive
+        this.profile = {
+            name: "Jane Smith",
+            email: "jane@example.com",
+            age: 25,
+            preferences: {
+                theme: "dark",
+                language: "zh",
+                notifications: false,
+            },
+            lastLogin: Date.now(),
+        };
+        logger.debug("Entire profile replaced");
+    };
+}

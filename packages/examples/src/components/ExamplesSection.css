@@ -737,6 +737,32 @@ wsx-link[active]::part(link)::after {
     background: linear-gradient(135deg, var(--bg-secondary), rgba(220, 38, 38, 0.03));
 }
 
+.category-section {
+    margin-bottom: 4rem;
+}
+
+.category-section:last-child {
+    margin-bottom: 0;
+}
+
+.category-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid var(--primary-red);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.category-title::before {
+    content: "▸";
+    color: var(--primary-red);
+    font-size: 1.5rem;
+}
+
 .examples-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));

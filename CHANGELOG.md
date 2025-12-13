@@ -5,6 +5,52 @@ All notable changes to the WSX Framework will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.8] - 2025-01-15
+
+### Added
+
+- **@wsxjs/wsx-tsconfig** - New package for shared TypeScript configuration
+  - Provides pre-configured TypeScript settings for WSX Framework projects
+  - Includes all required options: JSX support, decorators, and type safety
+  - Simplifies setup by extending `@wsxjs/wsx-tsconfig/tsconfig.base.json`
+  - Reduces configuration errors and ensures consistency across projects
+
+- **Automatic CSS Style Injection** - RFC 0008 implementation
+  - Automatically detects and injects CSS files for WSX components
+  - No need to manually import CSS or pass styles to constructor
+  - Works with both `WebComponent` and `LightComponent`
+  - Uses getter `get _autoStyles()` for lazy evaluation
+  - Respects manual style imports (skips auto-injection if styles already imported)
+
+### Changed
+
+- **Babel Plugin Configuration** - Improved decorator handling
+  - Added `@babel/plugin-proposal-decorators` with legacy mode for TypeScript compatibility
+  - Removed unnecessary decorators transformation (TypeScript handles `@autoRegister`)
+  - Set `loose: true` for class-properties to use native JavaScript assignments
+  - Fixed plugin order: decorators plugin must come before class-properties
+
+- **BaseComponent observedAttributes** - Changed from class property to getter
+  - `observedAttributes` is now a static getter instead of class property
+  - Prevents "Cannot set property" errors when subclasses try to override
+  - Updated `WsxView`, `WsxLink`, and `WsxLogo` to use getter syntax
+
+### Fixed
+
+- **WsxView Container Not Found** - Fixed route view container lookup
+  - Improved container detection using `querySelector` and `firstElementChild` fallback
+  - Handles cases where `onAttributeChanged` is called before `connectedCallback`
+  - Better error handling and fallback behavior
+
+- **Babel Decorator Parsing** - Fixed Babel unable to parse decorator syntax
+  - Added decorators plugin to allow Babel to parse `@autoRegister` and `@state` decorators
+  - Uses legacy mode to match TypeScript's `experimentalDecorators` behavior
+
+- **Improved @state Decorator Error Messages** - Better error messages for missing configuration
+  - Error messages now include step-by-step setup instructions
+  - Recommends using `@wsxjs/wsx-tsconfig` for TypeScript configuration
+  - Provides both recommended and manual configuration options
+
 ## [0.0.7] - 2025-12-07
 
 ### Fixed

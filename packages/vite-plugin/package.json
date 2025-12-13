@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-vite-plugin",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "Vite plugin for WSX Framework",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",

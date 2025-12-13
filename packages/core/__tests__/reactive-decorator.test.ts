@@ -6,7 +6,7 @@
 
 // Test file requires accessing private methods and properties for comprehensive testing
 
-import { describe, it, expect, beforeEach } from "@jest/globals";
+import { describe, it, expect, beforeEach, afterEach } from "@jest/globals";
 import { WebComponent } from "../src/web-component";
 import { LightComponent } from "../src/light-component";
 import { state } from "../src/reactive-decorator";
@@ -30,7 +30,13 @@ interface ReactiveInstance {
 interface ComponentWithState {
     count?: number;
     message?: string;
-    state?: { count: number; message?: string; active?: boolean };
+    state?: {
+        count: number;
+        message?: string;
+        active?: boolean;
+        user?: { name: string; age: number };
+        settings?: { theme: string };
+    } | null;
     items?: number[] | string[];
     theme?: string;
     enabled?: boolean;
@@ -40,8 +46,15 @@ interface ComponentWithState {
 
 type TestComponentWithState = ReactiveInstance & ComponentWithState;
 
+// Test container for DOM operations
+let container: HTMLElement;
+
 // Register test components for jsdom compatibility
 beforeEach(() => {
+    // Create a container for DOM operations
+    container = document.createElement("div");
+    document.body.appendChild(container);
+
     // Clean up any existing registrations
     const tagNames = [
         "test-web-reactive",
@@ -60,6 +73,11 @@ beforeEach(() => {
         "test-component-multiple",
         "test-component-updates",
         "test-derived",
+        "test-component-object-replace",
+        "test-component-array-replace",
+        "test-component-nested-replace",
+        "test-component-null-handle",
+        "test-component-array-mutations",
     ];
     tagNames.forEach((tag) => {
         if (customElements.get(tag)) {
@@ -67,6 +85,13 @@ beforeEach(() => {
             // Components will be overwritten if re-registered
         }
     });
+});
+
+afterEach(() => {
+    // Clean up container
+    if (container && container.parentNode) {
+        container.parentNode.removeChild(container);
+    }
 });
 
 describe("@state decorator with WebComponent", () => {
@@ -398,6 +423,354 @@ describe("@state decorator integration", () => {
             expect(stateValue.active).toBe(true);
         }
         expect(items).toEqual([]);
+    });
+
+    it("should automatically wrap new objects in reactive when replaced", async () => {
+        let renderCallCount = 0;
+
+        class TestComponent extends WebComponent {
+            @state private state = { count: 0, message: "initial" };
+
+            render() {
+                renderCallCount++;
+                return h("div", {}, `Count: ${this.state.count}`) as HTMLElement;
+            }
+        }
+
+        customElements.define("test-component-object-replace", TestComponent);
+        const instance = new TestComponent() as unknown as ComponentWithState;
+        container.appendChild(instance as unknown as HTMLElement);
+        (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+        const initialRenderCount = renderCallCount;
+
+        // Replace the entire object - should automatically wrap in reactive
+        instance.state = { count: 5, message: "updated" };
+
+        // Wait for async rerender
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+        if (instance.state && typeof instance.state === "object" && "count" in instance.state) {
+            expect(instance.state.count).toBe(5);
+        }
+    });
+
+    it("should automatically wrap new arrays in reactive when replaced", async () => {
+        let renderCallCount = 0;
+
+        class TestComponent extends WebComponent {
+            @state private items: number[] = [1, 2, 3];
+
+            render() {
+                renderCallCount++;
+                return h("div", {}, `Items: ${this.items.length}`) as HTMLElement;
+            }
+        }
+
+        customElements.define("test-component-array-replace", TestComponent);
+        const instance = new TestComponent() as unknown as ComponentWithState;
+        container.appendChild(instance as unknown as HTMLElement);
+        (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+        const initialRenderCount = renderCallCount;
+
+        // Replace the entire array - should automatically wrap in reactive
+        instance.items = [4, 5, 6, 7];
+
+        // Wait for async rerender
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+        if (Array.isArray(instance.items)) {
+            expect(instance.items).toEqual([4, 5, 6, 7]);
+        }
+    });
+
+    it("should handle nested object replacement", async () => {
+        let renderCallCount = 0;
+
+        class TestComponent extends WebComponent {
+            @state private state = {
+                user: { name: "John", age: 30 },
+                settings: { theme: "light" },
+            };
+
+            render() {
+                renderCallCount++;
+                return h("div", {}, "Test") as HTMLElement;
+            }
+        }
+
+        customElements.define("test-component-nested-replace", TestComponent);
+        const instance = new TestComponent() as unknown as ComponentWithState;
+        container.appendChild(instance as unknown as HTMLElement);
+        (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+        const initialRenderCount = renderCallCount;
+
+        // Replace with nested object - should automatically wrap in reactive
+        instance.state = {
+            user: { name: "Jane", age: 25 },
+            settings: { theme: "dark" },
+        };
+
+        // Wait for async rerender
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+    });
+
+    it("should handle null and undefined values correctly", () => {
+        class TestComponent extends WebComponent {
+            @state private state: { count: number } | null = { count: 0 };
+
+            render() {
+                return h("div", {}, "Test") as HTMLElement;
+            }
+        }
+
+        customElements.define("test-component-null-handle", TestComponent);
+        const instance = new TestComponent() as unknown as ComponentWithState;
+
+        // Setting to null should not wrap in reactive
+        instance.state = null;
+        expect(instance.state).toBeNull();
+    });
+
+    describe("Array mutation methods that trigger rerender", () => {
+        let renderCallCount = 0;
+
+        const createTestComponent = () => {
+            renderCallCount = 0;
+            return class extends WebComponent {
+                @state private items: number[] = [1, 2, 3];
+
+                render() {
+                    renderCallCount++;
+                    return h("div", {}, `Items: ${this.items.length}`) as HTMLElement;
+                }
+            };
+        };
+
+        it("should trigger rerender on push()", async () => {
+            const TestComponent = createTestComponent();
+            customElements.define("test-array-push", TestComponent);
+            const instance = new TestComponent() as unknown as ComponentWithState;
+            container.appendChild(instance as unknown as HTMLElement);
+            (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+            const initialRenderCount = renderCallCount;
+
+            if (Array.isArray(instance.items) && instance.items instanceof Array) {
+                (instance.items as number[]).push(4);
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+            if (Array.isArray(instance.items)) {
+                expect(instance.items).toEqual([1, 2, 3, 4]);
+            }
+        });
+
+        it("should trigger rerender on pop()", async () => {
+            const TestComponent = createTestComponent();
+            customElements.define("test-array-pop", TestComponent);
+            const instance = new TestComponent() as unknown as ComponentWithState;
+            container.appendChild(instance as unknown as HTMLElement);
+            (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+            const initialRenderCount = renderCallCount;
+
+            if (Array.isArray(instance.items)) {
+                instance.items.pop();
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+            if (Array.isArray(instance.items)) {
+                expect(instance.items).toEqual([1, 2]);
+            }
+        });
+
+        it("should trigger rerender on shift()", async () => {
+            const TestComponent = createTestComponent();
+            customElements.define("test-array-shift", TestComponent);
+            const instance = new TestComponent() as unknown as ComponentWithState;
+            container.appendChild(instance as unknown as HTMLElement);
+            (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+            const initialRenderCount = renderCallCount;
+
+            if (Array.isArray(instance.items)) {
+                instance.items.shift();
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+            if (Array.isArray(instance.items)) {
+                expect(instance.items).toEqual([2, 3]);
+            }
+        });
+
+        it("should trigger rerender on unshift()", async () => {
+            const TestComponent = createTestComponent();
+            customElements.define("test-array-unshift", TestComponent);
+            const instance = new TestComponent() as unknown as ComponentWithState;
+            container.appendChild(instance as unknown as HTMLElement);
+            (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+            const initialRenderCount = renderCallCount;
+
+            if (Array.isArray(instance.items) && instance.items instanceof Array) {
+                (instance.items as number[]).unshift(0);
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+            if (Array.isArray(instance.items)) {
+                expect(instance.items).toEqual([0, 1, 2, 3]);
+            }
+        });
+
+        it("should trigger rerender on splice()", async () => {
+            const TestComponent = createTestComponent();
+            customElements.define("test-array-splice", TestComponent);
+            const instance = new TestComponent() as unknown as ComponentWithState;
+            container.appendChild(instance as unknown as HTMLElement);
+            (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+            const initialRenderCount = renderCallCount;
+
+            if (Array.isArray(instance.items)) {
+                instance.items.splice(1, 1, 99);
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+            if (Array.isArray(instance.items)) {
+                expect(instance.items).toEqual([1, 99, 3]);
+            }
+        });
+
+        it("should trigger rerender on sort()", async () => {
+            const TestComponent = createTestComponent();
+            customElements.define("test-array-sort", TestComponent);
+            const instance = new TestComponent() as unknown as ComponentWithState;
+            if (Array.isArray(instance.items)) {
+                instance.items = [3, 1, 2];
+            }
+            container.appendChild(instance as unknown as HTMLElement);
+            (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+            const initialRenderCount = renderCallCount;
+
+            if (Array.isArray(instance.items)) {
+                instance.items.sort();
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+            if (Array.isArray(instance.items)) {
+                expect(instance.items).toEqual([1, 2, 3]);
+            }
+        });
+
+        it("should trigger rerender on reverse()", async () => {
+            const TestComponent = createTestComponent();
+            customElements.define("test-array-reverse", TestComponent);
+            const instance = new TestComponent() as unknown as ComponentWithState;
+            container.appendChild(instance as unknown as HTMLElement);
+            (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+            const initialRenderCount = renderCallCount;
+
+            if (Array.isArray(instance.items)) {
+                instance.items.reverse();
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+            if (Array.isArray(instance.items)) {
+                expect(instance.items).toEqual([3, 2, 1]);
+            }
+        });
+
+        it("should trigger rerender on array index assignment", async () => {
+            const TestComponent = createTestComponent();
+            customElements.define("test-array-index", TestComponent);
+            const instance = new TestComponent() as unknown as ComponentWithState;
+            container.appendChild(instance as unknown as HTMLElement);
+            (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+            const initialRenderCount = renderCallCount;
+
+            if (Array.isArray(instance.items)) {
+                instance.items[0] = 99;
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+            if (Array.isArray(instance.items)) {
+                expect(instance.items[0]).toBe(99);
+            }
+        });
+
+        it("should trigger rerender on array length modification", async () => {
+            const TestComponent = createTestComponent();
+            customElements.define("test-array-length", TestComponent);
+            const instance = new TestComponent() as unknown as ComponentWithState;
+            container.appendChild(instance as unknown as HTMLElement);
+            (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+            const initialRenderCount = renderCallCount;
+
+            if (Array.isArray(instance.items)) {
+                instance.items.length = 0;
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+            if (Array.isArray(instance.items)) {
+                expect(instance.items).toEqual([]);
+            }
+        });
+
+        it("should trigger rerender on multiple array operations", async () => {
+            const TestComponent = createTestComponent();
+            customElements.define("test-array-multiple", TestComponent);
+            const instance = new TestComponent() as unknown as ComponentWithState;
+            container.appendChild(instance as unknown as HTMLElement);
+            (instance as unknown as ReactiveInstance).connectedCallback?.();
+
+            const initialRenderCount = renderCallCount;
+
+            if (Array.isArray(instance.items) && instance.items instanceof Array) {
+                const items = instance.items as number[];
+                items.push(4);
+                items.push(5);
+                items.pop();
+                items[0] = 99;
+            }
+
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
+            // Should trigger rerender (may be batched)
+            expect(renderCallCount).toBeGreaterThan(initialRenderCount);
+            if (Array.isArray(instance.items)) {
+                expect(instance.items[0]).toBe(99);
+                expect(instance.items.length).toBeGreaterThan(2);
+            }
+        });
     });
 
     it("should handle state updates correctly", (done: () => void) => {

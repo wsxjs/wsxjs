@@ -19,6 +19,19 @@ interface ReactiveStateStorage {
 }
 
 /**
+ * Focus state interface for focus preservation during rerender
+ */
+interface FocusState {
+    key: string;
+    elementType: "input" | "textarea" | "select" | "contenteditable";
+    value?: string;
+    selectionStart?: number;
+    selectionEnd?: number;
+    scrollTop?: number; // For textarea
+    selectedIndex?: number; // For select
+}
+
+/**
  * Base configuration interface
  */
 export interface BaseComponentConfig {
@@ -46,6 +59,12 @@ export abstract class BaseComponent extends HTMLElement {
      * @internal - Managed by babel-plugin-wsx-style
      */
     protected _autoStyles?: string;
+
+    /**
+     * 当前捕获的焦点状态（用于在 render 时使用捕获的值）
+     * @internal - 由 rerender() 方法管理
+     */
+    protected _pendingFocusState: FocusState | null = null;
 
     /**
      * 子类应该重写这个方法来定义观察的属性
@@ -157,10 +176,17 @@ export abstract class BaseComponent extends HTMLElement {
     /**
      * 调度重渲染
      * 这个方法被响应式系统调用，开发者通常不需要直接调用
+     * 使用 queueMicrotask 进行异步调度，与 reactive() 系统保持一致
      */
     protected scheduleRerender(): void {
         if (this.connected) {
-            this.rerender();
+            // 使用 queueMicrotask 进行异步调度，与 reactive() 系统保持一致
+            // 这样可以批量处理多个状态更新，避免不必要的重复渲染
+            queueMicrotask(() => {
+                if (this.connected) {
+                    this.rerender();
+                }
+            });
         }
     }
 
@@ -235,5 +261,184 @@ export abstract class BaseComponent extends HTMLElement {
      */
     protected cleanupReactiveStates(): void {
         this._reactiveStates.clear();
+    }
+
+    /**
+     * 获取当前活动的 DOM 根（Shadow DOM 或 Light DOM）
+     * @returns 活动的 DOM 根元素
+     */
+    protected getActiveRoot(): ShadowRoot | HTMLElement {
+        // WebComponent 使用 shadowRoot，LightComponent 使用自身
+        if ("shadowRoot" in this && this.shadowRoot) {
+            return this.shadowRoot;
+        }
+        return this;
+    }
+
+    /**
+     * 捕获当前焦点状态（在重渲染之前调用）
+     * @returns 焦点状态，如果没有焦点元素则返回 null
+     */
+    protected captureFocusState(): FocusState | null {
+        const root = this.getActiveRoot();
+        let activeElement: Element | null = null;
+
+        // 获取活动元素
+        if (root instanceof ShadowRoot) {
+            // Shadow DOM: 使用 shadowRoot.activeElement
+            activeElement = root.activeElement;
+        } else {
+            // Light DOM: 检查 document.activeElement 是否在组件内
+            const docActiveElement = document.activeElement;
+            if (docActiveElement && root.contains(docActiveElement)) {
+                activeElement = docActiveElement;
+            }
+        }
+
+        if (!activeElement || !(activeElement instanceof HTMLElement)) {
+            return null;
+        }
+
+        // 检查元素是否有 data-wsx-key 属性
+        const key = activeElement.getAttribute("data-wsx-key");
+        if (!key) {
+            return null; // 元素没有 key，跳过焦点保持
+        }
+
+        const tagName = activeElement.tagName.toLowerCase();
+        const state: FocusState = {
+            key,
+            elementType: tagName as FocusState["elementType"],
+        };
+
+        // 处理 input 和 textarea
+        if (
+            activeElement instanceof HTMLInputElement ||
+            activeElement instanceof HTMLTextAreaElement
+        ) {
+            state.value = activeElement.value;
+            state.selectionStart = activeElement.selectionStart ?? undefined;
+            state.selectionEnd = activeElement.selectionEnd ?? undefined;
+
+            // 对于 textarea，保存滚动位置
+            if (activeElement instanceof HTMLTextAreaElement) {
+                state.scrollTop = activeElement.scrollTop;
+            }
+        }
+        // 处理 select
+        else if (activeElement instanceof HTMLSelectElement) {
+            state.elementType = "select";
+            state.selectedIndex = activeElement.selectedIndex;
+        }
+        // 处理 contenteditable
+        else if (activeElement.hasAttribute("contenteditable")) {
+            state.elementType = "contenteditable";
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                state.selectionStart = range.startOffset;
+                state.selectionEnd = range.endOffset;
+            }
+        }
+
+        return state;
+    }
+
+    /**
+     * 恢复焦点状态（在重渲染之后调用）
+     * @param state - 之前捕获的焦点状态
+     */
+    protected restoreFocusState(state: FocusState | null): void {
+        if (!state || !state.key) {
+            return;
+        }
+
+        const root = this.getActiveRoot();
+        const target = root.querySelector(`[data-wsx-key="${state.key}"]`) as HTMLElement;
+
+        if (!target) {
+            return; // 元素未找到，跳过恢复
+        }
+
+        // 立即同步恢复值，避免闪烁
+        // 这必须在 appendChild 之后立即执行，在浏览器渲染之前
+        if (state.value !== undefined) {
+            if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+                // 直接设置 value 属性，覆盖 render() 中设置的值
+                // 使用 .value 而不是 setAttribute，因为 .value 是当前值，setAttribute 是初始值
+                target.value = state.value;
+            }
+        }
+
+        // 恢复 select 状态
+        if (state.selectedIndex !== undefined && target instanceof HTMLSelectElement) {
+            target.selectedIndex = state.selectedIndex;
+        }
+
+        // 使用 requestAnimationFrame 恢复焦点和光标位置
+        // 这样可以确保 DOM 完全更新，但值已经同步恢复了
+        requestAnimationFrame(() => {
+            // 再次查找元素（确保元素仍然存在）
+            const currentTarget = root.querySelector(
+                `[data-wsx-key="${state.key}"]`
+            ) as HTMLElement;
+
+            if (!currentTarget) {
+                return;
+            }
+
+            // 再次确保值正确（防止被其他代码覆盖）
+            if (state.value !== undefined) {
+                if (
+                    currentTarget instanceof HTMLInputElement ||
+                    currentTarget instanceof HTMLTextAreaElement
+                ) {
+                    // 只有在值不同时才更新，避免触发额外的事件
+                    if (currentTarget.value !== state.value) {
+                        currentTarget.value = state.value;
+                    }
+                }
+            }
+
+            // 聚焦元素（防止页面滚动）
+            currentTarget.focus({ preventScroll: true });
+
+            // 恢复光标/选择位置
+            if (state.selectionStart !== undefined) {
+                if (
+                    currentTarget instanceof HTMLInputElement ||
+                    currentTarget instanceof HTMLTextAreaElement
+                ) {
+                    const start = state.selectionStart;
+                    const end = state.selectionEnd ?? start;
+                    currentTarget.setSelectionRange(start, end);
+
+                    // 恢复 textarea 滚动位置
+                    if (
+                        state.scrollTop !== undefined &&
+                        currentTarget instanceof HTMLTextAreaElement
+                    ) {
+                        currentTarget.scrollTop = state.scrollTop;
+                    }
+                } else if (currentTarget.hasAttribute("contenteditable")) {
+                    // 恢复 contenteditable 选择
+                    const selection = window.getSelection();
+                    if (selection) {
+                        const range = document.createRange();
+                        const textNode = currentTarget.childNodes[0];
+                        if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+                            const maxPos = Math.min(
+                                state.selectionStart,
+                                textNode.textContent?.length || 0
+                            );
+                            range.setStart(textNode, maxPos);
+                            range.setEnd(textNode, state.selectionEnd ?? maxPos);
+                            selection.removeAllRanges();
+                            selection.addRange(range);
+                        }
+                    }
+                }
+            }
+        });
     }
 }

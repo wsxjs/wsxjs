@@ -121,6 +121,12 @@ Vite integration for .wsx files (auto-injects JSX factory)
 
 ESLint rules for WSX components
 
+#### @wsxjs/wsx-tsconfig
+[![npm version](https://badge.fury.io/js/@wsxjs%2Fwsx-tsconfig.svg)](https://badge.fury.io/js/@wsxjs%2Fwsx-tsconfig)
+[![npm downloads](https://img.shields.io/npm/dm/@wsxjs/wsx-tsconfig.svg)](https://www.npmjs.com/package/@wsxjs/wsx-tsconfig)
+
+Shared TypeScript configuration for WSX Framework projects. Includes all required compiler options for JSX, decorators, and type safety.
+
 ### Development Package
 - **@wsxjs/wsx-examples** - Interactive showcase application with example components
 
@@ -259,6 +265,8 @@ export class Counter extends WebComponent {
   }
 }
 ```
+
+> ⚠️ **Important**: The `@state` decorator **requires** `@wsxjs/wsx-vite-plugin` to be configured in `vite.config.ts`. The plugin includes a Babel plugin that processes `@state` decorators at compile time. Without this configuration, `@state` will throw an error at runtime. See [Setup Guide](docs/QUICK_START.md) for details.
 
 ### LightComponent (Light DOM + Reactive)
 Light DOM component with reactive support, perfect for third-party integration:

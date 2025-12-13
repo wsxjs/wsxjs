@@ -1,0 +1,264 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * TodoList Component - WebComponent with @state array support
+ *
+ * Demonstrates:
+ * - Using @state decorator with arrays in WebComponent
+ * - Array operations: add, remove, update, toggle
+ * - Reactive array updates trigger automatic rerender
+ * - Shadow DOM styling
+ */
+
+import { WebComponent, state, autoRegister, createLogger } from "@wsxjs/wsx-core";
+
+const logger = createLogger("TodoList");
+
+interface TodoItem {
+    id: number;
+    text: string;
+    completed: boolean;
+    createdAt: number;
+}
+
+@autoRegister({ tagName: "todo-list" })
+export default class TodoList extends WebComponent {
+    // @state decorator with array - automatically reactive
+    @state private todos: TodoItem[] = [];
+
+    // Non-reactive input value - prevents rerender on every keystroke
+    private _newTodoText = "";
+
+    // @state decorator with filter state
+    @state private filter: "all" | "active" | "completed" = "all";
+
+    private nextId = 1;
+
+    constructor() {
+        super();
+        logger.info("TodoList initialized");
+    }
+
+    render() {
+        const filteredTodos = this.getFilteredTodos();
+
+        return (
+            <div class="todo-list">
+                <div class="todo-header">
+                    <h2>📝 Todo List (WebComponent)</h2>
+                    <p class="subtitle">
+                        {this.todos.length} total, {this.getActiveCount()} active,{" "}
+                        {this.getCompletedCount()} completed
+                    </p>
+                </div>
+
+                <div class="todo-input-section">
+                    <input
+                        type="text"
+                        class="todo-input"
+                        placeholder="Add a new todo..."
+                        value={this._newTodoText}
+                        onInput={this.handleInputChange}
+                        onKeyDown={this.handleKeyDown}
+                    />
+                    <button
+                        class="btn btn-primary"
+                        onClick={this.addTodo}
+                        disabled={!this._newTodoText.trim()}
+                    >
+                        Add
+                    </button>
+                </div>
+
+                <div class="todo-filters">
+                    <button
+                        class={`filter-btn ${this.filter === "all" ? "active" : ""}`}
+                        onClick={() => (this.filter = "all")}
+                    >
+                        All ({this.todos.length})
+                    </button>
+                    <button
+                        class={`filter-btn ${this.filter === "active" ? "active" : ""}`}
+                        onClick={() => (this.filter = "active")}
+                    >
+                        Active ({this.getActiveCount()})
+                    </button>
+                    <button
+                        class={`filter-btn ${this.filter === "completed" ? "active" : ""}`}
+                        onClick={() => (this.filter = "completed")}
+                    >
+                        Completed ({this.getCompletedCount()})
+                    </button>
+                </div>
+
+                <div class="todo-list-container">
+                    {filteredTodos.length === 0 ? (
+                        <div class="empty-state">
+                            {this.filter === "all"
+                                ? "No todos yet. Add one above! 🎉"
+                                : `No ${this.filter} todos.`}
+                        </div>
+                    ) : (
+                        <ul class="todo-items">
+                            {filteredTodos.map((todo) => (
+                                <li
+                                    key={todo.id}
+                                    class={`todo-item ${todo.completed ? "completed" : ""}`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={todo.completed}
+                                        onChange={() => this.toggleTodo(todo.id)}
+                                        class="todo-checkbox"
+                                    />
+                                    <span class="todo-text">{todo.text}</span>
+                                    <button
+                                        class="btn btn-sm btn-danger"
+                                        onClick={() => this.removeTodo(todo.id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+
+                {this.todos.length > 0 && (
+                    <div class="todo-actions">
+                        <button class="btn btn-warning" onClick={this.clearCompleted}>
+                            Clear Completed
+                        </button>
+                        <button class="btn btn-danger" onClick={this.clearAll}>
+                            Clear All
+                        </button>
+                    </div>
+                )}
+
+                <div class="debug-info">
+                    <details>
+                        <summary>Debug Info</summary>
+                        <pre>
+                            {JSON.stringify(
+                                {
+                                    todosCount: this.todos.length,
+                                    filter: this.filter,
+                                    newTodoText: this._newTodoText,
+                                    todos: this.todos,
+                                },
+                                null,
+                                2
+                            )}
+                        </pre>
+                    </details>
+                </div>
+            </div>
+        );
+    }
+
+    private handleInputChange = (event: Event) => {
+        const input = event.target as HTMLInputElement;
+        // Update non-reactive state without triggering rerender
+        this._newTodoText = input.value;
+        // Update button disabled state directly without rerender
+        const button = this.shadowRoot?.querySelector(
+            ".todo-input-section .btn-primary"
+        ) as HTMLButtonElement;
+        if (button) {
+            button.disabled = !this._newTodoText.trim();
+        }
+    };
+
+    private handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === "Enter" && this._newTodoText.trim()) {
+            this.addTodo();
+        }
+    };
+
+    private addTodo = () => {
+        // Get input value directly from DOM to avoid state sync issues
+        const input = this.shadowRoot?.querySelector(".todo-input") as HTMLInputElement;
+        const text = input?.value.trim() || this._newTodoText.trim();
+
+        if (!text) {
+            return;
+        }
+
+        // Array mutation - automatically reactive (triggers rerender)
+        this.todos = [
+            ...this.todos,
+            {
+                id: this.nextId++,
+                text,
+                completed: false,
+                createdAt: Date.now(),
+            },
+        ];
+
+        // Clear input - update both state and DOM
+        this._newTodoText = "";
+        if (input) {
+            input.value = "";
+            // Update button state
+            const button = this.shadowRoot?.querySelector(
+                ".todo-input-section .btn-primary"
+            ) as HTMLButtonElement;
+            if (button) {
+                button.disabled = true;
+            }
+        }
+        logger.debug("Todo added", { count: this.todos.length });
+    };
+
+    private removeTodo = (id: number) => {
+        // Array filter - creates new array, automatically reactive
+        this.todos = this.todos.filter((todo) => todo.id !== id);
+        logger.debug("Todo removed", { id, remaining: this.todos.length });
+    };
+
+    private toggleTodo = (id: number) => {
+        // Array map - creates new array with updated item, automatically reactive
+        this.todos = this.todos.map((todo) =>
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+        );
+        logger.debug("Todo toggled", { id });
+    };
+
+    private clearCompleted = () => {
+        // Array filter - removes all completed items
+        this.todos = this.todos.filter((todo) => !todo.completed);
+        logger.debug("Completed todos cleared");
+    };
+
+    private clearAll = () => {
+        // Array assignment - clears all items
+        this.todos = [];
+        logger.debug("All todos cleared");
+    };
+
+    private getFilteredTodos(): TodoItem[] {
+        switch (this.filter) {
+            case "active":
+                return this.todos.filter((todo) => !todo.completed);
+            case "completed":
+                return this.todos.filter((todo) => todo.completed);
+            default:
+                return this.todos;
+        }
+    }
+
+    private getActiveCount(): number {
+        return this.todos.filter((todo) => !todo.completed).length;
+    }
+
+    private getCompletedCount(): number {
+        return this.todos.filter((todo) => todo.completed).length;
+    }
+
+    protected onConnected(): void {
+        logger.info("TodoList connected to DOM");
+    }
+
+    protected onDisconnected(): void {
+        logger.info("TodoList disconnected from DOM");
+    }
+}

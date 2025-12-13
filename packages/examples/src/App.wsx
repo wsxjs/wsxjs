@@ -21,6 +21,8 @@ import "./components/FeaturesSection.wsx";
 import "./components/QuickStartSection.wsx";
 import "./components/ExamplesSection.wsx";
 import "./components/EcosystemSection.wsx";
+import "./components/WebComponentExamples.wsx";
+import "./components/LightComponentExamples.wsx";
 import "./components/WsxLogo.wsx";
 
 export interface AppConfig {
@@ -51,6 +53,14 @@ export default class App extends LightComponent {
                     <wsx-view route="/features" component="features-section"></wsx-view>
                     <wsx-view route="/quick-start" component="quick-start-section"></wsx-view>
                     <wsx-view route="/examples" component="examples-section"></wsx-view>
+                    <wsx-view
+                        route="/webcomponent-examples"
+                        component="webcomponent-examples"
+                    ></wsx-view>
+                    <wsx-view
+                        route="/lightcomponent-examples"
+                        component="lightcomponent-examples"
+                    ></wsx-view>
                     <wsx-view route="/editorjs" component="editorjs-demo"></wsx-view>
                     <wsx-view route="/ecosystem" component="ecosystem-section"></wsx-view>
                 </wsx-router>
@@ -85,6 +95,20 @@ export default class App extends LightComponent {
                         </wsx-link>
                         <wsx-link to="/examples" class="nav-link" active-class="nav-link-active">
                             Examples
+                        </wsx-link>
+                        <wsx-link
+                            to="/webcomponent-examples"
+                            class="nav-link"
+                            active-class="nav-link-active"
+                        >
+                            WebComponent
+                        </wsx-link>
+                        <wsx-link
+                            to="/lightcomponent-examples"
+                            class="nav-link"
+                            active-class="nav-link-active"
+                        >
+                            LightComponent
                         </wsx-link>
                         <wsx-link to="/editorjs" class="nav-link" active-class="nav-link-active">
                             EditorJS Demo

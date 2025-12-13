@@ -105,16 +105,22 @@ export abstract class LightComponent extends BaseComponent {
             return;
         }
 
+        // 1. 捕获焦点状态（在 DOM 替换之前）
+        const focusState = this.captureFocusState();
+        // 保存到实例变量，供 render() 使用（如果需要）
+        this._pendingFocusState = focusState;
+
         // 清空现有内容（包括样式元素）
         this.innerHTML = "";
 
         // 重新应用样式（必须在内容之前添加，确保样式优先）
-        if (this.config.styles) {
+        const stylesToApply = this._autoStyles || this.config.styles;
+        if (stylesToApply) {
             const styleName = this.config.styleName || this.constructor.name;
             // 直接创建并添加样式元素，不检查是否存在（因为 innerHTML = "" 已经清空了）
             const styleElement = document.createElement("style");
             styleElement.setAttribute("data-wsx-light-component", styleName);
-            styleElement.textContent = this.config.styles;
+            styleElement.textContent = stylesToApply;
             // 使用 prepend 或 insertBefore 确保样式在第一个位置
             // 由于 innerHTML = "" 后 firstChild 是 null，使用 appendChild 然后调整顺序
             this.appendChild(styleElement);
@@ -123,10 +129,29 @@ export abstract class LightComponent extends BaseComponent {
         // 重新渲染JSX内容
         try {
             const content = this.render();
+
+            // 在 appendChild 之前恢复值，避免浏览器渲染状态值
+            // 这样可以确保值在元素添加到 DOM 之前就是正确的
+            if (focusState && focusState.key && focusState.value !== undefined) {
+                // 在 content 树中查找目标元素
+                const target = content.querySelector(
+                    `[data-wsx-key="${focusState.key}"]`
+                ) as HTMLElement;
+
+                if (target) {
+                    if (
+                        target instanceof HTMLInputElement ||
+                        target instanceof HTMLTextAreaElement
+                    ) {
+                        target.value = focusState.value;
+                    }
+                }
+            }
+
             this.appendChild(content);
 
             // 确保样式元素在内容之前（如果样式存在）
-            if (this.config.styles && this.children.length > 1) {
+            if (stylesToApply && this.children.length > 1) {
                 const styleElement = this.querySelector(
                     `style[data-wsx-light-component="${this.config.styleName || this.constructor.name}"]`
                 );
@@ -135,6 +160,13 @@ export abstract class LightComponent extends BaseComponent {
                     this.insertBefore(styleElement, this.firstChild);
                 }
             }
+
+            // 2. 恢复焦点状态（在 DOM 替换之后）
+            // 值已经在 appendChild 之前恢复了，这里只需要恢复焦点和光标位置
+            this.restoreFocusState(focusState);
+
+            // 清除待处理的焦点状态
+            this._pendingFocusState = null;
         } catch (error) {
             logger.error(`[${this.constructor.name}] Error in rerender:`, error);
             this.renderError(error);

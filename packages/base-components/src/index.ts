@@ -9,6 +9,10 @@ export { default as ThemeSwitcher } from "./ThemeSwitcher.wsx";
 export { default as SvgIcon } from "./SvgIcon.wsx";
 export { default as SvgDemo } from "./SvgDemo.wsx";
 export { default as SimpleReactiveDemo } from "./SimpleReactiveDemo.wsx";
+export { default as TodoList } from "./TodoList.wsx";
+export { default as TodoListLight } from "./TodoListLight.wsx";
+export { default as UserProfile } from "./UserProfile.wsx";
+export { default as UserProfileLight } from "./UserProfileLight.wsx";
 
 // Export utilities
 export * from "./ColorPickerUtils";

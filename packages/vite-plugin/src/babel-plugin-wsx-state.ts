@@ -21,6 +21,7 @@ interface WSXStatePluginPass extends PluginPass {
         key: string;
         initialValue: t.Expression;
         isObject: boolean;
+        isArray?: boolean; // Add isArray flag
     }>;
     reactiveMethodName: string;
 }
@@ -36,6 +37,7 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                     key: string;
                     initialValue: t.Expression;
                     isObject: boolean;
+                    isArray?: boolean;
                 }> = [];
 
                 // Find all @state decorated properties
@@ -107,10 +109,14 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                                 initialValue.type === "ObjectExpression" ||
                                 initialValue.type === "ArrayExpression";
 
+                            // Check if it's specifically an array
+                            const isArray = initialValue.type === "ArrayExpression";
+
                             stateProperties.push({
                                 key,
                                 initialValue,
                                 isObject,
+                                isArray, // Add isArray flag
                             });
 
                             // Remove @state decorator - but keep other decorators
@@ -184,11 +190,14 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                 for (const { key, initialValue, isObject } of stateProperties) {
                     if (isObject) {
                         // For objects/arrays: this.state = this.reactive({ count: 0 });
+                        // Store the initial reactive value in a private variable
+                        const reactiveVarId = t.identifier(`_${key}Reactive`);
+
+                        // Create variable to store reactive value
                         statements.push(
-                            t.expressionStatement(
-                                t.assignmentExpression(
-                                    "=",
-                                    t.memberExpression(t.thisExpression(), t.identifier(key)),
+                            t.variableDeclaration("let", [
+                                t.variableDeclarator(
+                                    reactiveVarId,
                                     t.callExpression(
                                         t.memberExpression(
                                             t.thisExpression(),
@@ -196,6 +205,131 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                                         ),
                                         [initialValue]
                                     )
+                                ),
+                            ])
+                        );
+
+                        // For both arrays and objects, create a getter/setter that automatically wraps new values in reactive()
+                        // This ensures that when you do `this.state = { ... }` or `this.todos = [...]`,
+                        // the new value is automatically wrapped in reactive()
+                        // Create getter/setter using Object.defineProperty
+                        statements.push(
+                            t.expressionStatement(
+                                t.callExpression(
+                                    t.memberExpression(
+                                        t.identifier("Object"),
+                                        t.identifier("defineProperty")
+                                    ),
+                                    [
+                                        t.thisExpression(),
+                                        t.stringLiteral(key),
+                                        t.objectExpression([
+                                            t.objectProperty(
+                                                t.identifier("get"),
+                                                t.arrowFunctionExpression([], reactiveVarId)
+                                            ),
+                                            t.objectProperty(
+                                                t.identifier("set"),
+                                                t.arrowFunctionExpression(
+                                                    [t.identifier("newValue")],
+                                                    t.blockStatement([
+                                                        t.expressionStatement(
+                                                            t.assignmentExpression(
+                                                                "=",
+                                                                reactiveVarId,
+                                                                t.conditionalExpression(
+                                                                    // Check if newValue is an object or array
+                                                                    t.logicalExpression(
+                                                                        "&&",
+                                                                        t.binaryExpression(
+                                                                            "!==",
+                                                                            t.identifier(
+                                                                                "newValue"
+                                                                            ),
+                                                                            t.nullLiteral()
+                                                                        ),
+                                                                        t.logicalExpression(
+                                                                            "&&",
+                                                                            t.binaryExpression(
+                                                                                "!==",
+                                                                                t.unaryExpression(
+                                                                                    "typeof",
+                                                                                    t.identifier(
+                                                                                        "newValue"
+                                                                                    )
+                                                                                ),
+                                                                                t.stringLiteral(
+                                                                                    "undefined"
+                                                                                )
+                                                                            ),
+                                                                            t.logicalExpression(
+                                                                                "||",
+                                                                                t.callExpression(
+                                                                                    t.memberExpression(
+                                                                                        t.identifier(
+                                                                                            "Array"
+                                                                                        ),
+                                                                                        t.identifier(
+                                                                                            "isArray"
+                                                                                        )
+                                                                                    ),
+                                                                                    [
+                                                                                        t.identifier(
+                                                                                            "newValue"
+                                                                                        ),
+                                                                                    ]
+                                                                                ),
+                                                                                t.binaryExpression(
+                                                                                    "===",
+                                                                                    t.unaryExpression(
+                                                                                        "typeof",
+                                                                                        t.identifier(
+                                                                                            "newValue"
+                                                                                        )
+                                                                                    ),
+                                                                                    t.stringLiteral(
+                                                                                        "object"
+                                                                                    )
+                                                                                )
+                                                                            )
+                                                                        )
+                                                                    ),
+                                                                    // If object/array, wrap in reactive
+                                                                    t.callExpression(
+                                                                        t.memberExpression(
+                                                                            t.thisExpression(),
+                                                                            t.identifier("reactive")
+                                                                        ),
+                                                                        [t.identifier("newValue")]
+                                                                    ),
+                                                                    // Otherwise, just assign (for primitives)
+                                                                    t.identifier("newValue")
+                                                                )
+                                                            )
+                                                        ),
+                                                        // Trigger rerender when value is replaced
+                                                        t.expressionStatement(
+                                                            t.callExpression(
+                                                                t.memberExpression(
+                                                                    t.thisExpression(),
+                                                                    t.identifier("scheduleRerender")
+                                                                ),
+                                                                []
+                                                            )
+                                                        ),
+                                                    ])
+                                                )
+                                            ),
+                                            t.objectProperty(
+                                                t.identifier("enumerable"),
+                                                t.booleanLiteral(true)
+                                            ),
+                                            t.objectProperty(
+                                                t.identifier("configurable"),
+                                                t.booleanLiteral(true)
+                                            ),
+                                        ]),
+                                    ]
                                 )
                             )
                         );

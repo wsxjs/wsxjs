@@ -89,6 +89,21 @@ export function h(
                     element.setAttribute(key, "");
                 }
             }
+            // 特殊处理 input/textarea/select 的 value 属性
+            // 使用 .value 而不是 setAttribute，因为 .value 是当前值，setAttribute 是初始值
+            else if (key === "value") {
+                if (
+                    element instanceof HTMLInputElement ||
+                    element instanceof HTMLTextAreaElement ||
+                    element instanceof HTMLSelectElement
+                ) {
+                    element.value = String(value);
+                } else {
+                    // 对于其他元素，使用 setAttribute
+                    const attributeName = isSVG ? getSVGAttributeName(key) : key;
+                    element.setAttribute(attributeName, String(value));
+                }
+            }
             // 处理其他属性
             else {
                 // 对SVG元素使用正确的属性名

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /**
  * Vite Plugin for WSX with Babel decorator support
  *
@@ -13,6 +12,7 @@ import { existsSync } from "fs";
 import { dirname, join, basename } from "path";
 import babelPluginWSXState from "./babel-plugin-wsx-state";
 import babelPluginWSXStyle from "./babel-plugin-wsx-style";
+import babelPluginWSXFocus from "./babel-plugin-wsx-focus";
 
 export interface WSXPluginOptions {
     jsxFactory?: string;
@@ -30,7 +30,6 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
     const {
         jsxFactory = "h",
         jsxFragment = "Fragment",
-        debug = false,
         extensions = [".wsx"],
         autoStyleInjection = true,
     } = options;
@@ -44,10 +43,6 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
 
             if (!isWSXFile) {
                 return null;
-            }
-
-            if (debug) {
-                console.log(`[WSX Plugin Babel] Processing: ${id}`);
             }
 
             // Check if corresponding CSS file exists (for auto style injection)
@@ -67,12 +62,6 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
                 if (cssFileExists) {
                     // For import statement, use relative path with ?inline query
                     cssFilePath = `./${fileName}.css?inline`;
-                }
-
-                if (cssFileExists) {
-                    console.log(
-                        `[WSX Plugin Babel] Found CSS file for auto-injection: ${cssFilePathWithoutQuery}, will inject: ${cssFilePath}`
-                    );
                 }
             }
 
@@ -123,6 +112,9 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
                                   ],
                               ]
                             : []),
+                        // Focus key generation plugin runs early to add data-wsx-key attributes
+                        // This must run before JSX is transformed to h() calls
+                        babelPluginWSXFocus,
                         // State decorator transformation runs after style injection
                         babelPluginWSXState,
                         [
@@ -145,32 +137,9 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
 
                 if (babelResult && babelResult.code) {
                     transformedCode = babelResult.code;
-                    if (debug) {
-                        console.log(`[WSX Plugin Babel] Decorators preprocessed: ${id}`);
-                        // Log generated code for debugging
-                        if (
-                            transformedCode.includes("this.reactive") ||
-                            transformedCode.includes("this.useState")
-                        ) {
-                            console.log(
-                                `[WSX Plugin Babel] Generated reactive code found in: ${id}\n` +
-                                    transformedCode
-                                        .split("\n")
-                                        .filter(
-                                            (line) =>
-                                                line.includes("this.reactive") ||
-                                                line.includes("this.useState")
-                                        )
-                                        .join("\n")
-                            );
-                        }
-                    }
                 }
-            } catch (error) {
-                console.warn(
-                    `[WSX Plugin Babel] Babel transform failed for ${id}, falling back to esbuild only:`,
-                    error
-                );
+            } catch {
+                // Babel transform failed, fallback to esbuild only
             }
 
             // 2.5. Ensure JSX imports still exist after Babel transformation
@@ -187,11 +156,6 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
                 const importPath = getJSXFactoryImportPath(options);
                 const importStatement = `import { ${jsxFactory}, ${jsxFragment} } from "${importPath}";\n`;
                 transformedCode = importStatement + transformedCode;
-                if (debug) {
-                    console.log(
-                        `[WSX Plugin Babel] Re-added JSX imports after Babel transform: ${id}`
-                    );
-                }
             }
 
             // 3. Use esbuild for JSX transformation
