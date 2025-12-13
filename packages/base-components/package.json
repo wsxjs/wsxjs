@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-base-components",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "description": "Base UI components built with WSX Framework",
     "type": "module",
     "main": "./dist/index.cjs",
