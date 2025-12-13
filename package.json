@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-framework",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "description": "A modern Web Components framework with JSX syntax and TypeScript support",
     "type": "module",
     "private": true,
