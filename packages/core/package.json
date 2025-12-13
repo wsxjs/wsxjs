@@ -5,6 +5,13 @@
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
     "types": "./types/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wsxjs/wsxjs.git",
+        "directory": "packages/core"
+    },
+    "author": "Albert Li <albert.li@wsxjs.com>",
+    "license": "MIT",
     "exports": {
         ".": {
             "types": "./types/index.d.ts",
@@ -45,5 +52,8 @@
     },
     "peerDependencies": {
         "typescript": ">=4.7.0"
+    },
+    "publishConfig": {
+        "access": "public"
     }
 }
