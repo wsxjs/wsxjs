@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+# 运行 lint-staged（格式化暂存文件）
 pnpm precommit
+
+# 运行完整 lint 检查
+pnpm lint

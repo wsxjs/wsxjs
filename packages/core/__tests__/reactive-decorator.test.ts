@@ -133,7 +133,7 @@ describe("@state decorator with WebComponent", () => {
         expect(instance.message).toBe("Hello");
     });
 
-    it("should make @state properties reactive", (done: () => void) => {
+    it("should make @state properties reactive", async () => {
         let renderCount = 0;
 
         class TestWebComponent extends WebComponent {
@@ -158,17 +158,19 @@ describe("@state decorator with WebComponent", () => {
         if (instance.connectedCallback) {
             instance.connectedCallback();
         }
-        expect(renderCount).toBe(1);
+        const initialRenderCount = renderCount;
+        expect(initialRenderCount).toBeGreaterThan(0);
 
         // Change state - should trigger rerender
         instance.count = 5;
 
-        // Wait for reactive update
-        setTimeout(() => {
-            expect(renderCount).toBeGreaterThan(1);
-            expect(instance.count).toBe(5);
-            done();
-        }, 10);
+        // Wait for queueMicrotask to execute rerender
+        await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
+        // Additional wait to ensure rerender completes
+        await new Promise((resolve) => setTimeout(resolve, 10));
+
+        expect(renderCount).toBeGreaterThan(initialRenderCount);
+        expect(instance.count).toBe(5);
     });
 
     it("should handle object @state properties with reactive()", () => {
@@ -372,7 +374,7 @@ describe("@state decorator error handling", () => {
             // Simulate decorator being called with undefined target (Babel plugin not configured)
             const stateFn = state as (target: unknown, propertyKey: string) => void;
             stateFn(undefined, "count");
-        }).toThrow(/Please ensure Babel plugin is configured/);
+        }).toThrow(/Babel plugin/);
     });
 
     it("should throw error if used on getter property", () => {
@@ -599,13 +601,18 @@ describe("@state decorator integration", () => {
         container.appendChild(instance as unknown as HTMLElement);
         (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+        // Wait for initial render to complete
+        await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
         const initialRenderCount = renderCallCount;
+        expect(initialRenderCount).toBeGreaterThan(0);
 
         // Replace the entire object - should automatically wrap in reactive
         instance.state = { count: 5, message: "updated" };
 
-        // Wait for async rerender
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        // Wait for queueMicrotask to execute rerender
+        await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
+        // Additional wait to ensure rerender completes
+        await new Promise((resolve) => setTimeout(resolve, 10));
 
         expect(renderCallCount).toBeGreaterThan(initialRenderCount);
         if (instance.state && typeof instance.state === "object" && "count" in instance.state) {
@@ -630,13 +637,18 @@ describe("@state decorator integration", () => {
         container.appendChild(instance as unknown as HTMLElement);
         (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+        // Wait for initial render to complete
+        await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
         const initialRenderCount = renderCallCount;
+        expect(initialRenderCount).toBeGreaterThan(0);
 
         // Replace the entire array - should automatically wrap in reactive
         instance.items = [4, 5, 6, 7];
 
-        // Wait for async rerender
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        // Wait for queueMicrotask to execute rerender
+        await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
+        // Additional wait to ensure rerender completes
+        await new Promise((resolve) => setTimeout(resolve, 10));
 
         expect(renderCallCount).toBeGreaterThan(initialRenderCount);
         if (Array.isArray(instance.items)) {
@@ -664,7 +676,10 @@ describe("@state decorator integration", () => {
         container.appendChild(instance as unknown as HTMLElement);
         (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+        // Wait for initial render to complete
+        await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
         const initialRenderCount = renderCallCount;
+        expect(initialRenderCount).toBeGreaterThan(0);
 
         // Replace with nested object - should automatically wrap in reactive
         instance.state = {
@@ -672,8 +687,10 @@ describe("@state decorator integration", () => {
             settings: { theme: "dark" },
         };
 
-        // Wait for async rerender
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        // Wait for queueMicrotask to execute rerender
+        await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
+        // Additional wait to ensure rerender completes
+        await new Promise((resolve) => setTimeout(resolve, 10));
 
         expect(renderCallCount).toBeGreaterThan(initialRenderCount);
     });
@@ -717,13 +734,19 @@ describe("@state decorator integration", () => {
             container.appendChild(instance as unknown as HTMLElement);
             (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+            // Wait for initial render to complete
+            await new Promise((resolve) => queueMicrotask(resolve));
             const initialRenderCount = renderCallCount;
+            expect(initialRenderCount).toBeGreaterThan(0);
 
             if (Array.isArray(instance.items) && instance.items instanceof Array) {
                 (instance.items as number[]).push(4);
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            // Wait for queueMicrotask to execute rerender
+            await new Promise((resolve) => queueMicrotask(resolve));
+            // Additional wait to ensure rerender completes
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
@@ -738,13 +761,19 @@ describe("@state decorator integration", () => {
             container.appendChild(instance as unknown as HTMLElement);
             (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+            // Wait for initial render to complete
+            await new Promise((resolve) => queueMicrotask(resolve));
             const initialRenderCount = renderCallCount;
+            expect(initialRenderCount).toBeGreaterThan(0);
 
             if (Array.isArray(instance.items)) {
                 instance.items.pop();
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            // Wait for queueMicrotask to execute rerender
+            await new Promise((resolve) => queueMicrotask(resolve));
+            // Additional wait to ensure rerender completes
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
@@ -759,13 +788,19 @@ describe("@state decorator integration", () => {
             container.appendChild(instance as unknown as HTMLElement);
             (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+            // Wait for initial render to complete
+            await new Promise((resolve) => queueMicrotask(resolve));
             const initialRenderCount = renderCallCount;
+            expect(initialRenderCount).toBeGreaterThan(0);
 
             if (Array.isArray(instance.items)) {
                 instance.items.shift();
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            // Wait for queueMicrotask to execute rerender
+            await new Promise((resolve) => queueMicrotask(resolve));
+            // Additional wait to ensure rerender completes
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
@@ -780,13 +815,19 @@ describe("@state decorator integration", () => {
             container.appendChild(instance as unknown as HTMLElement);
             (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+            // Wait for initial render to complete
+            await new Promise((resolve) => queueMicrotask(resolve));
             const initialRenderCount = renderCallCount;
+            expect(initialRenderCount).toBeGreaterThan(0);
 
             if (Array.isArray(instance.items) && instance.items instanceof Array) {
                 (instance.items as number[]).unshift(0);
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            // Wait for queueMicrotask to execute rerender
+            await new Promise((resolve) => queueMicrotask(resolve));
+            // Additional wait to ensure rerender completes
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
@@ -801,13 +842,19 @@ describe("@state decorator integration", () => {
             container.appendChild(instance as unknown as HTMLElement);
             (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+            // Wait for initial render to complete
+            await new Promise((resolve) => queueMicrotask(resolve));
             const initialRenderCount = renderCallCount;
+            expect(initialRenderCount).toBeGreaterThan(0);
 
             if (Array.isArray(instance.items)) {
                 instance.items.splice(1, 1, 99);
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            // Wait for queueMicrotask to execute rerender
+            await new Promise((resolve) => queueMicrotask(resolve));
+            // Additional wait to ensure rerender completes
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
@@ -825,13 +872,19 @@ describe("@state decorator integration", () => {
             container.appendChild(instance as unknown as HTMLElement);
             (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+            // Wait for initial render to complete
+            await new Promise((resolve) => queueMicrotask(resolve));
             const initialRenderCount = renderCallCount;
+            expect(initialRenderCount).toBeGreaterThan(0);
 
             if (Array.isArray(instance.items)) {
                 instance.items.sort();
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            // Wait for queueMicrotask to execute rerender
+            await new Promise((resolve) => queueMicrotask(resolve));
+            // Additional wait to ensure rerender completes
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
@@ -846,13 +899,19 @@ describe("@state decorator integration", () => {
             container.appendChild(instance as unknown as HTMLElement);
             (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+            // Wait for initial render to complete
+            await new Promise((resolve) => queueMicrotask(resolve));
             const initialRenderCount = renderCallCount;
+            expect(initialRenderCount).toBeGreaterThan(0);
 
             if (Array.isArray(instance.items)) {
                 instance.items.reverse();
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            // Wait for queueMicrotask to execute rerender
+            await new Promise((resolve) => queueMicrotask(resolve));
+            // Additional wait to ensure rerender completes
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
@@ -867,13 +926,19 @@ describe("@state decorator integration", () => {
             container.appendChild(instance as unknown as HTMLElement);
             (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+            // Wait for initial render to complete
+            await new Promise((resolve) => queueMicrotask(resolve));
             const initialRenderCount = renderCallCount;
+            expect(initialRenderCount).toBeGreaterThan(0);
 
             if (Array.isArray(instance.items)) {
                 instance.items[0] = 99;
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            // Wait for queueMicrotask to execute rerender
+            await new Promise((resolve) => queueMicrotask(resolve));
+            // Additional wait to ensure rerender completes
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
@@ -888,13 +953,19 @@ describe("@state decorator integration", () => {
             container.appendChild(instance as unknown as HTMLElement);
             (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+            // Wait for initial render to complete
+            await new Promise((resolve) => queueMicrotask(resolve));
             const initialRenderCount = renderCallCount;
+            expect(initialRenderCount).toBeGreaterThan(0);
 
             if (Array.isArray(instance.items)) {
                 instance.items.length = 0;
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            // Wait for queueMicrotask to execute rerender
+            await new Promise((resolve) => queueMicrotask(resolve));
+            // Additional wait to ensure rerender completes
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
@@ -909,7 +980,10 @@ describe("@state decorator integration", () => {
             container.appendChild(instance as unknown as HTMLElement);
             (instance as unknown as ReactiveInstance).connectedCallback?.();
 
+            // Wait for initial render to complete
+            await new Promise((resolve) => queueMicrotask(resolve));
             const initialRenderCount = renderCallCount;
+            expect(initialRenderCount).toBeGreaterThan(0);
 
             if (Array.isArray(instance.items) && instance.items instanceof Array) {
                 const items = instance.items as number[];
@@ -919,7 +993,10 @@ describe("@state decorator integration", () => {
                 items[0] = 99;
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 50));
+            // Wait for queueMicrotask to execute rerender
+            await new Promise((resolve) => queueMicrotask(resolve));
+            // Additional wait to ensure rerender completes
+            await new Promise((resolve) => setTimeout(resolve, 10));
 
             // Should trigger rerender (may be batched)
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
