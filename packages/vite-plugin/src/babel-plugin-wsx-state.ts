@@ -155,8 +155,13 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                                 const originalSource = (path.state as Record<string, unknown>)
                                     ?.originalSource as string | undefined;
                                 if (originalSource) {
+                                    // Escape special regex characters in property name
+                                    const escapedPropertyName = propertyName.replace(
+                                        /[.*+?^${}()|[\]\\]/g,
+                                        "\\$&"
+                                    );
                                     const propertyPattern = new RegExp(
-                                        `@state\\s+(?:private|protected|public)?\\s+${propertyName}\\s*[?;]`,
+                                        `@state\\s+(?:private|protected|public)?\\s+${escapedPropertyName}\\s*[?;]`,
                                         "m"
                                     );
                                     if (propertyPattern.test(originalSource)) {
@@ -208,8 +213,13 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                             if (originalSource) {
                                 // Check if there's a pattern like "@state private count?" or "@state private count;" in source
                                 // Look for @state followed by private/protected/public, then property name, then optional ? or ;
+                                // Escape special regex characters in property name
+                                const escapedPropertyName = propertyName.replace(
+                                    /[.*+?^${}()|[\]\\]/g,
+                                    "\\$&"
+                                );
                                 const propertyPattern = new RegExp(
-                                    `@state\\s+(?:private|protected|public)?\\s+${propertyName}\\s*[?;]`,
+                                    `@state\\s+(?:private|protected|public)?\\s+${escapedPropertyName}\\s*[?;]`,
                                     "m"
                                 );
 
@@ -220,8 +230,9 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                                     );
                                     // Found @state in source but decorators array is empty
                                     // Check if it has an initial value in source (not just undefined from TypeScript)
+                                    // Escape special regex characters in property name (already escaped above, reuse)
                                     const hasInitialValueInSource = new RegExp(
-                                        `@state\\s+(?:private|protected|public)?\\s+${propertyName}\\s*=\\s*[^;]+`,
+                                        `@state\\s+(?:private|protected|public)?\\s+${escapedPropertyName}\\s*=\\s*[^;]+`,
                                         "m"
                                     ).test(originalSource);
 
