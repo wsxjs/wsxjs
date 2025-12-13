@@ -69,6 +69,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0001](./0001-wsx-router.md) | WSX Router | Implemented | Claude |
 | [RFC-0004](./0004-reactive-state-system.md) | 响应式状态系统 | Implemented | Claude |
 | [RFC-0006](./0006-light-dom-components.md) | Light DOM 组件 | Implemented | Claude |
+| [RFC-0011](./0011-focus-preservation.md) | 焦点保持机制 | Implemented | Claude |
 
 ### 草稿RFCs
 
@@ -79,7 +80,6 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0005](./0005-wsx-router-enhancements.md) | WSX Router 增强 | Draft | Claude |
 | [RFC-0009](./0009-scss-sass-preprocessing.md) | SCSS/SASS 预处理支持 | Draft (Future) | Claude |
 | [RFC-0010](./0010-eslint-rules-enhancement.md) | ESLint 规则增强 | Draft | Claude |
-| [RFC-0011](./0011-focus-preservation.md) | 焦点保持机制 | Draft | Claude |
 
 ## RFC原则
 

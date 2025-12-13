@@ -57,6 +57,9 @@ export abstract class LightComponent extends BaseComponent {
             const content = this.render();
             this.appendChild(content);
 
+            // 初始化事件监听器
+            this.initializeEventListeners();
+
             // 调用子类的初始化钩子
             this.onConnected?.();
         } catch (error) {
@@ -69,6 +72,8 @@ export abstract class LightComponent extends BaseComponent {
      * Web Component生命周期：从DOM断开
      */
     disconnectedCallback(): void {
+        this.connected = false;
+        this.cleanup(); // 清理资源（包括防抖定时器）
         this.cleanupReactiveStates();
         this.cleanupStyles();
         this.onDisconnected?.();
@@ -110,27 +115,11 @@ export abstract class LightComponent extends BaseComponent {
         // 保存到实例变量，供 render() 使用（如果需要）
         this._pendingFocusState = focusState;
 
-        // 清空现有内容（包括样式元素）
-        this.innerHTML = "";
-
-        // 重新应用样式（必须在内容之前添加，确保样式优先）
-        const stylesToApply = this._autoStyles || this.config.styles;
-        if (stylesToApply) {
-            const styleName = this.config.styleName || this.constructor.name;
-            // 直接创建并添加样式元素，不检查是否存在（因为 innerHTML = "" 已经清空了）
-            const styleElement = document.createElement("style");
-            styleElement.setAttribute("data-wsx-light-component", styleName);
-            styleElement.textContent = stylesToApply;
-            // 使用 prepend 或 insertBefore 确保样式在第一个位置
-            // 由于 innerHTML = "" 后 firstChild 是 null，使用 appendChild 然后调整顺序
-            this.appendChild(styleElement);
-        }
-
-        // 重新渲染JSX内容
         try {
+            // 重新渲染JSX内容
             const content = this.render();
 
-            // 在 appendChild 之前恢复值，避免浏览器渲染状态值
+            // 在添加到 DOM 之前恢复值，避免浏览器渲染状态值
             // 这样可以确保值在元素添加到 DOM 之前就是正确的
             if (focusState && focusState.key && focusState.value !== undefined) {
                 // 在 content 树中查找目标元素
@@ -148,25 +137,70 @@ export abstract class LightComponent extends BaseComponent {
                 }
             }
 
-            this.appendChild(content);
+            // 确保样式元素存在
+            const stylesToApply = this._autoStyles || this.config.styles;
+            if (stylesToApply) {
+                const styleName = this.config.styleName || this.constructor.name;
+                let styleElement = this.querySelector(
+                    `style[data-wsx-light-component="${styleName}"]`
+                ) as HTMLStyleElement;
 
-            // 确保样式元素在内容之前（如果样式存在）
-            if (stylesToApply && this.children.length > 1) {
-                const styleElement = this.querySelector(
-                    `style[data-wsx-light-component="${this.config.styleName || this.constructor.name}"]`
-                );
-                if (styleElement && styleElement !== this.firstChild) {
-                    // 将样式元素移到第一个位置
+                if (!styleElement) {
+                    // 创建样式元素
+                    styleElement = document.createElement("style");
+                    styleElement.setAttribute("data-wsx-light-component", styleName);
+                    styleElement.textContent = stylesToApply;
                     this.insertBefore(styleElement, this.firstChild);
+                } else if (styleElement.textContent !== stylesToApply) {
+                    // 更新样式内容
+                    styleElement.textContent = stylesToApply;
                 }
             }
 
-            // 2. 恢复焦点状态（在 DOM 替换之后）
-            // 值已经在 appendChild 之前恢复了，这里只需要恢复焦点和光标位置
-            this.restoreFocusState(focusState);
+            // 使用 requestAnimationFrame 批量执行 DOM 操作，减少重绘
+            // 在同一帧中完成添加和移除，避免中间状态
+            requestAnimationFrame(() => {
+                // 先添加新内容
+                this.appendChild(content);
 
-            // 清除待处理的焦点状态
-            this._pendingFocusState = null;
+                // 立即移除旧内容（在同一帧中，浏览器会批量处理）
+                const oldChildren = Array.from(this.children).filter((child) => {
+                    // 保留新添加的内容
+                    if (child === content) {
+                        return false;
+                    }
+                    // 保留样式元素（如果存在）
+                    if (
+                        stylesToApply &&
+                        child instanceof HTMLStyleElement &&
+                        child.getAttribute("data-wsx-light-component") ===
+                            (this.config.styleName || this.constructor.name)
+                    ) {
+                        return false;
+                    }
+                    return true;
+                });
+                oldChildren.forEach((child) => child.remove());
+
+                // 确保样式元素在第一个位置
+                if (stylesToApply && this.children.length > 1) {
+                    const styleElement = this.querySelector(
+                        `style[data-wsx-light-component="${this.config.styleName || this.constructor.name}"]`
+                    );
+                    if (styleElement && styleElement !== this.firstChild) {
+                        this.insertBefore(styleElement, this.firstChild);
+                    }
+                }
+
+                // 恢复焦点状态（在 DOM 替换之后）
+                // 值已经在添加到 DOM 之前恢复了，这里只需要恢复焦点和光标位置
+                // 使用另一个 requestAnimationFrame 确保 DOM 已完全更新
+                requestAnimationFrame(() => {
+                    this.restoreFocusState(focusState);
+                    // 清除待处理的焦点状态
+                    this._pendingFocusState = null;
+                });
+            });
         } catch (error) {
             logger.error(`[${this.constructor.name}] Error in rerender:`, error);
             this.renderError(error);

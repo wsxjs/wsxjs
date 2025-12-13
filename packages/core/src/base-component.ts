@@ -67,6 +67,18 @@ export abstract class BaseComponent extends HTMLElement {
     protected _pendingFocusState: FocusState | null = null;
 
     /**
+     * 防抖定时器，用于延迟重渲染（当用户正在输入时）
+     * @internal
+     */
+    private _rerenderDebounceTimer: number | null = null;
+
+    /**
+     * 待处理的重渲染标志（当用户正在输入时，标记需要重渲染但延迟执行）
+     * @internal
+     */
+    private _pendingRerender: boolean = false;
+
+    /**
      * 子类应该重写这个方法来定义观察的属性
      * @returns 要观察的属性名数组
      */
@@ -113,6 +125,35 @@ export abstract class BaseComponent extends HTMLElement {
      * 可选生命周期钩子：组件已连接
      */
     protected onConnected?(): void;
+
+    /**
+     * 处理 blur 事件，在用户停止输入时执行待处理的重渲染
+     * @internal
+     */
+    private handleGlobalBlur = (event: FocusEvent): void => {
+        // 检查 blur 的元素是否在组件内
+        const root = this.getActiveRoot();
+        const target = event.target as HTMLElement;
+
+        if (target && root.contains(target)) {
+            // 用户停止输入，执行待处理的重渲染
+            if (this._pendingRerender && this.connected) {
+                // 清除防抖定时器
+                if (this._rerenderDebounceTimer !== null) {
+                    clearTimeout(this._rerenderDebounceTimer);
+                    this._rerenderDebounceTimer = null;
+                }
+
+                // 延迟一小段时间后重渲染，确保 blur 事件完全处理
+                requestAnimationFrame(() => {
+                    if (this._pendingRerender && this.connected) {
+                        this._pendingRerender = false;
+                        this.rerender();
+                    }
+                });
+            }
+        }
+    };
 
     /**
      * 可选生命周期钩子：组件已断开
@@ -179,15 +220,79 @@ export abstract class BaseComponent extends HTMLElement {
      * 使用 queueMicrotask 进行异步调度，与 reactive() 系统保持一致
      */
     protected scheduleRerender(): void {
-        if (this.connected) {
-            // 使用 queueMicrotask 进行异步调度，与 reactive() 系统保持一致
-            // 这样可以批量处理多个状态更新，避免不必要的重复渲染
-            queueMicrotask(() => {
-                if (this.connected) {
-                    this.rerender();
-                }
-            });
+        if (!this.connected) {
+            // 如果组件已断开，清除定时器
+            if (this._rerenderDebounceTimer !== null) {
+                clearTimeout(this._rerenderDebounceTimer);
+                this._rerenderDebounceTimer = null;
+            }
+            return;
         }
+
+        // 检查是否有焦点元素（用户可能正在输入）
+        const root = this.getActiveRoot();
+        let hasActiveElement = false;
+
+        if (root instanceof ShadowRoot) {
+            hasActiveElement = root.activeElement !== null;
+        } else {
+            const docActiveElement = document.activeElement;
+            hasActiveElement = docActiveElement !== null && root.contains(docActiveElement);
+        }
+
+        // 如果用户正在输入，完全跳过重渲染，只在 blur 时更新
+        // 这样可以完全避免输入时的闪烁
+        if (hasActiveElement) {
+            // 标记需要重渲染，但延迟到 blur 事件
+            this._pendingRerender = true;
+
+            // 清除之前的定时器（不再使用定时器，只等待 blur）
+            if (this._rerenderDebounceTimer !== null) {
+                clearTimeout(this._rerenderDebounceTimer);
+                this._rerenderDebounceTimer = null;
+            }
+
+            // 不执行重渲染，等待 blur 事件
+            return;
+        }
+
+        // 没有焦点元素，立即重渲染（使用 queueMicrotask 批量处理）
+        // 如果有待处理的重渲染，也立即执行
+        if (this._pendingRerender) {
+            this._pendingRerender = false;
+        }
+        queueMicrotask(() => {
+            if (this.connected) {
+                this.rerender();
+            }
+        });
+    }
+
+    /**
+     * 清理资源（在组件断开连接时调用）
+     * @internal
+     */
+    protected cleanup(): void {
+        // 清除防抖定时器
+        if (this._rerenderDebounceTimer !== null) {
+            clearTimeout(this._rerenderDebounceTimer);
+            this._rerenderDebounceTimer = null;
+        }
+
+        // 移除 blur 事件监听器
+        document.removeEventListener("blur", this.handleGlobalBlur, true);
+
+        // 清除待处理的重渲染标志
+        this._pendingRerender = false;
+    }
+
+    /**
+     * 初始化事件监听器（在组件连接时调用）
+     * @internal
+     */
+    protected initializeEventListeners(): void {
+        // 添加 blur 事件监听器，在用户停止输入时执行待处理的重渲染
+        document.addEventListener("blur", this.handleGlobalBlur, true);
     }
 
     /**
