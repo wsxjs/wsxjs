@@ -1,6 +1,6 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 import { createLogger } from "@wsxjs/wsx-core";
-import type { InlineTool, InlineToolConstructorOptions } from "@editorjs/editorjs";
+import type { InlineTool, InlineToolConstructorOptions, API } from "@editorjs/editorjs";
 import "./WsxHighlightButton.wsx";
 import type WsxHighlightButton from "./WsxHighlightButton.wsx";
 const logger = createLogger("WsxHighlightTool");
@@ -8,7 +8,7 @@ const logger = createLogger("WsxHighlightTool");
 // Export the inline tool class for EditorJS
 export default class WsxHighlightTool implements InlineTool {
     private button: WsxHighlightButton;
-    private api: any;
+    private api: API;
     private tag = "MARK";
 
     static get isInline() {

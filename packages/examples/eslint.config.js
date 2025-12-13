@@ -24,6 +24,7 @@ export default [
                 jsxPragma: "h",
                 jsxFragmentName: "Fragment",
                 extraFileExtensions: [".wsx"],
+                experimentalDecorators: true, // Required for @state decorator support
             },
             globals: {
                 ...globals.browser,
@@ -47,10 +48,12 @@ export default [
                     varsIgnorePattern: "^_",
                 },
             ],
+            "@typescript-eslint/no-unsafe-declaration-merging": "off", // Disable incompatible rule
             // WSX plugin rules
             "wsx/render-method-required": "error",
             "wsx/no-react-imports": "error",
             "wsx/web-component-naming": "warn",
+            "wsx/state-requires-initial-value": "error",
             "no-undef": "off", // TypeScript handles this
         },
     },

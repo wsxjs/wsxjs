@@ -58,11 +58,20 @@ export default [
         },
         rules: {
             ...typescript.configs.recommended.rules,
+            "@typescript-eslint/no-explicit-any": "warn",
+            "@typescript-eslint/no-unused-vars": [
+                "error",
+                {
+                    argsIgnorePattern: "^_",
+                    varsIgnorePattern: "^_",
+                },
+            ],
             // WSX plugin rules
             "wsx/render-method-required": "error",
             "wsx/no-react-imports": "error",
             "wsx/web-component-naming": "warn",
             "wsx/state-requires-initial-value": "error",
+            "no-undef": "off", // TypeScript handles this
         },
     },
 ];
@@ -75,6 +84,8 @@ Make sure you have these peer dependencies installed:
 ```bash
 npm install --save-dev eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser globals
 ```
+
+**Important**: The `experimentalDecorators: true` option in `parserOptions` is **required** for the `wsx/state-requires-initial-value` rule to work correctly. Without it, ESLint cannot parse `@state` decorators and the rule will not detect violations.
 
 ## Rules
 
@@ -139,12 +150,17 @@ Enforces proper Web Component tag naming conventions (kebab-case with at least o
 
 **Error level**: `error`
 
-Requires `@state` decorator properties to have initial values. This is mandatory because we need the initial value to determine if it's a primitive or object/array.
+Requires `@state` decorator properties to have initial values. This is mandatory because:
+1. The Babel plugin needs the initial value to determine if it's a primitive (uses `useState`) or object/array (uses `reactive`)
+2. Without an initial value, the decorator cannot be properly transformed at compile time
+3. The runtime fallback also requires an initial value to set up reactive state correctly
 
 **Invalid**:
 ```typescript
 class MyComponent extends WebComponent {
     @state private maskStrokeColor?: string; // ❌ Missing initial value
+    @state private count; // ❌ Missing initial value
+    @state private user; // ❌ Missing initial value
 }
 ```
 
@@ -153,10 +169,24 @@ class MyComponent extends WebComponent {
 class MyComponent extends WebComponent {
     @state private maskStrokeColor = ""; // ✅ String
     @state private count = 0; // ✅ Number
+    @state private enabled = false; // ✅ Boolean
     @state private user = { name: "John" }; // ✅ Object
     @state private items = []; // ✅ Array
-    @state private optional?: string = undefined; // ✅ Optional with explicit undefined
+    @state private optional: string | undefined = undefined; // ✅ Optional with explicit undefined
+    @state private size?: number = 32; // ✅ Optional with default value
 }
+```
+
+**Error Message Example**:
+```
+@state decorator on property 'size' requires an initial value.
+
+Examples:
+  @state private size = '';  // for string
+  @state private size = 0;  // for number
+  @state private size = {};  // for object
+  @state private size = [];  // for array
+  @state private size = undefined;  // for optional
 ```
 
 ## Configuration Options

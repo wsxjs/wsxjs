@@ -175,6 +175,7 @@ describe("WsxTableComponent", () => {
 
         test("should emit datachange event when data updates", async () => {
             let eventFired = false;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let eventDetail: any = null;
 
             component.addEventListener("datachange", (e: CustomEvent) => {
@@ -368,6 +369,7 @@ describe("WsxTableComponent", () => {
 
             const mockClick = vi.fn();
             const mockAnchor = { href: "", download: "", click: mockClick };
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             vi.spyOn(document, "createElement").mockReturnValue(mockAnchor as any);
 
             // Set some test data

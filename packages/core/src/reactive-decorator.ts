@@ -51,7 +51,7 @@ interface DecoratorContext {
 export function state(
     targetOrContext: unknown | DecoratorContext,
     propertyKey?: string | symbol | unknown
-): void | DecoratorContext {
+): unknown {
     /**
      * @state decorator supports both:
      * 1. Compile-time processing by Babel plugin (preferred) - decorator is removed at compile time
