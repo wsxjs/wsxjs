@@ -7,7 +7,6 @@
  */
 
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
-import styles from "./XyButtonGroup.css?inline";
 
 export interface XyButtonGroupConfig {
     disabled?: boolean;
@@ -23,7 +22,6 @@ export default class XyButtonGroup extends WebComponent {
 
     constructor(config: XyButtonGroupConfig = {}) {
         super({
-            styles,
             styleName: "xy-button-group",
             ...config,
         });

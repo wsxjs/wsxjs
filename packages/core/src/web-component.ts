@@ -35,20 +35,17 @@ interface FocusData {
  */
 export abstract class WebComponent extends BaseComponent {
     declare shadowRoot: ShadowRoot;
-    protected config: WebComponentConfig;
+    protected config!: WebComponentConfig; // Initialized by BaseComponent constructor
     private _preserveFocus: boolean = true;
 
     constructor(config: WebComponentConfig = {}) {
         super(config);
-        this.config = config;
+        // BaseComponent already created this.config with getter for styles
+        // Just update preserveFocus property
         this._preserveFocus = config.preserveFocus ?? true;
         this.attachShadow({ mode: "open" });
-
-        // 自动应用CSS样式
-        if (config.styles) {
-            const styleName = config.styleName || this.constructor.name;
-            StyleManager.applyStyles(this.shadowRoot, styleName, config.styles);
-        }
+        // Styles are applied in connectedCallback for consistency with LightComponent
+        // and to ensure all class properties (including getters) are initialized
     }
 
     /**
@@ -64,6 +61,15 @@ export abstract class WebComponent extends BaseComponent {
     connectedCallback(): void {
         this.connected = true;
         try {
+            // 应用CSS样式到Shadow DOM
+            // Using method call ensures styles are available when accessed
+            // This is consistent with LightComponent and avoids execution order issues
+            const stylesToApply = this._getAutoStyles?.() || this.config.styles;
+            if (stylesToApply) {
+                const styleName = this.config.styleName || this.constructor.name;
+                StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
+            }
+
             // 渲染JSX内容到Shadow DOM
             const content = this.render();
             this.shadowRoot.appendChild(content);
@@ -134,9 +140,13 @@ export abstract class WebComponent extends BaseComponent {
         }
 
         // 只有在没有 adopted stylesheets 时才重新应用样式
-        if (adoptedStyleSheets.length === 0 && this.config.styles) {
-            const styleName = this.config.styleName || this.constructor.name;
-            StyleManager.applyStyles(this.shadowRoot, styleName, this.config.styles);
+        // Check both _autoStyles getter and config.styles getter
+        if (adoptedStyleSheets.length === 0) {
+            const stylesToApply = this._autoStyles || this.config.styles;
+            if (stylesToApply) {
+                const styleName = this.config.styleName || this.constructor.name;
+                StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
+            }
         }
 
         // 重新渲染JSX

@@ -9,13 +9,17 @@
 import type { Plugin } from "vite";
 import { transform } from "esbuild";
 import { transformSync } from "@babel/core";
+import { existsSync } from "fs";
+import { dirname, join, basename } from "path";
 import babelPluginWSXState from "./babel-plugin-wsx-state";
+import babelPluginWSXStyle from "./babel-plugin-wsx-style";
 
 export interface WSXPluginOptions {
     jsxFactory?: string;
     jsxFragment?: string;
     debug?: boolean;
     extensions?: string[];
+    autoStyleInjection?: boolean; // Default: true
 }
 
 function getJSXFactoryImportPath(_options: WSXPluginOptions): string {
@@ -28,6 +32,7 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
         jsxFragment = "Fragment",
         debug = false,
         extensions = [".wsx"],
+        autoStyleInjection = true,
     } = options;
 
     return {
@@ -43,6 +48,32 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
 
             if (debug) {
                 console.log(`[WSX Plugin Babel] Processing: ${id}`);
+            }
+
+            // Check if corresponding CSS file exists (for auto style injection)
+            let cssFileExists = false;
+            let cssFilePath = "";
+            let componentName = "";
+
+            if (autoStyleInjection) {
+                const fileDir = dirname(id);
+                const fileName = basename(id, extensions.find((ext) => id.endsWith(ext)) || "");
+                const cssFilePathWithoutQuery = join(fileDir, `${fileName}.css`);
+                cssFileExists = existsSync(cssFilePathWithoutQuery);
+                componentName = fileName;
+
+                // Generate relative path for import (e.g., "./Button.css?inline")
+                // Use relative path from the file's directory
+                if (cssFileExists) {
+                    // For import statement, use relative path with ?inline query
+                    cssFilePath = `./${fileName}.css?inline`;
+                }
+
+                if (cssFileExists) {
+                    console.log(
+                        `[WSX Plugin Babel] Found CSS file for auto-injection: ${cssFilePathWithoutQuery}, will inject: ${cssFilePath}`
+                    );
+                }
             }
 
             let transformedCode = code;
@@ -78,8 +109,21 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
                         ],
                     ],
                     plugins: [
-                        // CRITICAL: Custom plugin must run FIRST, before decorators are processed
-                        // This allows it to see @state decorators in their original form
+                        // CRITICAL: Style injection plugin must run FIRST
+                        // This ensures _autoStyles property exists before state transformations
+                        ...(autoStyleInjection && cssFileExists
+                            ? [
+                                  [
+                                      babelPluginWSXStyle,
+                                      {
+                                          cssFileExists,
+                                          cssFilePath,
+                                          componentName,
+                                      },
+                                  ],
+                              ]
+                            : []),
+                        // State decorator transformation runs after style injection
                         babelPluginWSXState,
                         [
                             "@babel/plugin-proposal-decorators",

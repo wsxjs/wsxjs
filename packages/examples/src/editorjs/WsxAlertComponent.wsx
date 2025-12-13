@@ -1,6 +1,5 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 import { WebComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
-import styles from "./WsxAlertComponent.css?inline";
 
 const logger = createLogger("WsxAlertComponent");
 
@@ -27,10 +26,7 @@ export default class WsxAlertComponent extends WebComponent {
     }
 
     constructor() {
-        super({
-            styles,
-            styleName: "wsx-alert-component",
-        });
+        super();
 
         logger.info("WSX Alert component initialized");
     }

@@ -22,11 +22,11 @@ export type LightComponentConfig = BaseComponentConfig;
  * Light DOM WSX Web Component 基类
  */
 export abstract class LightComponent extends BaseComponent {
-    protected config: LightComponentConfig;
+    protected config!: LightComponentConfig; // Initialized by BaseComponent constructor
 
     constructor(config: LightComponentConfig = {}) {
         super(config);
-        this.config = config;
+        // BaseComponent already created this.config with getter for styles
     }
 
     /**
@@ -43,9 +43,14 @@ export abstract class LightComponent extends BaseComponent {
         this.connected = true;
         try {
             // 应用CSS样式到组件自身
-            if (this.config.styles) {
+            // CRITICAL: _defineProperty for class properties executes AFTER super() but BEFORE constructor body
+            // However, in practice, _defineProperty may execute AFTER the constructor body
+            // So we need to check _autoStyles directly first, then fallback to config.styles getter
+            // The getter will dynamically check _autoStyles when accessed
+            const stylesToApply = this._autoStyles || this.config.styles;
+            if (stylesToApply) {
                 const styleName = this.config.styleName || this.constructor.name;
-                this.applyScopedStyles(styleName, this.config.styles);
+                this.applyScopedStyles(styleName, stylesToApply);
             }
 
             // 渲染JSX内容到Light DOM

@@ -1,6 +1,5 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 import { WebComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
-import styles from "./WsxLink.css?inline";
 
 const logger = createLogger("WsxLink");
 
@@ -28,13 +27,6 @@ export default class WsxLink extends WebComponent {
     private replace: boolean = false;
     private activeClass: string = "active";
     private exact: boolean = false;
-
-    constructor() {
-        super({
-            styles,
-            styleName: "wsx-link",
-        });
-    }
 
     render() {
         return (

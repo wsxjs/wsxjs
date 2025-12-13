@@ -23,6 +23,7 @@ interface ReactiveStateStorage {
  */
 export interface BaseComponentConfig {
     styles?: string;
+    autoStyles?: string;
     styleName?: string;
     debug?: boolean;
     [key: string]: unknown;
@@ -41,6 +42,12 @@ export abstract class BaseComponent extends HTMLElement {
     protected _reactiveStates = new Map<string, ReactiveStateStorage>();
 
     /**
+     * Auto-injected styles from Babel plugin (if CSS file exists)
+     * @internal - Managed by babel-plugin-wsx-style
+     */
+    protected _autoStyles?: string;
+
+    /**
      * 子类应该重写这个方法来定义观察的属性
      * @returns 要观察的属性名数组
      */
@@ -50,8 +57,30 @@ export abstract class BaseComponent extends HTMLElement {
 
     constructor(config: BaseComponentConfig = {}) {
         super();
-        this.config = config;
+
         this._isDebugEnabled = config.debug ?? false;
+
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const host = this;
+
+        // Store original styles value to avoid infinite recursion in getter
+        const originalStyles = config.styles;
+
+        this.config = {
+            ...config,
+            get styles() {
+                // Auto-detect injected styles from class property
+                // Note: _defineProperty executes in constructor after super(),
+                // so we check _autoStyles dynamically via getter
+                // This works for both WebComponent and LightComponent
+                // Priority: originalStyles > _autoStyles
+                const result = originalStyles || host._autoStyles || "";
+                return result;
+            },
+            set styles(value: string) {
+                config.styles = value;
+            },
+        };
     }
 
     /**

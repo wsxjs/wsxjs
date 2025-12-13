@@ -59,20 +59,26 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 
 | RFC | 标题 | 状态 | 提议人 |
 |-----|------|------|--------|
-| - | - | - | - |
+| [RFC-0007](./0007-reactive-decorator.md) | 响应式装饰器 | Active | Claude |
+| [RFC-0008](./0008-auto-style-injection.md) | 自动样式注入 | Active | Claude |
 
 ### 已实现的RFCs
 
 | RFC | 标题 | 状态 | 提议人 |
 |-----|------|------|--------|
-| [RFC-0001](./2025-01-20-reactive-state-system.md) | 响应式状态系统 | Implemented | Claude |
+| [RFC-0001](./0001-wsx-router.md) | WSX Router | Implemented | Claude |
+| [RFC-0004](./0004-reactive-state-system.md) | 响应式状态系统 | Implemented | Claude |
+| [RFC-0006](./0006-light-dom-components.md) | Light DOM 组件 | Implemented | Claude |
 
 ### 草稿RFCs
 
 | RFC | 标题 | 状态 | 提议人 |
 |-----|------|------|--------|
-| [RFC-0002](./2025-01-20-component-composition.md) | 组件组合和Slot增强 | Draft | Claude |
-| [RFC-0003](./2025-01-20-development-tooling.md) | 开发工具链增强 | Draft | Claude |
+| [RFC-0002](./0002-component-composition.md) | 组件组合和Slot增强 | Draft | Claude |
+| [RFC-0003](./0003-development-tooling.md) | 开发工具链增强 | Draft | Claude |
+| [RFC-0005](./0005-wsx-router-enhancements.md) | WSX Router 增强 | Draft | Claude |
+| [RFC-0009](./0009-scss-sass-preprocessing.md) | SCSS/SASS 预处理支持 | Draft (Future) | Claude |
+| [RFC-0010](./0010-eslint-rules-enhancement.md) | ESLint 规则增强 | Draft | Claude |
 
 ## RFC原则
 
