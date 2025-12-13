@@ -51,6 +51,7 @@ describe("WSX ESLint Plugin Integration", () => {
                 "render-method-required",
                 "no-react-imports",
                 "web-component-naming",
+                "state-requires-initial-value",
             ];
 
             expect(Object.keys(wsxPlugin.rules)).toEqual(expectedRules);

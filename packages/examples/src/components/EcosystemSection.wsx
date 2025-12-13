@@ -1,12 +1,10 @@
 /** @jsxImportSource @wsxjs/wsx-core */
-import { WebComponent, state, autoRegister } from "@wsxjs/wsx-core";
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
 import styles from "./EcosystemSection.css?inline";
 import "@wsxjs/wsx-router";
 
 @autoRegister({ tagName: "ecosystem-section" })
 export default class EcosystemSection extends WebComponent {
-    @state private count?;
-
     constructor() {
         super({
             styles,

@@ -270,7 +270,7 @@ describe("Auto Registration", () => {
             expect(component.disconnectedCount).toBe(1);
         });
 
-        it("should work with component attributes", () => {
+        it("should work with component attributes", async () => {
             @autoRegister({ tagName: "attr-test" })
             class AttributeTestComponent extends WebComponent {
                 static override get observedAttributes(): string[] {
@@ -310,12 +310,17 @@ describe("Auto Registration", () => {
             expect(component.shadowRoot.textContent).toContain("Attr: default");
 
             component.setAttribute("test-attr", "new-value");
+            // Wait for attributeChangedCallback to be called
+            await new Promise((resolve) => queueMicrotask(() => resolve()));
             expect(component.attributeChanges).toHaveLength(1);
             expect(component.attributeChanges[0]).toEqual({
                 name: "test-attr",
                 oldValue: null,
                 newValue: "new-value",
             });
+            // Wait for rerender to complete (attribute change triggers async rerender)
+            await new Promise((resolve) => queueMicrotask(() => resolve()));
+            await new Promise((resolve) => setTimeout(resolve, 20));
             expect(component.shadowRoot.textContent).toContain("Attr: new-value");
 
             document.body.removeChild(component);

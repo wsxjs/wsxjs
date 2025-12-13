@@ -154,7 +154,7 @@ describe("reactive system integration", () => {
             queueMicrotask(() => {
                 expect(goodCallbackCount).toBe(1);
                 expect(consoleSpy).toHaveBeenCalledWith(
-                    "[WSX Reactive] Error in callback:",
+                    expect.stringContaining("[WSX Reactive] Error in callback:"),
                     expect.any(Error)
                 );
 

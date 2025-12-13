@@ -158,6 +158,9 @@ describe("@state decorator with WebComponent", () => {
         if (instance.connectedCallback) {
             instance.connectedCallback();
         }
+        // Wait for initial render to complete
+        await new Promise<void>((resolve) => queueMicrotask(() => resolve()));
+        await new Promise((resolve) => setTimeout(resolve, 10));
         const initialRenderCount = renderCount;
         expect(initialRenderCount).toBeGreaterThan(0);
 
@@ -614,6 +617,8 @@ describe("@state decorator integration", () => {
         // Additional wait to ensure rerender completes
         await new Promise((resolve) => setTimeout(resolve, 10));
 
+        // renderCallCount should be greater than initialRenderCount
+        // But if they're equal, it means rerender wasn't triggered, which is a failure
         expect(renderCallCount).toBeGreaterThan(initialRenderCount);
         if (instance.state && typeof instance.state === "object" && "count" in instance.state) {
             expect(instance.state.count).toBe(5);
@@ -650,6 +655,8 @@ describe("@state decorator integration", () => {
         // Additional wait to ensure rerender completes
         await new Promise((resolve) => setTimeout(resolve, 10));
 
+        // renderCallCount should be greater than initialRenderCount
+        // But if they're equal, it means rerender wasn't triggered, which is a failure
         expect(renderCallCount).toBeGreaterThan(initialRenderCount);
         if (Array.isArray(instance.items)) {
             expect(instance.items).toEqual([4, 5, 6, 7]);
@@ -692,6 +699,8 @@ describe("@state decorator integration", () => {
         // Additional wait to ensure rerender completes
         await new Promise((resolve) => setTimeout(resolve, 10));
 
+        // renderCallCount should be greater than initialRenderCount
+        // But if they're equal, it means rerender wasn't triggered, which is a failure
         expect(renderCallCount).toBeGreaterThan(initialRenderCount);
     });
 
@@ -748,6 +757,8 @@ describe("@state decorator integration", () => {
             // Additional wait to ensure rerender completes
             await new Promise((resolve) => setTimeout(resolve, 10));
 
+            // renderCallCount should be greater than initialRenderCount
+            // But if they're equal, it means rerender wasn't triggered, which is a failure
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
                 expect(instance.items).toEqual([1, 2, 3, 4]);
@@ -775,6 +786,8 @@ describe("@state decorator integration", () => {
             // Additional wait to ensure rerender completes
             await new Promise((resolve) => setTimeout(resolve, 10));
 
+            // renderCallCount should be greater than initialRenderCount
+            // But if they're equal, it means rerender wasn't triggered, which is a failure
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
                 expect(instance.items).toEqual([1, 2]);
@@ -802,6 +815,8 @@ describe("@state decorator integration", () => {
             // Additional wait to ensure rerender completes
             await new Promise((resolve) => setTimeout(resolve, 10));
 
+            // renderCallCount should be greater than initialRenderCount
+            // But if they're equal, it means rerender wasn't triggered, which is a failure
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
                 expect(instance.items).toEqual([2, 3]);
@@ -829,6 +844,8 @@ describe("@state decorator integration", () => {
             // Additional wait to ensure rerender completes
             await new Promise((resolve) => setTimeout(resolve, 10));
 
+            // renderCallCount should be greater than initialRenderCount
+            // But if they're equal, it means rerender wasn't triggered, which is a failure
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
                 expect(instance.items).toEqual([0, 1, 2, 3]);
@@ -856,6 +873,8 @@ describe("@state decorator integration", () => {
             // Additional wait to ensure rerender completes
             await new Promise((resolve) => setTimeout(resolve, 10));
 
+            // renderCallCount should be greater than initialRenderCount
+            // But if they're equal, it means rerender wasn't triggered, which is a failure
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
                 expect(instance.items).toEqual([1, 99, 3]);
@@ -886,6 +905,8 @@ describe("@state decorator integration", () => {
             // Additional wait to ensure rerender completes
             await new Promise((resolve) => setTimeout(resolve, 10));
 
+            // renderCallCount should be greater than initialRenderCount
+            // But if they're equal, it means rerender wasn't triggered, which is a failure
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
                 expect(instance.items).toEqual([1, 2, 3]);
@@ -913,6 +934,8 @@ describe("@state decorator integration", () => {
             // Additional wait to ensure rerender completes
             await new Promise((resolve) => setTimeout(resolve, 10));
 
+            // renderCallCount should be greater than initialRenderCount
+            // But if they're equal, it means rerender wasn't triggered, which is a failure
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
                 expect(instance.items).toEqual([3, 2, 1]);
@@ -940,6 +963,8 @@ describe("@state decorator integration", () => {
             // Additional wait to ensure rerender completes
             await new Promise((resolve) => setTimeout(resolve, 10));
 
+            // renderCallCount should be greater than initialRenderCount
+            // But if they're equal, it means rerender wasn't triggered, which is a failure
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
                 expect(instance.items[0]).toBe(99);
@@ -967,6 +992,8 @@ describe("@state decorator integration", () => {
             // Additional wait to ensure rerender completes
             await new Promise((resolve) => setTimeout(resolve, 10));
 
+            // renderCallCount should be greater than initialRenderCount
+            // But if they're equal, it means rerender wasn't triggered, which is a failure
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
                 expect(instance.items).toEqual([]);
@@ -999,6 +1026,8 @@ describe("@state decorator integration", () => {
             await new Promise((resolve) => setTimeout(resolve, 10));
 
             // Should trigger rerender (may be batched)
+            // renderCallCount should be greater than initialRenderCount
+            // But if they're equal, it means rerender wasn't triggered, which is a failure
             expect(renderCallCount).toBeGreaterThan(initialRenderCount);
             if (Array.isArray(instance.items)) {
                 expect(instance.items[0]).toBe(99);

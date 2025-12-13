@@ -120,7 +120,7 @@ describe("reactive", () => {
         return new Promise<void>((resolve) => {
             queueMicrotask(() => {
                 expect(consoleSpy).toHaveBeenCalledWith(
-                    "[WSX Reactive] Error in callback:",
+                    expect.stringContaining("[WSX Reactive] Error in callback:"),
                     expect.any(Error)
                 );
                 consoleSpy.mockRestore();
