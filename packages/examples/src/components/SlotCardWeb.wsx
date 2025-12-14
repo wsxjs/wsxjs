@@ -1,0 +1,29 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Slot Card Component - WebComponent Version
+ * Demonstrates slot usage in Shadow DOM
+ *
+ * Note: CSS is automatically injected by babel-plugin-wsx-style
+ * if SlotCardWeb.css exists in the same directory
+ */
+
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+
+@autoRegister({ tagName: "slot-card-web" })
+export default class SlotCardWeb extends WebComponent {
+    render() {
+        return (
+            <div class="card">
+                <div class="card-header">
+                    <slot name="header">Default Header</slot>
+                </div>
+                <div class="card-body">
+                    <slot>Default Content</slot>
+                </div>
+                <div class="card-footer">
+                    <slot name="footer">Default Footer</slot>
+                </div>
+            </div>
+        );
+    }
+}

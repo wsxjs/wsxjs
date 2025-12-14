@@ -119,7 +119,7 @@ export abstract class BaseComponent extends HTMLElement {
      *
      * @returns JSX元素
      */
-    abstract render(): HTMLElement;
+    abstract render(): HTMLElement | SVGElement;
 
     /**
      * 可选生命周期钩子：组件已连接

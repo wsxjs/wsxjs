@@ -40,25 +40,66 @@ export abstract class WebComponent extends BaseComponent {
      *
      * @returns JSX元素
      */
-    abstract render(): HTMLElement;
+    abstract render(): HTMLElement | SVGElement;
 
     /**
      * Web Component生命周期：连接到DOM
+     *
+     * 渲染策略：
+     * 1. 检查 Shadow DOM 中是否已有实际内容（排除样式和 slot）
+     * 2. 如果有内容，先清空再渲染（避免重复元素）
+     * 3. 如果没有内容，直接渲染
+     * 4. Slot 元素会被重新添加，浏览器会自动将 Light DOM 中的内容分配到 slot
      */
     connectedCallback(): void {
         this.connected = true;
         try {
-            // 应用CSS样式到Shadow DOM
-            // Check both _autoStyles getter and config.styles getter
+            // 应用CSS样式到Shadow DOM（先应用，因为样式可能使用 fallback 添加 style 元素）
             const stylesToApply = this._autoStyles || this.config.styles;
             if (stylesToApply) {
                 const styleName = this.config.styleName || this.constructor.name;
                 StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
             }
 
-            // 渲染JSX内容到Shadow DOM
-            const content = this.render();
-            this.shadowRoot.appendChild(content);
+            // 检查是否有实际内容（排除样式和 slot）
+            // 样式元素：可能由 StyleManager fallback 添加
+            // Slot 元素：不算"内容"，因为 slot 的内容在 Light DOM 中
+            // 错误元素：如果存在错误信息，需要重新渲染以恢复正常
+            const allChildren = Array.from(this.shadowRoot.children);
+            const styleElements = allChildren.filter((child) => child instanceof HTMLStyleElement);
+            const slotElements = allChildren.filter((child) => child instanceof HTMLSlotElement);
+            const hasErrorElement = allChildren.some(
+                (child) =>
+                    child instanceof HTMLElement &&
+                    child.style.color === "red" &&
+                    child.textContent?.includes("Component Error")
+            );
+            const hasActualContent =
+                allChildren.length > styleElements.length + slotElements.length;
+
+            // 如果有错误元素，需要重新渲染以恢复正常
+            // 如果有实际内容且没有错误，跳过渲染（避免重复元素）
+            if (hasActualContent && !hasErrorElement) {
+                // 已经有内容且没有错误，跳过渲染（避免重复元素）
+                // 样式已在上方应用（StyleManager.applyStyles 是幂等的）
+                // Slot 元素已存在，浏览器会自动将 Light DOM 中的内容分配到 slot
+            } else {
+                // 没有内容，需要渲染
+                // 清空 Shadow DOM（包括可能的旧内容）
+                this.shadowRoot.innerHTML = "";
+
+                // 重新应用样式（因为上面清空了）
+                if (stylesToApply) {
+                    const styleName = this.config.styleName || this.constructor.name;
+                    StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
+                }
+
+                // 渲染JSX内容到Shadow DOM
+                // render() 应该返回包含 slot 元素的内容（如果需要）
+                // 浏览器会自动将 Light DOM 中的内容分配到 slot
+                const content = this.render();
+                this.shadowRoot.appendChild(content);
+            }
 
             // 初始化事件监听器
             this.initializeEventListeners();

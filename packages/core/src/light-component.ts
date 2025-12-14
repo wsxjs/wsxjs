@@ -34,10 +34,16 @@ export abstract class LightComponent extends BaseComponent {
      *
      * @returns JSX元素
      */
-    abstract render(): HTMLElement;
+    abstract render(): HTMLElement | SVGElement;
 
     /**
      * Web Component生命周期：连接到DOM
+     *
+     * 渲染策略：
+     * 1. 检查组件中是否已有实际内容（排除样式元素）
+     * 2. 如果有内容且完整，跳过渲染（避免重复元素和性能优化）
+     * 3. 如果没有内容或不完整，清空后重新渲染
+     * 4. 样式元素需要保留
      */
     connectedCallback(): void {
         this.connected = true;
@@ -48,19 +54,57 @@ export abstract class LightComponent extends BaseComponent {
             // So we need to check _autoStyles directly first, then fallback to config.styles getter
             // The getter will dynamically check _autoStyles when accessed
             const stylesToApply = this._autoStyles || this.config.styles;
+            const styleName = this.config.styleName || this.constructor.name;
             if (stylesToApply) {
-                const styleName = this.config.styleName || this.constructor.name;
                 this.applyScopedStyles(styleName, stylesToApply);
             }
 
-            // 渲染JSX内容到Light DOM
-            const content = this.render();
-            this.appendChild(content);
+            // 检查是否有实际内容（排除样式元素）
+            // 错误元素：如果存在错误信息，需要重新渲染以恢复正常
+            const styleElement = this.querySelector(
+                `style[data-wsx-light-component="${styleName}"]`
+            ) as HTMLStyleElement | null;
+            const hasErrorElement = Array.from(this.children).some(
+                (child) =>
+                    child instanceof HTMLElement &&
+                    child !== styleElement &&
+                    child.style.color === "red" &&
+                    child.textContent?.includes("Component Error")
+            );
+            const hasActualContent = Array.from(this.children).some(
+                (child) => child !== styleElement
+            );
 
-            // 初始化事件监听器
+            // 如果有错误元素，需要重新渲染以恢复正常
+            // 如果有实际内容且没有错误，跳过渲染（避免重复元素）
+            if (hasActualContent && !hasErrorElement) {
+                // 已经有内容且没有错误，跳过渲染（避免重复元素）
+                // 但确保样式元素在正确位置
+                if (styleElement && styleElement !== this.firstChild) {
+                    this.insertBefore(styleElement, this.firstChild);
+                }
+            } else {
+                // 没有内容，需要渲染
+                // 清空旧内容（保留样式元素）
+                const childrenToRemove = Array.from(this.children).filter(
+                    (child) => child !== styleElement
+                );
+                childrenToRemove.forEach((child) => child.remove());
+
+                // 渲染JSX内容到Light DOM
+                const content = this.render();
+                this.appendChild(content);
+
+                // 确保样式元素在第一个位置（如果存在）
+                if (styleElement && styleElement !== this.firstChild) {
+                    this.insertBefore(styleElement, this.firstChild);
+                }
+            }
+
+            // 初始化事件监听器（无论是否渲染，都需要重新初始化，因为 DOM 可能被移动）
             this.initializeEventListeners();
 
-            // 调用子类的初始化钩子
+            // 调用子类的初始化钩子（无论是否渲染，都需要调用，因为组件已连接）
             this.onConnected?.();
         } catch (error) {
             logger.error(`[${this.constructor.name}] Error in connectedCallback:`, error);

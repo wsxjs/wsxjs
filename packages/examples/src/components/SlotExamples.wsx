@@ -1,0 +1,230 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Slot Examples Page
+ *
+ * Demonstrates slot usage in both WebComponent and LightComponent:
+ * - WebComponent with slots (Shadow DOM)
+ * - LightComponent with slots (Light DOM)
+ * - Mixed usage: WebComponent containing LightComponent with slots
+ * - Mixed usage: LightComponent containing WebComponent with slots
+ */
+
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import "./SlotCardWeb.wsx";
+import "./SlotCardLight.wsx";
+
+/**
+ * Slot Examples Page
+ *
+ * Note: CSS is automatically injected by babel-plugin-wsx-style
+ * if SlotExamples.css exists in the same directory
+ */
+@autoRegister({ tagName: "slot-examples" })
+export default class SlotExamples extends WebComponent {
+    constructor() {
+        super({
+            styleName: "slot-examples",
+        });
+    }
+
+    render() {
+        return (
+            <section class="slot-examples">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">Slot Examples</h1>
+                        <p class="section-description">
+                            Explore slot usage in WebComponent (Shadow DOM) and LightComponent
+                            (Light DOM), including mixed usage scenarios.
+                        </p>
+                    </div>
+
+                    <div class="examples-container">
+                        {/* WebComponent Slot Example */}
+                        <div class="example-section">
+                            <div class="example-header">
+                                <h2>🎯 WebComponent Slot (Shadow DOM)</h2>
+                                <span class="example-badge">Shadow DOM</span>
+                            </div>
+                            <p class="example-description">
+                                Demonstrates slot usage in WebComponent with Shadow DOM. Slots allow
+                                you to project content from Light DOM into Shadow DOM. Use
+                                <code>::slotted()</code> CSS selector to style slotted content.
+                            </p>
+                            <div class="example-demo">
+                                <slot-card-web>
+                                    <span slot="header">WebComponent Card Header</span>
+                                    <p>This is the main content in a WebComponent slot.</p>
+                                    <p>Slots work perfectly in Shadow DOM!</p>
+                                    <button slot="footer" onClick={() => alert("Clicked!")}>
+                                        Action Button
+                                    </button>
+                                </slot-card-web>
+                            </div>
+                            <div class="code-example">
+                                <pre>
+                                    <code>{`<slot-card-web>
+  <span slot="header">Header Content</span>
+  <p>Main Content</p>
+  <button slot="footer">Footer Button</button>
+</slot-card-web>`}</code>
+                                </pre>
+                            </div>
+                        </div>
+
+                        {/* LightComponent Slot Example */}
+                        <div class="example-section">
+                            <div class="example-header">
+                                <h2>💡 LightComponent Slot (Light DOM)</h2>
+                                <span class="example-badge">Light DOM</span>
+                            </div>
+                            <p class="example-description">
+                                Demonstrates slot usage in LightComponent with Light DOM. Slots work
+                                similarly, but content is in Light DOM, making it accessible to
+                                third-party libraries like Editor.js.
+                            </p>
+                            <div class="example-demo">
+                                <slot-card-light>
+                                    <span slot="header">LightComponent Card Header</span>
+                                    <p>This is the main content in a LightComponent slot.</p>
+                                    <p>Slots work in Light DOM too!</p>
+                                    <button slot="footer" onClick={() => alert("Clicked!")}>
+                                        Action Button
+                                    </button>
+                                </slot-card-light>
+                            </div>
+                            <div class="code-example">
+                                <pre>
+                                    <code>{`<slot-card-light>
+  <span slot="header">Header Content</span>
+  <p>Main Content</p>
+  <button slot="footer">Footer Button</button>
+</slot-card-light>`}</code>
+                                </pre>
+                            </div>
+                        </div>
+
+                        {/* Mixed: WebComponent containing LightComponent with slots */}
+                        <div class="example-section">
+                            <div class="example-header">
+                                <h2>🔀 Mixed: WebComponent → LightComponent Slot</h2>
+                                <span class="example-badge">Mixed Usage</span>
+                            </div>
+                            <p class="example-description">
+                                WebComponent (Shadow DOM) containing LightComponent (Light DOM) with
+                                slots. The LightComponent's slot content comes from the
+                                WebComponent's render method. This demonstrates how slots work when
+                                components are nested.
+                            </p>
+                            <div class="example-demo">
+                                <div class="mixed-container">
+                                    <slot-card-light>
+                                        <span slot="header">LightComponent in WebComponent</span>
+                                        <p>
+                                            This LightComponent is rendered inside a WebComponent
+                                            (SlotExamples).
+                                        </p>
+                                        <p>
+                                            The slot content is projected from WebComponent's Shadow
+                                            DOM to LightComponent's Light DOM!
+                                        </p>
+                                        <button slot="footer" onClick={() => alert("Mixed!")}>
+                                            Mixed Usage Button
+                                        </button>
+                                    </slot-card-light>
+                                </div>
+                            </div>
+                            <div class="code-example">
+                                <pre>
+                                    <code>{`// In WebComponent (SlotExamples) render():
+return (
+  <div>
+    <slot-card-light>
+      <span slot="header">Header</span>
+      <p>Content</p>
+      <button slot="footer">Button</button>
+    </slot-card-light>
+  </div>
+);`}</code>
+                                </pre>
+                            </div>
+                        </div>
+
+                        {/* Mixed: LightComponent containing WebComponent with slots */}
+                        <div class="example-section">
+                            <div class="example-header">
+                                <h2>🔀 Mixed: LightComponent → WebComponent Slot</h2>
+                                <span class="example-badge">Mixed Usage</span>
+                            </div>
+                            <p class="example-description">
+                                LightComponent (Light DOM) containing WebComponent (Shadow DOM) with
+                                slots. The WebComponent's slot content comes from the
+                                LightComponent's render method. This demonstrates how slots work
+                                across Shadow DOM boundaries.
+                            </p>
+                            <div class="example-demo">
+                                <slot-card-web>
+                                    <span slot="header">WebComponent in LightComponent</span>
+                                    <p>
+                                        This WebComponent is rendered inside a LightComponent (App).
+                                    </p>
+                                    <p>
+                                        The slot content is projected from LightComponent's Light
+                                        DOM to WebComponent's Shadow DOM!
+                                    </p>
+                                    <button slot="footer" onClick={() => alert("Mixed!")}>
+                                        Mixed Usage Button
+                                    </button>
+                                </slot-card-web>
+                            </div>
+                            <div class="code-example">
+                                <pre>
+                                    <code>{`// In LightComponent (App) render():
+return (
+  <div>
+    <slot-card-web>
+      <span slot="header">Header</span>
+      <p>Content</p>
+      <button slot="footer">Button</button>
+    </slot-card-web>
+  </div>
+);`}</code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Slot Features</h3>
+                        <ul>
+                            <li>
+                                <strong>Named Slots:</strong> Use <code>slot="name"</code> to
+                                project content to specific slots
+                            </li>
+                            <li>
+                                <strong>Default Slot:</strong> Content without slot attribute goes
+                                to the default slot
+                            </li>
+                            <li>
+                                <strong>Shadow DOM Slots:</strong> Use <code>::slotted()</code> CSS
+                                selector to style slotted content
+                            </li>
+                            <li>
+                                <strong>Light DOM Slots:</strong> Slots work in Light DOM, making
+                                content accessible to third-party libraries
+                            </li>
+                            <li>
+                                <strong>Mixed Usage:</strong> You can nest WebComponent and
+                                LightComponent with slots
+                            </li>
+                            <li>
+                                <strong>Smart Rendering:</strong> Our optimized connectedCallback
+                                ensures slots work correctly even when components are moved
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+}

@@ -86,17 +86,17 @@ export default [
 
 ### 基础组件
 
+**自动 CSS 注入（推荐）**：
+如果存在 `MyButton.css` 文件，Babel 插件会自动注入样式，无需手动导入：
+
 ```typescript
 // MyButton.wsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
-import styles from './MyButton.css?inline';
+// CSS 自动注入：如果 MyButton.css 存在，会自动导入并注入为 _autoStyles
 
 @autoRegister('my-button')
 export class MyButton extends WebComponent {
-  constructor() {
-    super({ styles });
-  }
-
+  // 无需 constructor，样式会自动应用
   render() {
     return (
       <button className="btn" onClick={(e) => this.handleClick(e)}>
@@ -111,17 +111,33 @@ export class MyButton extends WebComponent {
 }
 ```
 
+**手动导入样式（可选）**：
+如果你已经手动导入了样式，Babel 插件会跳过自动注入以避免重复：
+
+```typescript
+// MyButton.wsx
+import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
+import styles from './MyButton.css?inline'; // 手动导入
+
+@autoRegister('my-button')
+export class MyButton extends WebComponent {
+  constructor() {
+    super({ styles }); // 手动传递
+  }
+  // ...
+}
+```
+
 ### 使用 @state 装饰器（响应式状态）
 
 ```typescript
 // Counter.wsx
 import { WebComponent, autoRegister, state } from '@wsxjs/wsx-core';
-import styles from './Counter.css?inline';
+// CSS 自动注入：如果 Counter.css 存在，会自动导入并注入
 
 @autoRegister('wsx-counter')
 export class Counter extends WebComponent {
-  constructor() {
-    super({ styles });
+  // 无需 constructor，样式会自动应用
   }
 
   // ✅ @state 装饰器必须有初始值

@@ -38,6 +38,36 @@
 
 ### 基础用法
 
+**方式 1: 自动 CSS 注入（推荐）**
+
+如果组件文件 `MyButton.wsx` 存在对应的 `MyButton.css` 文件，Babel 插件会自动注入 CSS，无需手动导入：
+
+```tsx
+import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
+// CSS 自动注入：如果 MyButton.css 存在，会自动导入并注入为 _autoStyles
+
+@autoRegister('my-button')
+export class MyButton extends WebComponent {
+  // 无需 constructor，样式会自动应用
+  // 或者只需要指定 styleName（如果需要）
+  constructor() {
+    super({ styleName: 'my-button' });
+  }
+
+  render() {
+    return (
+      <button class="btn">
+        <slot />
+      </button>
+    );
+  }
+}
+```
+
+**方式 2: 手动导入 CSS（可选）**
+
+如果需要手动控制，也可以显式导入：
+
 ```tsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
 import styles from './MyButton.css?inline';
@@ -57,6 +87,8 @@ export class MyButton extends WebComponent {
   }
 }
 ```
+
+**注意**：如果手动导入了 CSS，Babel 插件会检测到并跳过自动注入，避免重复。
 
 ### 使用响应式状态
 
@@ -183,20 +215,57 @@ export class TodoList extends WebComponent {
 
 ### 1. Shadow DOM 样式隔离
 
-`WebComponent` 使用 Shadow DOM 提供完全的样式隔离：
+`WebComponent` 使用 Shadow DOM 提供完全的样式隔离。
+
+#### 自动 CSS 注入（推荐）
+
+WSX Framework 提供了智能 CSS 自动注入功能。如果组件文件 `MyButton.wsx` 存在对应的 `MyButton.css` 文件，Babel 插件会自动：
+
+1. 自动导入 CSS 文件：`import styles from "./MyButton.css?inline";`
+2. 自动注入为类属性：`private _autoStyles = styles;`
+3. 自动应用样式：基类会自动检测并使用 `_autoStyles`
+
+**无需手动导入**：
 
 ```tsx
+// MyButton.wsx
+import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
+// CSS 自动注入：如果 MyButton.css 存在，会自动处理
+
+@autoRegister('my-button')
+export class MyButton extends WebComponent {
+  // 无需 constructor，或者只需要指定 styleName
+  constructor() {
+    super({ styleName: 'my-button' });
+  }
+
+  render() {
+    return <button class="btn">Click me</button>;
+  }
+}
+```
+
+```css
+/* MyButton.css - 自动注入 */
+.btn {
+  padding: 10px 20px;
+  background: blue;
+  color: white;
+}
+```
+
+**手动导入 CSS（可选）**：
+
+如果需要手动控制，也可以显式导入。Babel 插件会检测到手动导入并跳过自动注入：
+
+```tsx
+import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
+import styles from './MyButton.css?inline'; // 手动导入
+
+@autoRegister('my-button')
 export class MyButton extends WebComponent {
   constructor() {
-    super({
-      styles: `
-        .btn {
-          padding: 10px 20px;
-          background: blue;
-          color: white;
-        }
-      `
-    });
+    super({ styles }); // 手动传入
   }
 
   render() {
@@ -209,6 +278,8 @@ export class MyButton extends WebComponent {
 - ✅ 样式完全隔离，不会影响外部
 - ✅ 外部样式不会影响组件内部
 - ✅ 使用 Constructable StyleSheets 提升性能
+- ✅ 自动 CSS 注入减少样板代码
+- ✅ 统一的文件命名约定（`Component.wsx` → `Component.css`）
 
 ### 2. JSX 支持
 
@@ -833,6 +904,47 @@ render() {
   );
 }
 ```
+
+### Q: 如何自动注入 CSS 样式？
+
+A: WSX Framework 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
+
+1. **自动导入 CSS**：`import styles from "./MyComponent.css?inline";`
+2. **自动注入类属性**：`private _autoStyles = styles;`
+3. **自动应用样式**：基类会自动检测并使用 `_autoStyles`
+
+**使用方式**：
+
+```tsx
+// MyComponent.wsx - 无需手动导入 CSS
+import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
+
+@autoRegister('my-component')
+export class MyComponent extends WebComponent {
+  // 无需 constructor，或者只需要指定 styleName
+  constructor() {
+    super({ styleName: 'my-component' });
+  }
+
+  render() {
+    return <div class="my-component">Content</div>;
+  }
+}
+```
+
+```css
+/* MyComponent.css - 自动注入 */
+.my-component {
+  padding: 1rem;
+  background: white;
+}
+```
+
+**注意事项**：
+- ✅ 文件命名约定：`Component.wsx` → `Component.css`（必须在同一目录）
+- ✅ 如果手动导入了 CSS，Babel 插件会检测到并跳过自动注入，避免重复
+- ✅ 支持 WebComponent 和 LightComponent
+- 📖 查看 [RFC-0008](../rfcs/0008-auto-style-injection.md) 了解详细说明
 
 ### Q: @state 装饰器为什么必须有初始值？
 

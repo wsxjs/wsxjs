@@ -72,6 +72,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0011](./0011-focus-preservation.md) | 焦点保持机制 | Implemented | Claude |
 | [RFC-0012](./0012-babel-transform-error-handling.md) | Babel Transform 错误处理策略 | Implemented | Claude |
 | [RFC-0013](./0013-state-initial-value-validation.md) | @state 装饰器初始值验证 | Implemented | Claude |
+| [RFC-0014](./0014-connected-callback-optimization.md) | connectedCallback 智能渲染优化 | Implemented | WSX Team |
 
 ### 草稿RFCs
 

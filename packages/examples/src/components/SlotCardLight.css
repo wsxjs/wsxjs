@@ -1,0 +1,50 @@
+.card {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1.5rem;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+}
+
+.card-header {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.card-body {
+    color: #4b5563;
+    margin-bottom: 1rem;
+}
+
+.card-footer {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+/* Style content in Light DOM (no ::slotted needed) */
+.card p {
+    margin: 0.5rem 0;
+}
+
+.card button {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background 0.2s ease;
+}
+
+.card button:hover {
+    background: #059669;
+}
+
+.card span {
+    display: block;
+}

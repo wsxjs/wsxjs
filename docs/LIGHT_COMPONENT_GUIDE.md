@@ -30,6 +30,36 @@
 
 ### 基础用法
 
+**方式 1: 自动 CSS 注入（推荐）**
+
+如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动注入 CSS，无需手动导入：
+
+```tsx
+import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
+// CSS 自动注入：如果 MyComponent.css 存在，会自动导入并注入为 _autoStyles
+
+@autoRegister()
+export class MyComponent extends LightComponent {
+  constructor() {
+    super({
+      styleName: 'my-component', // 只需要指定 styleName
+    });
+  }
+
+  render() {
+    return (
+      <div class="my-component">
+        <h1>Hello LightComponent!</h1>
+      </div>
+    );
+  }
+}
+```
+
+**方式 2: 手动导入 CSS（可选）**
+
+如果需要手动控制，也可以显式导入：
+
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
 import styles from './MyComponent.css?inline';
@@ -52,6 +82,8 @@ export class MyComponent extends LightComponent {
   }
 }
 ```
+
+**注意**：如果手动导入了 CSS，Babel 插件会检测到并跳过自动注入，避免重复。
 
 ### 使用响应式状态
 
@@ -275,28 +307,72 @@ export class MyComponent extends LightComponent {
 
 ### 4. 样式管理
 
-`LightComponent` 使用作用域样式，通过 data 属性实现样式隔离：
+#### 自动 CSS 注入（推荐）
+
+WSX Framework 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
+
+1. 自动导入 CSS 文件：`import styles from "./MyComponent.css?inline";`
+2. 自动注入为类属性：`private _autoStyles = styles;`
+3. 自动应用样式：基类会自动检测并使用 `_autoStyles`
+
+**无需手动导入**：
 
 ```tsx
+// MyComponent.wsx
+import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
+// CSS 自动注入：如果 MyComponent.css 存在，会自动处理
+
+@autoRegister()
 export class MyComponent extends LightComponent {
   constructor() {
     super({
-      styles: `
-        .my-component {
-          padding: 20px;
-          background: #f5f5f5;
-        }
-        .my-component h1 {
-          color: #333;
-        }
-      `,
-      styleName: 'my-component', // 用于样式作用域
+      styleName: 'my-component', // 只需要指定 styleName
     });
+  }
+
+  render() {
+    return <div class="my-component">Content</div>;
   }
 }
 ```
 
-样式会被自动注入到组件内部，并使用 `data-wsx-light-component` 属性进行作用域化。
+```css
+/* MyComponent.css - 自动注入 */
+.my-component {
+  padding: 20px;
+  background: #f5f5f5;
+}
+.my-component h1 {
+  color: #333;
+}
+```
+
+**手动导入 CSS（可选）**：
+
+如果需要手动控制，也可以显式导入。Babel 插件会检测到手动导入并跳过自动注入：
+
+```tsx
+import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
+import styles from './MyComponent.css?inline'; // 手动导入
+
+@autoRegister()
+export class MyComponent extends LightComponent {
+  constructor() {
+    super({
+      styles, // 手动传入
+      styleName: 'my-component',
+    });
+  }
+
+  render() {
+    return <div class="my-component">Content</div>;
+  }
+}
+```
+
+#### 作用域样式
+
+`LightComponent` 使用作用域样式，通过 data 属性实现样式隔离。样式会被自动注入到组件内部，并使用 `data-wsx-light-component` 属性进行作用域化。
 
 ### 5. 错误处理
 
@@ -719,6 +795,48 @@ render() {
   );
 }
 ```
+
+### Q: 如何自动注入 CSS 样式？
+
+A: WSX Framework 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
+
+1. **自动导入 CSS**：`import styles from "./MyComponent.css?inline";`
+2. **自动注入类属性**：`private _autoStyles = styles;`
+3. **自动应用样式**：基类会自动检测并使用 `_autoStyles`
+
+**使用方式**：
+
+```tsx
+// MyComponent.wsx - 无需手动导入 CSS
+import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
+
+@autoRegister()
+export class MyComponent extends LightComponent {
+  constructor() {
+    super({
+      styleName: 'my-component', // 只需要指定 styleName
+    });
+  }
+
+  render() {
+    return <div class="my-component">Content</div>;
+  }
+}
+```
+
+```css
+/* MyComponent.css - 自动注入 */
+.my-component {
+  padding: 1rem;
+  background: white;
+}
+```
+
+**注意事项**：
+- ✅ 文件命名约定：`Component.wsx` → `Component.css`（必须在同一目录）
+- ✅ 如果手动导入了 CSS，Babel 插件会检测到并跳过自动注入，避免重复
+- ✅ 支持 WebComponent 和 LightComponent
+- 📖 查看 [RFC-0008](../rfcs/0008-auto-style-injection.md) 了解详细说明
 
 ### Q: @state 装饰器为什么必须有初始值？
 

@@ -23,6 +23,7 @@ import "./components/ExamplesSection.wsx";
 import "./components/EcosystemSection.wsx";
 import "./components/WebComponentExamples.wsx";
 import "./components/LightComponentExamples.wsx";
+import "./components/SlotExamples.wsx";
 import "./components/WsxLogo.wsx";
 
 export interface AppConfig {
@@ -61,6 +62,7 @@ export default class App extends LightComponent {
                         route="/lightcomponent-examples"
                         component="lightcomponent-examples"
                     ></wsx-view>
+                    <wsx-view route="/slot-examples" component="slot-examples"></wsx-view>
                     <wsx-view route="/editorjs" component="editorjs-demo"></wsx-view>
                     <wsx-view route="/ecosystem" component="ecosystem-section"></wsx-view>
                 </wsx-router>
@@ -101,17 +103,24 @@ export default class App extends LightComponent {
                             class="nav-link"
                             active-class="nav-link-active"
                         >
-                            WebComponent
+                            Web
                         </wsx-link>
                         <wsx-link
                             to="/lightcomponent-examples"
                             class="nav-link"
                             active-class="nav-link-active"
                         >
-                            LightComponent
+                            Light
+                        </wsx-link>
+                        <wsx-link
+                            to="/slot-examples"
+                            class="nav-link"
+                            active-class="nav-link-active"
+                        >
+                            Slots
                         </wsx-link>
                         <wsx-link to="/editorjs" class="nav-link" active-class="nav-link-active">
-                            EditorJS Demo
+                            EditorJS
                         </wsx-link>
                         <wsx-link to="/ecosystem" class="nav-link" active-class="nav-link-active">
                             Ecosystem

@@ -133,6 +133,38 @@ export default class ExamplesSection extends WebComponent {
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="example-card full-width">
+                                <div class="example-header">
+                                    <h3>🎯 Slot Examples</h3>
+                                    <span class="example-badge">Shadow & Light DOM</span>
+                                </div>
+                                <p>
+                                    Learn how to use slots in both WebComponent (Shadow DOM) and
+                                    LightComponent (Light DOM). Includes named slots, default slots,
+                                    and mixed usage scenarios where components are nested.
+                                </p>
+                                <div class="example-demo">
+                                    <div style="padding: 2rem; text-align: center;">
+                                        <wsx-link
+                                            to="/slot-examples"
+                                            class="demo-nav-btn"
+                                            style="
+                                                display: inline-block;
+                                                padding: 1rem 2rem;
+                                                background: #10b981;
+                                                color: white;
+                                                text-decoration: none;
+                                                border-radius: 8px;
+                                                font-weight: 600;
+                                                transition: all 0.2s;
+                                            "
+                                        >
+                                            → View Slot Examples
+                                        </wsx-link>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

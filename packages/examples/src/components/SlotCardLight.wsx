@@ -1,0 +1,29 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Slot Card Component - LightComponent Version
+ * Demonstrates slot usage in Light DOM
+ *
+ * Note: CSS is automatically injected by babel-plugin-wsx-style
+ * if SlotCardLight.css exists in the same directory
+ */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+
+@autoRegister({ tagName: "slot-card-light" })
+export default class SlotCardLight extends LightComponent {
+    render() {
+        return (
+            <div class="card">
+                <div class="card-header">
+                    <slot name="header">Default Header</slot>
+                </div>
+                <div class="card-body">
+                    <slot>Default Content</slot>
+                </div>
+                <div class="card-footer">
+                    <slot name="footer">Default Footer</slot>
+                </div>
+            </div>
+        );
+    }
+}
