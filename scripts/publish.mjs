@@ -207,51 +207,55 @@ async function main() {
         throw error;
     }
 
-    // 阶段 1: 询问是否要 bump version
+    // 阶段 1: 检查是否需要新版本并更新
     console.log(chalk.yellow("\n📦 阶段 1: 版本管理"));
+
+    // 检查是否有 changeset
+    const hasChangesetFiles = hasChangesets();
     let shouldBumpVersion = false;
-    const { bumpVersion } = await inquirer.prompt([
-        {
-            type: "confirm",
-            name: "bumpVersion",
-            message: "是否要更新版本号?",
-            default: true,
-        },
-    ]);
+    let newVersion = null;
 
-    shouldBumpVersion = bumpVersion;
+    if (hasChangesetFiles) {
+        // 有 changeset，询问是否更新版本
+        const { bumpVersion } = await inquirer.prompt([
+            {
+                type: "confirm",
+                name: "bumpVersion",
+                message: "检测到 changeset，是否更新版本号?",
+                default: true,
+            },
+        ]);
+        shouldBumpVersion = bumpVersion;
+    } else {
+        // 没有 changeset，询问是否创建并更新版本
+        console.log(chalk.yellow("\n⚠️  未找到 changeset 文件"));
+        const { createChangeset } = await inquirer.prompt([
+            {
+                type: "confirm",
+                name: "createChangeset",
+                message: "是否创建 changeset 并更新版本?",
+                default: true,
+            },
+        ]);
 
-    if (bumpVersion) {
-        // 检查是否有 changeset
-        const hasChangesetFiles = hasChangesets();
-        if (!hasChangesetFiles) {
-            console.log(chalk.yellow("\n⚠️  未找到 changeset 文件"));
-            const { createChangeset } = await inquirer.prompt([
-                {
-                    type: "confirm",
-                    name: "createChangeset",
-                    message: "是否创建 changeset?",
-                    default: true,
-                },
-            ]);
-
-            if (createChangeset) {
-                const createSpinner = ora("创建 changeset").start();
-                try {
-                    // 运行 changeset 命令（交互式）
-                    exec("pnpm changeset");
-                    createSpinner.succeed("Changeset 已创建");
-                } catch (error) {
-                    createSpinner.fail("创建 changeset 失败");
-                    throw error;
-                }
-            } else {
-                console.log(chalk.yellow("已跳过创建 changeset"));
-                process.exit(0);
+        if (createChangeset) {
+            const createSpinner = ora("创建 changeset").start();
+            try {
+                exec("pnpm changeset");
+                createSpinner.succeed("Changeset 已创建");
+                shouldBumpVersion = true;
+            } catch (error) {
+                createSpinner.fail("创建 changeset 失败");
+                throw error;
             }
+        } else {
+            console.log(chalk.yellow("已跳过版本更新"));
+            shouldBumpVersion = false;
         }
+    }
 
-        // 版本管理任务
+    if (shouldBumpVersion) {
+        // 版本管理任务：更新版本 -> 提交 -> 打标签 -> 推送
         const versionTasks = new Listr(
             [
                 {
@@ -262,6 +266,7 @@ async function main() {
                     title: "获取新版本号",
                     task: (ctx) => {
                         ctx.version = getVersion();
+                        newVersion = ctx.version;
                         console.log(chalk.green(`\n新版本: v${ctx.version}`));
                     },
                 },
@@ -326,8 +331,27 @@ async function main() {
         }
     }
 
-    // 阶段 2: 发布到 NPM
+    // 阶段 2: 询问是否发布到 NPM
     console.log(chalk.yellow("\n📤 阶段 2: 发布到 NPM"));
+
+    // 先询问是否要发布（OTP 提示）
+    console.log(chalk.cyan("\n📱 发布到 NPM 需要 OTP 验证"));
+    console.log(chalk.gray("如果启用了 NPM 2FA，发布时会提示输入 OTP（一次性密码）"));
+    console.log(chalk.gray("请准备好您的认证器应用以获取 OTP\n"));
+
+    const { shouldPublish } = await inquirer.prompt([
+        {
+            type: "confirm",
+            name: "shouldPublish",
+            message: "是否发布到 NPM?（如果启用 2FA，请准备好 OTP）",
+            default: false,
+        },
+    ]);
+
+    if (!shouldPublish) {
+        console.log(chalk.yellow("已取消发布"));
+        process.exit(0);
+    }
 
     // 预检查任务
     const prePublishTasks = new Listr(
@@ -438,22 +462,6 @@ async function main() {
         }
     }
 
-    // 确认发布
-    console.log(chalk.yellow("\n⚠️  准备发布到 NPM"));
-    const { confirm: shouldPublish } = await inquirer.prompt([
-        {
-            type: "confirm",
-            name: "confirm",
-            message: `确认发布 ${publishablePackages.length} 个包到 NPM?`,
-            default: false,
-        },
-    ]);
-
-    if (!shouldPublish) {
-        console.log(chalk.yellow("已取消发布"));
-        process.exit(0);
-    }
-
     // 询问是否先进行 dry-run
     const { dryRun } = await inquirer.prompt([
         {
@@ -493,25 +501,6 @@ async function main() {
     }
 
     // 发布到 NPM（支持交互式 OTP 输入）
-    console.log(chalk.cyan("\n📱 准备发布到 NPM"));
-    console.log(chalk.gray("如果启用了 NPM 2FA，发布时会提示输入 OTP（一次性密码）"));
-    console.log(chalk.gray("请准备好您的认证器应用以获取 OTP\n"));
-
-    // 询问是否准备好发布
-    const { ready } = await inquirer.prompt([
-        {
-            type: "confirm",
-            name: "ready",
-            message: "准备好发布到 NPM?（如果启用 2FA，请准备好 OTP）",
-            default: true,
-        },
-    ]);
-
-    if (!ready) {
-        console.log(chalk.yellow("已取消发布"));
-        process.exit(0);
-    }
-
     const publishSpinner = ora("发布到 NPM").start();
     try {
         publishSpinner.text = "正在发布包...";
@@ -548,8 +537,8 @@ async function main() {
     const currentVersion = getVersion();
     console.log(chalk.green.bold("\n✅ 发布流程成功完成!"));
     console.log(chalk.green(`📦 所有包已发布到 NPM (v${currentVersion})`));
-    if (shouldBumpVersion) {
-        console.log(chalk.green(`🏷️  Git 标签已创建 (v${currentVersion})`));
+    if (newVersion) {
+        console.log(chalk.green(`🏷️  Git 标签已创建 (v${newVersion})`));
         console.log(chalk.green("📝 版本更新已提交并推送"));
     }
 }
