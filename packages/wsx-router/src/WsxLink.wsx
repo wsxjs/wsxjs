@@ -1,5 +1,5 @@
 /** @jsxImportSource @wsxjs/wsx-core */
-import { WebComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
+import { WebComponent, autoRegister, createLogger, state } from "@wsxjs/wsx-core";
 
 const logger = createLogger("WsxLink");
 
@@ -23,10 +23,10 @@ const logger = createLogger("WsxLink");
 export default class WsxLink extends WebComponent {
     static observedAttributes = ["to", "replace", "active-class", "exact"];
 
-    private to: string = "";
-    private replace: boolean = false;
-    private activeClass: string = "active";
-    private exact: boolean = false;
+    @state private to: string = "";
+    @state private replace: boolean = false;
+    @state private activeClass: string = "active";
+    @state private exact: boolean = false;
 
     render() {
         return (
@@ -66,7 +66,6 @@ export default class WsxLink extends WebComponent {
         switch (name) {
             case "to":
                 this.to = newValue || "";
-                this.rerender(); // Re-render to update href in JSX
                 this.updateActiveState();
                 break;
             case "replace":

@@ -71,6 +71,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0006](./0006-light-dom-components.md) | Light DOM 组件 | Implemented | Claude |
 | [RFC-0011](./0011-focus-preservation.md) | 焦点保持机制 | Implemented | Claude |
 | [RFC-0012](./0012-babel-transform-error-handling.md) | Babel Transform 错误处理策略 | Implemented | Claude |
+| [RFC-0013](./0013-state-initial-value-validation.md) | @state 装饰器初始值验证 | Implemented | Claude |
 
 ### 草稿RFCs
 

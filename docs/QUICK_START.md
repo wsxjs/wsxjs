@@ -73,13 +73,18 @@ export default [
     plugins: { wsx: wsxPlugin },
     rules: {
       'wsx/no-react-imports': 'error',
-      'wsx/render-method-required': 'error'
+      'wsx/render-method-required': 'error',
+      'wsx/state-requires-initial-value': 'error' // ✅ 验证 @state 必须有初始值
     }
   }
 ];
 ```
 
+> ⚠️ **重要**：`wsx/state-requires-initial-value` 规则会在开发时检查 `@state` 装饰器的属性是否有初始值。这是强制性的，因为 Babel 插件需要初始值来判断属性类型并生成正确的响应式代码。
+
 ## 创建组件
+
+### 基础组件
 
 ```typescript
 // MyButton.wsx
@@ -106,6 +111,59 @@ export class MyButton extends WebComponent {
 }
 ```
 
+### 使用 @state 装饰器（响应式状态）
+
+```typescript
+// Counter.wsx
+import { WebComponent, autoRegister, state } from '@wsxjs/wsx-core';
+import styles from './Counter.css?inline';
+
+@autoRegister('wsx-counter')
+export class Counter extends WebComponent {
+  constructor() {
+    super({ styles });
+  }
+
+  // ✅ @state 装饰器必须有初始值
+  @state private count = 0;
+  @state private name = "";
+  @state private user = { name: "John", age: 30 };
+  @state private items: string[] = [];
+
+  render() {
+    return (
+      <div>
+        <p>Count: {this.count}</p>
+        <p>Name: {this.name}</p>
+        <button onClick={() => this.count++}>Increment</button>
+        <button onClick={() => this.name = "Updated"}>Update Name</button>
+      </div>
+    );
+  }
+}
+```
+
+**重要提示**：
+- ⚠️ `@state` 装饰器的属性**必须有初始值**
+- ✅ ESLint 规则会在开发时检查（`wsx/state-requires-initial-value`）
+- ✅ Babel 插件会在构建时验证，缺少初始值会导致构建失败
+- 📖 查看 [RFC-0013](./rfcs/0013-state-initial-value-validation.md) 了解详细说明
+
+**有效示例**：
+```typescript
+@state private count = 0;           // ✅ 数字
+@state private name = "";           // ✅ 字符串
+@state private enabled = false;     // ✅ 布尔值
+@state private user = {};           // ✅ 对象
+@state private items = [];          // ✅ 数组
+```
+
+**无效示例**（会被 ESLint 和 Babel 检测）：
+```typescript
+@state private count;               // ❌ 缺少初始值
+@state private name;                 // ❌ 缺少初始值
+```
+
 ## 使用组件
 
 ```html
@@ -130,4 +188,6 @@ export class MyButton extends WebComponent {
 
 ## 下一步
 
-查看 [JSX 支持文档](JSX_SUPPORT.md) 了解更多高级用法。 
+- 查看 **[WebComponent 使用指南](WEB_COMPONENT_GUIDE.md)** 了解 Shadow DOM 组件开发
+- 查看 **[LightComponent 使用指南](LIGHT_COMPONENT_GUIDE.md)** 了解 Light DOM 组件开发
+- 查看 **[JSX 支持文档](JSX_SUPPORT.md)** 了解更多高级用法 

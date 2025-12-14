@@ -13,6 +13,8 @@
 - **[Web Components基础](WSX_DESIGN.md)** - Web Components标准介绍
 
 ### 🛠️ 开发指南
+- **[WebComponent 使用指南](WEB_COMPONENT_GUIDE.md)** - Shadow DOM 组件开发指南
+- **[LightComponent 使用指南](LIGHT_COMPONENT_GUIDE.md)** - Light DOM 组件开发指南
 - **[TypeScript 配置指南](TYPESCRIPT_SETUP.md)** - 完整的 TypeScript 配置说明和最佳实践
 - **[Chrome调试指南](design/2025-07-19-chrome-debugging-guide.md)** - 使用Chrome DevTools调试WSX组件
 - **[实践计划](design/2025-07-14-wsx-practice-plan.md)** - 系统性的学习计划

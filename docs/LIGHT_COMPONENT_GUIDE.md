@@ -55,7 +55,63 @@ export class MyComponent extends LightComponent {
 
 ### 使用响应式状态
 
-`LightComponent` 完全支持响应式状态管理：
+`LightComponent` 完全支持响应式状态管理，提供了三种方式：
+
+#### 方式 1: 使用 @state 装饰器（推荐）
+
+使用 `@state` 装饰器是最简洁的方式，Babel 插件会在编译时自动处理：
+
+```tsx
+import { LightComponent, autoRegister, state } from '@wsxjs/wsx-core';
+
+@autoRegister()
+export class Counter extends LightComponent {
+  // ✅ 使用 @state 装饰器（必须有初始值）
+  @state private count = 0;
+  @state private name = "";
+  @state private user = { name: "John", age: 30 };
+  @state private items: string[] = [];
+
+  render() {
+    return (
+      <div>
+        <p>Count: {this.count}</p>
+        <p>Name: {this.name}</p>
+        <p>User: {this.user.name}</p>
+        <p>Items: {this.items.length}</p>
+        <button onClick={() => this.count++}>
+          Increment
+        </button>
+      </div>
+    );
+  }
+}
+```
+
+**重要提示**：
+- ⚠️ `@state` 装饰器的属性**必须有初始值**
+- ✅ ESLint 规则 `wsx/state-requires-initial-value` 会在开发时检查
+- ✅ Babel 插件会在构建时验证，缺少初始值会导致构建失败
+- 📖 查看 [RFC-0013](../rfcs/0013-state-initial-value-validation.md) 了解详细说明
+
+**有效示例**：
+```tsx
+@state private count = 0;           // ✅ 数字
+@state private name = "";           // ✅ 字符串
+@state private enabled = false;     // ✅ 布尔值
+@state private user = {};           // ✅ 对象
+@state private items = [];          // ✅ 数组
+@state private optional: string | undefined = undefined; // ✅ 可选类型（显式 undefined）
+```
+
+**无效示例**（会被 ESLint 和 Babel 检测）：
+```tsx
+@state private count;               // ❌ 缺少初始值
+@state private name;                 // ❌ 缺少初始值
+@state private user;                 // ❌ 缺少初始值
+```
+
+#### 方式 2: 使用 reactive() 方法
 
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
@@ -78,7 +134,7 @@ export class Counter extends LightComponent {
 }
 ```
 
-### 使用 useState Hook
+#### 方式 3: 使用 useState Hook
 
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
@@ -125,6 +181,42 @@ render() {
 ```
 
 ### 2. 响应式状态管理
+
+`LightComponent` 支持三种响应式状态管理方式：
+
+#### @state 装饰器（推荐）
+
+使用 `@state` 装饰器是最简洁的方式，Babel 插件会在编译时自动处理：
+
+```tsx
+import { state } from '@wsxjs/wsx-core';
+
+export class MyComponent extends LightComponent {
+  // Primitive 类型：使用 useState
+  @state private count = 0;
+  @state private name = "";
+  
+  // Object/Array 类型：使用 reactive
+  @state private user = { name: "John", age: 30 };
+  @state private items: string[] = [];
+  
+  render() {
+    // 直接使用，无需 this.state.xxx
+    return <div>{this.count} - {this.name}</div>;
+  }
+}
+```
+
+**关键要求**：
+- ⚠️ **必须有初始值**：`@state` 装饰器的属性必须提供初始值
+- ✅ **自动类型判断**：Babel 插件根据初始值自动选择 `useState`（primitive）或 `reactive`（object/array）
+- ✅ **编译时验证**：缺少初始值会导致构建失败
+- ✅ **开发时检查**：ESLint 规则会在编辑器中实时提示
+
+**为什么需要初始值？**
+1. Babel 插件需要初始值来判断属性类型（primitive vs object/array）
+2. 需要从 AST 中提取初始值，生成构造函数中的初始化代码
+3. 确保状态有明确的类型，避免运行时错误
 
 #### reactive() 方法
 
@@ -554,18 +646,22 @@ this.dispatchEvent(new CustomEvent('click', { bubbles: true, composed: true }));
 ```tsx
 // 两者使用相同的响应式 API
 export class Counter extends LightComponent { // 或 WebComponent
+  // ✅ @state 装饰器必须有初始值
   @state private count = 0;
   
   render() {
+    // 直接使用，无需 this.state.xxx
     return (
       <div>
-        <p>Count: {this.state.count}</p>
-        <button onClick={() => this.state.count++}>+</button>
+        <p>Count: {this.count}</p>
+        <button onClick={() => this.count++}>+</button>
       </div>
     );
   }
 }
 ```
+
+**注意**：`@state` 装饰器的属性必须有初始值。ESLint 规则和 Babel 插件会验证这一点。
 
 #### 不同点：DOM 访问
 
@@ -623,6 +719,38 @@ render() {
   );
 }
 ```
+
+### Q: @state 装饰器为什么必须有初始值？
+
+A: `@state` 装饰器必须有初始值，因为：
+
+1. **类型判断**：Babel 插件需要初始值来判断属性类型（primitive vs object/array）
+   - Primitive（数字、字符串、布尔值）→ 使用 `useState`
+   - Object/Array → 使用 `reactive`
+
+2. **代码生成**：Babel 插件需要从 AST 中提取初始值，生成构造函数中的初始化代码
+
+3. **类型安全**：确保状态有明确的类型和初始值，避免运行时错误
+
+**验证机制**：
+- ✅ **ESLint 规则**：`wsx/state-requires-initial-value` 在开发时检查
+- ✅ **Babel 插件**：在构建时验证，缺少初始值会导致构建失败
+
+**有效示例**：
+```tsx
+@state private count = 0;           // ✅
+@state private name = "";           // ✅
+@state private user = {};           // ✅
+@state private items = [];          // ✅
+```
+
+**无效示例**：
+```tsx
+@state private count;               // ❌ 缺少初始值
+@state private name;                 // ❌ 缺少初始值
+```
+
+查看 [RFC-0013](../rfcs/0013-state-initial-value-validation.md) 了解详细说明。
 
 ## 总结
 
