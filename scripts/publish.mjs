@@ -32,12 +32,13 @@ function exec(command, options = {}) {
     }
 }
 
-function execSilent(command) {
+function execSilent(command, timeout = 5000) {
     try {
         return execSync(command, {
             stdio: "pipe",
             cwd: ROOT_DIR,
             encoding: "utf-8",
+            timeout: timeout,
         }).trim();
     } catch {
         return null;
@@ -90,14 +91,33 @@ async function checkGitStatus() {
         process.exit(1);
     }
 
-    const unpushedCommits = execSilent("git log origin/main..HEAD 2>/dev/null");
-    if (unpushedCommits) {
+    // 检查 origin/main 是否存在本地引用，避免网络请求导致挂起
+    const originMainExists = execSilent("git rev-parse --verify origin/main 2>/dev/null", 3000);
+    if (originMainExists) {
+        // 使用本地引用，避免网络请求
+        const unpushedCommits = execSilent("git log origin/main..HEAD 2>/dev/null", 3000);
+        if (unpushedCommits) {
+            const { continue: shouldContinue } = await inquirer.prompt([
+                {
+                    type: "confirm",
+                    name: "continue",
+                    message: chalk.yellow("存在未推送的提交，是否继续?"),
+                    default: false,
+                },
+            ]);
+            if (!shouldContinue) {
+                process.exit(1);
+            }
+        }
+    } else {
+        // origin/main 不存在本地引用，可能是新仓库或未 fetch
+        console.log(chalk.yellow("⚠️  无法检测未推送的提交（本地无 origin/main 引用）"));
         const { continue: shouldContinue } = await inquirer.prompt([
             {
                 type: "confirm",
                 name: "continue",
-                message: chalk.yellow("存在未推送的提交，是否继续?"),
-                default: false,
+                message: chalk.yellow("是否继续发布流程?"),
+                default: true,
             },
         ]);
         if (!shouldContinue) {
@@ -190,7 +210,8 @@ function getPublishablePackages() {
  */
 function checkPackageExists(packageName, version) {
     try {
-        const info = execSilent(`npm view ${packageName}@${version} version 2>/dev/null`);
+        // 设置 10 秒超时，避免网络问题导致挂起
+        const info = execSilent(`npm view ${packageName}@${version} version 2>/dev/null`, 10000);
         return info === version;
     } catch {
         return false;
@@ -202,10 +223,21 @@ function checkPackageExists(packageName, version) {
  */
 async function checkRemoteUpToDate() {
     try {
-        // 获取远程更新
-        execSilent("git fetch origin main 2>/dev/null");
+        // 检查 origin/main 是否存在本地引用
+        const originMainExists = execSilent("git rev-parse --verify origin/main 2>/dev/null", 3000);
+        if (!originMainExists) {
+            // 尝试 fetch，但设置超时避免挂起
+            console.log(chalk.yellow("⚠️  本地无 origin/main 引用，尝试获取远程信息..."));
+            try {
+                execSilent("git fetch origin main 2>/dev/null", 10000); // 10秒超时
+            } catch {
+                console.log(chalk.yellow("⚠️  无法获取远程信息，跳过远程检查"));
+                return;
+            }
+        }
+
         const localCommit = execSilent("git rev-parse HEAD");
-        const remoteCommit = execSilent("git rev-parse origin/main 2>/dev/null");
+        const remoteCommit = execSilent("git rev-parse origin/main 2>/dev/null", 3000);
 
         if (remoteCommit && localCommit !== remoteCommit) {
             const { pull } = await inquirer.prompt([
