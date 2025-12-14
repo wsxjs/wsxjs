@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-examples",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "description": "Example applications using WSX Framework",
     "type": "module",
     "private": true,
