@@ -6,7 +6,7 @@
  */
 
 import { execSync } from "child_process";
-import { readFileSync, existsSync, readdirSync, readdir } from "fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync, readdir } from "fs";
 import { join } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -48,6 +48,59 @@ function execSilent(command, timeout = 5000) {
 function getVersion() {
     const packageJson = JSON.parse(readFileSync(join(ROOT_DIR, "package.json"), "utf-8"));
     return packageJson.version;
+}
+
+/**
+ * 手动 bump 版本号
+ */
+function bumpVersion(type) {
+    const currentVersion = getVersion();
+    const [major, minor, patch] = currentVersion.split(".").map(Number);
+    
+    let newVersion;
+    switch (type) {
+        case "major":
+            newVersion = `${major + 1}.0.0`;
+            break;
+        case "minor":
+            newVersion = `${major}.${minor + 1}.0`;
+            break;
+        case "revision":
+        case "patch":
+            newVersion = `${major}.${minor}.${patch + 1}`;
+            break;
+        default:
+            throw new Error(`未知的版本类型: ${type}`);
+    }
+    
+    // 更新根目录 package.json
+    const rootPackageJson = JSON.parse(readFileSync(join(ROOT_DIR, "package.json"), "utf-8"));
+    rootPackageJson.version = newVersion;
+    writeFileSync(join(ROOT_DIR, "package.json"), JSON.stringify(rootPackageJson, null, 2) + "\n", "utf-8");
+    
+    // 更新所有包的 package.json
+    const packagesDir = join(ROOT_DIR, "packages");
+    if (existsSync(packagesDir)) {
+        const dirs = readdirSync(packagesDir, { withFileTypes: true });
+        for (const dir of dirs) {
+            if (dir.isDirectory()) {
+                const packageJsonPath = join(packagesDir, dir.name, "package.json");
+                if (existsSync(packageJsonPath)) {
+                    try {
+                        const pkg = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+                        if (pkg.version) {
+                            pkg.version = newVersion;
+                            writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2) + "\n", "utf-8");
+                        }
+                    } catch {
+                        // 忽略无效的 package.json
+                    }
+                }
+            }
+        }
+    }
+    
+    return newVersion;
 }
 
 function checkBuild(pkg, distPath) {
