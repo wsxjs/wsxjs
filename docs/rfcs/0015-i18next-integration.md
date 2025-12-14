@@ -120,6 +120,11 @@ const unsubscribe = I18nUtils.onLanguageChanged((lng) => {
 #### 1. 组件架构
 
 ```typescript
+/** @jsxImportSource @wsxjs/wsx-core */
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import i18n, { type InitOptions } from "i18next";
+import { I18nUtils } from "./I18nUtils";
+
 // WsxI18n.wsx - 提供者组件
 @autoRegister({ tagName: "wsx-i18n" })
 export default class WsxI18n extends LightComponent {
@@ -151,6 +156,11 @@ export default class WsxI18n extends LightComponent {
 ```
 
 ```typescript
+/** @jsxImportSource @wsxjs/wsx-core */
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import { I18nUtils } from "./I18nUtils";
+import type { TFunction } from "i18next";
+
 // WsxT.wsx - 翻译组件
 @autoRegister({ tagName: "wsx-t" })
 export default class WsxT extends LightComponent {
@@ -171,8 +181,8 @@ export default class WsxT extends LightComponent {
     this.translation = t(key, options);
   }
   
-  private getTranslationOptions() {
-    const options: any = {};
+  private getTranslationOptions(): Record<string, string | number> {
+    const options: Record<string, string | number> = {};
     
     // 命名空间
     const ns = this.getAttribute('ns');
@@ -180,7 +190,7 @@ export default class WsxT extends LightComponent {
     
     // 复数
     const count = this.getAttribute('count');
-    if (count) options.count = parseInt(count);
+    if (count) options.count = parseInt(count, 10);
     
     // 插值变量
     Array.from(this.attributes).forEach(attr => {
@@ -202,6 +212,9 @@ export default class WsxT extends LightComponent {
 
 ```typescript
 // I18nUtils.ts
+import i18n from "i18next";
+import type { TFunction } from "i18next";
+
 export class I18nUtils {
   private static instance: i18n | null = null;
   private static languageChangeListeners: Set<(lng: string) => void> = new Set();
@@ -210,7 +223,7 @@ export class I18nUtils {
     this.instance = instance;
     
     // 监听 i18next 的语言变化
-    instance.on('languageChanged', (lng) => {
+    instance.on('languageChanged', (lng: string) => {
       this.notifyLanguageChange(lng);
     });
   }
@@ -305,6 +318,7 @@ import { I18nUtils } from "@wsxjs/wsx-i18n";
 @autoRegister({ tagName: "my-component" })
 export default class MyComponent extends WebComponent {
   @state private userName: string = "John";
+  private unsubscribeLanguageChange?: () => void;
   
   render() {
     const t = I18nUtils.getT();
@@ -319,13 +333,15 @@ export default class MyComponent extends WebComponent {
   
   protected onConnected() {
     // 监听语言变化，触发重新渲染
-    const unsubscribe = I18nUtils.onLanguageChanged(() => {
-      this.requestUpdate(); // 假设有这个方法
+    this.unsubscribeLanguageChange = I18nUtils.onLanguageChanged(() => {
+      // 触发组件更新（具体实现取决于组件系统）
+      this.requestUpdate?.();
     });
-    
-    this.onDisconnected = () => {
-      unsubscribe();
-    };
+  }
+  
+  protected onDisconnected() {
+    // 清理语言变化监听器
+    this.unsubscribeLanguageChange?.();
   }
 }
 ```
@@ -334,29 +350,40 @@ export default class MyComponent extends WebComponent {
 
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
-import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
 import { I18nUtils } from "@wsxjs/wsx-i18n";
 
 @autoRegister({ tagName: "language-switcher" })
 export default class LanguageSwitcher extends LightComponent {
+  @state private currentLang: string = I18nUtils.getLanguage();
+  
   render() {
-    const currentLang = I18nUtils.getLanguage();
-    
     return (
       <div>
         <button 
-          onClick={() => I18nUtils.changeLanguage('en')}
-          class={currentLang === 'en' ? 'active' : ''}>
+          onClick={() => this.handleLanguageChange('en')}
+          class={this.currentLang === 'en' ? 'active' : ''}>
           English
         </button>
         <button 
-          onClick={() => I18nUtils.changeLanguage('zh')}
-          class={currentLang === 'zh' ? 'active' : ''}>
+          onClick={() => this.handleLanguageChange('zh')}
+          class={this.currentLang === 'zh' ? 'active' : ''}>
           中文
         </button>
       </div>
     );
   }
+  
+  protected onConnected() {
+    // 监听语言变化
+    I18nUtils.onLanguageChanged((lng) => {
+      this.currentLang = lng;
+    });
+  }
+  
+  private handleLanguageChange = (lng: string) => {
+    I18nUtils.changeLanguage(lng);
+  };
 }
 ```
 
