@@ -90,40 +90,6 @@ async function checkGitStatus() {
         console.error(chalk.red("请先提交或暂存所有更改"));
         process.exit(1);
     }
-
-    // 检查 origin/main 是否存在本地引用，避免网络请求导致挂起
-    const originMainExists = execSilent("git rev-parse --verify origin/main 2>/dev/null", 3000);
-    if (originMainExists) {
-        // 使用本地引用，避免网络请求
-        const unpushedCommits = execSilent("git log origin/main..HEAD 2>/dev/null", 3000);
-        if (unpushedCommits) {
-            const { continue: shouldContinue } = await inquirer.prompt([
-                {
-                    type: "confirm",
-                    name: "continue",
-                    message: chalk.yellow("存在未推送的提交，是否继续?"),
-                    default: false,
-                },
-            ]);
-            if (!shouldContinue) {
-                process.exit(1);
-            }
-        }
-    } else {
-        // origin/main 不存在本地引用，可能是新仓库或未 fetch
-        console.log(chalk.yellow("⚠️  无法检测未推送的提交（本地无 origin/main 引用）"));
-        const { continue: shouldContinue } = await inquirer.prompt([
-            {
-                type: "confirm",
-                name: "continue",
-                message: chalk.yellow("是否继续发布流程?"),
-                default: true,
-            },
-        ]);
-        if (!shouldContinue) {
-            process.exit(1);
-        }
-    }
 }
 
 function hasChangesets() {
@@ -218,56 +184,6 @@ function checkPackageExists(packageName, version) {
     }
 }
 
-/**
- * 检查远程分支是否最新
- */
-async function checkRemoteUpToDate() {
-    try {
-        // 检查 origin/main 是否存在本地引用
-        const originMainExists = execSilent("git rev-parse --verify origin/main 2>/dev/null", 3000);
-        if (!originMainExists) {
-            // 尝试 fetch，但设置超时避免挂起
-            console.log(chalk.yellow("⚠️  本地无 origin/main 引用，尝试获取远程信息..."));
-            try {
-                execSilent("git fetch origin main 2>/dev/null", 10000); // 10秒超时
-            } catch {
-                console.log(chalk.yellow("⚠️  无法获取远程信息，跳过远程检查"));
-                return;
-            }
-        }
-
-        const localCommit = execSilent("git rev-parse HEAD");
-        const remoteCommit = execSilent("git rev-parse origin/main 2>/dev/null", 3000);
-
-        if (remoteCommit && localCommit !== remoteCommit) {
-            const { pull } = await inquirer.prompt([
-                {
-                    type: "confirm",
-                    name: "pull",
-                    message: chalk.yellow("远程分支有更新，是否先拉取? (推荐)"),
-                    default: true,
-                },
-            ]);
-
-            if (pull) {
-                const pullSpinner = ora("拉取远程更新").start();
-                try {
-                    exec("git pull origin main --rebase", { silent: true });
-                    pullSpinner.succeed("已拉取远程更新");
-                } catch (error) {
-                    pullSpinner.fail("拉取失败，请手动解决冲突");
-                    throw error;
-                }
-            } else {
-                console.log(chalk.yellow("⚠️  跳过拉取，继续使用本地版本"));
-            }
-        }
-    } catch (error) {
-        // 如果无法连接到远程，继续执行
-        console.log(chalk.yellow("⚠️  无法检查远程状态，继续执行"));
-    }
-}
-
 async function main() {
     console.log(chalk.blue.bold("\n🚀 WSX Framework 发布流程\n"));
 
@@ -290,9 +206,6 @@ async function main() {
         gitCheckSpinner.fail(`Git 状态检查失败: ${error.message}`);
         throw error;
     }
-
-    // 检查远程分支是否最新
-    await checkRemoteUpToDate();
 
     // 阶段 1: 询问是否要 bump version
     console.log(chalk.yellow("\n📦 阶段 1: 版本管理"));
