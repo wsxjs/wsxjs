@@ -76,6 +76,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0015](./0015-array-reactive-coverage.md) | 数组响应式覆盖说明 | Implemented | WSX Team |
 | [RFC-0016](./0016-component-library-build-guide.md) | 组件库构建指南 | Implemented | WSX Team |
 | [RFC-0017](./0017-jsx-factory-auto-injection-bug-fix.md) | JSX Factory 自动注入 Bug 修复 | Implemented | WSX Team |
+| [RFC-0018](./0018-wsx-dts-package-exposure.md) | 正确暴露 wsx.d.ts 类型定义文件 | Proposed | WSX Team |
 
 ### 草稿RFCs
 
