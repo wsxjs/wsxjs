@@ -54,9 +54,9 @@ function getVersion() {
  * 手动 bump 版本号
  */
 function bumpVersion(type) {
-    const currentVersion = getVersion();
-    const [major, minor, patch] = currentVersion.split(".").map(Number);
-    
+    const version = getVersion();
+    const [major, minor, patch] = version.split(".").map(Number);
+
     let newVersion;
     switch (type) {
         case "major":
@@ -72,12 +72,16 @@ function bumpVersion(type) {
         default:
             throw new Error(`未知的版本类型: ${type}`);
     }
-    
+
     // 更新根目录 package.json
     const rootPackageJson = JSON.parse(readFileSync(join(ROOT_DIR, "package.json"), "utf-8"));
     rootPackageJson.version = newVersion;
-    writeFileSync(join(ROOT_DIR, "package.json"), JSON.stringify(rootPackageJson, null, 2) + "\n", "utf-8");
-    
+    writeFileSync(
+        join(ROOT_DIR, "package.json"),
+        JSON.stringify(rootPackageJson, null, 2) + "\n",
+        "utf-8"
+    );
+
     // 更新所有包的 package.json
     const packagesDir = join(ROOT_DIR, "packages");
     if (existsSync(packagesDir)) {
@@ -90,7 +94,11 @@ function bumpVersion(type) {
                         const pkg = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
                         if (pkg.version) {
                             pkg.version = newVersion;
-                            writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2) + "\n", "utf-8");
+                            writeFileSync(
+                                packageJsonPath,
+                                JSON.stringify(pkg, null, 2) + "\n",
+                                "utf-8"
+                            );
                         }
                     } catch {
                         // 忽略无效的 package.json
@@ -99,7 +107,7 @@ function bumpVersion(type) {
             }
         }
     }
-    
+
     return newVersion;
 }
 
@@ -263,64 +271,68 @@ async function main() {
     // 阶段 1: 检查是否需要新版本并更新
     console.log(chalk.yellow("\n📦 阶段 1: 版本管理"));
 
-    // 检查是否有 changeset
-    const hasChangesetFiles = hasChangesets();
-    let shouldBumpVersion = false;
+    const currentVersion = getVersion();
+    console.log(chalk.cyan(`当前版本: v${currentVersion}`));
+
+    // 询问是否要更新版本
+    const { shouldBump } = await inquirer.prompt([
+        {
+            type: "confirm",
+            name: "shouldBump",
+            message: "是否要更新版本号?",
+            default: true,
+        },
+    ]);
+
     let newVersion = null;
+    let versionBumpType = null;
 
-    if (hasChangesetFiles) {
-        // 有 changeset，询问是否更新版本
-        const { bumpVersion } = await inquirer.prompt([
+    if (shouldBump) {
+        // 询问版本类型
+        const { bumpType } = await inquirer.prompt([
             {
-                type: "confirm",
-                name: "bumpVersion",
-                message: "检测到 changeset，是否更新版本号?",
-                default: true,
-            },
-        ]);
-        shouldBumpVersion = bumpVersion;
-    } else {
-        // 没有 changeset，询问是否创建并更新版本
-        console.log(chalk.yellow("\n⚠️  未找到 changeset 文件"));
-        const { createChangeset } = await inquirer.prompt([
-            {
-                type: "confirm",
-                name: "createChangeset",
-                message: "是否创建 changeset 并更新版本?",
-                default: true,
+                type: "list",
+                name: "bumpType",
+                message: "选择版本更新类型:",
+                choices: [
+                    { name: "Major (主版本号，破坏性变更) - 例如: 1.0.0 → 2.0.0", value: "major" },
+                    { name: "Minor (次版本号，新功能) - 例如: 1.0.0 → 1.1.0", value: "minor" },
+                    {
+                        name: "Revision/Patch (修订号，Bug修复) - 例如: 1.0.0 → 1.0.1",
+                        value: "revision",
+                    },
+                ],
+                default: "revision",
             },
         ]);
 
-        if (createChangeset) {
-            const createSpinner = ora("创建 changeset").start();
-            try {
-                exec("pnpm changeset");
-                createSpinner.succeed("Changeset 已创建");
-                shouldBumpVersion = true;
-            } catch (error) {
-                createSpinner.fail("创建 changeset 失败");
-                throw error;
-            }
-        } else {
-            console.log(chalk.yellow("已跳过版本更新"));
-            shouldBumpVersion = false;
+        versionBumpType = bumpType;
+
+        // 计算新版本号
+        const [major, minor, patch] = currentVersion.split(".").map(Number);
+        let nextVersion;
+        switch (bumpType) {
+            case "major":
+                nextVersion = `${major + 1}.0.0`;
+                break;
+            case "minor":
+                nextVersion = `${major}.${minor + 1}.0`;
+                break;
+            case "revision":
+                nextVersion = `${major}.${minor}.${patch + 1}`;
+                break;
         }
-    }
 
-    if (shouldBumpVersion) {
+        console.log(chalk.green(`\n新版本: v${currentVersion} → v${nextVersion}`));
+
         // 版本管理任务：更新版本 -> 提交 -> 打标签 -> 推送
         const versionTasks = new Listr(
             [
                 {
-                    title: "应用 changeset 版本更新",
-                    task: () => exec("pnpm changeset:version", { silent: true }),
-                },
-                {
-                    title: "获取新版本号",
+                    title: "更新 package.json 版本号",
                     task: (ctx) => {
-                        ctx.version = getVersion();
+                        ctx.version = bumpVersion(bumpType);
                         newVersion = ctx.version;
-                        console.log(chalk.green(`\n新版本: v${ctx.version}`));
                     },
                 },
                 {
@@ -331,12 +343,9 @@ async function main() {
                     title: "提交版本更新到 Git",
                     task: (ctx) => {
                         try {
-                            exec(
-                                "git add package.json packages/*/package.json CHANGELOG.md .changeset/",
-                                {
-                                    silent: true,
-                                }
-                            );
+                            exec("git add package.json packages/*/package.json", {
+                                silent: true,
+                            });
                         } catch {
                             // 可能没有需要添加的文件
                         }
@@ -352,11 +361,18 @@ async function main() {
                 {
                     title: "创建 Git 标签",
                     task: (ctx) => {
-                        const tagExists = execSilent(`git rev-parse v${ctx.version} 2>/dev/null`);
+                        // 确保版本号格式正确（移除可能的 'v' 前缀）
+                        const version = ctx.version.replace(/^v/, "");
+                        const tagName = `v${version}`;
+
+                        const tagExists = execSilent(`git rev-parse ${tagName} 2>/dev/null`);
                         if (!tagExists) {
-                            exec(`git tag -a v${ctx.version} -m "Release v${ctx.version}"`, {
+                            exec(`git tag -a ${tagName} -m "Release ${tagName}"`, {
                                 silent: true,
                             });
+                            console.log(chalk.green(`✅ 已创建标签: ${tagName}`));
+                        } else {
+                            console.log(chalk.yellow(`⚠️  标签已存在: ${tagName}`));
                         }
                     },
                 },
@@ -587,9 +603,9 @@ async function main() {
     }
 
     // 完成
-    const currentVersion = getVersion();
+    const finalVersion = getVersion();
     console.log(chalk.green.bold("\n✅ 发布流程成功完成!"));
-    console.log(chalk.green(`📦 所有包已发布到 NPM (v${currentVersion})`));
+    console.log(chalk.green(`📦 所有包已发布到 NPM (v${finalVersion})`));
     if (newVersion) {
         console.log(chalk.green(`🏷️  Git 标签已创建 (v${newVersion})`));
         console.log(chalk.green("📝 版本更新已提交并推送"));
