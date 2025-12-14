@@ -73,6 +73,9 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0012](./0012-babel-transform-error-handling.md) | Babel Transform 错误处理策略 | Implemented | Claude |
 | [RFC-0013](./0013-state-initial-value-validation.md) | @state 装饰器初始值验证 | Implemented | Claude |
 | [RFC-0014](./0014-connected-callback-optimization.md) | connectedCallback 智能渲染优化 | Implemented | WSX Team |
+| [RFC-0015](./0015-array-reactive-coverage.md) | 数组响应式覆盖说明 | Implemented | WSX Team |
+| [RFC-0016](./0016-component-library-build-guide.md) | 组件库构建指南 | Implemented | WSX Team |
+| [RFC-0017](./0017-jsx-factory-auto-injection-bug-fix.md) | JSX Factory 自动注入 Bug 修复 | Implemented | WSX Team |
 
 ### 草稿RFCs
 
@@ -83,7 +86,6 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0005](./0005-wsx-router-enhancements.md) | WSX Router 增强 | Draft | Claude |
 | [RFC-0009](./0009-scss-sass-preprocessing.md) | SCSS/SASS 预处理支持 | Draft (Future) | Claude |
 | [RFC-0010](./0010-eslint-rules-enhancement.md) | ESLint 规则增强 | Draft | Claude |
-| [RFC-0015](./0015-i18next-integration.md) | i18next 国际化集成 | Draft | WSX Team |
 
 ## RFC原则
 

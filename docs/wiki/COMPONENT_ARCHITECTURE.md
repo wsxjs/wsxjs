@@ -1,5 +1,7 @@
 # WSX Framework Component Architecture
 
+> **注意**: 本文档已合并到 RFC 格式。请查看 [RFC-0006: Light DOM Components](../rfcs/0006-light-dom-components.md) 获取最新和完整的信息，包括 Container vs Leaf 组件策略。
+
 ## Container vs Leaf Component Strategy
 
 WSX Framework follows a **Container-Light, Leaf-Shadow** architecture pattern for optimal third-party library compatibility and style isolation.
