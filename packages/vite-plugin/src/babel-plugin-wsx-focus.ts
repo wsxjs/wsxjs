@@ -138,13 +138,14 @@ function calculateJSXPath(path: NodePath<t.JSXOpeningElement>): number[] {
  * Find component name from class declaration
  */
 function findComponentName(path: NodePath<t.JSXOpeningElement>): string {
-    let classPath = path;
+    let classPath: NodePath<t.Node> | null = path;
 
     // Find parent class declaration
     while (classPath) {
         if (classPath.isClassDeclaration()) {
-            if (classPath.node.id && tModule.isIdentifier(classPath.node.id)) {
-                return classPath.node.id.name;
+            const classNode = classPath.node;
+            if (classNode.id && tModule.isIdentifier(classNode.id)) {
+                return classNode.id.name;
             }
             break;
         }
