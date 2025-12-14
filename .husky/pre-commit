@@ -6,3 +6,5 @@ pnpm precommit
 
 # 运行完整 lint 检查
 pnpm lint
+
+pnpm typecheck

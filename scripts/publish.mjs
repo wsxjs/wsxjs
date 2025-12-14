@@ -6,7 +6,7 @@
  */
 
 import { execSync } from "child_process";
-import { readFileSync, writeFileSync, existsSync, readdirSync, readdir } from "fs";
+import { readFileSync, existsSync, readdirSync, readdir } from "fs";
 import { join } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -32,13 +32,12 @@ function exec(command, options = {}) {
     }
 }
 
-function execSilent(command, timeout = 5000) {
+function execSilent(command) {
     try {
         return execSync(command, {
             stdio: "pipe",
             cwd: ROOT_DIR,
             encoding: "utf-8",
-            timeout: timeout,
         }).trim();
     } catch {
         return null;
@@ -48,67 +47,6 @@ function execSilent(command, timeout = 5000) {
 function getVersion() {
     const packageJson = JSON.parse(readFileSync(join(ROOT_DIR, "package.json"), "utf-8"));
     return packageJson.version;
-}
-
-/**
- * 手动 bump 版本号
- */
-function bumpVersion(type) {
-    const version = getVersion();
-    const [major, minor, patch] = version.split(".").map(Number);
-
-    let newVersion;
-    switch (type) {
-        case "major":
-            newVersion = `${major + 1}.0.0`;
-            break;
-        case "minor":
-            newVersion = `${major}.${minor + 1}.0`;
-            break;
-        case "revision":
-        case "patch":
-            newVersion = `${major}.${minor}.${patch + 1}`;
-            break;
-        default:
-            throw new Error(`未知的版本类型: ${type}`);
-    }
-
-    // 更新根目录 package.json
-    const rootPackageJson = JSON.parse(readFileSync(join(ROOT_DIR, "package.json"), "utf-8"));
-    rootPackageJson.version = newVersion;
-    writeFileSync(
-        join(ROOT_DIR, "package.json"),
-        JSON.stringify(rootPackageJson, null, 2) + "\n",
-        "utf-8"
-    );
-
-    // 更新所有包的 package.json
-    const packagesDir = join(ROOT_DIR, "packages");
-    if (existsSync(packagesDir)) {
-        const dirs = readdirSync(packagesDir, { withFileTypes: true });
-        for (const dir of dirs) {
-            if (dir.isDirectory()) {
-                const packageJsonPath = join(packagesDir, dir.name, "package.json");
-                if (existsSync(packageJsonPath)) {
-                    try {
-                        const pkg = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
-                        if (pkg.version) {
-                            pkg.version = newVersion;
-                            writeFileSync(
-                                packageJsonPath,
-                                JSON.stringify(pkg, null, 2) + "\n",
-                                "utf-8"
-                            );
-                        }
-                    } catch {
-                        // 忽略无效的 package.json
-                    }
-                }
-            }
-        }
-    }
-
-    return newVersion;
 }
 
 function checkBuild(pkg, distPath) {
@@ -150,6 +88,21 @@ async function checkGitStatus() {
         console.error(chalk.red("❌ 错误: 存在未提交的更改"));
         console.error(chalk.red("请先提交或暂存所有更改"));
         process.exit(1);
+    }
+
+    const unpushedCommits = execSilent("git log origin/main..HEAD 2>/dev/null");
+    if (unpushedCommits) {
+        const { continue: shouldContinue } = await inquirer.prompt([
+            {
+                type: "confirm",
+                name: "continue",
+                message: chalk.yellow("存在未推送的提交，是否继续?"),
+                default: false,
+            },
+        ]);
+        if (!shouldContinue) {
+            process.exit(1);
+        }
     }
 }
 
@@ -237,11 +190,49 @@ function getPublishablePackages() {
  */
 function checkPackageExists(packageName, version) {
     try {
-        // 设置 10 秒超时，避免网络问题导致挂起
-        const info = execSilent(`npm view ${packageName}@${version} version 2>/dev/null`, 10000);
+        const info = execSilent(`npm view ${packageName}@${version} version 2>/dev/null`);
         return info === version;
     } catch {
         return false;
+    }
+}
+
+/**
+ * 检查远程分支是否最新
+ */
+async function checkRemoteUpToDate() {
+    try {
+        // 获取远程更新
+        execSilent("git fetch origin main 2>/dev/null");
+        const localCommit = execSilent("git rev-parse HEAD");
+        const remoteCommit = execSilent("git rev-parse origin/main 2>/dev/null");
+
+        if (remoteCommit && localCommit !== remoteCommit) {
+            const { pull } = await inquirer.prompt([
+                {
+                    type: "confirm",
+                    name: "pull",
+                    message: chalk.yellow("远程分支有更新，是否先拉取? (推荐)"),
+                    default: true,
+                },
+            ]);
+
+            if (pull) {
+                const pullSpinner = ora("拉取远程更新").start();
+                try {
+                    exec("git pull origin main --rebase", { silent: true });
+                    pullSpinner.succeed("已拉取远程更新");
+                } catch (error) {
+                    pullSpinner.fail("拉取失败，请手动解决冲突");
+                    throw error;
+                }
+            } else {
+                console.log(chalk.yellow("⚠️  跳过拉取，继续使用本地版本"));
+            }
+        }
+    } catch (error) {
+        // 如果无法连接到远程，继续执行
+        console.log(chalk.yellow("⚠️  无法检查远程状态，继续执行"));
     }
 }
 
@@ -268,71 +259,65 @@ async function main() {
         throw error;
     }
 
-    // 阶段 1: 检查是否需要新版本并更新
+    // 检查远程分支是否最新
+    await checkRemoteUpToDate();
+
+    // 阶段 1: 询问是否要 bump version
     console.log(chalk.yellow("\n📦 阶段 1: 版本管理"));
-
-    const currentVersion = getVersion();
-    console.log(chalk.cyan(`当前版本: v${currentVersion}`));
-
-    // 询问是否要更新版本
-    const { shouldBump } = await inquirer.prompt([
+    let shouldBumpVersion = false;
+    const { bumpVersion } = await inquirer.prompt([
         {
             type: "confirm",
-            name: "shouldBump",
+            name: "bumpVersion",
             message: "是否要更新版本号?",
             default: true,
         },
     ]);
 
-    let newVersion = null;
-    let versionBumpType = null;
+    shouldBumpVersion = bumpVersion;
 
-    if (shouldBump) {
-        // 询问版本类型
-        const { bumpType } = await inquirer.prompt([
-            {
-                type: "list",
-                name: "bumpType",
-                message: "选择版本更新类型:",
-                choices: [
-                    { name: "Major (主版本号，破坏性变更) - 例如: 1.0.0 → 2.0.0", value: "major" },
-                    { name: "Minor (次版本号，新功能) - 例如: 1.0.0 → 1.1.0", value: "minor" },
-                    {
-                        name: "Revision/Patch (修订号，Bug修复) - 例如: 1.0.0 → 1.0.1",
-                        value: "revision",
-                    },
-                ],
-                default: "revision",
-            },
-        ]);
+    if (bumpVersion) {
+        // 检查是否有 changeset
+        const hasChangesetFiles = hasChangesets();
+        if (!hasChangesetFiles) {
+            console.log(chalk.yellow("\n⚠️  未找到 changeset 文件"));
+            const { createChangeset } = await inquirer.prompt([
+                {
+                    type: "confirm",
+                    name: "createChangeset",
+                    message: "是否创建 changeset?",
+                    default: true,
+                },
+            ]);
 
-        versionBumpType = bumpType;
-
-        // 计算新版本号
-        const [major, minor, patch] = currentVersion.split(".").map(Number);
-        let nextVersion;
-        switch (bumpType) {
-            case "major":
-                nextVersion = `${major + 1}.0.0`;
-                break;
-            case "minor":
-                nextVersion = `${major}.${minor + 1}.0`;
-                break;
-            case "revision":
-                nextVersion = `${major}.${minor}.${patch + 1}`;
-                break;
+            if (createChangeset) {
+                const createSpinner = ora("创建 changeset").start();
+                try {
+                    // 运行 changeset 命令（交互式）
+                    exec("pnpm changeset");
+                    createSpinner.succeed("Changeset 已创建");
+                } catch (error) {
+                    createSpinner.fail("创建 changeset 失败");
+                    throw error;
+                }
+            } else {
+                console.log(chalk.yellow("已跳过创建 changeset"));
+                process.exit(0);
+            }
         }
 
-        console.log(chalk.green(`\n新版本: v${currentVersion} → v${nextVersion}`));
-
-        // 版本管理任务：更新版本 -> 提交 -> 打标签 -> 推送
+        // 版本管理任务
         const versionTasks = new Listr(
             [
                 {
-                    title: "更新 package.json 版本号",
+                    title: "应用 changeset 版本更新",
+                    task: () => exec("pnpm changeset:version", { silent: true }),
+                },
+                {
+                    title: "获取新版本号",
                     task: (ctx) => {
-                        ctx.version = bumpVersion(bumpType);
-                        newVersion = ctx.version;
+                        ctx.version = getVersion();
+                        console.log(chalk.green(`\n新版本: v${ctx.version}`));
                     },
                 },
                 {
@@ -343,9 +328,12 @@ async function main() {
                     title: "提交版本更新到 Git",
                     task: (ctx) => {
                         try {
-                            exec("git add package.json packages/*/package.json", {
-                                silent: true,
-                            });
+                            exec(
+                                "git add package.json packages/*/package.json CHANGELOG.md .changeset/",
+                                {
+                                    silent: true,
+                                }
+                            );
                         } catch {
                             // 可能没有需要添加的文件
                         }
@@ -361,18 +349,11 @@ async function main() {
                 {
                     title: "创建 Git 标签",
                     task: (ctx) => {
-                        // 确保版本号格式正确（移除可能的 'v' 前缀）
-                        const version = ctx.version.replace(/^v/, "");
-                        const tagName = `v${version}`;
-
-                        const tagExists = execSilent(`git rev-parse ${tagName} 2>/dev/null`);
+                        const tagExists = execSilent(`git rev-parse v${ctx.version} 2>/dev/null`);
                         if (!tagExists) {
-                            exec(`git tag -a ${tagName} -m "Release ${tagName}"`, {
+                            exec(`git tag -a v${ctx.version} -m "Release v${ctx.version}"`, {
                                 silent: true,
                             });
-                            console.log(chalk.green(`✅ 已创建标签: ${tagName}`));
-                        } else {
-                            console.log(chalk.yellow(`⚠️  标签已存在: ${tagName}`));
                         }
                     },
                 },
@@ -400,27 +381,8 @@ async function main() {
         }
     }
 
-    // 阶段 2: 询问是否发布到 NPM
+    // 阶段 2: 发布到 NPM
     console.log(chalk.yellow("\n📤 阶段 2: 发布到 NPM"));
-
-    // 先询问是否要发布（OTP 提示）
-    console.log(chalk.cyan("\n📱 发布到 NPM 需要 OTP 验证"));
-    console.log(chalk.gray("如果启用了 NPM 2FA，发布时会提示输入 OTP（一次性密码）"));
-    console.log(chalk.gray("请准备好您的认证器应用以获取 OTP\n"));
-
-    const { shouldPublish } = await inquirer.prompt([
-        {
-            type: "confirm",
-            name: "shouldPublish",
-            message: "是否发布到 NPM?（如果启用 2FA，请准备好 OTP）",
-            default: false,
-        },
-    ]);
-
-    if (!shouldPublish) {
-        console.log(chalk.yellow("已取消发布"));
-        process.exit(0);
-    }
 
     // 预检查任务
     const prePublishTasks = new Listr(
@@ -531,6 +493,22 @@ async function main() {
         }
     }
 
+    // 确认发布
+    console.log(chalk.yellow("\n⚠️  准备发布到 NPM"));
+    const { confirm: shouldPublish } = await inquirer.prompt([
+        {
+            type: "confirm",
+            name: "confirm",
+            message: `确认发布 ${publishablePackages.length} 个包到 NPM?`,
+            default: false,
+        },
+    ]);
+
+    if (!shouldPublish) {
+        console.log(chalk.yellow("已取消发布"));
+        process.exit(0);
+    }
+
     // 询问是否先进行 dry-run
     const { dryRun } = await inquirer.prompt([
         {
@@ -570,6 +548,25 @@ async function main() {
     }
 
     // 发布到 NPM（支持交互式 OTP 输入）
+    console.log(chalk.cyan("\n📱 准备发布到 NPM"));
+    console.log(chalk.gray("如果启用了 NPM 2FA，发布时会提示输入 OTP（一次性密码）"));
+    console.log(chalk.gray("请准备好您的认证器应用以获取 OTP\n"));
+
+    // 询问是否准备好发布
+    const { ready } = await inquirer.prompt([
+        {
+            type: "confirm",
+            name: "ready",
+            message: "准备好发布到 NPM?（如果启用 2FA，请准备好 OTP）",
+            default: true,
+        },
+    ]);
+
+    if (!ready) {
+        console.log(chalk.yellow("已取消发布"));
+        process.exit(0);
+    }
+
     const publishSpinner = ora("发布到 NPM").start();
     try {
         publishSpinner.text = "正在发布包...";
@@ -603,11 +600,11 @@ async function main() {
     }
 
     // 完成
-    const finalVersion = getVersion();
+    const currentVersion = getVersion();
     console.log(chalk.green.bold("\n✅ 发布流程成功完成!"));
-    console.log(chalk.green(`📦 所有包已发布到 NPM (v${finalVersion})`));
-    if (newVersion) {
-        console.log(chalk.green(`🏷️  Git 标签已创建 (v${newVersion})`));
+    console.log(chalk.green(`📦 所有包已发布到 NPM (v${currentVersion})`));
+    if (shouldBumpVersion) {
+        console.log(chalk.green(`🏷️  Git 标签已创建 (v${currentVersion})`));
         console.log(chalk.green("📝 版本更新已提交并推送"));
     }
 }

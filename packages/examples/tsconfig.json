@@ -6,6 +6,6 @@
         "jsxImportSource": "@wsxjs/wsx-core",
         "types": ["@wsxjs/wsx-core", "@testing-library/jest-dom"]
     },
-    "include": ["src/**/*", "src/global.d.ts", "src/**/*.wsx", "src/**/*.test.ts"],
-    "exclude": ["dist"]
+    "include": ["src/**/*", "src/global.d.ts", "src/**/*.wsx"],
+    "exclude": ["dist", "**/__tests__/**", "**/*.test.ts"]
 }
