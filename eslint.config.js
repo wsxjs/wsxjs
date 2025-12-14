@@ -8,7 +8,7 @@ import globals from "globals";
 export default [
     // Ignore patterns - must be first
     {
-        ignores: ["**/dist/", "**/node_modules/", "**/coverage/", "*.config.js", "./scripts/"],
+        ignores: ["**/dist/", "**/node_modules/", "**/coverage/", "*.config.js", "**/scripts/"],
     },
 
     // Base configuration for all files
