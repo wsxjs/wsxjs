@@ -101,7 +101,7 @@ function unwrapProxy(value: unknown): unknown {
         // 直接访问原始对象的属性，不通过 Proxy
         for (const key in original) {
             if (Object.prototype.hasOwnProperty.call(original, key)) {
-                const propValue = original[key];
+                const propValue = (original as Record<string, unknown>)[key];
                 // 如果属性值是 Proxy，先获取原始对象再递归
                 if (
                     propValue != null &&

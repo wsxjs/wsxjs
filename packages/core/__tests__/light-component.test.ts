@@ -94,7 +94,7 @@ describe("LightComponent", () => {
 
             // 模拟 Editor.js 移动元素：断开连接但保留内容
             component.disconnectedCallback();
-            expect(component.connected).toBe(false);
+            expect((component as any).connected).toBe(false);
 
             // 重新连接（内容仍然存在）
             component.connectedCallback();
@@ -164,8 +164,8 @@ describe("LightComponent", () => {
                     });
                 }
 
-                render(): HTMLElement {
-                    return h("div", {}, "Test");
+                render(): HTMLElement | SVGElement {
+                    return h("div", {}, "Test") as HTMLElement;
                 }
             }
 
@@ -195,8 +195,8 @@ describe("LightComponent", () => {
                     });
                 }
 
-                render(): HTMLElement {
-                    return h("div", {}, "Test");
+                render(): HTMLElement | SVGElement {
+                    return h("div", {}, "Test") as HTMLElement;
                 }
             }
 
@@ -225,8 +225,8 @@ describe("LightComponent", () => {
                     });
                 }
 
-                render(): HTMLElement {
-                    return h("div", {}, "Test");
+                render(): HTMLElement | SVGElement {
+                    return h("div", {}, "Test") as HTMLElement;
                 }
             }
 
@@ -295,7 +295,7 @@ describe("LightComponent", () => {
                         shouldThrow = false;
                         throw new Error("Render error");
                     }
-                    return h("div", {}, "Success");
+                    return h("div", {}, "Success") as HTMLElement;
                 }
             }
 
@@ -331,7 +331,7 @@ describe("LightComponent", () => {
 
         test("querySelectorAll 应该能找到所有匹配的元素", () => {
             class MultiItemComponent extends LightComponent {
-                render(): HTMLElement {
+                render(): HTMLElement | SVGElement {
                     return h("div", {}, [
                         h("p", { class: "item" }, "Item 1"),
                         h("p", { class: "item" }, "Item 2"),
@@ -367,14 +367,14 @@ describe("LightComponent", () => {
 
             // 2. Editor.js 移动元素：断开连接（但内容仍然存在）
             component.disconnectedCallback();
-            expect(component.connected).toBe(false);
+            expect((component as any).connected).toBe(false);
             expect(component.onDisconnectedCallCount).toBe(1);
             // 内容应该仍然存在（Editor.js 只是移动，不删除）
             expect(component.querySelector(".test-content")).toBe(originalContent);
 
             // 3. Editor.js 将元素插入到新位置：重新连接
             component.connectedCallback();
-            expect(component.connected).toBe(true);
+            expect((component as any).connected).toBe(true);
 
             // 4. 验证：应该跳过渲染（避免重复）
             expect(component.renderCallCount).toBe(1); // 仍然是 1

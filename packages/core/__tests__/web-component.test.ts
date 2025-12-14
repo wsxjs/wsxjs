@@ -94,13 +94,13 @@ describe("WebComponent", () => {
 
             // 模拟 Editor.js 移动元素：断开连接但 Shadow DOM 内容仍然存在
             component.disconnectedCallback();
-            expect(component.connected).toBe(false);
+            expect((component as any).connected).toBe(false);
             // Shadow DOM 内容应该仍然存在（Editor.js 只是移动，不删除）
             expect(component.shadowRoot.children.length).toBeGreaterThan(0);
 
             // 重新连接（Shadow DOM 内容仍然存在）
             component.connectedCallback();
-            expect(component.connected).toBe(true);
+            expect((component as any).connected).toBe(true);
 
             // 应该跳过渲染（避免重复）
             expect(component.renderCallCount).toBe(1); // 仍然是 1
@@ -167,8 +167,8 @@ describe("WebComponent", () => {
                     });
                 }
 
-                render(): HTMLElement {
-                    return h("div", {}, "Test");
+                render(): HTMLElement | SVGElement {
+                    return h("div", {}, "Test") as HTMLElement;
                 }
             }
 
@@ -200,8 +200,8 @@ describe("WebComponent", () => {
                     });
                 }
 
-                render(): HTMLElement {
-                    return h("div", {}, "Test");
+                render(): HTMLElement | SVGElement {
+                    return h("div", {}, "Test") as HTMLElement;
                 }
             }
 
@@ -267,7 +267,7 @@ describe("WebComponent", () => {
                         shouldThrow = false;
                         throw new Error("Render error");
                     }
-                    return h("div", {}, "Success");
+                    return h("div", {}, "Success") as HTMLElement;
                 }
             }
 
@@ -306,7 +306,7 @@ describe("WebComponent", () => {
 
         test("querySelectorAll 应该能在 Shadow DOM 中找到所有匹配的元素", () => {
             class MultiItemWebComponent extends WebComponent {
-                render(): HTMLElement {
+                render(): HTMLElement | SVGElement {
                     return h("div", {}, [
                         h("p", { class: "item" }, "Item 1"),
                         h("p", { class: "item" }, "Item 2"),
@@ -342,7 +342,7 @@ describe("WebComponent", () => {
 
             // 2. Editor.js 移动元素：断开连接（但 Shadow DOM 内容仍然存在）
             component.disconnectedCallback();
-            expect(component.connected).toBe(false);
+            expect((component as any).connected).toBe(false);
             expect(component.onDisconnectedCallCount).toBe(1);
             // Shadow DOM 内容应该仍然存在（Editor.js 只是移动，不删除）
             expect(component.shadowRoot.children.length).toBeGreaterThan(0);
@@ -350,7 +350,7 @@ describe("WebComponent", () => {
 
             // 3. Editor.js 将元素插入到新位置：重新连接
             component.connectedCallback();
-            expect(component.connected).toBe(true);
+            expect((component as any).connected).toBe(true);
 
             // 4. 验证：应该跳过渲染（避免重复）
             expect(component.renderCallCount).toBe(1); // 仍然是 1
