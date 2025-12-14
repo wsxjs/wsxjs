@@ -83,6 +83,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0005](./0005-wsx-router-enhancements.md) | WSX Router 增强 | Draft | Claude |
 | [RFC-0009](./0009-scss-sass-preprocessing.md) | SCSS/SASS 预处理支持 | Draft (Future) | Claude |
 | [RFC-0010](./0010-eslint-rules-enhancement.md) | ESLint 规则增强 | Draft | Claude |
+| [RFC-0015](./0015-i18next-integration.md) | i18next 国际化集成 | Draft | WSX Team |
 
 ## RFC原则
 
