@@ -578,9 +578,11 @@ async function main() {
             silent: false, // 显示输出，允许交互式输入 OTP
         });
 
-        publishSpinner.succeed("所有包已发布到 NPM");
+        // 发布成功：使用 console.log 因为 spinner 已停止
+        console.log(chalk.green("✅ 所有包已发布到 NPM"));
     } catch (error) {
-        publishSpinner.fail(`发布失败`);
+        // 发布失败：使用 console.error 因为 spinner 已停止
+        console.error(chalk.red("❌ 发布失败"));
         const errorMessage = error.message || String(error);
         if (
             errorMessage.includes("OTP") ||
