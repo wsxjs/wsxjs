@@ -6,7 +6,7 @@
  */
 
 import { execSync } from "child_process";
-import { readFileSync, existsSync, readdirSync, readdir } from "fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync, readdir } from "fs";
 import { join } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -47,6 +47,69 @@ function execSilent(command) {
 function getVersion() {
     const packageJson = JSON.parse(readFileSync(join(ROOT_DIR, "package.json"), "utf-8"));
     return packageJson.version;
+}
+
+/**
+ * 手动更新版本号（major, minor, patch）
+ */
+function bumpVersion(versionType) {
+    const semver = /^(\d+)\.(\d+)\.(\d+)$/;
+    const packagesDir = join(ROOT_DIR, "packages");
+
+    // 读取根目录 package.json
+    const rootPackageJsonPath = join(ROOT_DIR, "package.json");
+    const rootPackageJson = JSON.parse(readFileSync(rootPackageJsonPath, "utf-8"));
+    const currentVersion = rootPackageJson.version;
+    const match = currentVersion.match(semver);
+
+    if (!match) {
+        throw new Error(`无效的版本号格式: ${currentVersion}`);
+    }
+
+    let [, major, minor, patch] = match.map(Number);
+    switch (versionType) {
+        case "major":
+            major++;
+            minor = 0;
+            patch = 0;
+            break;
+        case "minor":
+            minor++;
+            patch = 0;
+            break;
+        case "patch":
+            patch++;
+            break;
+        default:
+            throw new Error(`无效的版本类型: ${versionType}`);
+    }
+
+    const newVersion = `${major}.${minor}.${patch}`;
+
+    // 更新根目录 package.json
+    rootPackageJson.version = newVersion;
+    writeFileSync(rootPackageJsonPath, JSON.stringify(rootPackageJson, null, 2) + "\n", "utf-8");
+
+    // 更新所有包的 package.json
+    const dirs = readdirSync(packagesDir, { withFileTypes: true });
+    for (const dir of dirs) {
+        if (dir.isDirectory()) {
+            const packageJsonPath = join(packagesDir, dir.name, "package.json");
+            if (existsSync(packageJsonPath)) {
+                try {
+                    const pkg = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+                    if (pkg.version) {
+                        pkg.version = newVersion;
+                        writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2) + "\n", "utf-8");
+                    }
+                } catch {
+                    // 忽略无效的 package.json
+                }
+            }
+        }
+    }
+
+    return newVersion;
 }
 
 function checkBuild(pkg, distPath) {
@@ -277,47 +340,130 @@ async function main() {
     shouldBumpVersion = bumpVersion;
 
     if (bumpVersion) {
-        // 检查是否有 changeset
-        const hasChangesetFiles = hasChangesets();
-        if (!hasChangesetFiles) {
-            console.log(chalk.yellow("\n⚠️  未找到 changeset 文件"));
-            const { createChangeset } = await inquirer.prompt([
+        // 询问使用哪种版本更新方式
+        const { versionUpdateMethod } = await inquirer.prompt([
+            {
+                type: "list",
+                name: "versionUpdateMethod",
+                message: "选择版本更新方式:",
+                choices: [
+                    { name: "使用 changeset (推荐)", value: "changeset" },
+                    { name: "手动选择版本类型 (major/minor/patch)", value: "manual" },
+                ],
+                default: "changeset",
+            },
+        ]);
+
+        let newVersion;
+
+        if (versionUpdateMethod === "manual") {
+            // 手动版本更新
+            const { versionType } = await inquirer.prompt([
                 {
-                    type: "confirm",
-                    name: "createChangeset",
-                    message: "是否创建 changeset?",
-                    default: true,
+                    type: "list",
+                    name: "versionType",
+                    message: "选择版本类型:",
+                    choices: [
+                        { name: "Major (主版本号，不兼容的 API 修改)", value: "major" },
+                        { name: "Minor (次版本号，向后兼容的功能新增)", value: "minor" },
+                        { name: "Patch (修订号，向后兼容的问题修复)", value: "patch" },
+                    ],
                 },
             ]);
 
-            if (createChangeset) {
-                const createSpinner = ora("创建 changeset").start();
-                try {
-                    // 运行 changeset 命令（交互式）
-                    exec("pnpm changeset");
-                    createSpinner.succeed("Changeset 已创建");
-                } catch (error) {
-                    createSpinner.fail("创建 changeset 失败");
-                    throw error;
-                }
-            } else {
-                console.log(chalk.yellow("已跳过创建 changeset"));
-                process.exit(0);
+            const currentVersion = getVersion();
+            const bumpSpinner = ora("更新版本号").start();
+            try {
+                newVersion = bumpVersion(versionType);
+                bumpSpinner.succeed(`版本已更新: v${currentVersion} → v${newVersion}`);
+            } catch (error) {
+                bumpSpinner.fail(`版本更新失败: ${error.message}`);
+                throw error;
             }
+        } else {
+            // 使用 changeset
+            const hasChangesetFiles = hasChangesets();
+            if (!hasChangesetFiles) {
+                console.log(chalk.yellow("\n⚠️  未找到 changeset 文件"));
+                const { createChangeset } = await inquirer.prompt([
+                    {
+                        type: "confirm",
+                        name: "createChangeset",
+                        message: "是否创建 changeset?",
+                        default: true,
+                    },
+                ]);
+
+                if (createChangeset) {
+                    const createSpinner = ora("创建 changeset").start();
+                    try {
+                        // 运行 changeset 命令（交互式）
+                        exec("pnpm changeset");
+                        createSpinner.succeed("Changeset 已创建");
+                    } catch (error) {
+                        createSpinner.fail("创建 changeset 失败");
+                        throw error;
+                    }
+                } else {
+                    console.log(chalk.yellow("已跳过创建 changeset"));
+                    process.exit(0);
+                }
+            }
+
+            // 应用 changeset 版本更新
+            const applySpinner = ora("应用 changeset 版本更新").start();
+            try {
+                exec("pnpm changeset:version", { silent: true });
+                applySpinner.succeed("Changeset 版本更新已应用");
+            } catch (error) {
+                applySpinner.fail("应用 changeset 版本更新失败");
+                throw error;
+            }
+
+            newVersion = getVersion();
+            console.log(chalk.green(`\n新版本: v${newVersion}`));
         }
 
         // 版本管理任务
         const versionTasks = new Listr(
             [
                 {
-                    title: "应用 changeset 版本更新",
-                    task: () => exec("pnpm changeset:version", { silent: true }),
+                    title: "重新构建（版本更新后）",
+                    task: () => exec("turbo build", { silent: true }),
                 },
                 {
-                    title: "获取新版本号",
+                    title: "提交版本更新到 Git",
                     task: (ctx) => {
-                        ctx.version = getVersion();
-                        console.log(chalk.green(`\n新版本: v${ctx.version}`));
+                        ctx.version = newVersion;
+                        try {
+                            exec(
+                                "git add package.json packages/*/package.json CHANGELOG.md .changeset/",
+                                {
+                                    silent: true,
+                                }
+                            );
+                        } catch {
+                            // 可能没有需要添加的文件
+                        }
+
+                        const hasChanges = execSilent("git status --porcelain");
+                        if (hasChanges) {
+                            exec(`git commit -m "chore: release v${ctx.version}\n\n[skip ci]"`, {
+                                silent: true,
+                            });
+                        }
+                    },
+                },
+                {
+                    title: "创建 Git 标签",
+                    task: (ctx) => {
+                        ctx.version = newVersion;
+                        const tagExists = execSilent(`git rev-parse v${ctx.version} 2>/dev/null`);
+                        if (!tagExists) {
+                            exec(`git tag -a v${ctx.version} -m "Release v${ctx.version}"`, {
+                                silent: true,
+                            });
+                        }
                     },
                 },
                 {
@@ -371,7 +517,7 @@ async function main() {
             }
         );
 
-        let versionContext = {};
+        let versionContext = { version: newVersion };
         try {
             await versionTasks.run(versionContext);
             console.log(chalk.green(`\n✅ 版本更新完成! 新版本: v${versionContext.version}`));
