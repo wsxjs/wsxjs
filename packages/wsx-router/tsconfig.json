@@ -8,7 +8,8 @@
         "jsx": "react-jsx",
         "jsxImportSource": "@wsxjs/wsx-core",
         "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "types": ["@wsxjs/wsx-core"]
     },
     "include": ["src/**/*", "src/types/**/*"],
     "exclude": ["dist", "node_modules", "**/__tests__/**", "**/*.test.ts"]

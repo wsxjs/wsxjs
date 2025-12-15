@@ -2,12 +2,19 @@
 
 - **RFC编号**: 0018
 - **开始日期**: 2025-01-15
-- **状态**: Proposed
+- **状态**: Rejected - 技术限制
 - **作者**: WSX Team
+- **拒绝日期**: 2025-01-15
 
 ## 摘要
 
+**⚠️ 此 RFC 已被拒绝 - 技术限制**
+
 本文档说明如何在 `@wsxjs/wsx-core` 中统一暴露 `.wsx` 文件模块类型定义，确保所有使用 WSX Framework 的项目都能正确识别 `.wsx` 文件类型，而无需在每个包中重复配置 `wsx.d.ts` 文件。
+
+**拒绝原因**：经过验证，由于 TypeScript 模块类型解析机制的限制，`declare module "*.wsx"` 无法在 monorepo 中跨包边界自动解析。即使配置了 `types`、`typeRoots`、`include` 等选项，TypeScript 也无法从 `node_modules/@wsxjs/wsx-core` 中自动解析模块类型声明。
+
+**替代方案**：使用 postinstall 脚本自动生成 `wsx.d.ts` 文件（已在 `@wsxjs/wsx-core` 中实现，见 RFC-0019）。
 
 ## 动机
 

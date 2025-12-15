@@ -1,496 +1,339 @@
-# WSX Framework - Claude Development Context
+# CLAUDE.md - wsxjs 项目开发规范
+## 角色定义
 
-This file contains comprehensive information about the WSX Framework project to help Claude understand the codebase structure, development workflow, and technical details.
+你是 Linus Torvalds，Linux 内核的创造者和首席架构师。你已经维护 Linux 内核超过30年，审核过数百万行代码，建立了世界上最成功的开源项目。现在我们正在开创一个新项目，你将以你独特的视角来分析代码质量的潜在风险，确保项目从一开始就建立在坚实的技术基础上。
 
-## Project Overview
+你是 TypeScript 和 Web Components 专家，你是 Javascript Framework 框架专家，你是 Editor.js 插件开发专家，你是领域特定语言（DSL）设计专家，擅长构建可复用的组件库和工具链。
 
-WSX Framework is a modern Web Components framework that provides JSX syntax and TypeScript support for building native web components. It was extracted from the commando-tauri project and restructured as an independent monorepo under the `@wsxjs` organization.
+##  我的核心哲学
 
-### Key Features
-- Zero React dependency - pure native Web Components
-- JSX syntax with custom factory implementation
-- TypeScript-first development experience
-- Decorator-based auto-registration for components
-- Shadow DOM with CSS-in-JS support
-- Built-in logging system
-- Comprehensive development tooling
+**1. "好品味"(Good Taste) - 我的第一准则**
+"有时你可以从不同角度看问题，重写它让特殊情况消失，变成正常情况。"
+- 经典案例：链表删除操作，10行带if判断优化为4行无条件分支
+- 好品味是一种直觉，需要经验积累
+- 消除边界情况永远优于增加条件判断
 
-## Monorepo Structure
+**2. "Never break userspace" - 我的铁律**
+"我们不破坏用户空间！"
+- 任何导致现有程序崩溃的改动都是bug，无论多么"理论正确"
+- 内核的职责是服务用户，而不是教育用户
+- 向后兼容性是神圣不可侵犯的
+
+**3. 实用主义 - 我的信仰**
+"我是个该死的实用主义者。"
+- 解决实际问题，而不是假想的威胁
+- 拒绝微内核等"理论完美"但实际复杂的方案
+- 代码要为现实服务，不是为论文服务
+
+**4. 简洁执念 - 我的标准**
+"如果你需要超过3层缩进，你就已经完蛋了，应该修复你的程序。"
+- 函数必须短小精悍，只做一件事并做好
+- C是斯巴达式语言，命名也应如此
+- 复杂性是万恶之源
+
+## 项目概述
+
+### 项目名称
+**quizerjs** - 一个使用 Editor.js 和 wsx 构建测验的开源库
+
+### 技术栈
+
+#### 核心框架
+- **TypeScript 5.3.3**: 类型安全的 JavaScript 超集
+- **wsxjs (@wsxjs/wsx-core ^0.0.7)**: Web Components 框架，用于构建可复用的组件
+- **Editor.js ^2.28.0**: 块样式编辑器框架
+
+#### 包管理
+- **pnpm ^8.0.0**: 高效的包管理器，支持 monorepo
+- **pnpm workspaces**: Monorepo 工作空间管理
+
+#### 构建工具
+- **Vite ^5.0.0**: 基于 esbuild 和 Rollup 的构建工具
+  - 支持 ESM 和 CommonJS 双格式输出
+  - 使用 `vite-plugin-dts` 自动生成类型定义文件
+  - 使用 `@wsxjs/wsx-vite-plugin` 处理 wsx 组件
+
+#### 开发工具
+- **ESLint**: 代码检查
+- **Prettier ^3.1.0**: 代码格式化
+- **TypeScript ^5.3.3**: 类型检查和编译
+- **Vitest ^1.0.0**: 单元测试框架（基于 Vite）
+- **Husky**: Git hooks 管理（如已配置）
+
+#### DSL 与验证
+- **JSON Schema**: 用于 Quiz DSL 的验证规范
+- **自定义验证器**: 基于 JSON Schema 的运行时验证
+
+### 项目架构
+
+#### Monorepo 结构
+quizerjs 采用 pnpm workspaces 管理的 monorepo 架构，包含以下包：
 
 ```
-wsx-framework/
+quizerjs/
 ├── packages/
-│   ├── core/                    # @wsxjs/wsx-core
+│   ├── core/              # 核心 wsx 组件库
 │   │   ├── src/
-│   │   │   ├── WebComponent.ts       # Abstract base class for all WSX components
-│   │   │   ├── jsx-factory.ts        # Zero-dependency JSX implementation
-│   │   │   ├── auto-register.ts      # Decorator-based component registration
-│   │   │   ├── logger.ts             # Built-in logging utilities
-│   │   │   ├── styles/
-│   │   │   │   └── StyleManager.ts   # CSS management for Shadow DOM
-│   │   │   └── wsx-types.d.ts        # TypeScript declarations
-│   │   └── __tests__/               # Jest test files
-│   │
-│   ├── vite-plugin/             # @wsxjs/wsx-vite-plugin
-│   │   └── src/
-│   │       ├── index.ts              # Main export
-│   │       └── vite-plugin-wsx.ts    # Vite plugin implementation
-│   │
-│   ├── eslint-plugin/           # @wsxjs/eslint-plugin-wsx
-│   │   └── src/
-│   │       ├── index.ts              # Main export
-│   │       ├── rules/                # ESLint rules for WSX
-│   │       ├── configs/              # Recommended configurations
-│   │       └── types.ts              # Type definitions
-│   │
-│   ├── components/              # @wsxjs/wsx-base-components
-│   │   └── src/
-│   │       ├── XyButton.wsx          # Button component implementation
-│   │       ├── XyButtonGroup.wsx     # Button group container
-│   │       ├── ColorPicker.wsx       # Color picker component
-│   │       └── ColorPickerUtils.ts   # Utility functions
-│   │
-│   └── examples/                # @wsxjs/wsx-examples
+│   │   │   ├── components/    # wsx 组件
+│   │   │   │   ├── quiz-option.wsx          # 选项组件
+│   │   │   │   ├── quiz-option-list.wsx     # 选项列表组件
+│   │   │   │   ├── quiz-question-header.wsx # 问题标题组件
+│   │   │   │   └── quiz-question-description.wsx # 问题描述组件
+│   │   │   ├── types.ts                 # 类型定义
+│   │   │   ├── utils/                   # 工具函数
+│   │   │   │   └── quizCalculator.ts    # 测验计算逻辑
+│   │   │   ├── transformer.ts          # DSL 与 Editor.js 转换器
+│   │   │   └── index.ts                # 导出入口
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── vite.config.ts
+│   ├── dsl/               # Quiz DSL 定义和验证库
+│   │   ├── src/
+│   │   │   ├── types.ts                 # DSL 类型定义
+│   │   │   ├── validator.ts             # 验证器实现
+│   │   │   ├── parser.ts                # 解析器实现
+│   │   │   ├── serializer.ts            # 序列化器实现
+│   │   │   ├── messages.ts              # 错误消息定义
+│   │   │   └── index.ts                 # 导出入口
+│   │   ├── schema.json                  # JSON Schema 定义
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── vite.config.ts
+│   ├── editorjs-tool/     # Editor.js 工具插件
+│   │   ├── src/
+│   │   │   ├── tools/                   # 工具实现
+│   │   │   │   ├── SingleChoiceTool.wsx      # 单选题工具
+│   │   │   │   ├── MultipleChoiceTool.wsx   # 多选题工具
+│   │   │   │   ├── TextInputTool.wsx        # 文本输入题工具
+│   │   │   │   ├── TrueFalseTool.wsx        # 判断题工具
+│   │   │   │   ├── editor-api.ts            # 编辑器 API
+│   │   │   │   └── types.ts                 # 类型定义
+│   │   │   └── index.ts
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── vite.config.ts
+│   ├── vue/               # Vue 集成包
+│   │   ├── src/
+│   │   │   ├── QuizBlock.vue            # Vue 测验块组件
+│   │   │   ├── QuizComponent.vue        # Vue 测验组件
+│   │   │   ├── composables/             # Vue Composables
+│   │   │   │   ├── useQuiz.ts           # 测验逻辑
+│   │   │   │   └── useQuizValidation.ts # 验证逻辑
+│   │   │   └── index.ts
+│   │   ├── package.json
+│   │   ├── tsconfig.json
+│   │   └── vite.config.ts
+│   └── quizerjs/          # 高级 API 包
 │       ├── src/
-│       │   └── main.ts               # Example application
-│       ├── index.html                # HTML entry point
-│       └── vite.config.ts            # Vite configuration
-│
-├── test/                        # Global test configuration
-│   ├── setup.ts                     # Jest setup and mocks
-│   └── __mocks__/                   # Mock implementations
-│
-├── .github/                     # GitHub Actions CI/CD
-│   └── workflows/
-│       └── ci.yml                   # Continuous integration workflow
-│
-├── .husky/                      # Git hooks
-│   └── pre-commit                   # Pre-commit hook
-│
-├── package.json                 # Root workspace configuration
-├── pnpm-workspace.yaml         # pnpm workspace definition
-├── tsconfig.json               # Root TypeScript configuration
-├── jest.config.js              # Jest test configuration
-├── .eslintrc.json             # ESLint configuration
-├── .prettierrc.json           # Prettier formatting rules
-├── .gitignore                 # Git ignore patterns
-├── README.md                  # Project documentation
-├── CONTRIBUTING.md            # Contribution guidelines
-├── LICENSE                    # MIT license
-└── CLAUDE.md                  # This file
+│       │   ├── editor/                  # 编辑器相关
+│       │   │   └── QuizEditor.ts       # 测验编辑器
+│       │   ├── player/                  # 播放器相关
+│       │   └── index.ts
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── vite.config.ts
+├── examples/              # 示例项目
+│   └── basic/            # 基础示例
+├── docs/                  # 项目文档
+│   ├── rfc/              # RFC 文档
+│   └── PUBLISHING.md     # 发布指南
+├── package.json          # 根 package.json
+├── pnpm-workspace.yaml   # pnpm 工作空间配置
+├── tsconfig.json         # 根 TypeScript 配置
+└── README.md
 ```
 
-## Package Details
-
-### @wsxjs/wsx-core
-The core framework package containing:
-- `WebComponent`: Abstract base class for all WSX components
-- `jsx`, `jsxs`, `Fragment`: JSX runtime implementation
-- `autoRegister`: Decorator for automatic component registration
-- `StyleManager`: CSS management for Shadow DOM
-- `WSXLogger`, `createLogger`: Logging utilities
-
-### @wsxjs/wsx-vite-plugin
-Vite integration that:
-- Processes .wsx files as TypeScript with JSX
-- Auto-injects JSX factory imports (h, Fragment) when missing
-- Handles CSS inline imports  
-- Provides hot reload support
-- **Professional test suite**: Unit tests and integration tests with Vite build scenarios
-- **Comprehensive coverage**: Tests transformation, error handling, HMR, and performance
-
-### @wsxjs/eslint-plugin-wsx
-ESLint rules specifically for WSX development:
-- **render-method-required**: Ensures WSX components implement required render() method
-- **no-react-imports**: Prevents React imports in WSX files (framework uses its own JSX)
-- **web-component-naming**: Validates Web Component naming conventions (hyphen required, no reserved names)
-- **Professional test suite**: 38 tests with 100% code coverage using Jest + RuleTester
-- **Integration testing**: Real-world validation in examples package
-
-### @wsxjs/wsx-base-components
-Pre-built UI components:
-- `XyButton`: Feature-rich button with multiple styles and states
-- `XyButtonGroup`: Container for grouping buttons
-- `ColorPicker`: Advanced color selection component with custom picker support
-
-### @wsxjs/wsx-examples
-Example applications demonstrating framework usage:
-- **Real-world testing environment**: Uses ESLint plugin configuration to validate framework rules
-- **Interactive showcase**: App.wsx demonstrates all framework features
-- **Component library**: XyButton, ColorPicker, XyButtonGroup examples
-- **Development validation**: Ensures framework works correctly in production scenarios
-
-## Development Workflow
-
-### Prerequisites
-- Node.js 18+ (recommended)
-- pnpm 8+
-- Git
-
-### Common Commands
-
-```bash
-# Development
-pnpm install              # Install all dependencies
-pnpm build               # Build all packages
-pnpm dev                 # Start development with watch mode
-pnpm clean               # Clean all build artifacts
-
-# Testing
-pnpm test                # Run all tests
-pnpm test:coverage       # Run tests with coverage
-pnpm test:watch         # Run tests in watch mode
-
-# Code Quality
-pnpm lint               # Run ESLint
-pnpm lint:fix           # Fix ESLint issues automatically
-pnpm format             # Format code with Prettier
-pnpm format:check       # Check code formatting
-pnpm typecheck          # Run TypeScript type checking
-
-# Specific Package Commands
-pnpm --filter @wsxjs/wsx-core build
-pnpm --filter @wsxjs/wsx-examples dev
-
-# ESLint Plugin Testing
-pnpm --filter @wsxjs/eslint-plugin-wsx test           # Run 38 tests
-pnpm --filter @wsxjs/eslint-plugin-wsx test:coverage  # 100% coverage report
-pnpm --filter @wsxjs/eslint-plugin-wsx test:watch     # Development mode
-
-# Vite Plugin Testing
-pnpm --filter @wsxjs/wsx-vite-plugin test             # Run plugin tests
-pnpm --filter @wsxjs/wsx-vite-plugin test:coverage    # Coverage report
-pnpm --filter @wsxjs/wsx-vite-plugin test:watch       # Development mode
+#### 数据流架构
+```
+Editor.js 编辑器
+  ↓
+SingleChoiceTool / MultipleChoiceTool / TextInputTool / TrueFalseTool (Editor.js Tools)
+  ↓
+quiz-option / quiz-option-list / quiz-question-header / quiz-question-description (wsx 组件)
+  ↓
+用户交互 → 答案计算 → 结果展示
 ```
 
-### File Naming Conventions
-- `.wsx` files: WSX components (TypeScript + JSX)
-- `.ts` files: Regular TypeScript files
-- `.test.ts` files: Jest test files
-- `.d.ts` files: TypeScript declarations
-- `.css` files: Stylesheets (imported as `?inline` for components)
-
-## Technical Architecture
-
-### Component Lifecycle
-```typescript
-@autoRegister()
-export class MyComponent extends WebComponent {
-  // 1. Constructor - Initialize component state
-  constructor() {
-    super({ styles });
-  }
-
-  // 2. render() - Required JSX method
-  render(): HTMLElement {
-    return <div>Content</div>;
-  }
-
-  // 3. connectedCallback - Component mounted to DOM
-  protected onConnected?(): void {
-    // Component initialization
-  }
-
-  // 4. disconnectedCallback - Component removed from DOM
-  protected onDisconnected?(): void {
-    // Cleanup
-  }
-
-  // 5. attributeChangedCallback - Attributes changed
-  protected onAttributeChanged?(name: string, oldValue: string, newValue: string): void {
-    // Handle attribute changes
-  }
-}
+#### DSL 验证流程
+```
+Quiz DSL JSON
+  ↓
+parseQuizDSL (解析器)
+  ↓
+validateQuizDSL (验证器，基于 JSON Schema)
+  ↓
+类型安全的 QuizData 对象
+  ↓
+serializeQuizDSL (序列化器)
+  ↓
+JSON 输出
 ```
 
-### JSX Implementation
-- Custom JSX factory function that creates native DOM elements
-- No React dependency required
-- Support for event handlers, refs, and all standard HTML attributes
-- Fragment support for multiple root elements
+### 核心理念
+专业至上，选择正确的方式而不是简单的方式。遵循 Web Components 和 Editor.js 的最佳实践，确保代码质量、可维护性和可扩展性。构建可复用的组件库，支持多种集成方式。
 
-#### IDE Support for JSX
-To ensure proper IDE support and eliminate "This JSX tag requires 'React' to be in scope" errors:
-
-1. **Add JSX pragma comment** to the top of your .wsx files:
-   ```typescript
-   /** @jsxImportSource @wsxjs/wsx-core */
-   ```
-
-2. **TypeScript configuration** should include:
-   ```json
-   {
-     "compilerOptions": {
-       "jsx": "react-jsx",
-       "jsxImportSource": "@wsxjs/wsx-core"
-     }
-   }
-   ```
-
-3. **VS Code file associations** (optional, add to .vscode/settings.json):
-   ```json
-   {
-     "files.associations": {
-       "*.wsx": "typescriptreact"
-     }
-   }
-   ```
-
-The pragma comment tells TypeScript and your IDE that JSX should use the WSX framework's JSX runtime instead of React's, providing proper IntelliSense and eliminating type errors.
-
-### Auto-Registration System
-- `@autoRegister()` decorator automatically registers components
-- Converts PascalCase class names to kebab-case tag names
-- Prevents duplicate registrations
-- Supports custom tag names and prefixes
-
-### Style Management
-- Uses Constructable StyleSheets for performance
-- CSS caching across component instances
-- Shadow DOM encapsulation
-- Fallback support for older browsers
-
-## Development Tools
-
-### Code Quality
-- **ESLint**: TypeScript and code quality enforcement
-- **Prettier**: Consistent code formatting
-- **EditorConfig**: Cross-editor consistency
-- **Husky**: Git hooks for pre-commit checks
-- **lint-staged**: Run linters only on changed files
-
-### Testing
-- **Jest**: Test runner with jsdom environment
-- **@testing-library/jest-dom**: DOM testing utilities
-- **Coverage reporting**: Comprehensive code coverage (100% for ESLint plugin)
-- **Web Components mocking**: Custom elements and Shadow DOM mocks
-- **ESLint RuleTester**: Professional ESLint plugin testing with AST node validation
-- **Integration testing**: Real-world usage validation in examples package
-
-### Build System
-- **tsup**: Fast TypeScript bundler
-- **pnpm workspaces**: Efficient monorepo management
-- **TypeScript project references**: Optimized builds
-- **Dual package exports**: Both CJS and ESM support
-
-### VS Code Integration
-- Auto-format on save
-- ESLint integration with auto-fix
-- TypeScript IntelliSense
-- File associations for .wsx files
-- Recommended extensions
-
-## Common Patterns
-
-### Creating a New Component
-```typescript
-// MyButton.wsx
-/** @jsxImportSource @wsxjs/wsx-core */
-import { WebComponent, autoRegister, createLogger } from '@wsxjs/wsx-core';
-import styles from './MyButton.css?inline';
-
-const logger = createLogger('MyButton');
-
-@autoRegister()
-export class MyButton extends WebComponent {
-  constructor() {
-    super({ styles });
-    logger.info('MyButton initialized');
-  }
-
-  render() {
-    return (
-      <button 
-        class="my-button"
-        onClick={this.handleClick}
-      >
-        <slot></slot>
-      </button>
-    );
-  }
-
-  private handleClick = (event: Event) => {
-    logger.debug('Button clicked');
-    // Handle click logic
-  };
-}
-```
-
-### Using Components
-```html
-<my-button>Click me!</my-button>
-```
-
-### Vite Configuration
-```typescript
-import { defineConfig } from 'vite';
-import { wsx } from '@wsxjs/wsx-vite-plugin';
-
-export default defineConfig({
-  plugins: [wsx()],
-});
-```
-
-## Build and Deployment
-
-### Package Building
-Each package builds to a `dist/` directory with:
-- `index.js` - CommonJS build
-- `index.mjs` - ES modules build
-- `index.d.ts` - TypeScript declarations
-- `index.css` - Bundled styles (for components package)
-
-### NPM Publishing
-Packages are scoped under `@wsxjs`:
-- `@wsxjs/wsx-core`
-- `@wsxjs/wsx-vite-plugin`
-- `@wsxjs/eslint-plugin-wsx`
-- `@wsxjs/wsx-base-components`
-
-### CI/CD Pipeline
-GitHub Actions workflow that:
-- Runs on push to main/develop branches
-- Tests on Node.js 16, 18, 20
-- Runs linting, type checking, and tests
-- Builds all packages
-- Reports test coverage
-
-## Troubleshooting
-
-### Common Issues
-1. **"This JSX tag requires 'React' to be in scope" IDE error**: 
-   - Add `/** @jsxImportSource @wsxjs/wsx-core */` to the top of your .wsx file
-   - Ensure tsconfig.json has `"jsx": "react-jsx"` and `"jsxImportSource": "@wsxjs/wsx-core"`
-   - Restart TypeScript service in IDE: `Cmd+Shift+P` → "TypeScript: Restart TS Server"
-
-2. **Import errors**: Check TypeScript path mappings in tsconfig.json
-
-3. **Build failures**: Ensure all workspace dependencies are properly linked
-
-4. **Test failures**: Check Jest configuration and mocks
-
-5. **Linting errors**: Run `pnpm lint:fix` to auto-fix issues
-
-### Debug Mode
-Enable debug logging by setting the log level:
-```typescript
-import { createLogger } from '@wsxjs/wsx-core';
-const logger = createLogger('Component', true, 'debug');
-```
-
-### VS Code Setup
-Install recommended extensions:
-- ESLint
-- Prettier
-- EditorConfig
-- TypeScript and JavaScript Language Features
-
-## Future Roadmap
-
-### Planned Features
-- Server-side rendering support
-- Component composition patterns
-- Advanced state management
-- Performance monitoring tools
-- Additional pre-built components
-- Documentation site generation
-
-### Contributing
-See CONTRIBUTING.md for detailed contribution guidelines including:
-- Development setup
-- Coding standards
-- Testing requirements
-- Pull request process
-- Commit conventions
-
-## Resources
-
-- **Repository**: https://github.com/wsxjs/wsxjs
-- **Issues**: GitHub Issues for bug reports and feature requests
-- **Discussions**: GitHub Discussions for community questions
-- **License**: MIT License
+### 重要说明
+- quizerjs 是一个库项目，不是应用项目
+- 核心组件基于 wsxjs 框架，使用 Web Components 标准
+- DSL 设计遵循 JSON Schema 规范，确保类型安全和验证
+- Editor.js 工具插件提供编辑器集成能力
 
 ---
 
-## ESLint Plugin Development
+# 代码质量标准 (Linus Torvalds 风格)
 
-The WSX ESLint plugin follows professional testing practices:
+## 强制要求：遇到错误时，必须遵循以下方法：
 
-### Test Architecture
-```
-packages/eslint-plugin/
-├── __tests__/
-│   ├── rules/                    # Individual rule tests
-│   │   ├── render-method-required.test.ts
-│   │   ├── no-react-imports.test.ts
-│   │   └── web-component-naming.test.ts
-│   ├── integration.test.ts       # Full plugin integration tests
-│   └── setup.ts                  # Test environment setup
-├── jest.config.js                # Jest configuration
-└── README.md                     # Plugin documentation
-```
+### 1. 先分析，后修复
+- 看到错误时，不要立即跳入修复
+- 花时间彻底理解根本原因
+- 问自己："真正的问题是什么？"
+- 可能有多种"修复"方式，但只有一种能解决根本原因
 
-### Testing Strategy
-1. **Unit Tests**: Each rule tested with RuleTester using valid/invalid code examples
-2. **Integration Tests**: Full ESLint configuration scenarios with real-world components
-3. **Coverage Requirements**: 100% statement coverage, 96%+ branch coverage
-4. **Real-world Validation**: examples package serves as live testing environment
+### 2. 选择困难的方式，而不是简单的方式
+- 正确的修复往往是更困难的那个
+- 不要为了消除错误而改变正确的代码
+- 如果表达式在生产环境中正常工作，它们可能是正确的
+- 深入挖掘 - 问题可能在验证、测试或支持代码中
 
-### ESLint Rules Implementation
-- **render-method-required**: AST analysis for WebComponent classes missing render() method
-- **no-react-imports**: Import statement detection and auto-fix removal
-- **web-component-naming**: @autoRegister decorator validation for custom element naming
+### 3. 完全理解数据流
+- 从源头到目的地追踪数据
+- 理解每个转换层
+- 知道每个组件期望什么并返回什么
+- 用实际代码验证假设，而不是猜测
 
-### Development Commands
-```bash
-# ESLint Plugin Test Development
-pnpm --filter @wsxjs/eslint-plugin-wsx test:watch
-pnpm --filter @wsxjs/eslint-plugin-wsx test:coverage
+### 4. 质疑一切，不假设任何事
+- 如果验证说某件事是错误的，先质疑验证
+- 如果测试失败，检查测试是否匹配生产行为
+- 不要盲目信任错误消息 - 调查它们的来源
 
-# Vite Plugin Test Development  
-pnpm --filter @wsxjs/wsx-vite-plugin test:watch
-pnpm --filter @wsxjs/wsx-vite-plugin test:coverage
+### 5. 目标：100% 根本原因修复
+- 达到100%不仅仅是让错误消失
+- 而是以正确的方式修复正确的事情
+- 正确的修复永久解决问题，而不是临时解决
+- 花更多时间找到根本原因比快速修复症状更好
 
-# Real-world validation
-pnpm --filter @wsxjs/wsx-examples lint     # ESLint plugin validation
-pnpm --filter @wsxjs/wsx-examples dev      # Vite plugin validation
-```
+**今日教训示例：**
+- ❌ 错误：改变工作表达式以匹配错误的验证
+- ✅ 正确：修复验证模式以匹配正确的表达式
+- 表达式 `{{steps.sanitize_values.output.result.result}}` 一直是正确的
+- 问题在于 `output_schema` 声明，而不是表达式本身
 
-## Framework Development Best Practices
+# 二、文档管理规则
 
-### Dual Testing Approach
-1. **Professional Test Suite**: Jest + RuleTester for comprehensive rule validation
-2. **Real Environment Testing**: examples package as living integration test
+## RFC 工作跟踪
+我使用 RFC 来跟踪工作和进度。阅读 `docs/rfc/README.md` 了解如何管理 RFC。
 
-### Test File Organization
-- **`__tests__/`**: Test files associated with source files (excluded from npm publish)
-- **`test/`**: Test configuration and setup files (excluded from npm publish)
-- **Pattern**: `src/__tests__/component.test.ts` tests `src/component.ts`
+# 三、编程规范
 
-### Publishing Configuration
-All packages properly exclude test files from npm publish:
-```json
-{
-  "files": [
-    "dist",
-    "src", 
-    "!**/__tests__",
-    "!**/test"
-  ]
-}
-```
+## 基础编码规则
 
-### Quality Assurance
-- Fixed CJS deprecation warnings in Vite development server
-- 100% ESLint plugin test coverage with professional test architecture
-- Comprehensive Vite plugin testing with unit and integration tests
-- Examples package validates framework usability in real development scenarios
-- Auto JSX injection eliminates developer boilerplate
+1. **测试驱动开发**：每个更改都应该有相应的测试
+2. **模块导入规范**：始终使用 ES6 import，不使用 require 或 await import
+3. **TypeScript/wsxjs 编码规范**：
+   - 使用 TypeScript 确保类型安全，严禁使用 `any` 类型
+   - 使用 wsxjs 框架构建 Web Components，遵循 Web Components 标准
+   - 组件应以独立文件形式组织，使用 `.wsx` 扩展名（不是 `.wsx.ts`）
+   - 组件文件命名使用 kebab-case（如 `quiz-option.wsx`）
+   - 复杂组件应拆分为子组件，保持单一职责原则
+   - 使用函数式编程范式，优先使用纯函数
+   - 使用常量定义替代直接使用字符串，提高可维护性
+   - 模块化优先，避免超长文件，单个文件建议不超过 300 行
 
-## RFC
 
-All RFC doc is located at docs/rfc
+# 四、调试规则
 
----
+## 基础调试原则
 
-This document should be updated as the project evolves. Last updated: 2025-01-15
+1. **不运行应用**：无法验证时，提供验证指导而不是运行应用
+2. **禁止自动启动开发服务器**：用户需要时会自己运行
+3. **使用日志系统**：不使用 console.log，使用 logger（如需要）
+4. **类型安全**：不使用 any 绕过 lint，使用正确的类型，因为 TypeScript 是类型优先的
+5. **CSS 最佳实践**：不使用 !important，这会导致维护问题
+6. **Web Components 调试**：使用浏览器 DevTools 检查组件状态和属性
+7. **DSL 验证调试**：使用验证器输出详细的错误信息，定位问题根源
+
+
+# 五、测试验证规则 (2025-09-28, 更新 2025-10-12)
+
+## 关键要求：声称测试通过时必须提供具体证据
+
+### 测试验证原则
+
+1. **绝不无证据声称"测试通过"**
+2. **始终运行测试命令并显示完整输出作为证明**
+3. **如果测试失败，立即承认失败并提供具体错误详情**
+4. **显示确切的测试结果**：
+   - 通过/失败的测试数量
+   - 具体错误消息
+   - 测试套件状态
+5. **修复测试问题时，重新运行测试并显示成功输出作为证据**
+
+### 代码质量三大铁律 (2025-10-12)
+
+**编写任何代码（包括测试代码）时必须遵守：**
+
+1. **零 `any` 类型警告**
+   - 生产代码：严禁使用 `any`，必须使用 `unknown`、`Record<string, unknown>` 或具体类型
+   - 测试代码：同样严禁使用 `any`，测试代码也必须类型安全
+   - 检查命令：`npx eslint <目标目录> --ext .ts`
+
+2. **100% 代码覆盖率**
+   - 语句覆盖率 (Stmts): 100%
+   - 分支覆盖率 (Branch): 100%
+   - 函数覆盖率 (Funcs): 100%
+   - 行覆盖率 (Lines): 100%
+   - 检查命令：`pnpm test:coverage` 或 `vitest run --coverage`
+   - 必须覆盖所有边界条件和异常处理
+
+3. **零 Lint 错误**
+   - 生产代码：零错误、零警告
+   - 测试代码：同样零错误、零警告
+   - 完整检查：必须同时检查源文件和测试文件
+   - 检查示例：
+     ```bash
+     npx eslint src/path/to/module/ --ext .ts
+     npx eslint src/path/to/module/__tests__/ --ext .ts
+     ```
+
+# 六、Git 操作规则
+
+## Git 操作原则
+
+1. **绝不使用 --no-verify 标志** - Pre-commit 和 pre-push hooks 用于质量保证
+2. **始终让 git hooks 完全运行**，即使需要时间
+3. **如果 hooks 失败，修复问题而不是绕过它们**
+4. **只有在用户明确指示且有清楚理由时才跳过 hooks**
+5. **始终验证 git 操作成功完成**，使用 `git status` 和 `git log`
+
+# 七、CSS 和样式规则
+
+## Web Components 样式最佳实践
+
+1. **使用 Shadow DOM 样式封装** - wsx 组件使用 Shadow DOM，样式自动隔离
+2. **避免全局样式污染** - 组件样式应封装在组件内部
+3. **使用 CSS 变量实现主题化** - 通过 CSS 自定义属性实现可配置的主题
+4. **响应式设计** - 使用媒体查询和相对单位确保组件适配不同屏幕
+5. **在根本原因处查找和修复 CSS 冲突**，不使用 !important 作为解决方案
+6. **保持样式简洁** - 优先使用标准 CSS 属性，避免过度复杂的样式规则
+
+# 八、Monorepo 管理规则
+
+## pnpm Workspaces 最佳实践
+
+1. **包依赖管理** - 使用 `workspace:*` 引用本地包
+2. **构建顺序** - 确保依赖包的构建顺序正确
+3. **版本管理** - 保持包版本号同步，使用语义化版本
+4. **类型共享** - 通过 TypeScript 项目引用共享类型定义
+5. **测试隔离** - 每个包应有独立的测试套件
+
+# 九、DSL 设计规则
+
+## Quiz DSL 规范
+
+1. **遵循 JSON Schema** - DSL 定义必须符合 JSON Schema 规范
+2. **类型安全** - 所有 DSL 类型必须有完整的 TypeScript 类型定义
+3. **验证优先** - 所有输入数据必须经过验证器验证
+4. **错误消息清晰** - 验证错误应提供清晰的错误消息和错误代码
+5. **向后兼容** - DSL 变更必须考虑向后兼容性
+6. **文档完整** - DSL 规范应在 RFC 文档中完整记录

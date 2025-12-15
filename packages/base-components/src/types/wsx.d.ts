@@ -1,6 +1,7 @@
 // Type declaration for .wsx files
 declare module "*.wsx" {
-    import { WebComponent } from "@wsxjs/wsx-core";
-    const component: typeof WebComponent;
-    export default component;
+    import { WebComponent, LightComponent } from "@wsxjs/wsx-core";
+    // Allow any class that extends WebComponent or LightComponent
+    const Component: new (...args: unknown[]) => WebComponent | LightComponent;
+    export default Component;
 }

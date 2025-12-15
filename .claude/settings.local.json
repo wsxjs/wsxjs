@@ -48,7 +48,8 @@
             "Bash(timeout 15s pnpm dev:*)",
             "Bash(tee:*)",
             "Bash(pnpm --filter @wsxjs/wsx-vite-plugin lint:*)",
-            "Bash(npx eslint:*)"
+            "Bash(npx eslint:*)",
+            "WebSearch"
         ],
         "deny": []
     }

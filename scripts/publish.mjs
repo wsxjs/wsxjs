@@ -100,7 +100,11 @@ function bumpVersion(versionType) {
                     const pkg = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
                     if (pkg.version) {
                         pkg.version = newVersion;
-                        writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2) + "\n", "utf-8");
+                        writeFileSync(
+                            packageJsonPath,
+                            JSON.stringify(pkg, null, 2) + "\n",
+                            "utf-8"
+                        );
                     }
                 } catch {
                     // 忽略无效的 package.json

@@ -76,7 +76,13 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0015](./0015-array-reactive-coverage.md) | 数组响应式覆盖说明 | Implemented | WSX Team |
 | [RFC-0016](./0016-component-library-build-guide.md) | 组件库构建指南 | Implemented | WSX Team |
 | [RFC-0017](./0017-jsx-factory-auto-injection-bug-fix.md) | JSX Factory 自动注入 Bug 修复 | Implemented | WSX Team |
-| [RFC-0018](./0018-wsx-dts-package-exposure.md) | 正确暴露 wsx.d.ts 类型定义文件 | Proposed | WSX Team |
+| [RFC-0019](./0019-zero-config-initialization.md) | 零配置初始化方案 | Proposed | WSX Team |
+
+### 被拒绝的RFCs
+
+| RFC | 标题 | 状态 | 提议人 | 拒绝原因 |
+|-----|------|------|--------|----------|
+| [RFC-0018](./0018-wsx-dts-package-exposure.md) | 统一在 wsx-core 中暴露 wsx.d.ts 类型定义 | Rejected | WSX Team | 技术限制：TypeScript 模块类型解析机制在 monorepo 中无法直接统一暴露 |
 
 ### 草稿RFCs
 
