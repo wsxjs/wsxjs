@@ -38,7 +38,6 @@
         "dist",
         "src",
         "types",
-        "scripts",
         "!**/__tests__",
         "!**/test"
     ],
@@ -48,8 +47,7 @@
         "dev": "NODE_ENV=development tsup src/index.ts src/jsx.ts src/jsx-runtime.ts --format cjs,esm --watch --sourcemap",
         "test": "jest",
         "typecheck": "tsc --noEmit",
-        "clean": "rm -rf dist",
-        "postinstall": "node scripts/postinstall.mjs"
+        "clean": "rm -rf dist"
     },
     "keywords": [
         "web-components",
