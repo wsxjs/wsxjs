@@ -1,20 +1,26 @@
 # @wsxjs/wsx-core
 
+## 0.0.17
+
+### Patch Changes
+
+- republish
+
 ## 0.0.6
 
 ### Major Features
 
 - **ReactiveWebComponent** - New base class extending `WebComponent` with reactive state management
-  - Full reactive state support with `reactive()` and `useState()` methods
-  - Automatic re-rendering on state changes
-  - Focus preservation during re-renders
-  - Debug mode support for reactive state tracking
+    - Full reactive state support with `reactive()` and `useState()` methods
+    - Automatic re-rendering on state changes
+    - Focus preservation during re-renders
+    - Debug mode support for reactive state tracking
 
 - **LightComponent Enhancements** - Complete reactive state support
-  - `LightComponent` now supports the same reactive API as `ReactiveWebComponent`
-  - Full `reactive()` and `useState()` support
-  - Automatic re-rendering on state changes
-  - Perfect for third-party library integration (EditorJS, Chart.js, etc.)
+    - `LightComponent` now supports the same reactive API as `ReactiveWebComponent`
+    - Full `reactive()` and `useState()` support
+    - Automatic re-rendering on state changes
+    - Perfect for third-party library integration (EditorJS, Chart.js, etc.)
 
 ### Added
 
