@@ -3,7 +3,7 @@
  */
 
 import { RuleTester } from "@typescript-eslint/rule-tester";
-import { noReactImports } from "../../src/rules/no-react-imports";
+import { noReactImports } from "../no-react-imports";
 
 const ruleTester = new RuleTester({
     parser: "@typescript-eslint/parser",
@@ -15,7 +15,7 @@ const ruleTester = new RuleTester({
 
 ruleTester.run("no-react-imports", noReactImports, {
     valid: [
-        // Valid: WSX framework imports
+        // Valid: WSXJS imports
         {
             code: `import { WebComponent, autoRegister } from '@wsxjs/wsx-core';`,
         },

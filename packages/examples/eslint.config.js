@@ -54,6 +54,7 @@ export default [
             "wsx/no-react-imports": "error",
             "wsx/web-component-naming": "warn",
             "wsx/state-requires-initial-value": "error",
+            "wsx/require-jsx-import-source": "error",
             "no-undef": "off", // TypeScript handles this
         },
     },

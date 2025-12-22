@@ -49,7 +49,8 @@
             "Bash(tee:*)",
             "Bash(pnpm --filter @wsxjs/wsx-vite-plugin lint:*)",
             "Bash(npx eslint:*)",
-            "WebSearch"
+            "WebSearch",
+            "Bash(git checkout:*)"
         ],
         "deny": []
     }

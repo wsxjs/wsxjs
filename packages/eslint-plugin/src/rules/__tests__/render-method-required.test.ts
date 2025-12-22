@@ -3,7 +3,7 @@
  */
 
 import { RuleTester } from "@typescript-eslint/rule-tester";
-import { renderMethodRequired } from "../../src/rules/render-method-required";
+import { renderMethodRequired } from "../render-method-required";
 
 const ruleTester = new RuleTester({
     parser: "@typescript-eslint/parser",
@@ -37,11 +37,11 @@ ruleTester.run("render-method-required", renderMethodRequired, {
           constructor() {
             super();
           }
-          
+
           render() {
             return <div>Complex</div>;
           }
-          
+
           private handleClick() {
             // handler
           }

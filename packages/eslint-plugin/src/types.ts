@@ -12,6 +12,7 @@ export interface WSXRuleContext extends Rule.RuleContext {
 export interface WSXRuleModule extends Rule.RuleModule {
     // WSX 特定的规则模块扩展
     create: (context: WSXRuleContext) => Rule.RuleListener;
+    defaultOptions?: unknown[]; // 默认配置选项（可选）
 }
 
 export interface WSXConfig {

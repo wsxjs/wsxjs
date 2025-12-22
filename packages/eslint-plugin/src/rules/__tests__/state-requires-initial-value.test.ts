@@ -3,7 +3,7 @@
  */
 
 import { RuleTester } from "@typescript-eslint/rule-tester";
-import { stateRequiresInitialValue } from "../../src/rules/state-requires-initial-value";
+import { stateRequiresInitialValue } from "../state-requires-initial-value";
 
 const ruleTester = new RuleTester({
     parser: "@typescript-eslint/parser",

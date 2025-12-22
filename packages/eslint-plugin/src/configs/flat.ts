@@ -1,7 +1,7 @@
 /**
  * ESLint Plugin WSX - Flat Config for ESLint 9+
  *
- * Modern flat config format for WSX framework
+ * Modern flat config format for WSXJS
  */
 
 import type { Linter } from "eslint";

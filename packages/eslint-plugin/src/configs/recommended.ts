@@ -25,6 +25,7 @@ export const recommendedConfig: WSXConfig = {
         "wsx/no-react-imports": "error",
         "wsx/web-component-naming": "warn",
         "wsx/state-requires-initial-value": "error",
+        "wsx/require-jsx-import-source": "error",
 
         // TypeScript 规则（推荐）
         "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],

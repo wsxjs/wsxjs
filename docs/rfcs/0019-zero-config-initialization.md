@@ -92,12 +92,12 @@ const program = new Command();
 
 program
   .name('wsx')
-  .description('WSX Framework CLI tool')
+  .description('WSXJS CLI tool')
   .version('0.0.17');
 
 program
   .command('init')
-  .description('Initialize WSX Framework in your project')
+  .description('Initialize WSXJS in your project')
   .option('--skip-tsconfig', 'Skip TypeScript configuration')
   .option('--skip-vite', 'Skip Vite configuration')
   .option('--skip-eslint', 'Skip ESLint configuration')

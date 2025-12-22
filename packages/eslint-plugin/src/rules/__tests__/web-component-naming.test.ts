@@ -3,7 +3,7 @@
  */
 
 import { RuleTester } from "@typescript-eslint/rule-tester";
-import { webComponentNaming } from "../../src/rules/web-component-naming";
+import { webComponentNaming } from "../web-component-naming";
 
 const ruleTester = new RuleTester({
     parser: "@typescript-eslint/parser",

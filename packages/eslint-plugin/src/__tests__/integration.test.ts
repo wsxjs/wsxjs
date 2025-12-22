@@ -4,7 +4,7 @@
  */
 
 import { ESLint } from "eslint";
-import wsxPlugin from "../src/index";
+import wsxPlugin from "../index";
 
 describe("WSX ESLint Plugin Integration", () => {
     let eslint: ESLint;
@@ -29,7 +29,8 @@ describe("WSX ESLint Plugin Integration", () => {
                 },
             },
             plugins: {
-                wsx: wsxPlugin,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                wsx: wsxPlugin as any,
             },
         });
     });
@@ -52,6 +53,7 @@ describe("WSX ESLint Plugin Integration", () => {
                 "no-react-imports",
                 "web-component-naming",
                 "state-requires-initial-value",
+                "require-jsx-import-source",
             ];
 
             expect(Object.keys(wsxPlugin.rules)).toEqual(expectedRules);
