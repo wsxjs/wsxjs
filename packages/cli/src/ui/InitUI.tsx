@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Box, Text, Newline } from "ink";
 import Spinner from "ink-spinner";
 import type { InitOptions } from "../commands/init.js";
@@ -6,127 +6,139 @@ import type { InitOptions } from "../commands/init.js";
 export interface InitUIProps {
     onComplete: () => void;
     options: InitOptions;
-    configSteps: string[];
-    onStepComplete: (
-        stepName: string,
-        result: { success: boolean; message: string; created: boolean }
-    ) => void;
+    configSteps: Array<{
+        name: string;
+        skip: boolean;
+        execute: () => Promise<{ success: boolean; message: string; created: boolean }>;
+    }>;
 }
 
 interface StepStatus {
     name: string;
-    status: "pending" | "running" | "completed" | "skipped";
+    status: "pending" | "running" | "completed" | "skipped" | "error";
     message?: string;
 }
 
-export const InitUI: React.FC<InitUIProps> = ({
-    onComplete,
-    options,
-    configSteps,
-    onStepComplete,
-}) => {
+export const InitUI: React.FC<InitUIProps> = ({ onComplete, configSteps }) => {
     const [steps, setSteps] = useState<StepStatus[]>(
-        configSteps.map((name) => ({
-            name,
-            status: "pending",
+        configSteps.map((step) => ({
+            name: step.name,
+            status: step.skip ? ("skipped" as const) : ("pending" as const),
+            message: step.skip ? "已跳过" : undefined,
         }))
     );
     const [allComplete, setAllComplete] = useState(false);
+    const executingRef = useRef(false);
 
     useEffect(() => {
-        // 标记跳过的步骤
-        const updatedSteps = steps.map((step) => {
-            if (step.name === "TypeScript" && options.skipTsconfig) {
-                return { ...step, status: "skipped" as const, message: "已跳过" };
-            }
-            if (step.name === "Vite" && options.skipVite) {
-                return { ...step, status: "skipped" as const, message: "已跳过" };
-            }
-            if (step.name === "wsx.d.ts" && options.skipTypes) {
-                return { ...step, status: "skipped" as const, message: "已跳过" };
-            }
-            if (step.name === "ESLint" && options.skipEslint) {
-                return { ...step, status: "skipped" as const, message: "已跳过" };
-            }
-            return step;
-        });
-        setSteps(updatedSteps);
+        // 检查是否所有步骤都被跳过
+        const allSkipped = steps.every((s) => s.status === "skipped");
+        if (allSkipped) {
+            setAllComplete(true);
+            setTimeout(() => onComplete(), 1000);
+            return;
+        }
 
-        // 开始执行第一个未跳过的步骤
-        const firstPendingIndex = updatedSteps.findIndex((s) => s.status === "pending");
-        if (firstPendingIndex !== -1) {
-            const timer = setTimeout(() => {
+        // 如果已经在执行，不要重复执行
+        if (executingRef.current) {
+            return;
+        }
+
+        executingRef.current = true;
+
+        // 执行配置步骤
+        const runSteps = async () => {
+            const stepsToExecute = configSteps.filter((step) => !step.skip);
+
+            for (let i = 0; i < stepsToExecute.length; i++) {
+                const step = stepsToExecute[i];
+
+                // 标记为运行中
                 setSteps((prev) => {
                     const newSteps = [...prev];
-                    newSteps[firstPendingIndex] = {
-                        ...newSteps[firstPendingIndex],
-                        status: "running",
-                    };
+                    const index = newSteps.findIndex((s) => s.name === step.name);
+                    if (index !== -1) {
+                        newSteps[index] = {
+                            ...newSteps[index],
+                            status: "running",
+                        };
+                    }
                     return newSteps;
                 });
-            }, 500);
-            return () => clearTimeout(timer);
-        } else {
-            // 所有步骤都被跳过
-            const timer = setTimeout(() => {
-                setAllComplete(true);
-                setTimeout(() => onComplete(), 1000);
-            }, 500);
-            return () => clearTimeout(timer);
-        }
-    }, []);
 
-    // 模拟步骤完成（实际应该由父组件通过回调触发）
-    useEffect(() => {
-        if (steps.some((s) => s.status === "running")) {
-            // 模拟每个步骤的执行时间
-            const runningStep = steps.find((s) => s.status === "running");
-            if (runningStep) {
-                const timer = setTimeout(() => {
+                try {
+                    // 执行步骤
+                    const result = await step.execute();
+
+                    // 更新步骤状态
                     setSteps((prev) => {
                         const newSteps = [...prev];
-                        const index = newSteps.findIndex((s) => s.name === runningStep.name);
+                        const index = newSteps.findIndex((s) => s.name === step.name);
                         if (index !== -1) {
                             newSteps[index] = {
                                 ...newSteps[index],
-                                status: "completed",
-                                message: "完成",
+                                status: result.success
+                                    ? ("completed" as const)
+                                    : ("error" as const),
+                                message: result.message,
                             };
-                            // 通知父组件
-                            onStepComplete(runningStep.name, {
-                                success: true,
-                                message: "完成",
-                                created: false,
-                            });
                         }
-
-                        // 检查是否还有待执行的步骤
-                        const nextPendingIndex = newSteps.findIndex((s) => s.status === "pending");
-                        if (nextPendingIndex !== -1) {
-                            // 开始下一个步骤
-                            setTimeout(() => {
-                                setSteps((prev) => {
-                                    const newPrev = [...prev];
-                                    newPrev[nextPendingIndex] = {
-                                        ...newPrev[nextPendingIndex],
-                                        status: "running",
-                                    };
-                                    return newPrev;
-                                });
-                            }, 300);
-                        } else {
-                            // 所有步骤完成
-                            setAllComplete(true);
-                            setTimeout(() => onComplete(), 1500);
-                        }
-
                         return newSteps;
                     });
-                }, 1000);
-                return () => clearTimeout(timer);
+                } catch (error) {
+                    // 处理错误
+                    setSteps((prev) => {
+                        const newSteps = [...prev];
+                        const index = newSteps.findIndex((s) => s.name === step.name);
+                        if (index !== -1) {
+                            newSteps[index] = {
+                                ...newSteps[index],
+                                status: "error",
+                                message: `错误: ${error instanceof Error ? error.message : String(error)}`,
+                            };
+                        }
+                        return newSteps;
+                    });
+                }
+
+                // 短暂延迟，让用户看到进度
+                await new Promise((resolve) => setTimeout(resolve, 200));
             }
-        }
-    }, [steps, onStepComplete, onComplete]);
+
+            // 所有步骤完成
+            setAllComplete(true);
+            setTimeout(() => onComplete(), 1500);
+        };
+
+        // 延迟一点开始执行，让 UI 先渲染
+        const timer = setTimeout(() => {
+            runSteps().catch((error) => {
+                // 处理未捕获的错误
+                setSteps((prev) => {
+                    const newSteps = [...prev];
+                    const errorStep = newSteps.find((s) => s.status === "running");
+                    if (errorStep) {
+                        const index = newSteps.findIndex((s) => s.name === errorStep.name);
+                        if (index !== -1) {
+                            newSteps[index] = {
+                                ...newSteps[index],
+                                status: "error",
+                                message: `错误: ${error instanceof Error ? error.message : String(error)}`,
+                            };
+                        }
+                    }
+                    return newSteps;
+                });
+                setAllComplete(true);
+                setTimeout(() => onComplete(), 1500);
+            });
+        }, 300);
+
+        return () => {
+            clearTimeout(timer);
+            executingRef.current = false;
+        };
+    }, []);
 
     return (
         <Box flexDirection="column" padding={1}>
@@ -154,6 +166,11 @@ export const InitUI: React.FC<InitUIProps> = ({
                     {step.status === "skipped" && (
                         <Text color="yellow">
                             ⊘ {step.name}: {step.message || "已跳过"}
+                        </Text>
+                    )}
+                    {step.status === "error" && (
+                        <Text color="red">
+                            ✗ {step.name}: {step.message || "失败"}
                         </Text>
                     )}
                 </Box>

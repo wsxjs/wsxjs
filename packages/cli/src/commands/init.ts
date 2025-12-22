@@ -41,71 +41,57 @@ export async function initWSX(options: InitOptions = {}) {
         resolveComplete = resolve;
     });
 
-    // 执行配置步骤
-    const configSteps: Array<{
-        name: string;
-        skip: boolean;
-        fn: () => Promise<{ success: boolean; message: string; created: boolean }>;
-    }> = [
+    // 定义配置步骤
+    const configSteps = [
         {
             name: "TypeScript",
             skip: finalOptions.skipTsconfig ?? false,
-            fn: async () => {
+            execute: async () => {
                 const tsOptions: TypeScriptConfigOptions = {
                     useTsConfigPackage: finalOptions.useTsconfigPackage,
                     useDecorators: finalOptions.useDecorators ?? true,
                 };
-                return await configureTypeScript(projectRoot, tsOptions);
+                const result = await configureTypeScript(projectRoot, tsOptions);
+                results.push({ name: "TypeScript", ...result });
+                return result;
             },
         },
         {
             name: "Vite",
             skip: finalOptions.skipVite ?? false,
-            fn: async () => await configureVite(projectRoot),
+            execute: async () => {
+                const result = await configureVite(projectRoot);
+                results.push({ name: "Vite", ...result });
+                return result;
+            },
         },
         {
             name: "wsx.d.ts",
             skip: finalOptions.skipTypes ?? false,
-            fn: async () => {
+            execute: async () => {
                 const result = await generateWsxTypes(projectRoot);
-                return {
+                const stepResult = {
                     success: result.success,
                     message: result.message,
                     created: result.created,
                 };
+                results.push({ name: "wsx.d.ts", ...stepResult });
+                return stepResult;
             },
         },
         {
             name: "ESLint",
             skip: finalOptions.skipEslint ?? false,
-            fn: async () => {
+            execute: async () => {
                 const eslintOptions: ESLintConfigOptions = {
                     useFlatConfig: undefined, // 自动检测
                 };
-                return await configureESLint(projectRoot, eslintOptions);
+                const result = await configureESLint(projectRoot, eslintOptions);
+                results.push({ name: "ESLint", ...result });
+                return result;
             },
         },
     ];
-
-    // 执行配置步骤
-    for (const step of configSteps) {
-        if (!step.skip) {
-            try {
-                const stepResult = await step.fn();
-                results.push({
-                    name: step.name,
-                    ...stepResult,
-                });
-            } catch (error) {
-                results.push({
-                    name: step.name,
-                    success: false,
-                    message: `错误: ${error}`,
-                    created: false,
-                });
-            }
-        }
-    }
 
     // Render Ink UI
     const { unmount } = render(
@@ -113,14 +99,8 @@ export async function initWSX(options: InitOptions = {}) {
             onComplete: () => {
                 resolveComplete();
             },
-            options: finalOptions,
-            configSteps: configSteps.map((s) => s.name),
-            onStepComplete: (
-                _stepName: string,
-                _result: { success: boolean; message: string; created: boolean }
-            ) => {
-                // 结果已在执行步骤时收集
-            },
+            options: finalOptions, // Keep for potential future use
+            configSteps,
         })
     );
 
@@ -131,11 +111,9 @@ export async function initWSX(options: InitOptions = {}) {
     unmount();
 
     // 输出结果摘要
-    // eslint-disable-next-line no-console
     console.log("\n配置完成摘要:");
     results.forEach((result) => {
         const status = result.success ? "✓" : "✗";
-        // eslint-disable-next-line no-console
         console.log(`  ${status} ${result.name}: ${result.message}`);
     });
 }

@@ -127,53 +127,42 @@ export async function checkConfig(projectRoot: string = process.cwd()): Promise<
 }
 
 export async function displayCheckResults(result: ConfigCheckResult) {
-    // eslint-disable-next-line no-console
     console.log(chalk.blue.bold("\n🔍 WSX Configuration Check\n"));
 
     // Display status
-    // eslint-disable-next-line no-console
     console.log(chalk.bold("Status:"));
-    // eslint-disable-next-line no-console
     console.log(
         `  wsx.d.ts: ${result.hasWsxTypes ? chalk.green("✓ Found") : chalk.red("✗ Missing")}`
     );
-    // eslint-disable-next-line no-console
     console.log(
         `  tsconfig.json: ${result.hasTsConfig ? (result.tsConfigValid ? chalk.green("✓ Valid") : chalk.yellow("⚠ Needs update")) : chalk.red("✗ Missing")}`
     );
-    // eslint-disable-next-line no-console
     console.log(
         `  vite.config: ${result.hasViteConfig ? (result.viteConfigValid ? chalk.green("✓ Valid") : chalk.yellow("⚠ Needs update")) : chalk.gray("- Not found")}`
     );
 
     // Display issues
     if (result.issues.length > 0) {
-        // eslint-disable-next-line no-console
         console.log(chalk.red.bold("\n❌ Issues:"));
         result.issues.forEach((issue) => {
-            // eslint-disable-next-line no-console
             console.log(chalk.red(`  • ${issue}`));
         });
     }
 
     // Display suggestions
     if (result.suggestions.length > 0) {
-        // eslint-disable-next-line no-console
         console.log(chalk.yellow.bold("\n💡 Suggestions:"));
         result.suggestions.forEach((suggestion) => {
-            // eslint-disable-next-line no-console
             console.log(chalk.yellow(`  • ${suggestion}`));
         });
     }
 
     // Summary
     if (result.issues.length === 0) {
-        // eslint-disable-next-line no-console
         console.log(
             chalk.green.bold("\n✅ All checks passed! Your WSX configuration looks good.\n")
         );
     } else {
-        // eslint-disable-next-line no-console
         console.log(chalk.yellow.bold("\n⚠️  Some issues need attention.\n"));
     }
 }
