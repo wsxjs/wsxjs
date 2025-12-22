@@ -77,7 +77,20 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0016](./0016-component-library-build-guide.md) | 组件库构建指南 | Implemented | WSX Team |
 | [RFC-0017](./0017-jsx-factory-auto-injection-bug-fix.md) | JSX Factory 自动注入 Bug 修复 | Implemented | WSX Team |
 | [RFC-0020](./0020-jsx-import-source-pragma-auto-injection.md) | JSX Import Source Pragma 自动注入方案 | Implemented | WSX Team |
+
+### 提议中的RFCs
+
+| RFC | 标题 | 状态 | 提议人 |
+|-----|------|------|--------|
 | [RFC-0019](./0019-zero-config-initialization.md) | 零配置初始化方案 | Proposed | WSX Team |
+| [RFC-0021](./0021-framework-website-enhancement.md) | 框架网站增强计划（根 RFC） | Proposed | WSX Team |
+| [RFC-0022](./0022-homepage-value-proposition.md) | 首页价值主张优化（M0） | Proposed | WSX Team |
+| [RFC-0023](./0023-seo-error-handling.md) | SEO 优化和错误处理（M1） | Proposed | WSX Team |
+| [RFC-0024](./0024-documentation-system.md) | 文档系统集成（M2） | Proposed | WSX Team |
+| [RFC-0025](./0025-code-playground.md) | 代码 Playground（M3） | Proposed | WSX Team |
+| [RFC-0026](./0026-performance-optimization.md) | 性能优化（M4） | Proposed | WSX Team |
+| [RFC-0027](./0027-community-features.md) | 社区功能（M5） | Proposed | WSX Team |
+| [RFC-0028](./0028-advanced-features.md) | 高级功能（M6） | Proposed | WSX Team |
 
 ### 被拒绝的RFCs
 
