@@ -1,28 +1,28 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 /**
- * XyButtonGroup WSX Component - 迁移自xy-button.js
+ * ButtonGroup WSX Component
  *
- * 用于将多个xy-button组合成一个按钮组，
+ * 用于将多个wsx-button组合成一个按钮组，
  * 提供统一的样式和布局管理
  */
 
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
 
-export interface XyButtonGroupConfig {
+export interface ButtonGroupConfig {
     disabled?: boolean;
 }
 
-@autoRegister({ tagName: "xy-button-group" })
-export default class XyButtonGroup extends WebComponent {
+@autoRegister({ tagName: "wsx-button-group" })
+export default class ButtonGroup extends WebComponent {
     private disabled: boolean = false;
 
     static get observedAttributes(): string[] {
         return ["disabled"];
     }
 
-    constructor(config: XyButtonGroupConfig = {}) {
+    constructor(config: ButtonGroupConfig = {}) {
         super({
-            styleName: "xy-button-group",
+            styleName: "wsx-button-group",
             ...config,
         });
 
@@ -67,8 +67,8 @@ export default class XyButtonGroup extends WebComponent {
     private updateChildrenDisabledState(): void {
         if (!this.disabled) return;
 
-        // 获取所有xy-button子元素
-        const buttons = this.querySelectorAll("xy-button");
+        // 获取所有wsx-button子元素
+        const buttons = this.querySelectorAll("wsx-button");
         buttons.forEach((button: Element) => {
             if (this.disabled) {
                 button.setAttribute("disabled", "");
@@ -97,7 +97,7 @@ export default class XyButtonGroup extends WebComponent {
      * 公共API：获取组内的所有按钮
      */
     public getButtons(): NodeListOf<Element> {
-        return this.querySelectorAll("xy-button");
+        return this.querySelectorAll("wsx-button");
     }
 
     /**

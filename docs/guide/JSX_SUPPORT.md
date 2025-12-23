@@ -128,11 +128,11 @@ export default [
 ### 基本 JSX 语法
 
 ```typescript
-// XyButton.wsx
+// Button.wsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
 
-@autoRegister({ tagName: 'xy-button' })
-export default class XyButton extends WebComponent {
+@autoRegister({ tagName: 'wsx-button' })
+export default class Button extends WebComponent {
     render(): HTMLElement {
         return (
             <div className="button-container">

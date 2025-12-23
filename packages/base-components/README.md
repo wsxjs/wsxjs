@@ -17,18 +17,18 @@ npm install @wsxjs/wsx-base-components
 <html>
 <head>
     <script type="module">
-        import { XyButton } from '@wsxjs/wsx-base-components';
+        import { Button } from '@wsxjs/wsx-base-components';
     </script>
 </head>
 <body>
-    <xy-button variant="primary">Hello World</xy-button>
+    <wsx-button variant="primary">Hello World</wsx-button>
 </body>
 </html>
 ```
 
 ## 🎨 组件
 
-### XyButton - 现代按钮组件
+### Button - 现代按钮组件
 
 一个完全重新设计的现代化按钮组件，具有语义化设计、无障碍访问和响应式布局。
 
@@ -46,21 +46,21 @@ npm install @wsxjs/wsx-base-components
 
 ```html
 <!-- 基础用法 -->
-<xy-button variant="primary">Primary Button</xy-button>
-<xy-button variant="secondary">Secondary Button</xy-button>
-<xy-button variant="danger">Delete</xy-button>
+<wsx-button variant="primary">Primary Button</wsx-button>
+<wsx-button variant="secondary">Secondary Button</wsx-button>
+<wsx-button variant="danger">Delete</wsx-button>
 
 <!-- 图标按钮 -->
-<xy-button icon="🚀" variant="primary">Launch</xy-button>
-<xy-button icon="→" icon-position="right" variant="primary">Next</xy-button>
+<wsx-button icon="🚀" variant="primary">Launch</wsx-button>
+<wsx-button icon="→" icon-position="right" variant="primary">Next</wsx-button>
 
 <!-- 状态按钮 -->
-<xy-button loading variant="primary">Loading...</xy-button>
-<xy-button disabled variant="primary">Disabled</xy-button>
+<wsx-button loading variant="primary">Loading...</wsx-button>
+<wsx-button disabled variant="primary">Disabled</wsx-button>
 
 <!-- 布局按钮 -->
-<xy-button block variant="primary">Full Width</xy-button>
-<xy-button rounded variant="primary">Rounded</xy-button>
+<wsx-button block variant="primary">Full Width</wsx-button>
+<wsx-button rounded variant="primary">Rounded</wsx-button>
 ```
 
 #### API
@@ -83,7 +83,7 @@ npm install @wsxjs/wsx-base-components
 
 ```javascript
 // 监听点击事件
-button.addEventListener('xy-button-click', (event) => {
+button.addEventListener('wsx-button-click', (event) => {
     console.log('Button clicked:', event.detail);
     // event.detail 包含：variant, size, disabled, loading
 });
@@ -140,19 +140,19 @@ npm run start
 ```css
 :host {
     /* 颜色系统 */
-    --xy-button-primary-bg: #3b82f6;
-    --xy-button-primary-hover-bg: #2563eb;
-    --xy-button-primary-color: #ffffff;
+    --wsx-button-primary-bg: #3b82f6;
+    --wsx-button-primary-hover-bg: #2563eb;
+    --wsx-button-primary-color: #ffffff;
     
     /* 尺寸系统 */
-    --xy-button-sm-padding: 0.5rem 0.75rem;
-    --xy-button-md-padding: 0.75rem 1rem;
-    --xy-button-lg-padding: 1rem 1.5rem;
+    --wsx-button-sm-padding: 0.5rem 0.75rem;
+    --wsx-button-md-padding: 0.75rem 1rem;
+    --wsx-button-lg-padding: 1rem 1.5rem;
     
     /* 视觉效果 */
-    --xy-button-border-radius: 0.5rem;
-    --xy-button-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    --xy-button-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --wsx-button-border-radius: 0.5rem;
+    --wsx-button-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --wsx-button-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 ```
 
@@ -160,9 +160,9 @@ npm run start
 
 ```css
 [data-theme="dark"] {
-    --xy-button-primary-bg: #1e40af;
-    --xy-button-secondary-bg: #374151;
-    --xy-button-outline-border: #4b5563;
+    --wsx-button-primary-bg: #1e40af;
+    --wsx-button-secondary-bg: #374151;
+    --wsx-button-outline-border: #4b5563;
 }
 ```
 
@@ -200,5 +200,5 @@ MIT License
 ## 📚 相关链接
 
 - [WSXJS](https://github.com/wsxjs/wsxjs)
-- [设计文档](./docs/modern-xybutton-design.md)
+- [设计文档](./docs/modern-button-design.md)
 - [在线演示](http://localhost:3000) 

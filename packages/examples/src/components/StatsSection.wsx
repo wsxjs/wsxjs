@@ -52,9 +52,18 @@ export class StatsSection extends LightComponent {
             this.downloads = await this.getNpmDownloads();
             this.stars = await this.getGitHubStars();
         } catch (error) {
-            console.error("Failed to load stats:", error);
-            this.downloads = "N/A";
-            this.stars = "N/A";
+            // AbortError 是预期的超时，不需要打印错误日志
+            // getNpmDownloads 和 getGitHubStars 内部已经处理了降级逻辑
+            if (!this.isAbortError(error)) {
+                console.error("Failed to load stats:", error);
+            }
+            // 如果内部方法都失败了，设置默认值
+            if (this.downloads === "...") {
+                this.downloads = "N/A";
+            }
+            if (this.stars === "...") {
+                this.stars = "N/A";
+            }
         } finally {
             this.loading = false;
         }
@@ -95,6 +104,31 @@ export class StatsSection extends LightComponent {
         return controller.signal;
     }
 
+    /**
+     * 检查错误是否为 AbortError（超时错误）
+     * 兼容 DOMException 和 Error 两种类型，同时检查 name 和 message
+     */
+    private isAbortError(error: unknown): boolean {
+        if (!error) return false;
+        // 检查 Error 或 DOMException 的 name 属性
+        if (error instanceof Error || error instanceof DOMException) {
+            if (error.name === "AbortError") return true;
+            // 也检查错误消息中是否包含 "abort"（某些浏览器可能 name 不同但 message 包含 abort）
+            if (error.message && /abort/i.test(error.message)) return true;
+        }
+        // 检查是否为包含 "abort" 的错误对象
+        if (typeof error === "object" && "name" in error) {
+            const name = (error as { name?: string }).name;
+            if (name === "AbortError") return true;
+            // 检查 message 属性
+            if ("message" in error) {
+                const message = (error as { message?: string }).message;
+                if (message && /abort/i.test(message)) return true;
+            }
+        }
+        return false;
+    }
+
     private async getNpmDownloads(): Promise<string> {
         try {
             // 方案 1: 使用 npm API（开发环境通过代理，生产环境直接调用）
@@ -126,6 +160,12 @@ export class StatsSection extends LightComponent {
             }
             return totalDownloads.toString();
         } catch (error) {
+            // AbortError 是预期的超时，静默处理，直接降级
+            if (this.isAbortError(error)) {
+                // 静默处理超时，直接使用降级方案
+                return await this.getNpmDownloadsFallback();
+            }
+            // 其他错误才记录日志
             console.error("Failed to fetch npm downloads:", error);
             // 降级方案：使用 shields.io API（无 CORS 问题）
             return await this.getNpmDownloadsFallback();
@@ -139,7 +179,7 @@ export class StatsSection extends LightComponent {
         try {
             // shields.io 提供无 CORS 问题的 API
             const response = await fetch("https://img.shields.io/npm/dw/@wsxjs/wsx-core.json", {
-                signal: this.createTimeoutSignal(3000),
+                signal: this.createTimeoutSignal(5000), // 增加超时时间到 5 秒
             });
             if (response.ok) {
                 const data = await response.json();
@@ -147,7 +187,11 @@ export class StatsSection extends LightComponent {
                 return data.value?.replace("/week", "") || "N/A";
             }
         } catch (error) {
-            console.error("Failed to fetch npm downloads from shields.io:", error);
+            // AbortError 是预期的超时，静默处理
+            if (!this.isAbortError(error)) {
+                console.error("Failed to fetch npm downloads from shields.io:", error);
+            }
+            // 超时或其他错误都返回 "N/A"
         }
         return "N/A";
     }
@@ -175,6 +219,12 @@ export class StatsSection extends LightComponent {
             }
             return stars.toString();
         } catch (error) {
+            // AbortError 是预期的超时，静默处理，直接降级
+            if (this.isAbortError(error)) {
+                // 静默处理超时，直接使用降级方案
+                return await this.getGitHubStarsFallback();
+            }
+            // 其他错误才记录日志
             console.error("Failed to fetch GitHub stars:", error);
             // 降级方案：使用 shields.io API（无 CORS 问题）
             return await this.getGitHubStarsFallback();
@@ -188,7 +238,7 @@ export class StatsSection extends LightComponent {
         try {
             // shields.io 提供无 CORS 问题的 API
             const response = await fetch("https://img.shields.io/github/stars/wsxjs/wsxjs.json", {
-                signal: this.createTimeoutSignal(3000),
+                signal: this.createTimeoutSignal(5000), // 增加超时时间到 5 秒
             });
             if (response.ok) {
                 const data = await response.json();
@@ -200,7 +250,11 @@ export class StatsSection extends LightComponent {
                 return stars.toString();
             }
         } catch (error) {
-            console.error("Failed to fetch GitHub stars from shields.io:", error);
+            // AbortError 是预期的超时，静默处理
+            if (!this.isAbortError(error)) {
+                console.error("Failed to fetch GitHub stars from shields.io:", error);
+            }
+            // 超时或其他错误都返回 "N/A"
         }
         return "N/A";
     }

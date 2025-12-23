@@ -52,7 +52,7 @@ pnpm debug:chrome          # 启动Chrome调试模式
 // 在Console中检查Web Components
 document.querySelector('wsx-app');           // 检查主应用组件
 document.querySelector('color-picker');      // 检查颜色选择器
-document.querySelector('xy-button');         // 检查按钮组件
+document.querySelector('wsx-button');         // 检查按钮组件
 
 // 检查Shadow DOM
 const app = document.querySelector('wsx-app');
@@ -81,7 +81,7 @@ document.addEventListener('colorchange', (e) => {
 
 // 监听按钮点击
 document.addEventListener('click', (e) => {
-    if (e.target.matches('xy-button')) {
+    if (e.target.matches('wsx-button')) {
         console.log('Button clicked:', e.target);
     }
 });
@@ -128,7 +128,7 @@ console.log(styles.textContent);                 // 查看注入的样式
 
 ```javascript
 // 检查事件监听器
-const button = document.querySelector('xy-button');
+const button = document.querySelector('wsx-button');
 console.log(button.onclick);                     // 查看点击事件
 console.log(button.eventListeners);              // 查看所有事件监听器
 ```

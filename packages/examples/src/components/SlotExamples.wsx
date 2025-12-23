@@ -10,8 +10,10 @@
  */
 
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
-import "./SlotCardWeb.wsx";
-import "./SlotCardLight.wsx";
+import "@wsxjs/wsx-base-components";
+// Import example components from local examples directory
+import "./examples/SlotCardWeb.wsx";
+import "./examples/SlotCardLight.wsx";
 
 /**
  * Slot Examples Page

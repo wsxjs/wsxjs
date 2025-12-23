@@ -1,0 +1,288 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Code Block Component
+ * 通用的代码展示组件，支持复制功能和自定义操作按钮
+ */
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import type { CodeSegment, CodeBlockConfig } from "./CodeBlock.types";
+import styles from "./CodeBlock.css?inline";
+// 导入 Prism.js 主题 CSS
+import "prismjs/themes/prism-tomorrow.css";
+// 静态导入 Prism.js 核心
+import Prism from "prismjs";
+// 静态导入所有支持的语言（按依赖顺序）
+// 基础语言（无依赖）
+import "prismjs/components/prism-markup";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-sql";
+import "prismjs/components/prism-yaml";
+import "prismjs/components/prism-c"; // C 语言是基础语言
+import "prismjs/components/prism-markdown";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-java";
+import "prismjs/components/prism-rust";
+import "prismjs/components/prism-go";
+// 依赖基础语言的语言
+import "prismjs/components/prism-typescript"; // 依赖 javascript
+import "prismjs/components/prism-jsx"; // 依赖 javascript
+import "prismjs/components/prism-cpp"; // 依赖 c
+// 依赖其他语言的语言（必须在依赖之后）
+import "prismjs/components/prism-tsx"; // 依赖 typescript 和 jsx
+
+@autoRegister({ tagName: "code-block" })
+export default class CodeBlock extends LightComponent {
+    static observedAttributes = [
+        "code",
+        "title",
+        "language",
+        "show-copy",
+        "show-try-online",
+        "try-online-url",
+    ];
+
+    @state private copied: boolean = false;
+    @state private highlighted: boolean = false;
+    private code: string = "";
+    private segments: CodeSegment[] = [];
+    private codeTitle: string = "";
+    private language: string = "typescript";
+    private showCopy: boolean = true;
+    private showTryOnline: boolean = false;
+    private tryOnlineUrl: string = "";
+    private onTryOnlineCallback?: () => void;
+    private codeElements: HTMLElement[] = [];
+
+    constructor() {
+        super({ styles });
+    }
+
+    protected onConnected() {
+        // 从属性初始化
+        this.code = this.getAttribute("code") || "";
+        this.codeTitle = this.getAttribute("title") || "";
+        this.language = this.getAttribute("language") || "typescript";
+        this.showCopy = this.getAttribute("show-copy") !== "false";
+        this.showTryOnline = this.getAttribute("show-try-online") === "true";
+        this.tryOnlineUrl = this.getAttribute("try-online-url") || "";
+
+        // 如果通过属性设置了代码，更新显示
+        if (this.code) {
+            this.rerender();
+            // 等待 DOM 更新后应用语法高亮
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    this.highlightCode();
+                });
+            });
+        }
+    }
+
+    protected onAttributeChanged(name: string, _oldValue: string, newValue: string) {
+        switch (name) {
+            case "code":
+                this.code = newValue || "";
+                this.rerender();
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        this.highlightCode();
+                    });
+                });
+                break;
+            case "title":
+                this.codeTitle = newValue || "";
+                this.rerender();
+                break;
+            case "language":
+                this.language = newValue || "typescript";
+                this.rerender();
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        this.highlightCode();
+                    });
+                });
+                break;
+            case "show-copy":
+                this.showCopy = newValue !== "false";
+                this.rerender();
+                break;
+            case "show-try-online":
+                this.showTryOnline = newValue === "true";
+                this.rerender();
+                break;
+            case "try-online-url":
+                this.tryOnlineUrl = newValue || "";
+                this.rerender();
+                break;
+        }
+    }
+
+    /**
+     * 通过方法设置配置（用于编程式使用）
+     */
+    public updateConfig(config: CodeBlockConfig): void {
+        if (config.segments && config.segments.length > 0) {
+            this.segments = config.segments;
+            this.code = ""; // 清空单个代码块
+        } else if (config.code) {
+            this.code = config.code;
+            this.segments = []; // 清空代码段
+        }
+        this.codeTitle = config.title || "";
+        this.language = config.language || "typescript";
+        this.showCopy = config.showCopy !== false;
+        this.showTryOnline = config.showTryOnline === true;
+        this.tryOnlineUrl = config.tryOnlineUrl || "";
+        this.onTryOnlineCallback = config.onTryOnline;
+        this.rerender();
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                this.highlightCode();
+            });
+        });
+    }
+
+    render() {
+        // 确定要显示的代码段
+        const displaySegments =
+            this.segments.length > 0
+                ? this.segments
+                : this.code
+                  ? [{ code: this.code, language: this.language }]
+                  : [];
+
+        // 始终返回有效的 DOM 节点，不能返回 null
+        if (displaySegments.length === 0) {
+            return <div class="code-block"></div>;
+        }
+
+        // 合并所有代码用于复制功能
+        const allCode = displaySegments.map((seg) => seg.code).join("\n\n");
+
+        return (
+            <div class="code-block">
+                {(this.codeTitle || this.showCopy || this.showTryOnline) && (
+                    <div class="code-header">
+                        {this.codeTitle && <span class="code-title">{this.codeTitle}</span>}
+                        <div class="code-actions">
+                            {this.showCopy && (
+                                <button
+                                    onClick={() => this.copyCode(allCode)}
+                                    class={`btn-copy ${this.copied ? "copied" : ""}`}
+                                >
+                                    {this.copied ? "✓ Copied!" : "Copy"}
+                                </button>
+                            )}
+                            {this.showTryOnline && (
+                                <button onClick={this.openPlayground} class="btn-try">
+                                    Try Online
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+                <div class="code-content">
+                    {displaySegments.map((segment, index) => (
+                        <pre key={index} class="code-segment">
+                            <code
+                                class={`language-${segment.language}`}
+                                ref={(element) => {
+                                    if (element) {
+                                        this.codeElements[index] = element as HTMLElement;
+                                        // 当 ref 设置后，立即应用语法高亮
+                                        requestAnimationFrame(() => {
+                                            requestAnimationFrame(() => {
+                                                // 确保 class 正确设置
+                                                const lang = segment.language.toLowerCase();
+                                                element.className = `language-${lang}`;
+                                                Prism.highlightElement(element);
+                                            });
+                                        });
+                                    }
+                                }}
+                            >
+                                {segment.code}
+                            </code>
+                        </pre>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    private copyCode = async (codeToCopy?: string): Promise<void> => {
+        const code = codeToCopy || this.code || this.segments.map((s) => s.code).join("\n\n");
+        try {
+            await navigator.clipboard.writeText(code);
+            this.copied = true;
+            setTimeout(() => {
+                this.copied = false;
+            }, 2000);
+        } catch (error) {
+            console.error("Failed to copy code:", error);
+            // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = code;
+            textArea.style.position = "fixed";
+            textArea.style.opacity = "0";
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand("copy");
+                this.copied = true;
+                setTimeout(() => {
+                    this.copied = false;
+                }, 2000);
+            } catch (err) {
+                console.error("Fallback copy failed:", err);
+            }
+            document.body.removeChild(textArea);
+        }
+    };
+
+    private openPlayground = (): void => {
+        if (this.onTryOnlineCallback) {
+            this.onTryOnlineCallback();
+        } else if (this.tryOnlineUrl) {
+            window.location.href = this.tryOnlineUrl;
+        } else {
+            window.location.href = "/playground";
+        }
+    };
+
+    /**
+     * 应用语法高亮
+     */
+    private highlightCode(): void {
+        try {
+            // 如果有代码段，高亮所有代码段
+            if (this.segments.length > 0) {
+                this.segments.forEach((segment, index) => {
+                    const codeEl =
+                        this.codeElements[index] ||
+                        (this.querySelectorAll("code")[index] as HTMLElement | null);
+                    if (codeEl) {
+                        const lang = segment.language.toLowerCase();
+                        codeEl.className = `language-${lang}`;
+                        Prism.highlightElement(codeEl);
+                    }
+                });
+            } else if (this.code) {
+                // 单个代码块
+                const codeEl =
+                    this.codeElements[0] || (this.querySelector("code") as HTMLElement | null);
+                if (codeEl) {
+                    const lang = this.language.toLowerCase();
+                    codeEl.className = `language-${lang}`;
+                    Prism.highlightElement(codeEl);
+                }
+            }
+            this.highlighted = true;
+        } catch (error) {
+            console.error("Failed to highlight code:", error);
+            // 如果高亮失败，仍然显示原始代码
+        }
+    }
+}

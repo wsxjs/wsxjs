@@ -26,6 +26,7 @@ export const recommendedConfig: WSXConfig = {
         "wsx/web-component-naming": "warn",
         "wsx/state-requires-initial-value": "error",
         "wsx/require-jsx-import-source": "error",
+        "wsx/no-null-render": "error",
 
         // TypeScript 规则（推荐）
         "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],

@@ -54,6 +54,7 @@ describe("WSX ESLint Plugin Integration", () => {
                 "web-component-naming",
                 "state-requires-initial-value",
                 "require-jsx-import-source",
+                "no-null-render",
             ];
 
             expect(Object.keys(wsxPlugin.rules)).toEqual(expectedRules);
@@ -74,6 +75,7 @@ describe("WSX ESLint Plugin Integration", () => {
             expect(config.rules).toHaveProperty("wsx/render-method-required");
             expect(config.rules).toHaveProperty("wsx/no-react-imports");
             expect(config.rules).toHaveProperty("wsx/web-component-naming");
+            expect(config.rules).toHaveProperty("wsx/no-null-render");
         });
     });
 

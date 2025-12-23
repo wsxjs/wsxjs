@@ -8,11 +8,12 @@ import { i18n } from "@wsxjs/wsx-i18next";
 import styles from "./HomeSection.css?inline";
 import "@wsxjs/wsx-base-components";
 import "@wsxjs/wsx-router";
-import "./WsxLogo.wsx";
 import "./ComparisonSection.wsx";
 import "./PerformanceMetrics.wsx";
 import "./QuickStartCode.wsx";
 import "./StatsSection.wsx";
+// Import example components from local examples directory
+import "./examples/WsxLogo.wsx";
 
 @autoRegister({ tagName: "home-section" })
 @i18n("home")

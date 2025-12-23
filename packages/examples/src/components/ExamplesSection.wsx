@@ -4,6 +4,9 @@ import styles from "./ExamplesSection.css?inline";
 import "@wsxjs/wsx-base-components";
 import "@wsxjs/wsx-router";
 import "../editorjs/EditorJSDemo.wsx";
+// Import example components from local examples directory
+import "./examples/SimpleReactiveDemo.wsx";
+import "./examples/SvgDemo.wsx";
 
 @autoRegister({ tagName: "examples-section" })
 export default class ExamplesSection extends WebComponent {

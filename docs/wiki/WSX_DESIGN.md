@@ -36,7 +36,7 @@ WSXJS 是一套现代 Web Components 框架，主打 JSX 语法与 TypeScript �
 
 ## 四、examples 集成与自举
 - examples 目录为 wsx 体系的真实演示与自举验证场景
-- 组件（如 XyButton、ColorPicker、XyButtonGroup）均为 wsx 文件，完整演示核心能力
+- 组件（如 Button、ColorPicker、ButtonGroup）均为 wsx 文件，完整演示核心能力
 - Vite 配置集成 wsx-vite-plugin，支持 .wsx 热更新与调试
 - 通过 pnpm workspace 机制，examples 依赖 core/vite-plugin 为本地包，支持联动开发
 

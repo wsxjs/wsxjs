@@ -1,0 +1,30 @@
+/* ButtonGroup Component Styles */
+:host {
+    display: inline-flex;
+}
+
+::slotted(wsx-button:not(:first-of-type):not(:last-of-type)) {
+    border-radius: 0;
+}
+
+::slotted(wsx-button) {
+    margin: 0 !important;
+}
+
+::slotted(wsx-button:not(:first-of-type)) {
+    margin-left: -1px !important;
+}
+
+::slotted(wsx-button[type]:not([type="dashed"]):not(:first-of-type)) {
+    margin-left: 1px !important;
+}
+
+::slotted(wsx-button:first-of-type) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0px;
+}
+
+::slotted(wsx-button:last-of-type) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}

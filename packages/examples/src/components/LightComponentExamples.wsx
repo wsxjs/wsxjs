@@ -10,6 +10,9 @@
 import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
 import styles from "./LightComponentExamples.css?inline";
 import "@wsxjs/wsx-base-components";
+// Import example components from local examples directory
+import "./examples/TodoListLight.wsx";
+import "./examples/UserProfileLight.wsx";
 
 @autoRegister({ tagName: "lightcomponent-examples" })
 export default class LightComponentExamples extends LightComponent {

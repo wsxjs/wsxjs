@@ -1,4 +1,8 @@
 /** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * WSXJS Logo Component
+ * 可复用的 Logo 组件，支持多种变体（图标、文字、完整）
+ */
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
 
 @autoRegister({ tagName: "wsx-logo" })

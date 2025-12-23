@@ -75,7 +75,7 @@ pnpm --filter @wsxjs/wsx-examples build
 ```
 
 The examples showcase includes:
-- Interactive component demos (XyButton, ColorPicker, XyButtonGroup)
+- Interactive component demos (Button, ColorPicker, ButtonGroup)
 - Framework feature explanations
 - Live code examples and documentation
 - Mobile-responsive design
@@ -229,7 +229,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/):
 feat(core): add logging system for components
 fix(vite-plugin): resolve .wsx file imports correctly
 docs: update installation instructions
-test(components): add tests for XyButton component
+test(components): add tests for Button component
 chore: update dependencies to latest versions
 ```
 

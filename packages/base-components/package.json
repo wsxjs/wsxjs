@@ -27,13 +27,15 @@
         "lint:fix": "eslint . --fix"
     },
     "dependencies": {
-        "@wsxjs/wsx-core": "workspace:*"
+        "@wsxjs/wsx-core": "workspace:*",
+        "prismjs": "^1.30.0"
     },
     "devDependencies": {
-        "@wsxjs/eslint-plugin-wsx": "workspace:*",
-        "@wsxjs/wsx-vite-plugin": "workspace:*",
+        "@types/prismjs": "^1.26.5",
         "@typescript-eslint/eslint-plugin": "^8.37.0",
         "@typescript-eslint/parser": "^8.37.0",
+        "@wsxjs/eslint-plugin-wsx": "workspace:*",
+        "@wsxjs/wsx-vite-plugin": "workspace:*",
         "eslint": "^9.31.0",
         "http-server": "^14.1.1",
         "tsup": "^8.0.0",

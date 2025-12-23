@@ -134,7 +134,7 @@ export default class ColorPicker extends WebComponent {
      */
     private renderColorButton(): HTMLElement {
         return (
-            <xy-button
+            <wsx-button
                 type="button"
                 class={`color-btn ${this.disabled ? "disabled" : ""}`}
                 style={`--theme-color: ${this.selectedColor}`}
@@ -145,7 +145,7 @@ export default class ColorPicker extends WebComponent {
                 }}
             >
                 <span class="color-indicator">_</span>
-            </xy-button>
+            </wsx-button>
         );
     }
 
@@ -174,7 +174,7 @@ export default class ColorPicker extends WebComponent {
      */
     private renderCustomPicker(): HTMLElement {
         return (
-            <xy-button
+            <wsx-button
                 type="button"
                 class="color-cube custom-picker"
                 style={{ backgroundColor: this.customColor }}
@@ -189,7 +189,7 @@ export default class ColorPicker extends WebComponent {
      */
     private renderColorButtons(): HTMLElement[] {
         return this.colorCollections.map((color) => (
-            <xy-button
+            <wsx-button
                 key={color}
                 type="button"
                 class="color-cube"

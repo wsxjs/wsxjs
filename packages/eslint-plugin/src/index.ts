@@ -10,6 +10,7 @@ import { noReactImports } from "./rules/no-react-imports";
 import { webComponentNaming } from "./rules/web-component-naming";
 import { stateRequiresInitialValue } from "./rules/state-requires-initial-value";
 import { requireJsxImportSource } from "./rules/require-jsx-import-source";
+import { noNullRender } from "./rules/no-null-render";
 import { recommendedConfig } from "./configs/recommended";
 import { createFlatConfig } from "./configs/flat";
 import { WSXPlugin } from "./types";
@@ -28,6 +29,7 @@ const plugin: WSXPlugin = {
         "web-component-naming": webComponentNaming,
         "state-requires-initial-value": stateRequiresInitialValue,
         "require-jsx-import-source": requireJsxImportSource,
+        "no-null-render": noNullRender,
     },
 
     // 配置预设

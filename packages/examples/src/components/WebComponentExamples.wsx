@@ -10,6 +10,9 @@
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
 import styles from "./WebComponentExamples.css?inline";
 import "@wsxjs/wsx-base-components";
+// Import example components from local examples directory
+import "./examples/TodoList.wsx";
+import "./examples/UserProfile.wsx";
 
 @autoRegister({ tagName: "webcomponent-examples" })
 export default class WebComponentExamples extends WebComponent {

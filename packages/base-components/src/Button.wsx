@@ -1,6 +1,6 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 /**
- * XyButton WSX Component - 迁移自xy-button.js
+ * Button WSX Component
  *
  * 特性：
  * - 支持多种按钮类型：primary、danger、flat、dashed
@@ -12,7 +12,7 @@
 
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
 
-export interface XyButtonConfig {
+export interface ButtonConfig {
     disabled?: boolean;
     icon?: string;
     loading?: boolean;
@@ -29,8 +29,8 @@ export interface XyButtonConfig {
     size?: "xxxs" | "xxs" | "xs" | "sm" | "md" | "lg" | "xl";
 }
 
-@autoRegister({ tagName: "xy-button" })
-export default class XyButton extends WebComponent {
+@autoRegister({ tagName: "wsx-button" })
+export default class Button extends WebComponent {
     // 状态属性
     private disabled: boolean = false;
     private loading: boolean = false;
@@ -68,9 +68,9 @@ export default class XyButton extends WebComponent {
         ];
     }
 
-    constructor(config: XyButtonConfig = {}) {
+    constructor(config: ButtonConfig = {}) {
         super({
-            styleName: "xy-button",
+            styleName: "wsx-button",
             ...config,
         });
 
@@ -124,7 +124,7 @@ export default class XyButton extends WebComponent {
             </button>
         );
 
-        return <div className="xy-button-container">{isLink ? linkElement : buttonElement}</div>;
+        return <div className="wsx-button-container">{isLink ? linkElement : buttonElement}</div>;
     }
 
     private renderContent(): (HTMLElement | string)[] {

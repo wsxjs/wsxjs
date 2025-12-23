@@ -1,16 +1,26 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 /**
  * Slot Card Component - LightComponent Version
- * Demonstrates slot usage in Light DOM
+ * 通用的 Card 组件，支持 Light DOM 中的 slot 使用
  *
- * Note: CSS is automatically injected by babel-plugin-wsx-style
- * if SlotCardLight.css exists in the same directory
+ * 使用方式：
+ * ```tsx
+ * <slot-card-light>
+ *   <span slot="header">Header Content</span>
+ *   <p>Main Content</p>
+ *   <button slot="footer">Footer Button</button>
+ * </slot-card-light>
+ * ```
  */
-
 import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./SlotCardLight.css?inline";
 
 @autoRegister({ tagName: "slot-card-light" })
 export default class SlotCardLight extends LightComponent {
+    constructor() {
+        super({ styles });
+    }
+
     render() {
         return (
             <div class="card">

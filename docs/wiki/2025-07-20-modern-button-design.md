@@ -1,8 +1,8 @@
-# Modern XyButton 组件设计文档
+# Modern Button 组件设计文档
 
 ## 设计理念
 
-Modern XyButton 是一个完全重新设计的按钮组件，遵循现代 Web 设计标准和最佳实践。
+Modern Button 是一个完全重新设计的按钮组件，遵循现代 Web 设计标准和最佳实践。
 
 ### 核心原则
 
@@ -67,8 +67,8 @@ Modern XyButton 是一个完全重新设计的按钮组件，遵循现代 Web �
 ### 1. 组件结构
 
 ```typescript
-@autoRegister({ tagName: "xy-button" })
-export default class XyButton extends WebComponent {
+@autoRegister({ tagName: "wsx-button" })
+export default class Button extends WebComponent {
     // 基础属性
     private disabled: boolean = false;
     private loading: boolean = false;
@@ -96,11 +96,11 @@ export default class XyButton extends WebComponent {
 
 ```css
 /* 基础样式 */
-.xy-button {
+.wsx-button {
     /* 使用 CSS 自定义属性 */
-    --xy-button-primary-bg: #3b82f6;
-    --xy-button-border-radius: 0.5rem;
-    --xy-button-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --wsx-button-primary-bg: #3b82f6;
+    --wsx-button-border-radius: 0.5rem;
+    --wsx-button-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 变体样式 */
@@ -141,7 +141,7 @@ this.buttonElement.setAttribute("aria-disabled", "true");
 自定义事件支持：
 
 ```typescript
-this.dispatchEvent(new CustomEvent("xy-button-click", {
+this.dispatchEvent(new CustomEvent("wsx-button-click", {
     detail: {
         variant: this.variant,
         size: this.size,
@@ -159,61 +159,61 @@ this.dispatchEvent(new CustomEvent("xy-button-click", {
 
 ```html
 <!-- 主要按钮 -->
-<xy-button variant="primary">Primary Button</xy-button>
+<wsx-button variant="primary">Primary Button</wsx-button>
 
 <!-- 次要按钮 -->
-<xy-button variant="secondary">Secondary Button</xy-button>
+<wsx-button variant="secondary">Secondary Button</wsx-button>
 
 <!-- 危险按钮 -->
-<xy-button variant="danger">Delete</xy-button>
+<wsx-button variant="danger">Delete</wsx-button>
 ```
 
 ### 图标按钮
 
 ```html
 <!-- 左侧图标 -->
-<xy-button icon="🚀" variant="primary">Launch</xy-button>
+<wsx-button icon="🚀" variant="primary">Launch</wsx-button>
 
 <!-- 右侧图标 -->
-<xy-button icon="→" icon-position="right" variant="primary">Next</xy-button>
+<wsx-button icon="→" icon-position="right" variant="primary">Next</wsx-button>
 
 <!-- 仅图标 -->
-<xy-button icon="⚙️" variant="ghost"></xy-button>
+<wsx-button icon="⚙️" variant="ghost"></wsx-button>
 ```
 
 ### 状态按钮
 
 ```html
 <!-- 加载状态 -->
-<xy-button loading variant="primary">Loading...</xy-button>
+<wsx-button loading variant="primary">Loading...</wsx-button>
 
 <!-- 禁用状态 -->
-<xy-button disabled variant="primary">Disabled</xy-button>
+<wsx-button disabled variant="primary">Disabled</wsx-button>
 
 <!-- 激活状态 -->
-<xy-button active variant="primary">Active</xy-button>
+<wsx-button active variant="primary">Active</wsx-button>
 ```
 
 ### 布局按钮
 
 ```html
 <!-- 块级按钮 -->
-<xy-button block variant="primary">Full Width</xy-button>
+<wsx-button block variant="primary">Full Width</wsx-button>
 
 <!-- 圆角按钮 -->
-<xy-button rounded variant="primary">Rounded</xy-button>
+<wsx-button rounded variant="primary">Rounded</wsx-button>
 ```
 
 ### 链接按钮
 
 ```html
 <!-- 外部链接 -->
-<xy-button href="https://example.com" target="_blank" variant="primary">
+<wsx-button href="https://example.com" target="_blank" variant="primary">
     External Link
-</xy-button>
+</wsx-button>
 
 <!-- 内部链接 -->
-<xy-button href="/about" variant="link">About</xy-button>
+<wsx-button href="/about" variant="link">About</wsx-button>
 ```
 
 ## 主题定制
@@ -225,19 +225,19 @@ this.dispatchEvent(new CustomEvent("xy-button-click", {
 ```css
 :host {
     /* 颜色系统 */
-    --xy-button-primary-bg: #3b82f6;
-    --xy-button-primary-hover-bg: #2563eb;
-    --xy-button-primary-color: #ffffff;
+    --wsx-button-primary-bg: #3b82f6;
+    --wsx-button-primary-hover-bg: #2563eb;
+    --wsx-button-primary-color: #ffffff;
     
     /* 尺寸系统 */
-    --xy-button-sm-padding: 0.5rem 0.75rem;
-    --xy-button-md-padding: 0.75rem 1rem;
-    --xy-button-lg-padding: 1rem 1.5rem;
+    --wsx-button-sm-padding: 0.5rem 0.75rem;
+    --wsx-button-md-padding: 0.75rem 1rem;
+    --wsx-button-lg-padding: 1rem 1.5rem;
     
     /* 视觉效果 */
-    --xy-button-border-radius: 0.5rem;
-    --xy-button-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-    --xy-button-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --wsx-button-border-radius: 0.5rem;
+    --wsx-button-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --wsx-button-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 ```
 
@@ -246,15 +246,15 @@ this.dispatchEvent(new CustomEvent("xy-button-click", {
 ```css
 /* 深色主题 */
 [data-theme="dark"] {
-    --xy-button-primary-bg: #1e40af;
-    --xy-button-secondary-bg: #374151;
-    --xy-button-outline-border: #4b5563;
+    --wsx-button-primary-bg: #1e40af;
+    --wsx-button-secondary-bg: #374151;
+    --wsx-button-outline-border: #4b5563;
 }
 
 /* 品牌主题 */
 [data-brand="acme"] {
-    --xy-button-primary-bg: #ff6b35;
-    --xy-button-primary-hover-bg: #e55a2b;
+    --wsx-button-primary-bg: #ff6b35;
+    --wsx-button-primary-hover-bg: #e55a2b;
 }
 ```
 
@@ -264,7 +264,7 @@ this.dispatchEvent(new CustomEvent("xy-button-click", {
 
 ```css
 @media (max-width: 640px) {
-    .xy-button {
+    .wsx-button {
         min-height: 2.25rem;
     }
     
@@ -282,7 +282,7 @@ this.dispatchEvent(new CustomEvent("xy-button-click", {
 
 ```css
 @media (prefers-contrast: high) {
-    .xy-button {
+    .wsx-button {
         border: 1px solid currentColor;
     }
     
@@ -296,7 +296,7 @@ this.dispatchEvent(new CustomEvent("xy-button-click", {
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-    .xy-button {
+    .wsx-button {
         transition: none;
     }
     
@@ -335,7 +335,7 @@ this.dispatchEvent(new CustomEvent("xy-button-click", {
 
 ## 总结
 
-Modern XyButton 组件代表了现代 Web 组件设计的最佳实践：
+Modern Button 组件代表了现代 Web 组件设计的最佳实践：
 
 1. **设计系统化** - 统一的视觉语言和交互模式
 2. **开发友好** - 清晰的 API 和完整的文档
