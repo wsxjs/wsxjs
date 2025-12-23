@@ -1,6 +1,6 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 /**
- * WSX Framework Example App - Router-based Demo
+ * WSXJS Example App - Router-based Demo
  *
  * Features:
  * - WSX Router demonstration with navigation
@@ -149,7 +149,7 @@ export default class App extends LightComponent {
                         <div class="footer-section">
                             <div class="footer-brand">
                                 <wsx-logo variant="icon" size="24" color="#fca5a5"></wsx-logo>
-                                <h3>WSX Framework</h3>
+                                <h3>WSXJS</h3>
                             </div>
                             <p>The Progressive Web Components Framework</p>
                             <div class="footer-social">
@@ -238,8 +238,8 @@ export default class App extends LightComponent {
                     </div>
 
                     <div class="footer-bottom">
-                        <p>&copy; 2024 WSX Framework. Released under the MIT License.</p>
-                        <p>Made with ❤️ by the WSX Framework team</p>
+                        <p>&copy; 2024 WSXJS. Released under the MIT License.</p>
+                        <p>Made with ❤️ by the WSXJS team</p>
                     </div>
                 </div>
             </footer>
@@ -257,19 +257,19 @@ export default class App extends LightComponent {
     };
 
     private openDocs = (): void => {
-        window.open("https://wsx-framework.dev/docs", "_blank");
+        window.open("https://wsxjs.dev/docs", "_blank");
     };
 
     private openDiscord = (): void => {
-        window.open("https://discord.gg/wsx-framework", "_blank");
+        window.open("https://discord.gg/wsxjs", "_blank");
     };
 
     private openTwitter = (): void => {
-        window.open("https://twitter.com/wsx_framework", "_blank");
+        window.open("https://twitter.com/wsxjs", "_blank");
     };
 
     private openBlog = (): void => {
-        window.open("https://wsx-framework.dev/blog", "_blank");
+        window.open("https://wsxjs.dev/blog", "_blank");
     };
 
     private openLicense = (): void => {
@@ -277,11 +277,11 @@ export default class App extends LightComponent {
     };
 
     private openPrivacy = (): void => {
-        window.open("https://wsx-framework.dev/privacy", "_blank");
+        window.open("https://wsxjs.dev/privacy", "_blank");
     };
 
     private openTerms = (): void => {
-        window.open("https://wsx-framework.dev/terms", "_blank");
+        window.open("https://wsxjs.dev/terms", "_blank");
     };
 
     /**

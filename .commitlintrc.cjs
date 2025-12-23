@@ -1,5 +1,5 @@
 /**
- * Commitlint Configuration for WSX Framework
+ * Commitlint Configuration for WSXJS
  *
  * Enforces conventional commit messages to enable semantic versioning
  * and automated changelog generation.

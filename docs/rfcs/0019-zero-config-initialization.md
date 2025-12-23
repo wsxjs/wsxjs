@@ -7,7 +7,7 @@
 
 ## 摘要
 
-本文档说明如何实现 WSX Framework 的零配置初始化，让用户只需安装依赖即可开始使用，无需手动配置 `tsconfig.json`、`vite.config.ts`、`wsx.d.ts` 和 ESLint 等文件。
+本文档说明如何实现 WSXJS 的零配置初始化，让用户只需安装依赖即可开始使用，无需手动配置 `tsconfig.json`、`vite.config.ts`、`wsx.d.ts` 和 ESLint 等文件。
 
 ## 动机
 
@@ -320,7 +320,7 @@ $ npx wsx init
 ✅ wsx.d.ts 已生成
 ✅ ESLint 配置已更新
 
-🎉 WSX Framework 初始化完成！
+🎉 WSXJS 初始化完成！
 ```
 
 ### 跳过某些配置

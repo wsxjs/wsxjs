@@ -1,4 +1,4 @@
-# WSX Framework (@wsxjs)
+# WSXJS (@wsxjs)
 
 [![npm version](https://badge.fury.io/js/@wsxjs%2Fwsx-core.svg)](https://badge.fury.io/js/@wsxjs%2Fwsx-core)
 [![npm downloads](https://img.shields.io/npm/dm/@wsxjs/wsx-core.svg)](https://www.npmjs.com/package/@wsxjs/wsx-core)
@@ -12,7 +12,7 @@
 
 **[View Examples on GitHub Pages →](https://www.wsxjs.dev/)**
 
-Experience WSX Framework in action with our interactive examples showcasing:
+Experience WSXJS in action with our interactive examples showcasing:
 - Zero-dependency Web Components with JSX syntax
 - Router-based navigation
 - Theme switching
@@ -125,7 +125,7 @@ ESLint rules for WSX components
 [![npm version](https://badge.fury.io/js/@wsxjs%2Fwsx-tsconfig.svg)](https://badge.fury.io/js/@wsxjs%2Fwsx-tsconfig)
 [![npm downloads](https://img.shields.io/npm/dm/@wsxjs/wsx-tsconfig.svg)](https://www.npmjs.com/package/@wsxjs/wsx-tsconfig)
 
-Shared TypeScript configuration for WSX Framework projects. Includes all required compiler options for JSX, decorators, and type safety.
+Shared TypeScript configuration for WSXJS projects. Includes all required compiler options for JSX, decorators, and type safety.
 
 ### Development Package
 - **@wsxjs/wsx-examples** - Interactive showcase application with example components
@@ -192,7 +192,7 @@ export class MyComponent extends WebComponent {
 
 ## JSX Configuration
 
-WSX Framework provides framework-level JSX support. Configure your `tsconfig.json`:
+WSXJS provides framework-level JSX support. Configure your `tsconfig.json`:
 
 ```json
 {
@@ -234,7 +234,7 @@ Since WSX components are native Web Components, use them like any HTML element:
 
 ## Component Types
 
-WSX Framework provides three component base classes for different use cases:
+WSXJS provides three component base classes for different use cases:
 
 ### WebComponent (Shadow DOM)
 Standard Web Component with Shadow DOM for style isolation:
@@ -286,7 +286,7 @@ export class EditorDemo extends LightComponent {
 
 ## Documentation
 
-- [Quick Start Guide](docs/QUICK_START.md) - Get started with WSX Framework in minutes
+- [Quick Start Guide](docs/QUICK_START.md) - Get started with WSXJS in minutes
 - [TypeScript Setup Guide](docs/TYPESCRIPT_SETUP.md) - Complete TypeScript configuration and best practices
 - [LightComponent Guide](docs/LIGHT_COMPONENT_GUIDE.md) - Complete guide to using LightComponent
 - [JSX Support Guide](docs/JSX_SUPPORT.md) - Complete guide to JSX configuration and usage
@@ -310,7 +310,7 @@ This monorepo uses pnpm workspaces with comprehensive development tooling:
 ```bash
 # Clone the repository
 git clone https://github.com/wsxjs/wsxjs.git
-cd wsx-framework
+cd wsxjs
 
 # Install dependencies
 pnpm install
@@ -348,7 +348,7 @@ pnpm clean               # Clean all build artifacts
 ### Project Structure
 
 ```
-wsx-framework/
+wsxjs/
 ├── packages/
 │   ├── core/              # Core framework
 │   │   ├── src/
@@ -464,7 +464,7 @@ export class MyComponent extends WebComponent {
 
 ## SVG Support
 
-WSX Framework provides native SVG support with proper namespace handling:
+WSXJS provides native SVG support with proper namespace handling:
 
 ```tsx
 @autoRegister()
@@ -524,7 +524,7 @@ export class SvgChart extends WebComponent {
 
 ## Installation
 
-To use WSX Framework in your project:
+To use WSXJS in your project:
 
 ```bash
 # Install core framework
@@ -579,7 +579,7 @@ All packages are published under the `@wsxjs` npm organization:
 
 ## Credits
 
-Built with ❤️ by the WSX Framework team.
+Built with ❤️ by the WSXJS team.
 
 ## Project Context
 

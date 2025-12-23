@@ -1,6 +1,6 @@
 # @wsxjs/wsx-router
 
-WSX Router - Native History API-based routing for WSX Framework
+WSX Router - Native History API-based routing for WSXJS
 
 ## Features
 
@@ -238,7 +238,7 @@ wsx-view::part(view) {
 
 ## Contributing
 
-See the main [WSX Framework Contributing Guide](../../CONTRIBUTING.md).
+See the main [WSXJS Contributing Guide](../../CONTRIBUTING.md).
 
 ## License
 

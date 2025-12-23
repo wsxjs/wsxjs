@@ -28,7 +28,7 @@ export default class EcosystemSection extends WebComponent {
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon">🔧</div>
                             <h3>Core Framework</h3>
-                            <p>The main WSX Framework with JSX support and Web Components</p>
+                            <p>The main WSXJS with JSX support and Web Components</p>
                             <div class="ecosystem-links">
                                 <a href="#" onClick={this.openDocs}>
                                     Documentation
@@ -115,7 +115,7 @@ export default class EcosystemSection extends WebComponent {
     }
 
     private openDocs = (): void => {
-        window.open("https://wsx-framework.dev/docs", "_blank");
+        window.open("https://wsxjs.dev/docs", "_blank");
     };
 
     private openGitHub = (): void => {

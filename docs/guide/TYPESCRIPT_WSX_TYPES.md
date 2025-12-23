@@ -1,6 +1,6 @@
 # WSX 类型系统指南
 
-本指南详细说明了 WSX Framework 中 `.wsx` 文件类型系统的工作原理、维护方式和最佳实践。
+本指南详细说明了 WSXJS 中 `.wsx` 文件类型系统的工作原理、维护方式和最佳实践。
 
 ## 目录
 
@@ -15,7 +15,7 @@
 
 ### 问题背景
 
-在 WSX Framework 的 monorepo 结构中，多个包（`wsx-router`、`base-components`、`examples` 等）都包含了相同的 `wsx.d.ts` 文件，这看起来是重复的。但这是**必需的**，而不是设计失误。
+在 WSXJS 的 monorepo 结构中，多个包（`wsx-router`、`base-components`、`examples` 等）都包含了相同的 `wsx.d.ts` 文件，这看起来是重复的。但这是**必需的**，而不是设计失误。
 
 ### TypeScript 模块类型声明的限制
 
@@ -356,4 +356,4 @@ git commit -m "test" --allow-empty
 - **开发者体验？** 完全自动化，零手动维护成本
 - **是否可以改进？** 未来 TypeScript 改进类型系统后可以迁移到统一配置
 
-WSX Framework 选择了工程实用主义：承认技术限制，通过自动化工具提供最佳开发体验。
+WSXJS 选择了工程实用主义：承认技术限制，通过自动化工具提供最佳开发体验。

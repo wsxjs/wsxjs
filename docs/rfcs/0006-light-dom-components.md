@@ -1,4 +1,4 @@
-# RFC 0006: Light DOM Components in WSX Framework
+# RFC 0006: Light DOM Components in WSXJS
 
 - **Status**: Implemented
 - **Type**: Feature
@@ -7,11 +7,11 @@
 
 ## Summary
 
-This RFC proposes the addition of Light DOM components to the WSX Framework as a complementary approach to the existing Shadow DOM components. Light DOM components enable seamless integration with third-party libraries that require direct DOM access, such as EditorJS, while maintaining the component-based architecture and developer experience of WSX.
+This RFC proposes the addition of Light DOM components to the WSXJS as a complementary approach to the existing Shadow DOM components. Light DOM components enable seamless integration with third-party libraries that require direct DOM access, such as EditorJS, while maintaining the component-based architecture and developer experience of WSX.
 
 ## Motivation
 
-The WSX Framework currently uses Shadow DOM exclusively for component encapsulation. While Shadow DOM provides excellent style isolation and encapsulation, it creates barriers when integrating with third-party libraries that:
+The WSXJS currently uses Shadow DOM exclusively for component encapsulation. While Shadow DOM provides excellent style isolation and encapsulation, it creates barriers when integrating with third-party libraries that:
 
 1. Use global DOM queries (`document.querySelector`)
 2. Inject styles into the document head
@@ -348,7 +348,7 @@ export class MyComponent extends LightComponent {
 
 ## Component Architecture Pattern: Container vs Leaf
 
-WSX Framework follows a **Container-Light, Leaf-Shadow** architecture pattern for optimal third-party library compatibility and style isolation.
+WSXJS follows a **Container-Light, Leaf-Shadow** architecture pattern for optimal third-party library compatibility and style isolation.
 
 ### Component Categories
 
@@ -531,7 +531,7 @@ button {
 
 ### Framework Guidelines (Not Enforced)
 
-WSX Framework **recommends** this pattern but gives developers full choice:
+WSXJS **recommends** this pattern but gives developers full choice:
 
 ```typescript
 // Recommended: Container components use Light DOM
@@ -555,11 +555,11 @@ export class WsxButton extends WebComponent {
 
 ## Conclusion
 
-Light DOM components provide a necessary escape hatch for scenarios where Shadow DOM's isolation becomes a barrier. By offering both Shadow DOM and Light DOM options, WSX Framework becomes more versatile while maintaining its core principles of component-based development, type safety, and excellent developer experience.
+Light DOM components provide a necessary escape hatch for scenarios where Shadow DOM's isolation becomes a barrier. By offering both Shadow DOM and Light DOM options, WSXJS becomes more versatile while maintaining its core principles of component-based development, type safety, and excellent developer experience.
 
 The addition of Light DOM components makes WSX suitable for a wider range of applications, from isolated widget development to complex integrations with existing libraries and frameworks.
 
-The **Container-Light, Leaf-Shadow** architecture pattern ensures WSX Framework components work seamlessly with the entire web ecosystem while maintaining the benefits of Web Components encapsulation where appropriate.
+The **Container-Light, Leaf-Shadow** architecture pattern ensures WSXJS components work seamlessly with the entire web ecosystem while maintaining the benefits of Web Components encapsulation where appropriate.
 
 ## References
 
@@ -567,7 +567,7 @@ The **Container-Light, Leaf-Shadow** architecture pattern ensures WSX Framework 
 - [Shadow DOM v1](https://developers.google.com/web/fundamentals/web-components/shadowdom)
 - [Custom Elements v1](https://developers.google.com/web/fundamentals/web-components/customelements)
 - [EditorJS Documentation](https://editorjs.io/)
-- [WSX Framework Documentation](https://github.com/wsxjs/wsxjs)
+- [WSXJS Documentation](https://github.com/wsxjs/wsxjs)
 
 ## Appendix: Code Examples
 

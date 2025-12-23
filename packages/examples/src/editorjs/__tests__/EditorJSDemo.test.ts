@@ -43,7 +43,7 @@ describe("EditorJSDemo Component", () => {
 
         test("should render demo title", () => {
             const title = component.querySelector(".demo-title");
-            expect(title?.textContent).toContain("EditorJS + WSX Framework Demo");
+            expect(title?.textContent).toContain("EditorJS + WSXJS Demo");
         });
 
         test("should render benefits section with list items", () => {
@@ -200,7 +200,7 @@ describe("EditorJSDemo Component", () => {
             expect(container).toBeTruthy();
 
             const title = component.querySelector(".demo-title");
-            expect(title?.textContent).toContain("EditorJS + WSX Framework Demo");
+            expect(title?.textContent).toContain("EditorJS + WSXJS Demo");
         });
     });
 

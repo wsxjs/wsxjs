@@ -1,4 +1,4 @@
-name: Deploy WSX Framework Examples to GitHub Pages
+name: Deploy WSXJS Examples to GitHub Pages
 
 on:
     push:

@@ -12,12 +12,12 @@ export default defineConfig({
         process.env.NODE_ENV === "production" && process.env.GITHUB_PAGES === "true"
             ? process.env.CUSTOM_DOMAIN === "true"
                 ? "/"
-                : "/wsx-framework/"
+                : "/wsxjs/"
             : "/",
     plugins: [
         UnoCSS(),
         wsx({
-            debug: true, // Enable debug to see generated code
+            debug: false, // Enable debug to see generated code
             jsxFactory: "h",
             jsxFragment: "Fragment",
         }),
@@ -40,8 +40,33 @@ export default defineConfig({
                           __dirname,
                           "../base-components/src/index.ts"
                       ),
+                      // Use built files for wsx-i18next to avoid module resolution issues
+                      "@wsxjs/wsx-i18next": path.resolve(
+                          __dirname,
+                          "../wsx-i18next/dist/index.mjs"
+                      ),
                       "@wsxjs/wsx-router": path.resolve(__dirname, "../wsx-router/src/index.ts"),
                   }
                 : undefined,
+    },
+    // 开发环境代理配置，解决 CORS 问题
+    server: {
+        proxy: {
+            "/api/github": {
+                target: "https://api.github.com",
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/github/, ""),
+                configure: (proxy, _options) => {
+                    proxy.on("error", (err, _req, _res) => {
+                        console.error("GitHub API proxy error", err);
+                    });
+                },
+            },
+            "/api/npm": {
+                target: "https://api.npmjs.org",
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/npm/, ""),
+            },
+        },
     },
 });

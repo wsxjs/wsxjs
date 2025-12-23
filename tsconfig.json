@@ -36,7 +36,8 @@
         "packages/vite-plugin/test/setup.ts",
         "packages/core/types/wsx-types.d.ts",
         "wsx.d.ts",
-        "packages/eslint-plugin/test/setup.ts"
+        "packages/eslint-plugin/test/setup.ts",
+        "packages/wsx-i18next/src/**/*"
     ],
     "exclude": ["node_modules", "dist"]
 }

@@ -4,7 +4,7 @@
 - **父 RFC**: [RFC-0021](./0021-framework-website-enhancement.md)
 - **里程碑**: M0
 - **开始日期**: 2025-01-XX
-- **状态**: Proposed
+- **状态**: In Progress
 - **作者**: WSX Team
 
 ## 摘要
@@ -28,10 +28,11 @@
 - ✅ 基本的 Hero Section
 - ✅ Logo 和标题
 - ✅ 简单的描述
-- ❌ 缺少对比说明
-- ❌ 缺少性能指标
-- ❌ 缺少快速开始代码
-- ❌ 缺少统计数据
+- ✅ 对比说明（ComparisonSection）
+- ✅ 性能指标（PerformanceMetrics）
+- ✅ 快速开始代码（QuickStartCode）
+- ✅ 统计数据（StatsSection）
+- ✅ **i18next 国际化支持**（新增）
 
 ### 目标用户
 
@@ -52,17 +53,19 @@
 
 ### 组件设计
 
-#### 1. 增强的 Hero Section
+#### 1. 增强的 Hero Section（已实现，支持国际化）
 
 ```tsx
 /** @jsxImportSource @wsxjs/wsx-core */
 // src/components/HomeSection.wsx (增强版)
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
+import { i18n } from '@wsxjs/wsx-i18next';
 import './ComparisonSection.wsx';
 import './PerformanceMetrics.wsx';
 import './QuickStartCode.wsx';
 import './StatsSection.wsx';
 
+@i18n('home')
 @autoRegister({ tagName: 'home-section' })
 export class HomeSection extends WebComponent {
     render() {
@@ -70,23 +73,23 @@ export class HomeSection extends WebComponent {
             <div>
                 {/* Hero Section */}
                 <section class="hero-section">
+                    <div class="hero-badge">
+                        <span class="badge-text">{this.t('hero.badge')}</span>
+                    </div>
                     <h1 class="hero-title">
-                        <span class="title-main">WSXJS</span>
-                        <span class="title-subtitle">
-                            JSX for Native Web Components
-                        </span>
+                        <span class="title-main">{this.t('hero.title')}</span>
+                        <span class="title-subtitle">{this.t('hero.subtitle')}</span>
                     </h1>
-                    <p class="hero-description">
-                        Not a framework, just better developer experience.
-                        Write JSX syntax, get native Web Components.
-                        Zero dependencies, TypeScript-first, production-ready.
-                    </p>
+                    <p class="hero-description">{this.t('hero.description')}</p>
                     <div class="hero-actions">
                         <wsx-link to="/docs/getting-started" class="btn-primary">
-                            Get Started
+                            {this.t('hero.getStarted')}
                         </wsx-link>
                         <button class="btn-secondary" onClick={this.openPlayground}>
-                            Try Online
+                            {this.t('hero.tryOnline')}
+                        </button>
+                        <button class="btn-ghost" onClick={this.openGitHub}>
+                            {this.t('hero.viewGitHub')}
                         </button>
                     </div>
                 </section>
@@ -108,45 +111,54 @@ export class HomeSection extends WebComponent {
 }
 ```
 
-#### 2. 对比说明组件
+**国际化支持**：
+- 使用 `@i18n('home')` 装饰器自动注入翻译功能
+- 所有文本通过 `this.t()` 方法获取翻译
+- 支持语言切换，组件自动响应语言变化并重新渲染
+- 翻译文件位于 `public/locales/{lng}/home.json`
+
+#### 2. 对比说明组件（已实现，支持国际化）
 
 ```tsx
 /** @jsxImportSource @wsxjs/wsx-core */
 // src/components/ComparisonSection.wsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
+import { i18n } from '@wsxjs/wsx-i18next';
 
+@i18n('home')
 @autoRegister({ tagName: 'comparison-section' })
 export class ComparisonSection extends WebComponent {
     render() {
         return (
             <section class="comparison-section">
-                <h2>Why WSXJS?</h2>
+                <h2>{this.t('comparison.title')}</h2>
+                <p>{this.t('comparison.description')}</p>
                 <div class="comparison-grid">
                     <div class="comparison-item">
-                        <h3>vs React</h3>
+                        <h3>{this.t('comparison.vsReact.title')}</h3>
                         <ul>
-                            <li>✅ Native Web Components (no Virtual DOM)</li>
-                            <li>✅ Zero runtime overhead</li>
-                            <li>✅ Works with any framework</li>
-                            <li>✅ Smaller bundle size</li>
+                            <li>✅ {this.t('comparison.vsReact.items.native')}</li>
+                            <li>✅ {this.t('comparison.vsReact.items.zero')}</li>
+                            <li>✅ {this.t('comparison.vsReact.items.works')}</li>
+                            <li>✅ {this.t('comparison.vsReact.items.smaller')}</li>
                         </ul>
                     </div>
                     <div class="comparison-item">
-                        <h3>vs Vue</h3>
+                        <h3>{this.t('comparison.vsVue.title')}</h3>
                         <ul>
-                            <li>✅ Pure Web Standards</li>
-                            <li>✅ No framework lock-in</li>
-                            <li>✅ Better performance</li>
-                            <li>✅ Future-proof</li>
+                            <li>✅ {this.t('comparison.vsVue.items.pure')}</li>
+                            <li>✅ {this.t('comparison.vsVue.items.noLock')}</li>
+                            <li>✅ {this.t('comparison.vsVue.items.better')}</li>
+                            <li>✅ {this.t('comparison.vsVue.items.future')}</li>
                         </ul>
                     </div>
                     <div class="comparison-item">
-                        <h3>vs Plain Web Components</h3>
+                        <h3>{this.t('comparison.vsPlain.title')}</h3>
                         <ul>
-                            <li>✅ JSX syntax (familiar)</li>
-                            <li>✅ TypeScript support</li>
-                            <li>✅ Better DX</li>
-                            <li>✅ Modern tooling</li>
+                            <li>✅ {this.t('comparison.vsPlain.items.jsx')}</li>
+                            <li>✅ {this.t('comparison.vsPlain.items.typescript')}</li>
+                            <li>✅ {this.t('comparison.vsPlain.items.dx')}</li>
+                            <li>✅ {this.t('comparison.vsPlain.items.tooling')}</li>
                         </ul>
                     </div>
                 </div>
@@ -155,6 +167,11 @@ export class ComparisonSection extends WebComponent {
     }
 }
 ```
+
+**国际化支持**：
+- 所有对比文本已国际化
+- 支持英文和中文翻译
+- 使用 `@i18n('home')` 装饰器实现自动响应式翻译
 
 #### 3. 性能指标组件
 
@@ -310,68 +327,175 @@ export class StatsSection extends LightComponent {
 ## 实施计划
 
 ### 步骤 0.1: 分析当前首页（1 天）
-- [ ] 审查 `HomeSection.wsx` 当前实现
-- [ ] 对比 Vue.js 和 React 的首页设计
-- [ ] 识别需要改进的关键点
-- [ ] 收集 WSXJS 的核心价值主张
+- [x] 审查 `HomeSection.wsx` 当前实现
+- [x] 对比 Vue.js 和 React 的首页设计
+- [x] 识别需要改进的关键点
+- [x] 收集 WSXJS 的核心价值主张
 
 ### 步骤 0.2: 设计新的 Hero Section（1 天）
-- [ ] 设计核心标语："JSX for Native Web Components"
-- [ ] 设计副标题和描述文案
-- [ ] 设计 CTA 按钮布局
-- [ ] 创建设计稿或原型
+- [x] 设计核心标语："JSX for Native Web Components"
+- [x] 设计副标题和描述文案
+- [x] 设计 CTA 按钮布局
+- [x] 创建设计稿或原型
 
 ### 步骤 0.3: 实现对比说明部分（1 天）
-- [ ] 创建 `ComparisonSection.wsx` 组件
-- [ ] 实现 vs React/Vue/Plain Web Components 对比
-- [ ] 添加样式和动画
+- [x] 创建 `ComparisonSection.wsx` 组件
+- [x] 实现 vs React/Vue/Plain Web Components 对比
+- [x] 添加样式和动画
+- [x] **集成 i18next 国际化支持**
 
 ### 步骤 0.4: 实现性能指标展示（1 天）
-- [ ] 创建 `PerformanceMetrics.wsx` 组件
+- [x] 创建 `PerformanceMetrics.wsx` 组件
 - [ ] 显示运行时大小和性能指标
 - [ ] 添加动画效果
+- [ ] **集成 i18next 国际化支持**（待完成）
 
 ### 步骤 0.5: 实现快速开始代码示例（1 天）
-- [ ] 创建 `QuickStartCode.wsx` 组件
+- [x] 创建 `QuickStartCode.wsx` 组件
 - [ ] 添加代码高亮
 - [ ] 实现复制功能
 - [ ] 添加"Try Online"按钮
+- [ ] **集成 i18next 国际化支持**（待完成）
 
 ### 步骤 0.6: 集成统计数据（1 天）
-- [ ] 创建 `StatsSection.wsx` 组件
+- [x] 创建 `StatsSection.wsx` 组件
 - [ ] 集成 npm downloads API（或使用静态数据）
 - [ ] 集成 GitHub stars API（或使用静态数据）
 - [ ] 添加加载状态和错误处理
+- [ ] **集成 i18next 国际化支持**（待完成）
 
 ### 步骤 0.7: 测试和优化（1 天）
 - [ ] 测试响应式设计
 - [ ] 测试性能（Lighthouse 评分）
 - [ ] 优化动画和交互
 - [ ] 收集反馈并迭代
+- [ ] **测试国际化功能**（语言切换、翻译准确性）
+
+### 步骤 0.8: 国际化集成（新增）
+- [x] 创建 i18next 配置文件
+- [x] 创建翻译文件结构（en/zh）
+- [x] 在 `main.ts` 中初始化 i18next
+- [x] 更新 `HomeSection` 组件使用 `@i18n` 装饰器
+- [x] 更新 `ComparisonSection` 组件使用 `@i18n` 装饰器
+- [ ] 更新其他首页组件（PerformanceMetrics, QuickStartCode, StatsSection）
+- [ ] 添加语言切换 UI 组件
 
 ## 验收标准
 
-- [ ] Hero Section 清晰传达核心价值主张
-- [ ] 对比说明准确展示 WSXJS 的优势
+- [x] Hero Section 清晰传达核心价值主张
+- [x] 对比说明准确展示 WSXJS 的优势
 - [ ] 性能指标正确显示
 - [ ] 快速开始代码可以复制
 - [ ] 统计数据正确加载（或显示占位符）
 - [ ] 所有组件响应式设计正常
 - [ ] Lighthouse 性能评分 > 90
 - [ ] 移动端体验良好
+- [x] **国际化支持正常工作**（语言切换、翻译显示）
+- [x] **翻译文件结构完整**（英文和中文）
 
 ## 交付物
 
-- ✅ 优化后的 `HomeSection.wsx`
-- ✅ `ComparisonSection.wsx` 组件
+- ✅ 优化后的 `HomeSection.wsx`（支持国际化）
+- ✅ `ComparisonSection.wsx` 组件（支持国际化）
 - ✅ `PerformanceMetrics.wsx` 组件
 - ✅ `QuickStartCode.wsx` 组件
 - ✅ `StatsSection.wsx` 组件
 - ✅ 相关样式文件
 - ✅ 测试文件
+- ✅ **i18next 配置文件** (`src/i18n.ts`)
+- ✅ **翻译文件** (`public/locales/en/home.json`, `public/locales/zh/home.json`)
+- ✅ **国际化集成**（使用 `@wsxjs/wsx-i18next` 包）
+
+## 国际化实现细节
+
+### 技术栈
+- 使用 `@wsxjs/wsx-i18next` 包提供 i18next 集成
+- 使用 `@i18n` 装饰器自动注入翻译功能
+- 支持自动语言检测和手动语言切换
+- 组件自动响应语言变化并重新渲染
+
+### 翻译文件结构
+```
+public/locales/
+├── en/
+│   └── home.json    # 英文翻译
+└── zh/
+    └── home.json    # 中文翻译
+```
+
+### 使用方式
+1. 在组件上使用 `@i18n('home')` 装饰器
+2. 在组件内使用 `this.t('key')` 获取翻译
+3. 语言切换通过 `i18n.changeLanguage('en' | 'zh')` 实现
+4. 组件会自动订阅语言变化事件并重新渲染
+
+### 已国际化的组件
+- ✅ `HomeSection` - Hero Section 所有文本
+- ✅ `ComparisonSection` - 所有对比说明文本
+- ⏳ `PerformanceMetrics` - 待完成
+- ⏳ `QuickStartCode` - 待完成
+- ⏳ `StatsSection` - 待完成
+
+## 国际化实现说明
+
+### 技术实现
+
+首页组件已集成 `@wsxjs/wsx-i18next` 包，提供完整的国际化支持：
+
+1. **初始化配置** (`src/i18n.ts`):
+   ```typescript
+   import { initI18n } from "@wsxjs/wsx-i18next";
+   
+   export const i18n = initI18n({
+       fallbackLng: "en",
+       backend: {
+           loadPath: "/locales/{{lng}}/{{ns}}.json",
+       },
+       ns: ["home", "common"],
+       defaultNS: "home",
+   });
+   ```
+
+2. **组件使用**:
+   - 使用 `@i18n('home')` 装饰器自动注入翻译功能
+   - 通过 `this.t('key')` 获取翻译文本
+   - 自动订阅语言变化事件，语言切换时自动重新渲染
+
+3. **翻译文件结构**:
+   ```
+   public/locales/
+   ├── en/
+   │   └── home.json    # 英文翻译
+   └── zh/
+       └── home.json    # 中文翻译
+   ```
+
+### 已实现的国际化
+
+- ✅ **HomeSection**: Hero Section 所有文本已国际化
+- ✅ **ComparisonSection**: 所有对比说明文本已国际化
+- ⏳ **PerformanceMetrics**: 待完成
+- ⏳ **QuickStartCode**: 待完成
+- ⏳ **StatsSection**: 待完成
+
+### 语言切换
+
+用户可以通过以下方式切换语言：
+```typescript
+import { i18n } from './i18n';
+
+// 切换到中文
+i18n.changeLanguage('zh');
+
+// 切换到英文
+i18n.changeLanguage('en');
+```
+
+组件会自动响应语言变化并重新渲染。
 
 ## 相关文档
 
 - [RFC-0021: 框架网站增强计划](./0021-framework-website-enhancement.md)
+- [RFC-0029: i18next 集成](./0029-i18next-integration.md)
 - [执行计划](../../packages/examples/EXECUTION_PLAN.md)
 

@@ -28,7 +28,7 @@ export default class EditorJSDemo extends LightComponent {
     render() {
         return (
             <div class="editor-demo-container">
-                <h1 class="demo-title">EditorJS + WSX Framework Demo</h1>
+                <h1 class="demo-title">EditorJS + WSXJS Demo</h1>
 
                 <div class="editor-container">
                     <h2 class="editor-title">Try the Editor</h2>
@@ -157,7 +157,7 @@ export default class EditorJSDemo extends LightComponent {
                     {
                         type: "paragraph",
                         data: {
-                            text: "This editor demonstrates how WSX Framework can enhance EditorJS plugin development with Web Components and JSX.",
+                            text: "This editor demonstrates how WSXJS can enhance EditorJS plugin development with Web Components and JSX.",
                         },
                     },
                     {

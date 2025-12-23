@@ -1,19 +1,19 @@
-# WSX Framework 设计理念
+# WSXJS 设计理念
 
 ## 概述
 
-WSX Framework 是一个**原生优先**的 Web Components 框架，致力于提供最接近原生 Web 开发的开发体验，同时保持现代框架的便利性。
+WSXJS 是一个**原生优先**的 Web Components 框架，致力于提供最接近原生 Web 开发的开发体验，同时保持现代框架的便利性。
 
 ## 核心设计原则
 
 ### 1. 原生优先 (Native-First)
 
-WSX Framework 优先使用原生 Web 标准和 API，而不是创建抽象层。
+WSXJS 优先使用原生 Web 标准和 API，而不是创建抽象层。
 
 #### 示例：class vs className
 
 ```jsx
-// ✅ WSX Framework - 使用原生HTML属性名
+// ✅ WSXJS - 使用原生HTML属性名
 <div class="container">
   <button class="btn btn-primary">Click me</button>
 </div>
@@ -66,7 +66,7 @@ class MyComponent extends WebComponent {
 
 ## 与React的对比
 
-| 特性 | WSX Framework | React |
+| 特性 | WSXJS | React |
 |------|---------------|-------|
 | 属性名 | `class` | `className` |
 | 事件处理 | `onClick` | `onClick` |
@@ -239,7 +239,7 @@ class MyComponent extends WebComponent {
 
 ## 总结
 
-WSX Framework 的设计理念是**回归原生，拥抱标准**。通过使用原生 Web 技术，我们获得了：
+WSXJS 的设计理念是**回归原生，拥抱标准**。通过使用原生 Web 技术，我们获得了：
 
 - **更好的性能** - 无抽象层开销
 - **更小的体积** - 零依赖

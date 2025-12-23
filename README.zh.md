@@ -233,7 +233,7 @@ WSX 框架提供框架级的 JSX 支持。配置你的 `tsconfig.json`：
 ```bash
 # 克隆仓库
 git clone https://github.com/wsxjs/wsxjs.git
-cd wsx-framework
+cd wsxjs
 
 # 安装依赖
 pnpm install
@@ -271,7 +271,7 @@ pnpm clean               # 清理所有构建产物
 ### 项目结构
 
 ```
-wsx-framework/
+wsxjs/
 ├── packages/
 │   ├── core/              # 核心框架
 │   │   ├── src/

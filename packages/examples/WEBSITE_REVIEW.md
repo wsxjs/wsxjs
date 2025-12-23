@@ -9,7 +9,7 @@
 ### 1. 技术栈
 
 - **构建工具**: Vite 5
-- **UI 框架**: WSX Framework (自举)
+- **UI 框架**: WSXJS (自举)
 - **路由**: @wsxjs/wsx-router (基于 History API)
 - **样式**: UnoCSS + 自定义 CSS
 - **部署**: GitHub Pages (通过 GitHub Actions)

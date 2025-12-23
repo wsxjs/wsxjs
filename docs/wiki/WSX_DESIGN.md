@@ -1,7 +1,7 @@
-# WSX Framework 设计说明文档
+# WSXJS 设计说明文档
 
 ## 一、框架简介
-WSX Framework 是一套现代 Web Components 框架，主打 JSX 语法与 TypeScript 支持，完全零依赖 React，专注于原生 WebComponent 能力的极致开发体验。
+WSXJS 是一套现代 Web Components 框架，主打 JSX 语法与 TypeScript 支持，完全零依赖 React，专注于原生 WebComponent 能力的极致开发体验。
 
 - **核心理念**：WebComponent + JSX + TypeScript，极致类型安全与开发效率。
 - **wsx 文件**：即 Web Component with JSX，采用 .wsx 扩展名，等价于 TSX 语法的 WebComponent。

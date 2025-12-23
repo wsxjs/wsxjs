@@ -1,7 +1,7 @@
-# WSX Framework 发展路线图
+# WSXJS 发展路线图
 
 ## 愿景
-WSX Framework 致力于成为构建原生 Web Components 的最佳开发体验，在保持 Web 标准的同时提供现代 JSX 语法支持。
+WSXJS 致力于成为构建原生 Web Components 的最佳开发体验，在保持 Web 标准的同时提供现代 JSX 语法支持。
 
 ## 核心原则
 - **标准优先** - 遵循 Web Components 标准，不重新发明轮子
@@ -151,7 +151,7 @@ WSX Framework 致力于成为构建原生 Web Components 的最佳开发体验�
 ### 反馈渠道
 - GitHub Discussions: 功能讨论和问答
 - GitHub Issues: Bug 报告和功能请求
-- Twitter: @wsx_framework (即将推出)
+- Twitter: @wsxjs (即将推出)
 - Discord: 社区聊天 (计划中)
 
 ## 版本规划

@@ -1,0 +1,52 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Performance Metrics - 展示 WSXJS 的性能指标
+ * 突出零运行时开销和原生性能优势
+ */
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./PerformanceMetrics.css?inline";
+
+@autoRegister({ tagName: "performance-metrics" })
+export class PerformanceMetrics extends WebComponent {
+    constructor() {
+        super({ styles });
+    }
+
+    render() {
+        return (
+            <section class="performance-section">
+                <div class="container">
+                    <h2 class="section-title">Performance</h2>
+                    <p class="section-description">
+                        WSXJS delivers native performance with zero runtime overhead. No Virtual
+                        DOM, no framework overhead, just pure Web Components.
+                    </p>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-icon">📦</div>
+                            <span class="metric-value">0 KB</span>
+                            <span class="metric-label">Runtime Size</span>
+                            <p class="metric-description">
+                                No runtime library, pure build-time transformation
+                            </p>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon">⚡</div>
+                            <span class="metric-value">100%</span>
+                            <span class="metric-label">Native Performance</span>
+                            <p class="metric-description">
+                                Direct DOM manipulation, no Virtual DOM overhead
+                            </p>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-icon">🚀</div>
+                            <span class="metric-value">∞</span>
+                            <span class="metric-label">No Virtual DOM</span>
+                            <p class="metric-description">Works directly with browser APIs</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+}

@@ -10,7 +10,7 @@
 
 **⚠️ 此 RFC 已被拒绝 - 技术限制**
 
-本文档说明如何在 `@wsxjs/wsx-core` 中统一暴露 `.wsx` 文件模块类型定义，确保所有使用 WSX Framework 的项目都能正确识别 `.wsx` 文件类型，而无需在每个包中重复配置 `wsx.d.ts` 文件。
+本文档说明如何在 `@wsxjs/wsx-core` 中统一暴露 `.wsx` 文件模块类型定义，确保所有使用 WSXJS 的项目都能正确识别 `.wsx` 文件类型，而无需在每个包中重复配置 `wsx.d.ts` 文件。
 
 **拒绝原因**：经过验证，由于 TypeScript 模块类型解析机制的限制，`declare module "*.wsx"` 无法在 monorepo 中跨包边界自动解析。即使配置了 `types`、`typeRoots`、`include` 等选项，TypeScript 也无法从 `node_modules/@wsxjs/wsx-core` 中自动解析模块类型声明。
 
@@ -74,7 +74,7 @@ declare module "*.wsx" {
 
 ### 目标用户
 
-- 使用 WSX Framework 开发组件的开发者
+- 使用 WSXJS 开发组件的开发者
 - 构建基于 WSX 的组件库的团队
 - 需要类型支持的 TypeScript 用户
 
@@ -151,7 +151,7 @@ declare module "*.wsx" {
 }
 ```
 
-这样，所有使用 WSX Framework 的项目都能自动获得 `.wsx` 文件的类型支持。
+这样，所有使用 WSXJS 的项目都能自动获得 `.wsx` 文件的类型支持。
 
 ### 推荐方案
 
@@ -484,4 +484,4 @@ TypeScript 会提供清晰的错误信息：
 4. ✅ **改善用户体验** - 用户只需配置一次 `@wsxjs/wsx-core` 的类型
 5. ✅ **遵循最佳实践** - 单一数据源原则，避免重复
 
-这个 RFC 简化了 WSX Framework 的类型管理，通过集中管理 `.wsx` 类型定义，减少了维护成本，提升了开发体验。
+这个 RFC 简化了 WSXJS 的类型管理，通过集中管理 `.wsx` 类型定义，减少了维护成本，提升了开发体验。

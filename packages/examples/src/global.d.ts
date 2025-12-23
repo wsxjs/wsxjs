@@ -1,5 +1,5 @@
 /**
- * WSX Framework 类型声明文件
+ * WSXJS 类型声明文件
  *
  * 为WSX组件和模块提供TypeScript类型支持
  */

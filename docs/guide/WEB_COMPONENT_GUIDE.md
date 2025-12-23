@@ -2,7 +2,7 @@
 
 ## 概述
 
-`WebComponent` 是 WSX Framework 提供的标准自定义元素基类，使用 Shadow DOM 提供完全的样式隔离和封装。它是构建可复用 UI 组件的首选，特别适合需要样式隔离和完全封装的场景。
+`WebComponent` 是 WSXJS 提供的标准自定义元素基类，使用 Shadow DOM 提供完全的样式隔离和封装。它是构建可复用 UI 组件的首选，特别适合需要样式隔离和完全封装的场景。
 
 ## 为什么使用 WebComponent？
 
@@ -219,7 +219,7 @@ export class TodoList extends WebComponent {
 
 #### 自动 CSS 注入（推荐）
 
-WSX Framework 提供了智能 CSS 自动注入功能。如果组件文件 `MyButton.wsx` 存在对应的 `MyButton.css` 文件，Babel 插件会自动：
+WSXJS 提供了智能 CSS 自动注入功能。如果组件文件 `MyButton.wsx` 存在对应的 `MyButton.css` 文件，Babel 插件会自动：
 
 1. 自动导入 CSS 文件：`import styles from "./MyButton.css?inline";`
 2. 自动注入为类属性：`private _autoStyles = styles;`
@@ -907,7 +907,7 @@ render() {
 
 ### Q: 如何自动注入 CSS 样式？
 
-A: WSX Framework 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
+A: WSXJS 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
 
 1. **自动导入 CSS**：`import styles from "./MyComponent.css?inline";`
 2. **自动注入类属性**：`private _autoStyles = styles;`

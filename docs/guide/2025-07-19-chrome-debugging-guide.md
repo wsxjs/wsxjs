@@ -1,8 +1,8 @@
-# Chrome调试指南 - WSX Framework
+# Chrome调试指南 - WSXJS
 
 ## 概述
 
-本指南介绍如何使用Chrome DevTools调试WSX Framework应用，包括Web Components、JSX渲染和性能分析。
+本指南介绍如何使用Chrome DevTools调试WSXJS应用，包括Web Components、JSX渲染和性能分析。
 
 ## 快速开始
 
@@ -44,7 +44,7 @@ pnpm debug:chrome          # 启动Chrome调试模式
 2. **Computed面板**: 查看计算样式
 3. **Layout面板**: 检查布局和盒模型
 
-## WSX Framework特定调试
+## WSXJS特定调试
 
 ### Web Components调试
 
@@ -239,7 +239,7 @@ window.WSXDebug = {
 
 ## 总结
 
-使用Chrome DevTools调试WSX Framework应用可以：
+使用Chrome DevTools调试WSXJS应用可以：
 
 - 🔍 **深入检查Web Components结构**
 - 🐛 **调试JSX渲染过程**
@@ -247,4 +247,4 @@ window.WSXDebug = {
 - ⚡ **分析性能和内存使用**
 - 📱 **测试响应式设计**
 
-通过掌握这些调试技巧，您可以更高效地开发和维护WSX Framework应用。 
+通过掌握这些调试技巧，您可以更高效地开发和维护WSXJS应用。 

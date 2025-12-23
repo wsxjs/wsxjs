@@ -1,5 +1,5 @@
 /**
- * WSX Router - Native History API-based routing for WSX Framework
+ * WSX Router - Native History API-based routing for WSXJS
  *
  * 提供基于原生 History API 的路由功能：
  * - 零依赖路由器组件

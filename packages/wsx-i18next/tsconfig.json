@@ -1,0 +1,14 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "types": ["jest", "@types/jest"],
+        "composite": false,
+        "declaration": true,
+        "declarationMap": true,
+        "noEmit": false,
+        "skipLibCheck": true
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["dist", "node_modules", "**/__tests__", "**/*.test.ts"]
+}

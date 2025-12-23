@@ -1,7 +1,7 @@
 /**
- * WSX Framework Logger
+ * WSXJS Logger
  *
- * A lightweight logging utility for the WSX framework.
+ * A lightweight logging utility for the WSXJS.
  * Can be extended or replaced by consuming applications.
  */
 

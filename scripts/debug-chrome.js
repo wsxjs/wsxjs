@@ -3,9 +3,9 @@
 /* eslint-disable no-console */
 
 /**
- * Chrome调试脚本 - WSX Framework
+ * Chrome调试脚本 - WSXJS
  *
- * 用于调试WSX Framework应用的Chrome DevTools集成
+ * 用于调试WSXJS应用的Chrome DevTools集成
  */
 
 import { spawn } from "child_process";

@@ -2,7 +2,7 @@
 
 ## 概述
 
-`LightComponent` 是 WSX Framework 提供的轻量级自定义元素基类，专为需要与第三方库集成或使用 Light DOM 的场景设计。它直接继承 `HTMLElement`，不使用 Shadow DOM，同时提供了完整的响应式状态管理和 JSX 支持。
+`LightComponent` 是 WSXJS 提供的轻量级自定义元素基类，专为需要与第三方库集成或使用 Light DOM 的场景设计。它直接继承 `HTMLElement`，不使用 Shadow DOM，同时提供了完整的响应式状态管理和 JSX 支持。
 
 ## 为什么使用 LightComponent？
 
@@ -309,7 +309,7 @@ export class MyComponent extends LightComponent {
 
 #### 自动 CSS 注入（推荐）
 
-WSX Framework 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
+WSXJS 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
 
 1. 自动导入 CSS 文件：`import styles from "./MyComponent.css?inline";`
 2. 自动注入为类属性：`private _autoStyles = styles;`
@@ -798,7 +798,7 @@ render() {
 
 ### Q: 如何自动注入 CSS 样式？
 
-A: WSX Framework 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
+A: WSXJS 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
 
 1. **自动导入 CSS**：`import styles from "./MyComponent.css?inline";`
 2. **自动注入类属性**：`private _autoStyles = styles;`

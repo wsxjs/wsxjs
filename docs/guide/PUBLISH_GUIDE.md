@@ -1,6 +1,6 @@
-# WSX Framework 发布指南
+# WSXJS 发布指南
 
-本指南说明如何使用 Turbo 和 Changesets 发布 WSX Framework 的所有包。
+本指南说明如何使用 Turbo 和 Changesets 发布 WSXJS 的所有包。
 
 > **最佳实践**: 本发布流程遵循开源 npm 包发布的最佳实践，包括安全性检查、dry-run 测试、版本验证等。
 

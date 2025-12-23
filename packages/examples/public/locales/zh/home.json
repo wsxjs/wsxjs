@@ -1,0 +1,45 @@
+{
+    "hero": {
+        "badge": "🚀 刚刚发布",
+        "title": "WSXJS",
+        "subtitle": "原生 Web Components 的 JSX",
+        "description": "不是框架，只是更好的开发体验。编写 JSX 语法，获得原生 Web Components。零依赖、TypeScript 优先、生产就绪。",
+        "getStarted": "开始使用",
+        "tryOnline": "在线体验",
+        "viewGitHub": "查看 GitHub"
+    },
+    "comparison": {
+        "title": "为什么选择 WSXJS？",
+        "description": "将 WSXJS 与其他流行框架进行比较，了解为什么它是构建原生 Web Components 的最佳选择。",
+        "vsReact": {
+            "title": "对比 React",
+            "badge": "框架",
+            "items": {
+                "native": "原生 Web Components（无虚拟 DOM）",
+                "zero": "零运行时开销",
+                "works": "可与任何框架配合使用",
+                "smaller": "更小的打包体积"
+            }
+        },
+        "vsVue": {
+            "title": "对比 Vue",
+            "badge": "框架",
+            "items": {
+                "pure": "纯 Web 标准",
+                "noLock": "无框架锁定",
+                "better": "更好的性能",
+                "future": "面向未来"
+            }
+        },
+        "vsPlain": {
+            "title": "对比原生 Web Components",
+            "badge": "原生",
+            "items": {
+                "jsx": "JSX 语法（熟悉）",
+                "typescript": "TypeScript 支持",
+                "dx": "更好的开发体验",
+                "tooling": "现代化工具链"
+            }
+        }
+    }
+}

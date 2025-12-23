@@ -1,7 +1,7 @@
 /**
- * WSX Framework Examples - Main Entry Point
+ * WSXJS Examples - Main Entry Point
  *
- * This demonstrates how to use WSX Framework to build a complete application.
+ * This demonstrates how to use WSXJS to build a complete application.
  * The App component showcases all framework features and example components.
  */
 
@@ -10,6 +10,8 @@ import "uno.css";
 import "./main.css";
 // Import base components package (includes CSS)
 import "@wsxjs/wsx-base-components";
+// Initialize i18next
+import "./i18n";
 import "./App.wsx";
 
 const logger = createLogger("Main");
@@ -26,7 +28,7 @@ function initApp() {
     // Mount the WSX App component
     appContainer.innerHTML = "<wsx-app></wsx-app>";
 
-    logger.info("WSX Framework Example App initialized");
+    logger.info("WSXJS Example App initialized");
 }
 
 // Start the app when DOM is ready

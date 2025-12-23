@@ -1,6 +1,6 @@
 # @wsxjs/wsx-tsconfig
 
-Shared TypeScript configuration for WSX Framework projects.
+Shared TypeScript configuration for WSXJS projects.
 
 ## Installation
 
@@ -127,7 +127,7 @@ The configuration includes these critical options for `@state` decorator support
 
 ## Related Packages
 
-- [`@wsxjs/wsx-core`](../core) - Core WSX Framework
+- [`@wsxjs/wsx-core`](../core) - Core WSXJS
 - [`@wsxjs/wsx-vite-plugin`](../vite-plugin) - Vite plugin (required for `@state` decorator)
 
 ## License

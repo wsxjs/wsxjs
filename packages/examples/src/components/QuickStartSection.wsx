@@ -15,8 +15,8 @@ export default class QuickStartSection extends WebComponent {
                     <div class="section-header">
                         <h2 class="section-title">Quick Start</h2>
                         <p class="section-description">
-                            Get started with WSX Framework in minutes. Create your first web
-                            component with JSX syntax and TypeScript support.
+                            Get started with WSXJS in minutes. Create your first web component with
+                            JSX syntax and TypeScript support.
                         </p>
                     </div>
 
@@ -47,7 +47,7 @@ class MyButton extends WebComponent {
                                 <div class="step-number">1</div>
                                 <div class="step-content">
                                     <h4>Install</h4>
-                                    <p>Install WSX Framework via npm</p>
+                                    <p>Install WSXJS via npm</p>
                                 </div>
                             </div>
                             <div class="step-item">

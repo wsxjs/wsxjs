@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the WSX Framework will be documented in this file.
+All notable changes to the WSXJS will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **@wsxjs/wsx-tsconfig** - New package for shared TypeScript configuration
-  - Provides pre-configured TypeScript settings for WSX Framework projects
+  - Provides pre-configured TypeScript settings for WSXJS projects
   - Includes all required options: JSX support, decorators, and type safety
   - Simplifies setup by extending `@wsxjs/wsx-tsconfig/tsconfig.base.json`
   - Reduces configuration errors and ensures consistency across projects
@@ -150,7 +150,7 @@ None - all changes are backward compatible.
 ## [0.0.4] - 2025-01-15
 
 ### Added
-- Initial release of WSX Framework
+- Initial release of WSXJS
 - Core WebComponent base class with JSX support
 - Auto-registration decorator system
 - Vite plugin for .wsx file processing

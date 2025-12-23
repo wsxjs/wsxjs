@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * WSX Framework 发布脚本
+ * WSXJS 发布脚本
  * 使用专业的 CLI 库构建，提供更好的用户体验
  */
 
@@ -304,7 +304,7 @@ async function checkRemoteUpToDate() {
 }
 
 async function main() {
-    console.log(chalk.blue.bold("\n🚀 WSX Framework 发布流程\n"));
+    console.log(chalk.blue.bold("\n🚀 WSXJS 发布流程\n"));
 
     // 检查 npm 认证
     const npmCheckSpinner = ora("检查 NPM 认证").start();

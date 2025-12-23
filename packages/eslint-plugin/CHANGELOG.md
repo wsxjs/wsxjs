@@ -14,7 +14,7 @@
 
 - # Native SVG Support
 
-    Added comprehensive SVG support to WSX Framework with proper namespace handling.
+    Added comprehensive SVG support to WSXJS with proper namespace handling.
 
     ## Features
     - **Automatic namespace detection** - SVG elements use `createElementNS` automatically

@@ -1,6 +1,6 @@
 # TypeScript 配置指南
 
-本指南详细说明如何在项目中正确配置 TypeScript 以使用 WSX Framework。
+本指南详细说明如何在项目中正确配置 TypeScript 以使用 WSXJS。
 
 ## 📋 目录
 
@@ -27,7 +27,7 @@
 
 **配置说明**：
 - **`jsx: "react-jsx"`** - 使用新的 JSX 转换方式（React 17+ 引入）
-- **`jsxImportSource: "@wsxjs/wsx-core"`** - 指定 JSX 运行时来源为 WSX Framework
+- **`jsxImportSource: "@wsxjs/wsx-core"`** - 指定 JSX 运行时来源为 WSXJS
 
 ### 2. 类型引用配置
 
@@ -44,7 +44,7 @@
 ```
 
 **配置说明**：
-- **`types: ["@wsxjs/wsx-core"]`** - 显式引用 WSX Framework 的类型定义
+- **`types: ["@wsxjs/wsx-core"]`** - 显式引用 WSXJS 的类型定义
 - TypeScript 会自动加载 `@wsxjs/wsx-core/types/index.d.ts`
 - 这确保了 JSX 全局类型和组件类型正确加载
 
@@ -459,7 +459,7 @@ export {};
    });
    ```
 
-### 6. 外部项目集成 WSX Framework
+### 6. 外部项目集成 WSXJS
 
 **问题**：在新项目中集成 WSX，不知道如何配置。
 
@@ -567,7 +567,7 @@ const testComponent: typeof WebComponent = WebComponent;
 
 ### 📚 相关文档
 
-- [快速开始指南](QUICK_START.md) - 5分钟上手 WSX Framework
+- [快速开始指南](QUICK_START.md) - 5分钟上手 WSXJS
 - [JSX 支持详解](JSX_SUPPORT.md) - 完整的 JSX 语法和特性
 - [Vite 插件文档](../packages/vite-plugin/README.md) - Vite 集成配置
 - [ESLint 插件文档](../packages/eslint-plugin/README.md) - 代码质量检查

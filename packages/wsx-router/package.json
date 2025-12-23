@@ -1,7 +1,7 @@
 {
     "name": "@wsxjs/wsx-router",
     "version": "0.0.17",
-    "description": "WSX Router - Native History API-based routing for WSX Framework",
+    "description": "WSX Router - Native History API-based routing for WSXJS",
     "type": "module",
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
@@ -53,7 +53,7 @@
         "navigation",
         "spa"
     ],
-    "author": "WSX Framework Team",
+    "author": "WSXJS Team",
     "license": "MIT",
     "repository": {
         "type": "git",

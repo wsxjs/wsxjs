@@ -1,0 +1,107 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Comparison Section - 展示 WSXJS 与其他框架的对比
+ * 帮助用户理解 WSXJS 的差异化优势
+ */
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+import styles from "./ComparisonSection.css?inline";
+
+@autoRegister({ tagName: "comparison-section" })
+@i18n("home")
+export class ComparisonSection extends WebComponent {
+    constructor() {
+        super({ styles });
+    }
+
+    render() {
+        return (
+            <section class="comparison-section">
+                <div class="container">
+                    <h2 class="section-title">{this.t("comparison.title")}</h2>
+                    <p class="section-description">{this.t("comparison.description")}</p>
+                    <div class="comparison-grid">
+                        <div class="comparison-item">
+                            <div class="comparison-header">
+                                <h3>{this.t("comparison.vsReact.title")}</h3>
+                                <span class="comparison-badge">
+                                    {this.t("comparison.vsReact.badge")}
+                                </span>
+                            </div>
+                            <ul class="comparison-list">
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsReact.items.native")}</span>
+                                </li>
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsReact.items.zero")}</span>
+                                </li>
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsReact.items.works")}</span>
+                                </li>
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsReact.items.smaller")}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-header">
+                                <h3>{this.t("comparison.vsVue.title")}</h3>
+                                <span class="comparison-badge">
+                                    {this.t("comparison.vsVue.badge")}
+                                </span>
+                            </div>
+                            <ul class="comparison-list">
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsVue.items.pure")}</span>
+                                </li>
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsVue.items.noLock")}</span>
+                                </li>
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsVue.items.better")}</span>
+                                </li>
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsVue.items.future")}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="comparison-item">
+                            <div class="comparison-header">
+                                <h3>{this.t("comparison.vsPlain.title")}</h3>
+                                <span class="comparison-badge">
+                                    {this.t("comparison.vsPlain.badge")}
+                                </span>
+                            </div>
+                            <ul class="comparison-list">
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsPlain.items.jsx")}</span>
+                                </li>
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsPlain.items.typescript")}</span>
+                                </li>
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsPlain.items.dx")}</span>
+                                </li>
+                                <li>
+                                    <span class="check-icon">✅</span>
+                                    <span>{this.t("comparison.vsPlain.items.tooling")}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+}

@@ -1,7 +1,7 @@
 {
     "name": "@wsxjs/wsx-examples",
     "version": "0.0.16",
-    "description": "Example applications using WSX Framework",
+    "description": "Example applications using WSXJS",
     "type": "module",
     "private": true,
     "scripts": {
@@ -26,7 +26,11 @@
         "@unocss/preset-uno": "^66.3.3",
         "@wsxjs/wsx-base-components": "workspace:*",
         "@wsxjs/wsx-core": "workspace:*",
-        "@wsxjs/wsx-router": "workspace:*"
+        "@wsxjs/wsx-i18next": "workspace:*",
+        "@wsxjs/wsx-router": "workspace:*",
+        "i18next": "^23.0.0",
+        "i18next-browser-languagedetector": "^7.0.0",
+        "i18next-http-backend": "^2.0.0"
     },
     "devDependencies": {
         "@testing-library/dom": "^10.4.0",

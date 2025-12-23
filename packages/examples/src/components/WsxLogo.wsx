@@ -102,7 +102,7 @@ export default class WsxLogo extends WebComponent {
                 <div
                     style={`font-size: ${fontSize}px; font-weight: 700; color: ${this.color}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;`}
                 >
-                    WSX Framework
+                    WSXJS
                 </div>
             </div>
         );

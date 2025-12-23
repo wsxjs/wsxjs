@@ -40,7 +40,7 @@ export default class FeaturesSection extends WebComponent {
             <section id="features" class="features-section">
                 <div class="container">
                     <div class="section-header">
-                        <h2 class="section-title">Why Choose WSX Framework?</h2>
+                        <h2 class="section-title">Why Choose WSXJS?</h2>
                         <p class="section-description">
                             Built for modern web development with a focus on simplicity,
                             performance, and developer experience.

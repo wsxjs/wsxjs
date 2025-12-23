@@ -1,7 +1,7 @@
-# CI/CD Strategy for WSX Framework
+# CI/CD Strategy for WSXJS
 
 ## Overview
-This document outlines the Continuous Integration and Continuous Deployment strategy for the WSX Framework monorepo using pnpm workspaces.
+This document outlines the Continuous Integration and Continuous Deployment strategy for the WSXJS monorepo using pnpm workspaces.
 
 ## Repository Structure
 ```

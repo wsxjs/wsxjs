@@ -1,21 +1,21 @@
-# WSX Framework 文档
+# WSXJS 文档
 
-欢迎来到 WSX Framework 文档中心！这里包含了框架的完整文档，从快速开始到高级特性。
+欢迎来到 WSXJS 文档中心！这里包含了框架的完整文档，从快速开始到高级特性。
 
 ## 📚 文档导航
 
 ### 🚀 快速开始
-- **[快速开始指南](guide/QUICK_START.md)** - 5分钟上手WSX Framework
+- **[快速开始指南](guide/QUICK_START.md)** - 5分钟上手WSXJS
 - **[JSX支持详解](guide/JSX_SUPPORT.md)** - 完整的JSX语法和特性说明
 
 ### 🎯 核心概念
-- **[设计理念](wiki/DESIGN_PHILOSOPHY.md)** - WSX Framework的设计哲学和原生优先理念
+- **[设计理念](wiki/DESIGN_PHILOSOPHY.md)** - WSXJS的设计哲学和原生优先理念
 - **[Web Components基础](wiki/WSX_DESIGN.md)** - Web Components标准介绍
 - **[组件架构](wiki/COMPONENT_ARCHITECTURE.md)** - Container vs Leaf 组件策略（已合并到 [RFC-0006](../rfcs/0006-light-dom-components.md)）
 
 ### 🛠️ WSXJS 使用指南（给使用 WSXJS 的开发者）
 
-这些指南帮助您使用 WSX Framework 开发应用：
+这些指南帮助您使用 WSXJS 开发应用：
 
 - **[WebComponent 使用指南](guide/WEB_COMPONENT_GUIDE.md)** - Shadow DOM 组件开发指南
 - **[LightComponent 使用指南](guide/LIGHT_COMPONENT_GUIDE.md)** - Light DOM 组件开发指南
@@ -88,7 +88,7 @@ docs/
 ### 文档分类规则
 
 #### 📖 guide/ - 使用指南
-**受众**: 使用 WSX Framework 开发应用的开发者
+**受众**: 使用 WSXJS 开发应用的开发者
 
 **内容**:
 - 如何使用的教程和指南
@@ -156,7 +156,7 @@ docs/
 ## 🎯 设计理念亮点
 
 ### 原生优先 (Native-First)
-WSX Framework 采用原生优先的设计理念：
+WSXJS 采用原生优先的设计理念：
 
 ```jsx
 // ✅ WSX - 使用原生HTML属性名
@@ -220,4 +220,4 @@ WSX Framework 采用原生优先的设计理念：
 
 ---
 
-**WSX Framework** - 回归原生，拥抱标准 🌟 
+**WSXJS** - 回归原生，拥抱标准 🌟 

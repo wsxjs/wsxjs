@@ -1,0 +1,114 @@
+/* Comparison Section Styles */
+.comparison-section {
+    padding: 6rem 2rem;
+    background: linear-gradient(135deg, var(--bg-primary), rgba(220, 38, 38, 0.03));
+}
+
+.comparison-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.comparison-section .section-title {
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.comparison-section .section-description {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto 4rem;
+    line-height: 1.6;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.comparison-item {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px var(--card-shadow);
+    transition: all 0.3s ease;
+}
+
+.comparison-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px var(--card-shadow-hover);
+}
+
+.comparison-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.comparison-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.comparison-badge {
+    background: linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end));
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.comparison-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.comparison-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.comparison-list li:last-child {
+    margin-bottom: 0;
+}
+
+.check-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.comparison-list li span:last-child {
+    flex: 1;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .comparison-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .comparison-item {
+        padding: 1.5rem;
+    }
+}

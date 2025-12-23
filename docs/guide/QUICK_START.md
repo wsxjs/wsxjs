@@ -1,4 +1,4 @@
-# WSX Framework 快速开始指南
+# WSXJS 快速开始指南
 
 ## 安装
 

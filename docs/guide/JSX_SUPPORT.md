@@ -1,8 +1,8 @@
-# WSX Framework JSX 支持文档
+# WSXJS JSX 支持文档
 
 ## 概述
 
-WSX Framework 提供了完整的 JSX 支持，无需依赖 React 或其他框架。通过框架级的配置，任何使用 WSX 的项目都能获得开箱即用的 JSX 体验。
+WSXJS 提供了完整的 JSX 支持，无需依赖 React 或其他框架。通过框架级的配置，任何使用 WSX 的项目都能获得开箱即用的 JSX 体验。
 
 ## 核心特性
 
@@ -16,7 +16,7 @@ WSX Framework 提供了完整的 JSX 支持，无需依赖 React 或其他框架
 
 ### JSX 工厂函数
 
-WSX Framework 使用纯原生的 JSX 工厂函数：
+WSXJS 使用纯原生的 JSX 工厂函数：
 
 ```typescript
 // JSX 工厂函数
@@ -76,7 +76,7 @@ declare global {
 
 ### 2. Vite 配置
 
-WSX Framework 提供了专门的 Vite 插件：
+WSXJS 提供了专门的 Vite 插件：
 
 ```typescript
 // vite.config.ts
@@ -226,7 +226,7 @@ render(): HTMLElement {
 
 ### JSX 入口点
 
-WSX Framework 创建了专门的 JSX 入口点：
+WSXJS 创建了专门的 JSX 入口点：
 
 ```typescript
 // packages/core/src/jsx.ts
@@ -355,7 +355,7 @@ wsx({
 
 ## 总结
 
-WSX Framework 的 JSX 支持提供了：
+WSXJS 的 JSX 支持提供了：
 
 - **零配置体验**：开箱即用的 JSX 支持
 - **类型安全**：完整的 TypeScript 类型系统

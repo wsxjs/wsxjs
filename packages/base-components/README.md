@@ -1,6 +1,6 @@
 # @wsxjs/wsx-base-components
 
-现代化的 Web Components 基础组件库，基于 WSX Framework 构建。
+现代化的 Web Components 基础组件库，基于 WSXJS 构建。
 
 ## 🚀 快速开始
 
@@ -199,6 +199,6 @@ MIT License
 
 ## 📚 相关链接
 
-- [WSX Framework](https://github.com/wsxjs/wsxjs)
+- [WSXJS](https://github.com/wsxjs/wsxjs)
 - [设计文档](./docs/modern-xybutton-design.md)
 - [在线演示](http://localhost:3000) 

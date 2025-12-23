@@ -1,0 +1,94 @@
+/* Performance Metrics Section Styles */
+.performance-section {
+    padding: 6rem 2rem;
+    background: linear-gradient(135deg, var(--bg-secondary), rgba(234, 88, 12, 0.05));
+}
+
+.performance-section .container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.performance-section .section-title {
+    text-align: center;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.performance-section .section-description {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto 4rem;
+    line-height: 1.6;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.metric-item {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px var(--card-shadow);
+    transition: all 0.3s ease;
+}
+
+.metric-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px var(--card-shadow-hover);
+}
+
+.metric-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.metric-value {
+    display: block;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 900;
+    color: var(--primary-red);
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--hero-gradient-start), var(--hero-gradient-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.metric-label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.metric-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .metric-item {
+        padding: 2rem 1.5rem;
+    }
+}

@@ -2,7 +2,7 @@
 
 ## ✅ Implementation Complete
 
-The CI/CD pipeline has been successfully implemented for the WSX Framework monorepo. Here's what has been set up:
+The CI/CD pipeline has been successfully implemented for the WSXJS monorepo. Here's what has been set up:
 
 ## 🛠️ Tools Installed
 

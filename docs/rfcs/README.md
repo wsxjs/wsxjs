@@ -1,4 +1,4 @@
-# WSX Framework RFCs
+# WSXJS RFCs
 
 RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文档。
 
@@ -91,6 +91,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0026](./0026-performance-optimization.md) | 性能优化（M4） | Proposed | WSX Team |
 | [RFC-0027](./0027-community-features.md) | 社区功能（M5） | Proposed | WSX Team |
 | [RFC-0028](./0028-advanced-features.md) | 高级功能（M6） | Proposed | WSX Team |
+| [RFC-0029](./0029-i18next-integration.md) | i18next 国际化支持（包含 @wsxjs/wsx-i18next 包设计） | Proposed | WSX Team |
 
 ### 被拒绝的RFCs
 

@@ -1,11 +1,21 @@
 /** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Home Section - 首页主区域
+ * 包含 Hero Section 和所有新增的价值主张组件
+ */
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
 import styles from "./HomeSection.css?inline";
 import "@wsxjs/wsx-base-components";
 import "@wsxjs/wsx-router";
 import "./WsxLogo.wsx";
+import "./ComparisonSection.wsx";
+import "./PerformanceMetrics.wsx";
+import "./QuickStartCode.wsx";
+import "./StatsSection.wsx";
 
 @autoRegister({ tagName: "home-section" })
+@i18n("home")
 export default class HomeSection extends WebComponent {
     constructor() {
         super({ styles });
@@ -14,6 +24,7 @@ export default class HomeSection extends WebComponent {
     render() {
         return (
             <div>
+                {/* Hero Section */}
                 <section class="hero-section">
                     <div class="hero-background">
                         <div class="hero-pattern"></div>
@@ -26,7 +37,7 @@ export default class HomeSection extends WebComponent {
 
                     <div class="hero-content">
                         <div class="hero-badge">
-                            <span class="badge-text">🚀 Just Released</span>
+                            <span class="badge-text">{this.t("hero.badge")}</span>
                         </div>
 
                         <div class="hero-logo">
@@ -34,32 +45,11 @@ export default class HomeSection extends WebComponent {
                         </div>
 
                         <h1 class="hero-title">
-                            <span class="title-main">WSX Framework</span>
-                            <span class="title-subtitle">
-                                The Progressive Web Components Framework
-                            </span>
+                            <span class="title-main">{this.t("hero.title")}</span>
+                            <span class="title-subtitle">{this.t("hero.subtitle")}</span>
                         </h1>
 
-                        <p class="hero-description">
-                            An approachable, performant and versatile framework for building native
-                            web components with JSX syntax. Zero dependencies, TypeScript-first, and
-                            production-ready.
-                        </p>
-
-                        <div class="hero-stats">
-                            <div class="stat-item">
-                                <span class="stat-number">0</span>
-                                <span class="stat-label">Dependencies</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number">100%</span>
-                                <span class="stat-label">TypeScript</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-number">⚡</span>
-                                <span class="stat-label">Fast</span>
-                            </div>
-                        </div>
+                        <p class="hero-description">{this.t("hero.description")}</p>
 
                         <div class="hero-actions">
                             <wsx-link to="/quick-start" class="btn-primary">
@@ -69,36 +59,53 @@ export default class HomeSection extends WebComponent {
                                     color="white"
                                     style="margin-right: 8px;"
                                 ></svg-icon>
-                                Get Started
+                                {this.t("hero.getStarted")}
                             </wsx-link>
 
-                            <button class="btn-secondary" onClick={this.openGitHub}>
+                            <button class="btn-secondary" onClick={this.openPlayground}>
+                                <svg-icon
+                                    name="code"
+                                    size="18"
+                                    color="currentColor"
+                                    style="margin-right: 8px;"
+                                ></svg-icon>
+                                {this.t("hero.tryOnline")}
+                            </button>
+
+                            <button class="btn-ghost" onClick={this.openGitHub}>
                                 <svg-icon
                                     name="github"
                                     size="18"
                                     color="currentColor"
                                     style="margin-right: 8px;"
                                 ></svg-icon>
-                                View on GitHub
+                                {this.t("hero.viewGitHub")}
                             </button>
-
-                            <wsx-link to="/examples" class="btn-ghost">
-                                <svg-icon
-                                    name="star"
-                                    size="18"
-                                    color="currentColor"
-                                    style="margin-right: 8px;"
-                                ></svg-icon>
-                                Try Examples
-                            </wsx-link>
                         </div>
                     </div>
                 </section>
+
+                {/* 对比说明 */}
+                <comparison-section></comparison-section>
+
+                {/* 性能指标 */}
+                <performance-metrics></performance-metrics>
+
+                {/* 快速开始代码 */}
+                <quick-start-code></quick-start-code>
+
+                {/* 统计数据 */}
+                <stats-section></stats-section>
             </div>
         );
     }
 
     private openGitHub = (): void => {
         window.open("https://github.com/wsxjs/wsxjs", "_blank");
+    };
+
+    private openPlayground = (): void => {
+        // TODO: 链接到 Playground 页面（当实现后）
+        window.location.href = "/playground";
     };
 }

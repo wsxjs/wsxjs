@@ -1,5 +1,5 @@
 /**
- * Semantic Release Configuration for WSX Framework Monorepo
+ * Semantic Release Configuration for WSXJS Monorepo
  *
  * This configuration handles automated versioning and publishing
  * for all packages in the monorepo based on conventional commits.

@@ -1,7 +1,7 @@
 {
     "name": "@wsxjs/wsx-base-components",
     "version": "0.0.17",
-    "description": "Base UI components built with WSX Framework",
+    "description": "Base UI components built with WSXJS",
     "type": "module",
     "main": "./dist/index.cjs",
     "module": "./dist/index.js",
@@ -47,7 +47,7 @@
         "typescript",
         "jsx"
     ],
-    "author": "WSX Framework Team",
+    "author": "WSXJS Team",
     "license": "MIT",
     "repository": {
         "type": "git",

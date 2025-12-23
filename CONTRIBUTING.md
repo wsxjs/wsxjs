@@ -1,6 +1,6 @@
-# Contributing to WSX Framework
+# Contributing to WSXJS
 
-Thank you for your interest in contributing to WSX Framework! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to WSXJS! This document provides guidelines and information for contributors.
 
 ## Development Setup
 
@@ -14,8 +14,8 @@ Thank you for your interest in contributing to WSX Framework! This document prov
 
 1. **Fork and Clone**
    ```bash
-   git clone https://github.com/your-username/wsx-framework.git
-   cd wsx-framework
+   git clone https://github.com/your-username/wsxjs.git
+   cd wsxjs
    ```
 
 2. **Install Dependencies**
@@ -60,7 +60,7 @@ Thank you for your interest in contributing to WSX Framework! This document prov
 
 ### Running Examples
 
-The examples package contains a comprehensive showcase of WSX Framework features:
+The examples package contains a comprehensive showcase of WSXJS features:
 
 ```bash
 # Start the examples development server
@@ -331,4 +331,4 @@ Contributors are recognized in:
 - Release notes
 - Contributors section (major contributions)
 
-Thank you for contributing to WSX Framework! 🎉
+Thank you for contributing to WSXJS! 🎉

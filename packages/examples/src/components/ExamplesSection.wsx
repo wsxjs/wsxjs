@@ -21,8 +21,8 @@ export default class ExamplesSection extends WebComponent {
                     <div class="section-header">
                         <h2 class="section-title">Interactive Examples</h2>
                         <p class="section-description">
-                            Explore WSX Framework capabilities with these interactive examples. See
-                            how easy it is to build powerful web components.
+                            Explore WSXJS capabilities with these interactive examples. See how easy
+                            it is to build powerful web components.
                         </p>
                     </div>
 
