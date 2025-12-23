@@ -443,60 +443,147 @@ public/locales/
 
 ```tsx
 /** @jsxImportSource @wsxjs/wsx-core */
+**实际使用示例：LanguageSwitcher 组件**
+
+在 `packages/examples/src/components/LanguageSwitcher.wsx` 中，我们创建了一个完整的语言切换器组件，展示了如何在 WSXJS 中使用 i18next：
+
+```tsx
 // src/components/LanguageSwitcher.wsx
-import { LightComponent, autoRegister, state } from '@wsxjs/wsx-core';
-import { i18n, useTranslation } from '@wsxjs/wsx-i18next';
+/** @jsxImportSource @wsxjs/wsx-core */
+import { WebComponent, autoRegister, state } from '@wsxjs/wsx-core';
+import { i18nInstance } from '@wsxjs/wsx-i18next';
 
 @autoRegister({ tagName: 'language-switcher' })
-export class LanguageSwitcher extends LightComponent {
-    private translation = useTranslation('common');
-    @state private currentLang: string = i18n.language;
-    private unsubscribe?: () => void;
+export default class LanguageSwitcher extends WebComponent {
+    // 支持的语言列表（不使用国旗图标，使用语言名称）
+    private languages = [
+        { code: 'en', name: 'English' },
+        { code: 'zh', name: '中文' },
+        { code: 'es', name: 'Español' },
+        { code: 'fr', name: 'Français' },
+        { code: 'de', name: 'Deutsch' },
+        { code: 'ja', name: '日本語' },
+        { code: 'ko', name: '한국어' },
+    ];
+
+    @state private currentLanguage: string = 'en';
+    @state private isOpen: boolean = false;
 
     protected onConnected(): void {
-        // 订阅语言变化事件
-        // i18n.on() 返回取消订阅的函数
-        this.unsubscribe = i18n.on('languageChanged', (lng) => {
-            // 更新 @state，自动触发 rerender()
-            this.currentLang = lng;
-        });
+        // 从 localStorage 或 i18next 获取当前语言
+        const savedLanguage = localStorage.getItem('wsx-language');
+        const i18nLanguage = i18nInstance.language || 'en';
+        const baseLanguage = (savedLanguage || i18nLanguage).split('-')[0];
+        
+        if (baseLanguage !== this.currentLanguage) {
+            this.currentLanguage = baseLanguage;
+        }
+
+        // 监听 i18next 语言变化事件
+        i18nInstance.on('languageChanged', this.handleLanguageChanged);
     }
 
     protected onDisconnected(): void {
-        // 取消订阅，避免内存泄漏
-        if (this.unsubscribe) {
-            this.unsubscribe();
-        }
+        i18nInstance.off('languageChanged', this.handleLanguageChanged);
     }
 
+    private handleLanguageChanged = (lng: string): void => {
+        const baseLanguage = lng.split('-')[0];
+        if (baseLanguage !== this.currentLanguage) {
+            this.currentLanguage = baseLanguage;
+            this.rerender();
+        }
+    };
+
     render() {
-        const languages = [
-            { code: 'en', name: 'English', flag: '🇺🇸' },
-            { code: 'zh', name: '中文', flag: '🇨🇳' },
-        ];
+        const currentLang = this.languages.find((lang) => lang.code === this.currentLanguage);
+        const displayName = currentLang?.name || this.currentLanguage.toUpperCase();
 
         return (
-            <div class="language-switcher">
-                {languages.map((lang) => (
-                    <button
-                        key={lang.code}
-                        class={`lang-btn ${this.currentLang === lang.code ? 'active' : ''}`}
-                        onClick={() => this.changeLanguage(lang.code)}
-                    >
-                        <span class="lang-flag">{lang.flag}</span>
-                        <span class="lang-name">{lang.name}</span>
-                    </button>
-                ))}
+            <div class="language-switcher-container">
+                <button
+                    class="language-switcher-btn"
+                    onClick={this.toggleDropdown}
+                    aria-label={`Current language: ${displayName}`}
+                >
+                    <span class="language-switcher-icon">🌐</span>
+                    <span class="language-switcher-text">{displayName}</span>
+                    <span class="language-switcher-arrow">{this.isOpen ? '▲' : '▼'}</span>
+                </button>
+
+                {this.isOpen && (
+                    <div class="language-switcher-dropdown" role="listbox">
+                        {this.languages.map((lang) => (
+                            <button
+                                key={lang.code}
+                                class={`language-switcher-option ${
+                                    lang.code === this.currentLanguage ? 'active' : ''
+                                }`}
+                                onClick={() => this.selectLanguage(lang.code)}
+                                role="option"
+                            >
+                                <span class="language-name">{lang.name}</span>
+                                <span class="language-code">{lang.code.toUpperCase()}</span>
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
         );
     }
 
-    private changeLanguage = async (lng: string): Promise<void> => {
-        await i18n.changeLanguage(lng);
-        // 状态会自动更新（通过 i18n.on('languageChanged')）
+    private toggleDropdown = (): void => {
+        this.isOpen = !this.isOpen;
+        this.rerender();
+    };
+
+    private selectLanguage = (languageCode: string): void => {
+        if (languageCode === this.currentLanguage) {
+            this.isOpen = false;
+            this.rerender();
+            return;
+        }
+
+        // 更改 i18next 语言
+        i18nInstance.changeLanguage(languageCode).then(() => {
+            this.currentLanguage = languageCode;
+            this.isOpen = false;
+            this.rerender();
+            localStorage.setItem('wsx-language', languageCode);
+        });
     };
 }
 ```
+
+**关键特性**：
+1. **不使用国旗图标**：使用语言名称显示，避免不同国家的政治敏感性
+2. **响应式更新**：通过 `i18nInstance.on('languageChanged')` 监听语言变化，自动更新 UI
+3. **持久化存储**：使用 `localStorage` 保存用户的语言选择
+4. **下拉菜单**：提供更好的用户体验，支持多语言选择
+5. **自动同步**：组件初始化时自动从 `localStorage` 或 `i18next` 获取当前语言
+
+**在 App 中使用**：
+```tsx
+// src/App.wsx
+import './components/LanguageSwitcher.wsx';
+
+// 在导航栏中使用
+<nav class="main-nav">
+    {/* ... 其他导航项 ... */}
+    <language-switcher></language-switcher>
+    <theme-switcher></theme-switcher>
+</nav>
+```
+
+**验证响应式更新**：
+当用户通过 `LanguageSwitcher` 切换语言时：
+1. `i18nInstance.changeLanguage()` 被调用
+2. i18next 触发 `languageChanged` 事件
+3. 所有使用 `@i18n` 装饰器的组件（如 `HomeSection`、`ComparisonSection`）会自动：
+   - 接收到 `languageChanged` 事件
+   - 调用 `rerender()` 方法
+   - 重新渲染时，`this.t()` 会使用新的 `i18n.language` 获取翻译
+4. 页面内容自动更新为新语言，无需手动刷新
 
 ## 实施计划
 

@@ -1,0 +1,352 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Combobox Component
+ * 组合框组件，结合输入框和下拉菜单
+ * 支持搜索、过滤、选择等功能
+ */
+import { WebComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import styles from "./Combobox.css?inline";
+import type { DropdownOption } from "./Dropdown.types";
+import type { ComboboxOption, ComboboxConfig } from "./Combobox.types";
+export type { ComboboxOption, ComboboxConfig };
+
+@autoRegister({ tagName: "wsx-combobox" })
+export default class Combobox extends WebComponent {
+    /** 选项列表 */
+    private options: DropdownOption[] = [];
+    /** 当前选中的值（单选）或值数组（多选） */
+    @state private selectedValue: string | string[] = "";
+    /** 搜索关键词 */
+    @state private searchQuery: string = "";
+    /** 下拉菜单是否打开 */
+    @state private isOpen: boolean = false;
+    /** 配置选项 */
+    private config: ComboboxConfig = {};
+
+    /** 元素引用 */
+    private inputElement?: HTMLInputElement;
+    private dropdownElement?: HTMLElement;
+    private outsideClickHandler?: (event: Event) => void;
+
+    constructor(config: ComboboxConfig = {}) {
+        super({
+            styles,
+            styleName: "wsx-combobox",
+        });
+        this.config = {
+            placeholder: "Select or search...",
+            searchable: true,
+            multiple: false,
+            align: "left",
+            position: "bottom",
+            ...config,
+        };
+    }
+
+    /**
+     * 设置选项列表
+     */
+    public setOptions(options: DropdownOption[]): void {
+        this.options = options;
+        this.rerender();
+    }
+
+    /**
+     * 设置选中的值
+     */
+    public setValue(value: string | string[]): void {
+        this.selectedValue = value;
+        if (this.inputElement && !this.config.multiple) {
+            const selectedOption = this.options.find(
+                (opt) => opt.value === (Array.isArray(value) ? value[0] : value)
+            );
+            this.inputElement.value = selectedOption?.label || "";
+        }
+        this.rerender();
+        this.dispatchEvent(
+            new CustomEvent("change", {
+                detail: { value },
+                bubbles: true,
+            })
+        );
+    }
+
+    /**
+     * 获取选中的值
+     */
+    public getValue(): string | string[] {
+        return this.selectedValue;
+    }
+
+    /**
+     * 获取过滤后的选项列表
+     */
+    private getFilteredOptions(): DropdownOption[] {
+        if (!this.config.searchable || !this.searchQuery.trim()) {
+            return this.options;
+        }
+
+        const query = this.searchQuery.toLowerCase();
+        return this.options.filter(
+            (opt) =>
+                opt.label.toLowerCase().includes(query) || opt.value.toLowerCase().includes(query)
+        );
+    }
+
+    render(): HTMLElement {
+        const filteredOptions = this.getFilteredOptions();
+        const isMultiple = this.config.multiple;
+        const selectedValues = Array.isArray(this.selectedValue)
+            ? this.selectedValue
+            : this.selectedValue
+              ? [this.selectedValue]
+              : [];
+
+        // 获取显示文本
+        let displayText = "";
+        if (isMultiple) {
+            if (selectedValues.length === 0) {
+                displayText = this.config.placeholder || "Select...";
+            } else if (selectedValues.length === 1) {
+                const option = this.options.find((opt) => opt.value === selectedValues[0]);
+                displayText = option?.label || selectedValues[0];
+            } else {
+                displayText = `${selectedValues.length} selected`;
+            }
+        } else {
+            const selectedOption = this.options.find((opt) => opt.value === this.selectedValue);
+            displayText = selectedOption?.label || this.config.placeholder || "Select...";
+        }
+
+        return (
+            <div class="combobox-container">
+                <div class="combobox-input-wrapper">
+                    {isMultiple && selectedValues.length > 0 && (
+                        <div class="combobox-tags">
+                            {selectedValues.slice(0, 2).map((value) => {
+                                const option = this.options.find((opt) => opt.value === value);
+                                return (
+                                    <span key={value} class="combobox-tag">
+                                        {option?.label || value}
+                                        <button
+                                            class="combobox-tag-remove"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                this.removeValue(value);
+                                            }}
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
+                                );
+                            })}
+                            {selectedValues.length > 2 && (
+                                <span class="combobox-tag-more">+{selectedValues.length - 2}</span>
+                            )}
+                        </div>
+                    )}
+                    <input
+                        ref={(el) => (this.inputElement = el)}
+                        type="text"
+                        class="combobox-input"
+                        placeholder={displayText}
+                        value={this.config.searchable && this.isOpen ? this.searchQuery : ""}
+                        onInput={this.handleInput}
+                        onFocus={this.openDropdown}
+                        onClick={this.openDropdown}
+                        disabled={this.config.disabled}
+                        readonly={!this.config.searchable}
+                    />
+                    <button
+                        class={`combobox-arrow ${this.isOpen ? "open" : ""}`}
+                        onClick={this.toggleDropdown}
+                        disabled={this.config.disabled}
+                    >
+                        {this.isOpen ? "▲" : "▼"}
+                    </button>
+                </div>
+
+                {this.isOpen && (
+                    <div
+                        ref={(el) => (this.dropdownElement = el)}
+                        class={`combobox-menu combobox-${this.config.position} combobox-${this.config.align}`}
+                        role="listbox"
+                    >
+                        {filteredOptions.length === 0 ? (
+                            <div class="combobox-empty">
+                                {this.config.searchable && this.searchQuery
+                                    ? "No results found"
+                                    : "No options"}
+                            </div>
+                        ) : (
+                            filteredOptions.map((option) => {
+                                const isSelected = isMultiple
+                                    ? selectedValues.includes(option.value)
+                                    : option.value === this.selectedValue;
+
+                                return (
+                                    <button
+                                        key={option.value}
+                                        class={`combobox-option ${isSelected ? "selected" : ""} ${
+                                            option.disabled ? "disabled" : ""
+                                        }`}
+                                        onClick={() =>
+                                            !option.disabled && this.selectOption(option.value)
+                                        }
+                                        role="option"
+                                        aria-selected={isSelected}
+                                        disabled={option.disabled}
+                                    >
+                                        {isMultiple && (
+                                            <span class="combobox-checkbox">
+                                                {isSelected ? "✓" : ""}
+                                            </span>
+                                        )}
+                                        {option.render ? (
+                                            option.render()
+                                        ) : (
+                                            <span>{option.label}</span>
+                                        )}
+                                    </button>
+                                );
+                            })
+                        )}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    /**
+     * 处理输入
+     */
+    private handleInput = (event: Event): void => {
+        if (!this.config.searchable) return;
+        const input = event.target as HTMLInputElement;
+        this.searchQuery = input.value;
+        this.rerender();
+    };
+
+    /**
+     * 切换下拉菜单
+     */
+    private toggleDropdown = (): void => {
+        if (this.config.disabled) return;
+        this.isOpen = !this.isOpen;
+        if (this.isOpen && this.config.searchable && this.inputElement) {
+            this.inputElement.focus();
+        }
+        this.rerender();
+
+        if (this.isOpen) {
+            setTimeout(() => {
+                this.attachOutsideClickHandler();
+            }, 0);
+        } else {
+            this.detachOutsideClickHandler();
+            this.searchQuery = "";
+        }
+    };
+
+    /**
+     * 打开下拉菜单
+     */
+    private openDropdown = (): void => {
+        if (this.config.disabled || this.isOpen) return;
+        this.isOpen = true;
+        if (this.config.searchable && this.inputElement) {
+            this.inputElement.focus();
+        }
+        this.rerender();
+        setTimeout(() => {
+            this.attachOutsideClickHandler();
+        }, 0);
+    };
+
+    /**
+     * 关闭下拉菜单
+     */
+    private closeDropdown = (): void => {
+        if (!this.isOpen) return;
+        this.isOpen = false;
+        this.searchQuery = "";
+        this.rerender();
+        this.detachOutsideClickHandler();
+    };
+
+    /**
+     * 选择选项
+     */
+    private selectOption = (value: string): void => {
+        if (this.config.multiple) {
+            const currentValues = Array.isArray(this.selectedValue) ? this.selectedValue : [];
+            const newValues = currentValues.includes(value)
+                ? currentValues.filter((v) => v !== value)
+                : [...currentValues, value];
+            this.selectedValue = newValues;
+        } else {
+            this.selectedValue = value;
+            this.closeDropdown();
+        }
+
+        this.rerender();
+        this.dispatchEvent(
+            new CustomEvent("change", {
+                detail: { value: this.selectedValue },
+                bubbles: true,
+            })
+        );
+    };
+
+    /**
+     * 移除值（多选模式）
+     */
+    private removeValue = (value: string): void => {
+        if (!this.config.multiple) return;
+        const currentValues = Array.isArray(this.selectedValue) ? this.selectedValue : [];
+        this.selectedValue = currentValues.filter((v) => v !== value);
+        this.rerender();
+        this.dispatchEvent(
+            new CustomEvent("change", {
+                detail: { value: this.selectedValue },
+                bubbles: true,
+            })
+        );
+    };
+
+    /**
+     * 附加外部点击处理器
+     */
+    private attachOutsideClickHandler = (): void => {
+        this.outsideClickHandler = (event: Event) => {
+            const target = event.target as Node;
+            if (
+                this.dropdownElement &&
+                this.inputElement &&
+                !this.dropdownElement.contains(target) &&
+                !this.inputElement.contains(target)
+            ) {
+                this.closeDropdown();
+            }
+        };
+
+        document.addEventListener("click", this.outsideClickHandler, true);
+    };
+
+    /**
+     * 移除外部点击处理器
+     */
+    private detachOutsideClickHandler = (): void => {
+        if (this.outsideClickHandler) {
+            document.removeEventListener("click", this.outsideClickHandler, true);
+            this.outsideClickHandler = undefined;
+        }
+    };
+
+    /**
+     * 组件断开连接时清理
+     */
+    protected onDisconnected(): void {
+        this.detachOutsideClickHandler();
+    }
+}

@@ -1,0 +1,450 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * ResponsiveNav Component
+ * 响应式导航栏组件
+ * - 自动处理 overflow：当空间不足时，将导航项移到下拉菜单
+ * - 移动端自动切换为汉堡菜单
+ */
+import { WebComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import { OverflowDetector } from "./OverflowDetector";
+import styles from "./ResponsiveNav.css?inline";
+// 需要导入 wsx-link 和 wsx-router
+// 注意：这些组件应该在外部已经注册
+
+import type { NavItem, ResponsiveNavConfig } from "./ResponsiveNav.types";
+export type { NavItem, ResponsiveNavConfig };
+
+@autoRegister({ tagName: "wsx-responsive-nav" })
+export default class ResponsiveNav extends WebComponent {
+    private navConfig: ResponsiveNavConfig = { items: [] };
+    /** 移动端菜单是否打开 */
+    @state private isMobileMenuOpen: boolean = false;
+    /** 可见的导航项索引 */
+    @state private visibleItemIndices: number[] = [];
+    /** 隐藏的导航项索引（在 overflow 菜单中） */
+    @state private hiddenItemIndices: number[] = [];
+    /** 是否移动端 */
+    @state private isMobile: boolean = false;
+    /** overflow 菜单是否打开 */
+    @state private isOverflowOpen: boolean = false;
+
+    /** 元素引用 */
+    private navMenuElement?: HTMLElement;
+    private navItemsElements: HTMLElement[] = [];
+    private resizeObserver?: ResizeObserver;
+    private resizeHandler?: () => void;
+
+    constructor(config?: ResponsiveNavConfig) {
+        super({
+            styles,
+            styleName: "wsx-responsive-nav",
+        });
+        // 如果通过构造函数传递配置，使用它；否则在 onConnected 时从属性读取
+        if (config) {
+            this.navConfig = {
+                mobileBreakpoint: 768,
+                autoOverflow: true,
+                ...config,
+            };
+            this.visibleItemIndices = config.items.map((_, index) => index);
+        }
+    }
+
+    render(): HTMLElement {
+        // 确保配置已初始化
+        if (!this.navConfig.items || this.navConfig.items.length === 0) {
+            return <nav class="responsive-nav"></nav>;
+        }
+
+        const hiddenItems = this.hiddenItemIndices.map((index) => this.navConfig.items[index]);
+
+        return (
+            <nav class="responsive-nav">
+                <div class="nav-container">
+                    {/* 品牌 */}
+                    <div class="nav-brand">
+                        <slot name="brand-icon">
+                            {this.navConfig.brandIcon &&
+                                typeof this.navConfig.brandIcon === "string" && (
+                                    <span class="nav-brand-icon">{this.navConfig.brandIcon}</span>
+                                )}
+                        </slot>
+                        {this.navConfig.brand && (
+                            <span class="nav-brand-text">{this.navConfig.brand}</span>
+                        )}
+                    </div>
+
+                    {/* 桌面端导航菜单 */}
+                    {!this.isMobile && (
+                        <div ref={(el) => (this.navMenuElement = el)} class="nav-menu">
+                            {/* 渲染所有项，但隐藏不在 visibleItemIndices 中的项 */}
+                            {this.navConfig.items.map((item, index) => {
+                                const isVisible = this.visibleItemIndices.includes(index);
+                                return (
+                                    <wsx-link
+                                        key={index}
+                                        ref={(el) => {
+                                            if (el) {
+                                                this.navItemsElements[index] = el;
+                                            }
+                                        }}
+                                        to={item.to}
+                                        class={`nav-link ${!isVisible ? "hidden-item" : ""}`}
+                                        active-class="nav-link-active"
+                                        exact={item.exact}
+                                        style={
+                                            !isVisible
+                                                ? "position: absolute; visibility: hidden; pointer-events: none;"
+                                                : ""
+                                        }
+                                    >
+                                        {item.label}
+                                    </wsx-link>
+                                );
+                            })}
+
+                            {/* Overflow 菜单 */}
+                            {this.navConfig.autoOverflow &&
+                                hiddenItems.length > 0 &&
+                                !this.isMobile && (
+                                    <div class="nav-overflow">
+                                        <button
+                                            class="nav-overflow-button"
+                                            onClick={this.toggleOverflow}
+                                        >
+                                            More ▼
+                                        </button>
+                                        {this.isOverflowOpen && (
+                                            <div class="nav-overflow-menu">
+                                                {hiddenItems.map((item, idx) => {
+                                                    const originalIndex =
+                                                        this.hiddenItemIndices[idx];
+                                                    return (
+                                                        <wsx-link
+                                                            key={originalIndex}
+                                                            to={item.to}
+                                                            class="nav-overflow-link"
+                                                            active-class="nav-link-active"
+                                                            exact={item.exact}
+                                                            onClick={this.closeOverflow}
+                                                        >
+                                                            {item.label}
+                                                        </wsx-link>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                        </div>
+                    )}
+
+                    {/* 右侧操作项（始终显示，包括移动端） */}
+                    {this.navConfig.actionTags && (
+                        <div class="nav-actions">
+                            {this.navConfig.actionTags.map((tag, index) => {
+                                // 使用动态标签名创建元素
+                                const TagName = tag as keyof HTMLElementTagNameMap;
+                                return (
+                                    <div key={index} class="nav-action">
+                                        <TagName></TagName>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {/* 移动端汉堡菜单按钮 */}
+                    {this.isMobile && (
+                        <button class="nav-toggle" onClick={this.toggleMobileMenu}>
+                            <span
+                                class={`nav-toggle-line ${this.isMobileMenuOpen ? "open" : ""}`}
+                            ></span>
+                            <span
+                                class={`nav-toggle-line ${this.isMobileMenuOpen ? "open" : ""}`}
+                            ></span>
+                            <span
+                                class={`nav-toggle-line ${this.isMobileMenuOpen ? "open" : ""}`}
+                            ></span>
+                        </button>
+                    )}
+                </div>
+
+                {/* 移动端菜单 */}
+                {this.isMobile && (
+                    <div class={`nav-mobile-menu ${this.isMobileMenuOpen ? "open" : ""}`}>
+                        {this.navConfig.items
+                            .filter((item) => !item.hideOnMobile)
+                            .map((item, index) => (
+                                <wsx-link
+                                    key={index}
+                                    to={item.to}
+                                    class="nav-mobile-link"
+                                    active-class="nav-link-active"
+                                    exact={item.exact}
+                                    onClick={this.closeMobileMenu}
+                                >
+                                    {item.label}
+                                </wsx-link>
+                            ))}
+                    </div>
+                )}
+            </nav>
+        );
+    }
+
+    /**
+     * 切换移动端菜单
+     */
+    private toggleMobileMenu = (): void => {
+        this.isMobileMenuOpen = !this.isMobileMenuOpen;
+        this.rerender();
+    };
+
+    /**
+     * 关闭移动端菜单
+     */
+    private closeMobileMenu = (): void => {
+        this.isMobileMenuOpen = false;
+        this.rerender();
+    };
+
+    /**
+     * 切换 overflow 菜单
+     */
+    private toggleOverflow = (): void => {
+        this.isOverflowOpen = !this.isOverflowOpen;
+        this.rerender();
+
+        if (this.isOverflowOpen) {
+            setTimeout(() => {
+                document.addEventListener("click", this.handleOverflowOutsideClick, true);
+            }, 0);
+        } else {
+            document.removeEventListener("click", this.handleOverflowOutsideClick, true);
+        }
+    };
+
+    /**
+     * 关闭 overflow 菜单
+     */
+    private closeOverflow = (): void => {
+        this.isOverflowOpen = false;
+        this.rerender();
+        document.removeEventListener("click", this.handleOverflowOutsideClick, true);
+    };
+
+    /**
+     * 处理 overflow 菜单外部点击
+     */
+    private handleOverflowOutsideClick = (event: Event): void => {
+        const target = event.target as Node;
+        const overflowContainer = this.querySelector(".nav-overflow");
+        const overflowMenu = overflowContainer?.querySelector(".nav-overflow-menu");
+        const overflowButton = overflowContainer?.querySelector(".nav-overflow-button");
+
+        if (
+            overflowMenu &&
+            overflowButton &&
+            !overflowMenu.contains(target) &&
+            !overflowButton.contains(target)
+        ) {
+            this.closeOverflow();
+        }
+    };
+
+    /**
+     * 检查并更新可见项
+     * 使用 OverflowDetector 来最大化可见项数量
+     */
+    private updateVisibleItems = (): void => {
+        if (!this.navConfig.autoOverflow || this.isMobile || !this.navMenuElement) {
+            // 如果不是移动端且 autoOverflow 关闭，显示所有项
+            if (!this.isMobile) {
+                const allIndices = this.navConfig.items.map((_, index) => index);
+                if (
+                    JSON.stringify(allIndices.sort()) !==
+                    JSON.stringify(this.visibleItemIndices.sort())
+                ) {
+                    this.visibleItemIndices = allIndices;
+                    this.hiddenItemIndices = [];
+                    this.rerender();
+                }
+            }
+            return;
+        }
+
+        // 确保所有导航项元素都已获取
+        // 先渲染所有项（隐藏的项也需要渲染以获取宽度）
+        const allItems: HTMLElement[] = [];
+        for (let i = 0; i < this.navConfig.items.length; i++) {
+            // 尝试从已渲染的元素中获取
+            let itemElement = this.navItemsElements[i];
+            if (!itemElement) {
+                // 如果元素不存在，尝试从 DOM 中查找
+                const navLinks = Array.from(
+                    this.navMenuElement.querySelectorAll(".nav-link")
+                ) as HTMLElement[];
+                if (navLinks[i]) {
+                    itemElement = navLinks[i];
+                    this.navItemsElements[i] = itemElement;
+                }
+            }
+            if (itemElement) {
+                allItems.push(itemElement);
+            } else {
+                // 如果元素还不存在，创建一个临时元素来测量宽度
+                // 这通常发生在首次渲染时
+                const tempElement = document.createElement("wsx-link");
+                tempElement.textContent = this.navConfig.items[i].label;
+                tempElement.style.visibility = "hidden";
+                tempElement.style.position = "absolute";
+                document.body.appendChild(tempElement);
+                allItems.push(tempElement);
+                // 清理临时元素
+                setTimeout(() => {
+                    if (tempElement.parentElement) {
+                        tempElement.parentElement.removeChild(tempElement);
+                    }
+                }, 0);
+            }
+        }
+
+        // 计算其他元素占用的宽度
+        const actionsElement = this.navMenuElement.parentElement?.querySelector(
+            ".nav-actions"
+        ) as HTMLElement;
+        const actionsWidth = actionsElement
+            ? Array.from(actionsElement.children).reduce(
+                  (sum, el) => sum + OverflowDetector.getElementTotalWidth(el as HTMLElement),
+                  0
+              ) + 8 // gap
+            : 0;
+
+        // 使用 OverflowDetector 计算可见/隐藏项
+        const overflowButtonWidth = 90; // overflow 按钮宽度（包括 padding 和 gap）
+        const gap = 16; // 导航项之间的间距
+
+        const result = OverflowDetector.detect({
+            container: this.navMenuElement,
+            items: allItems,
+            gap,
+            reservedWidth: actionsWidth,
+            overflowButtonWidth,
+            padding: 0,
+            minVisibleItems: 1,
+        });
+
+        // 更新状态
+        const newVisibleIndices = result.visibleIndices;
+        const newHiddenIndices = result.hiddenIndices;
+
+        // 清理临时元素
+        allItems.forEach((item) => {
+            if (item.parentElement === document.body) {
+                document.body.removeChild(item);
+            }
+        });
+
+        // 只有当结果发生变化时才更新
+        if (
+            JSON.stringify(newVisibleIndices.sort()) !==
+                JSON.stringify(this.visibleItemIndices.sort()) ||
+            JSON.stringify(newHiddenIndices.sort()) !==
+                JSON.stringify(this.hiddenItemIndices.sort())
+        ) {
+            this.visibleItemIndices = newVisibleIndices;
+            this.hiddenItemIndices = newHiddenIndices;
+            this.rerender();
+        }
+    };
+
+    /**
+     * 检查是否为移动端
+     */
+    private checkMobile = (): void => {
+        const isMobile = window.innerWidth <= (this.navConfig.mobileBreakpoint || 768);
+        if (isMobile !== this.isMobile) {
+            this.isMobile = isMobile;
+            this.rerender();
+        }
+    };
+
+    /**
+     * 组件连接时初始化
+     */
+    protected onConnected(): void {
+        // 如果配置未初始化，从属性读取
+        if (!this.navConfig.items || this.navConfig.items.length === 0) {
+            const configAttr = this.getAttribute("config");
+            if (configAttr) {
+                try {
+                    const parsedConfig = JSON.parse(configAttr) as ResponsiveNavConfig;
+                    this.navConfig = {
+                        mobileBreakpoint: 768,
+                        autoOverflow: true,
+                        ...parsedConfig,
+                    };
+                    this.visibleItemIndices = parsedConfig.items.map((_, index) => index);
+                    this.rerender();
+                } catch (error) {
+                    console.error("Failed to parse ResponsiveNav config:", error);
+                }
+            }
+        }
+
+        this.checkMobile();
+
+        // 等待 DOM 渲染完成后再计算可见项
+        // 需要多次尝试，因为元素可能还没有渲染完成
+        const tryUpdateVisibleItems = (attempts: number = 0) => {
+            if (attempts > 10) return; // 最多尝试10次
+            setTimeout(() => {
+                if (this.navMenuElement) {
+                    const hasAllElements = this.navConfig.items.every(
+                        (_, index) => this.navItemsElements[index]
+                    );
+                    if (hasAllElements || attempts > 5) {
+                        this.updateVisibleItems();
+                    } else {
+                        tryUpdateVisibleItems(attempts + 1);
+                    }
+                }
+            }, 50);
+        };
+        tryUpdateVisibleItems();
+
+        // 监听窗口大小变化
+        this.resizeHandler = () => {
+            this.checkMobile();
+            setTimeout(() => {
+                this.updateVisibleItems();
+            }, 100);
+        };
+        window.addEventListener("resize", this.resizeHandler);
+
+        // 使用 ResizeObserver 监听容器大小变化
+        setTimeout(() => {
+            if (this.navMenuElement && window.ResizeObserver) {
+                this.resizeObserver = new ResizeObserver(() => {
+                    setTimeout(() => {
+                        this.updateVisibleItems();
+                    }, 0);
+                });
+                this.resizeObserver.observe(this.navMenuElement);
+            }
+        }, 0);
+    }
+
+    /**
+     * 组件断开连接时清理
+     */
+    protected onDisconnected(): void {
+        if (this.resizeHandler) {
+            window.removeEventListener("resize", this.resizeHandler);
+        }
+        if (this.resizeObserver) {
+            this.resizeObserver.disconnect();
+        }
+    }
+}

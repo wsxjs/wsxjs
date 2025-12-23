@@ -1,0 +1,221 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Dropdown Component
+ * 通用下拉菜单组件，用于构建各种下拉选择器
+ */
+import { WebComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import styles from "./Dropdown.css?inline";
+import type { DropdownOption, DropdownConfig } from "./Dropdown.types";
+export type { DropdownOption, DropdownConfig };
+
+@autoRegister({ tagName: "wsx-dropdown" })
+export default class Dropdown extends WebComponent {
+    /** 选项列表 */
+    private options: DropdownOption[] = [];
+    /** 当前选中的值 */
+    @state private selectedValue = "";
+    /** 下拉菜单是否打开 */
+    @state private isOpen: boolean = false;
+    /** 配置选项 */
+    private config: DropdownConfig = {};
+
+    /** 元素引用 */
+    private buttonElement?: HTMLElement;
+    private dropdownElement?: HTMLElement;
+    private outsideClickHandler?: (event: Event) => void;
+
+    constructor(config: DropdownConfig = {}) {
+        super({
+            styles,
+            styleName: "wsx-dropdown",
+        });
+        this.config = {
+            placeholder: "Select...",
+            align: "left",
+            position: "bottom",
+            trigger: "click",
+            ...config,
+        };
+    }
+
+    /**
+     * 设置选项列表
+     */
+    public setOptions(options: DropdownOption[]): void {
+        this.options = options;
+        this.rerender();
+    }
+
+    /**
+     * 设置选中的值
+     */
+    public setValue(value: string): void {
+        this.selectedValue = value;
+        this.rerender();
+        this.dispatchEvent(
+            new CustomEvent("change", {
+                detail: { value },
+                bubbles: true,
+            })
+        );
+    }
+
+    /**
+     * 获取选中的值
+     */
+    public getValue(): string | undefined {
+        return this.selectedValue || undefined;
+    }
+
+    render(): HTMLElement {
+        const selectedOption = this.options.find(
+            (opt) => opt.value === this.selectedValue && this.selectedValue !== ""
+        );
+        const displayText = selectedOption?.label || this.config.placeholder || "Select...";
+
+        return (
+            <div class="dropdown-container">
+                <button
+                    ref={(el) => (this.buttonElement = el)}
+                    class={`dropdown-button ${this.isOpen ? "open" : ""} ${
+                        this.config.disabled ? "disabled" : ""
+                    }`}
+                    onClick={this.config.trigger === "click" ? this.toggleDropdown : undefined}
+                    onMouseEnter={this.config.trigger === "hover" ? this.openDropdown : undefined}
+                    onMouseLeave={this.config.trigger === "hover" ? this.closeDropdown : undefined}
+                    disabled={this.config.disabled}
+                    aria-expanded={this.isOpen}
+                    aria-haspopup="listbox"
+                >
+                    <span class="dropdown-text">{displayText}</span>
+                    <span class="dropdown-arrow">{this.isOpen ? "▲" : "▼"}</span>
+                </button>
+
+                {this.isOpen && (
+                    <div
+                        ref={(el) => (this.dropdownElement = el)}
+                        class={`dropdown-menu dropdown-${this.config.position} dropdown-${this.config.align}`}
+                        role="listbox"
+                        onMouseEnter={
+                            this.config.trigger === "hover" ? this.openDropdown : undefined
+                        }
+                        onMouseLeave={
+                            this.config.trigger === "hover" ? this.closeDropdown : undefined
+                        }
+                    >
+                        {this.options.length === 0 ? (
+                            <div class="dropdown-empty">No options</div>
+                        ) : (
+                            this.options.map((option) => (
+                                <button
+                                    key={option.value}
+                                    class={`dropdown-option ${
+                                        option.value === this.selectedValue &&
+                                        this.selectedValue !== ""
+                                            ? "selected"
+                                            : ""
+                                    } ${option.disabled ? "disabled" : ""}`}
+                                    onClick={() =>
+                                        !option.disabled && this.selectOption(option.value)
+                                    }
+                                    role="option"
+                                    aria-selected={
+                                        option.value === this.selectedValue &&
+                                        this.selectedValue !== ""
+                                    }
+                                    disabled={option.disabled}
+                                >
+                                    {option.render ? option.render() : <span>{option.label}</span>}
+                                </button>
+                            ))
+                        )}
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    /**
+     * 切换下拉菜单
+     */
+    private toggleDropdown = (): void => {
+        if (this.config.disabled) return;
+        this.isOpen = !this.isOpen;
+        this.rerender();
+
+        if (this.isOpen) {
+            setTimeout(() => {
+                this.attachOutsideClickHandler();
+            }, 0);
+        } else {
+            this.detachOutsideClickHandler();
+        }
+    };
+
+    /**
+     * 打开下拉菜单
+     */
+    private openDropdown = (): void => {
+        if (this.config.disabled || this.isOpen) return;
+        this.isOpen = true;
+        this.rerender();
+    };
+
+    /**
+     * 关闭下拉菜单
+     */
+    private closeDropdown = (): void => {
+        if (!this.isOpen) return;
+        this.isOpen = false;
+        this.rerender();
+        this.detachOutsideClickHandler();
+    };
+
+    /**
+     * 选择选项
+     */
+    private selectOption = (value: string): void => {
+        this.setValue(value);
+        if (this.config.trigger === "click") {
+            this.closeDropdown();
+        }
+    };
+
+    /**
+     * 附加外部点击处理器
+     */
+    private attachOutsideClickHandler = (): void => {
+        if (this.config.trigger === "hover") return;
+
+        this.outsideClickHandler = (event: Event) => {
+            const target = event.target as Node;
+            if (
+                this.dropdownElement &&
+                this.buttonElement &&
+                !this.dropdownElement.contains(target) &&
+                !this.buttonElement.contains(target)
+            ) {
+                this.closeDropdown();
+            }
+        };
+
+        document.addEventListener("click", this.outsideClickHandler, true);
+    };
+
+    /**
+     * 移除外部点击处理器
+     */
+    private detachOutsideClickHandler = (): void => {
+        if (this.outsideClickHandler) {
+            document.removeEventListener("click", this.outsideClickHandler, true);
+            this.outsideClickHandler = undefined;
+        }
+    };
+
+    /**
+     * 组件断开连接时清理
+     */
+    protected onDisconnected(): void {
+        this.detachOutsideClickHandler();
+    }
+}

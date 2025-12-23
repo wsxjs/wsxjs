@@ -10,7 +10,7 @@ export const i18n = initI18n({
         loadPath: "/locales/{{lng}}/{{ns}}.json",
     },
     ns: ["home", "common"],
-    defaultNS: "home",
+    defaultNS: "common",
 });
 
 // 重新导出 i18n 实例，方便在其他地方使用
