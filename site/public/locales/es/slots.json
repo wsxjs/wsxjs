@@ -1,0 +1,67 @@
+{
+    "title": "Ejemplos de Slots",
+    "description": "Explora el uso de slots en WebComponent (Shadow DOM) y LightComponent (Light DOM), incluyendo escenarios de uso mixto.",
+    "webComponentSlot": {
+        "title": "🎯 Slot de WebComponent (Shadow DOM)",
+        "badge": "Shadow DOM",
+        "description": "Demuestra el uso de slots en WebComponent con Shadow DOM. Los slots permiten proyectar contenido desde Light DOM hacia Shadow DOM. Usa el selector CSS ::slotted() para estilizar el contenido con slots.",
+        "header": "Encabezado de Tarjeta WebComponent",
+        "content1": "Este es el contenido principal en un slot de WebComponent.",
+        "content2": "¡Los slots funcionan perfectamente en Shadow DOM!",
+        "button": "Botón de Acción"
+    },
+    "lightComponentSlot": {
+        "title": "💡 Slot de LightComponent (Light DOM)",
+        "badge": "Light DOM",
+        "description": "Demuestra el uso de slots en LightComponent con Light DOM. Los slots funcionan de manera similar, pero el contenido está en Light DOM, haciéndolo accesible a bibliotecas de terceros como Editor.js.",
+        "header": "Encabezado de Tarjeta LightComponent",
+        "content1": "Este es el contenido principal en un slot de LightComponent.",
+        "content2": "¡Los slots también funcionan en Light DOM!",
+        "button": "Botón de Acción"
+    },
+    "mixedWebToLight": {
+        "title": "🔀 Mixto: WebComponent → Slot de LightComponent",
+        "badge": "Uso Mixto",
+        "description": "WebComponent (Shadow DOM) que contiene LightComponent (Light DOM) con slots. El contenido del slot de LightComponent proviene del método render de WebComponent. Esto demuestra cómo funcionan los slots cuando los componentes están anidados.",
+        "header": "LightComponent en WebComponent",
+        "content1": "Este LightComponent se renderiza dentro de un WebComponent (SlotExamples).",
+        "content2": "¡El contenido del slot se proyecta desde el Shadow DOM de WebComponent al Light DOM de LightComponent!",
+        "button": "Botón de Uso Mixto"
+    },
+    "mixedLightToWeb": {
+        "title": "🔀 Mixto: LightComponent → Slot de WebComponent",
+        "badge": "Uso Mixto",
+        "description": "LightComponent (Light DOM) que contiene WebComponent (Shadow DOM) con slots. El contenido del slot de WebComponent proviene del método render de LightComponent. Esto demuestra cómo funcionan los slots a través de los límites de Shadow DOM.",
+        "header": "WebComponent en LightComponent",
+        "content1": "Este WebComponent se renderiza dentro de un LightComponent (App).",
+        "content2": "¡El contenido del slot se proyecta desde el Light DOM de LightComponent al Shadow DOM de WebComponent!",
+        "button": "Botón de Uso Mixto"
+    },
+    "features": {
+        "title": "Características de Slots",
+        "namedSlots": {
+            "label": "Slots Nombrados",
+            "description": "Usa slot=\"name\" para proyectar contenido a slots específicos"
+        },
+        "defaultSlot": {
+            "label": "Slot por Defecto",
+            "description": "El contenido sin atributo slot va al slot por defecto"
+        },
+        "shadowDomSlots": {
+            "label": "Slots de Shadow DOM",
+            "description": "Usa el selector CSS ::slotted() para estilizar el contenido con slots"
+        },
+        "lightDomSlots": {
+            "label": "Slots de Light DOM",
+            "description": "Los slots funcionan en Light DOM, haciendo el contenido accesible a bibliotecas de terceros"
+        },
+        "mixedUsage": {
+            "label": "Uso Mixto",
+            "description": "Puedes anidar WebComponent y LightComponent con slots"
+        },
+        "smartRendering": {
+            "label": "Renderizado Inteligente",
+            "description": "Nuestro connectedCallback optimizado asegura que los slots funcionen correctamente incluso cuando los componentes se mueven"
+        }
+    }
+}

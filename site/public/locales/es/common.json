@@ -1,0 +1,47 @@
+{
+    "language": {
+        "switcher": {
+            "label": "Idioma",
+            "current": "Idioma actual"
+        },
+        "names": {
+            "en": "English",
+            "zh": "中文",
+            "es": "Español",
+            "fr": "Français",
+            "de": "Deutsch",
+            "ja": "日本語",
+            "ko": "한국어"
+        }
+    },
+    "nav": {
+        "home": "Inicio",
+        "features": "Características",
+        "quickStart": "Inicio Rápido",
+        "examples": "Ejemplos",
+        "web": "Web",
+        "light": "Light",
+        "slots": "Slots",
+        "editorjs": "EditorJS",
+        "ecosystem": "Ecosistema"
+    },
+    "footer": {
+        "tagline": "El Framework de Web Components Progresivo",
+        "resources": "Recursos",
+        "community": "Comunidad",
+        "legal": "Legal",
+        "documentation": "Documentación",
+        "githubRepo": "Repositorio de GitHub",
+        "examples": "Ejemplos",
+        "blog": "Blog",
+        "discordServer": "Servidor de Discord",
+        "twitter": "Twitter",
+        "githubDiscussions": "Discusiones de GitHub",
+        "communityBlog": "Blog de la Comunidad",
+        "mitLicense": "Licencia MIT",
+        "privacyPolicy": "Política de Privacidad",
+        "termsOfService": "Términos de Servicio",
+        "copyright": "© 2026 WSXJS. Publicado bajo la Licencia MIT.",
+        "madeWith": "Hecho con ❤️ por el equipo de WSXJS"
+    }
+}

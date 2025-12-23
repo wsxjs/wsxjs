@@ -1,0 +1,205 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Slot Examples Page
+ *
+ * Demonstrates slot usage in both WebComponent and LightComponent:
+ * - WebComponent with slots (Shadow DOM)
+ * - LightComponent with slots (Light DOM)
+ * - Mixed usage: WebComponent containing LightComponent with slots
+ * - Mixed usage: LightComponent containing WebComponent with slots
+ */
+
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+import "@wsxjs/wsx-base-components";
+// Import example components from local examples directory
+import "./examples/SlotCardWeb.wsx";
+import "./examples/SlotCardLight.wsx";
+
+/**
+ * Slot Examples Page
+ *
+ * Note: CSS is automatically injected by babel-plugin-wsx-style
+ * if SlotExamples.css exists in the same directory
+ */
+@autoRegister({ tagName: "slot-examples" })
+@i18n("slots")
+export default class SlotExamples extends WebComponent {
+    constructor() {
+        super({
+            styleName: "slot-examples",
+        });
+    }
+
+    render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        return (
+            <section class="slot-examples">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">{t("title")}</h1>
+                        <p class="section-description">{t("description")}</p>
+                    </div>
+
+                    <div class="examples-container">
+                        {/* WebComponent Slot Example */}
+                        <div class="example-section">
+                            <div class="example-header">
+                                <h2>{t("webComponentSlot.title")}</h2>
+                                <span class="example-badge">{t("webComponentSlot.badge")}</span>
+                            </div>
+                            <p class="example-description">{t("webComponentSlot.description")}</p>
+                            <div class="example-demo">
+                                <slot-card-web>
+                                    <span slot="header">{t("webComponentSlot.header")}</span>
+                                    <p>{t("webComponentSlot.content1")}</p>
+                                    <p>{t("webComponentSlot.content2")}</p>
+                                    <button slot="footer" onClick={() => alert("Clicked!")}>
+                                        {t("webComponentSlot.button")}
+                                    </button>
+                                </slot-card-web>
+                            </div>
+                            <div class="code-example">
+                                <pre>
+                                    <code>{`<slot-card-web>
+  <span slot="header">Header Content</span>
+  <p>Main Content</p>
+  <button slot="footer">Footer Button</button>
+</slot-card-web>`}</code>
+                                </pre>
+                            </div>
+                        </div>
+
+                        {/* LightComponent Slot Example */}
+                        <div class="example-section">
+                            <div class="example-header">
+                                <h2>{t("lightComponentSlot.title")}</h2>
+                                <span class="example-badge">{t("lightComponentSlot.badge")}</span>
+                            </div>
+                            <p class="example-description">{t("lightComponentSlot.description")}</p>
+                            <div class="example-demo">
+                                <slot-card-light>
+                                    <span slot="header">{t("lightComponentSlot.header")}</span>
+                                    <p>{t("lightComponentSlot.content1")}</p>
+                                    <p>{t("lightComponentSlot.content2")}</p>
+                                    <button slot="footer" onClick={() => alert("Clicked!")}>
+                                        {t("lightComponentSlot.button")}
+                                    </button>
+                                </slot-card-light>
+                            </div>
+                            <div class="code-example">
+                                <pre>
+                                    <code>{`<slot-card-light>
+  <span slot="header">Header Content</span>
+  <p>Main Content</p>
+  <button slot="footer">Footer Button</button>
+</slot-card-light>`}</code>
+                                </pre>
+                            </div>
+                        </div>
+
+                        {/* Mixed: WebComponent containing LightComponent with slots */}
+                        <div class="example-section">
+                            <div class="example-header">
+                                <h2>{t("mixedWebToLight.title")}</h2>
+                                <span class="example-badge">{t("mixedWebToLight.badge")}</span>
+                            </div>
+                            <p class="example-description">{t("mixedWebToLight.description")}</p>
+                            <div class="example-demo">
+                                <div class="mixed-container">
+                                    <slot-card-light>
+                                        <span slot="header">{t("mixedWebToLight.header")}</span>
+                                        <p>{t("mixedWebToLight.content1")}</p>
+                                        <p>{t("mixedWebToLight.content2")}</p>
+                                        <button slot="footer" onClick={() => alert("Mixed!")}>
+                                            {t("mixedWebToLight.button")}
+                                        </button>
+                                    </slot-card-light>
+                                </div>
+                            </div>
+                            <div class="code-example">
+                                <pre>
+                                    <code>{`// In WebComponent (SlotExamples) render():
+return (
+  <div>
+    <slot-card-light>
+      <span slot="header">Header</span>
+      <p>Content</p>
+      <button slot="footer">Button</button>
+    </slot-card-light>
+  </div>
+);`}</code>
+                                </pre>
+                            </div>
+                        </div>
+
+                        {/* Mixed: LightComponent containing WebComponent with slots */}
+                        <div class="example-section">
+                            <div class="example-header">
+                                <h2>{t("mixedLightToWeb.title")}</h2>
+                                <span class="example-badge">{t("mixedLightToWeb.badge")}</span>
+                            </div>
+                            <p class="example-description">{t("mixedLightToWeb.description")}</p>
+                            <div class="example-demo">
+                                <slot-card-web>
+                                    <span slot="header">{t("mixedLightToWeb.header")}</span>
+                                    <p>{t("mixedLightToWeb.content1")}</p>
+                                    <p>{t("mixedLightToWeb.content2")}</p>
+                                    <button slot="footer" onClick={() => alert("Mixed!")}>
+                                        {t("mixedLightToWeb.button")}
+                                    </button>
+                                </slot-card-web>
+                            </div>
+                            <div class="code-example">
+                                <pre>
+                                    <code>{`// In LightComponent (App) render():
+return (
+  <div>
+    <slot-card-web>
+      <span slot="header">Header</span>
+      <p>Content</p>
+      <button slot="footer">Button</button>
+    </slot-card-web>
+  </div>
+);`}</code>
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>{t("features.title")}</h3>
+                        <ul>
+                            <li>
+                                <strong>{t("features.namedSlots.label")}:</strong>{" "}
+                                {t("features.namedSlots.description")}
+                            </li>
+                            <li>
+                                <strong>{t("features.defaultSlot.label")}:</strong>{" "}
+                                {t("features.defaultSlot.description")}
+                            </li>
+                            <li>
+                                <strong>{t("features.shadowDomSlots.label")}:</strong>{" "}
+                                {t("features.shadowDomSlots.description")}
+                            </li>
+                            <li>
+                                <strong>{t("features.lightDomSlots.label")}:</strong>{" "}
+                                {t("features.lightDomSlots.description")}
+                            </li>
+                            <li>
+                                <strong>{t("features.mixedUsage.label")}:</strong>{" "}
+                                {t("features.mixedUsage.description")}
+                            </li>
+                            <li>
+                                <strong>{t("features.smartRendering.label")}:</strong>{" "}
+                                {t("features.smartRendering.description")}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+}

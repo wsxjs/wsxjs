@@ -1,0 +1,45 @@
+{
+    "hero": {
+        "badge": "🚀 リリース済み",
+        "title": "WSXJS",
+        "subtitle": "ネイティブ Web Components のための JSX",
+        "description": "フレームワークではなく、より良い開発者体験を提供します。JSX 構文を記述し、ネイティブ Web Components を取得します。依存関係ゼロ、TypeScript 優先、本番環境対応。",
+        "getStarted": "始める",
+        "tryOnline": "オンラインで試す",
+        "viewGitHub": "GitHub で見る"
+    },
+    "comparison": {
+        "title": "なぜ WSXJS なのか？",
+        "description": "WSXJS を他の人気フレームワークと比較し、ネイティブ Web Components を構築するのに最適な選択肢である理由を確認してください。",
+        "vsReact": {
+            "title": "vs React",
+            "badge": "フレームワーク",
+            "items": {
+                "native": "ネイティブ Web Components（仮想 DOM なし）",
+                "zero": "ランタイムオーバーヘッドゼロ",
+                "works": "あらゆるフレームワークで動作",
+                "smaller": "より小さなバンドルサイズ"
+            }
+        },
+        "vsVue": {
+            "title": "vs Vue",
+            "badge": "フレームワーク",
+            "items": {
+                "pure": "純粋な Web 標準",
+                "noLock": "フレームワークロックインなし",
+                "better": "より良いパフォーマンス",
+                "future": "将来性がある"
+            }
+        },
+        "vsPlain": {
+            "title": "vs プレーン Web Components",
+            "badge": "ネイティブ",
+            "items": {
+                "jsx": "JSX 構文（親しみやすい）",
+                "typescript": "TypeScript サポート",
+                "dx": "より良い開発者体験",
+                "tooling": "モダンなツール"
+            }
+        }
+    }
+}

@@ -1,0 +1,67 @@
+{
+    "title": "スロットの例",
+    "description": "WebComponent (Shadow DOM) と LightComponent (Light DOM) でのスロットの使用を探索します。混合使用シナリオも含みます。",
+    "webComponentSlot": {
+        "title": "🎯 WebComponent スロット (Shadow DOM)",
+        "badge": "Shadow DOM",
+        "description": "Shadow DOM を使用した WebComponent でのスロットの使用を実演します。スロットを使用すると、Light DOM から Shadow DOM にコンテンツを投影できます。::slotted() CSS セレクタを使用してスロットコンテンツをスタイル化します。",
+        "header": "WebComponent カードヘッダー",
+        "content1": "これは WebComponent スロット内のメインコンテンツです。",
+        "content2": "スロットは Shadow DOM で完璧に機能します！",
+        "button": "アクションボタン"
+    },
+    "lightComponentSlot": {
+        "title": "💡 LightComponent スロット (Light DOM)",
+        "badge": "Light DOM",
+        "description": "Light DOM を使用した LightComponent でのスロットの使用を実演します。スロットは同様に機能しますが、コンテンツは Light DOM にあり、Editor.js などのサードパーティライブラリからアクセス可能です。",
+        "header": "LightComponent カードヘッダー",
+        "content1": "これは LightComponent スロット内のメインコンテンツです。",
+        "content2": "スロットは Light DOM でも機能します！",
+        "button": "アクションボタン"
+    },
+    "mixedWebToLight": {
+        "title": "🔀 混合: WebComponent → LightComponent スロット",
+        "badge": "混合使用",
+        "description": "スロット付きの LightComponent (Light DOM) を含む WebComponent (Shadow DOM)。LightComponent のスロットコンテンツは WebComponent の render メソッドから来ます。これは、コンポーネントがネストされている場合のスロットの動作を示します。",
+        "header": "WebComponent 内の LightComponent",
+        "content1": "この LightComponent は WebComponent (SlotExamples) 内でレンダリングされます。",
+        "content2": "スロットコンテンツは WebComponent の Shadow DOM から LightComponent の Light DOM に投影されます！",
+        "button": "混合使用ボタン"
+    },
+    "mixedLightToWeb": {
+        "title": "🔀 混合: LightComponent → WebComponent スロット",
+        "badge": "混合使用",
+        "description": "スロット付きの WebComponent (Shadow DOM) を含む LightComponent (Light DOM)。WebComponent のスロットコンテンツは LightComponent の render メソッドから来ます。これは、スロットが Shadow DOM の境界を越えてどのように機能するかを示します。",
+        "header": "LightComponent 内の WebComponent",
+        "content1": "この WebComponent は LightComponent (App) 内でレンダリングされます。",
+        "content2": "スロットコンテンツは LightComponent の Light DOM から WebComponent の Shadow DOM に投影されます！",
+        "button": "混合使用ボタン"
+    },
+    "features": {
+        "title": "スロットの機能",
+        "namedSlots": {
+            "label": "名前付きスロット",
+            "description": "slot=\"name\" を使用してコンテンツを特定のスロットに投影"
+        },
+        "defaultSlot": {
+            "label": "デフォルトスロット",
+            "description": "slot 属性のないコンテンツはデフォルトスロットに移動"
+        },
+        "shadowDomSlots": {
+            "label": "Shadow DOM スロット",
+            "description": "::slotted() CSS セレクタを使用してスロットコンテンツをスタイル化"
+        },
+        "lightDomSlots": {
+            "label": "Light DOM スロット",
+            "description": "スロットは Light DOM で機能し、コンテンツをサードパーティライブラリからアクセス可能にします"
+        },
+        "mixedUsage": {
+            "label": "混合使用",
+            "description": "スロット付きの WebComponent と LightComponent をネストできます"
+        },
+        "smartRendering": {
+            "label": "スマートレンダリング",
+            "description": "最適化された connectedCallback により、コンポーネントが移動されてもスロットが正しく機能します"
+        }
+    }
+}

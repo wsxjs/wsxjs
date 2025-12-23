@@ -1,0 +1,67 @@
+{
+    "title": "Exemples de Slots",
+    "description": "Explorez l'utilisation des slots dans WebComponent (Shadow DOM) et LightComponent (Light DOM), y compris les scénarios d'utilisation mixte.",
+    "webComponentSlot": {
+        "title": "🎯 Slot WebComponent (Shadow DOM)",
+        "badge": "Shadow DOM",
+        "description": "Démontre l'utilisation des slots dans WebComponent avec Shadow DOM. Les slots permettent de projeter du contenu depuis Light DOM vers Shadow DOM. Utilisez le sélecteur CSS ::slotted() pour styliser le contenu avec slots.",
+        "header": "En-tête de Carte WebComponent",
+        "content1": "Ceci est le contenu principal dans un slot WebComponent.",
+        "content2": "Les slots fonctionnent parfaitement dans Shadow DOM !",
+        "button": "Bouton d'Action"
+    },
+    "lightComponentSlot": {
+        "title": "💡 Slot LightComponent (Light DOM)",
+        "badge": "Light DOM",
+        "description": "Démontre l'utilisation des slots dans LightComponent avec Light DOM. Les slots fonctionnent de manière similaire, mais le contenu est dans Light DOM, le rendant accessible aux bibliothèques tierces comme Editor.js.",
+        "header": "En-tête de Carte LightComponent",
+        "content1": "Ceci est le contenu principal dans un slot LightComponent.",
+        "content2": "Les slots fonctionnent aussi dans Light DOM !",
+        "button": "Bouton d'Action"
+    },
+    "mixedWebToLight": {
+        "title": "🔀 Mixte : WebComponent → Slot LightComponent",
+        "badge": "Utilisation Mixte",
+        "description": "WebComponent (Shadow DOM) contenant LightComponent (Light DOM) avec slots. Le contenu du slot de LightComponent provient de la méthode render de WebComponent. Cela démontre comment les slots fonctionnent lorsque les composants sont imbriqués.",
+        "header": "LightComponent dans WebComponent",
+        "content1": "Ce LightComponent est rendu à l'intérieur d'un WebComponent (SlotExamples).",
+        "content2": "Le contenu du slot est projeté depuis le Shadow DOM de WebComponent vers le Light DOM de LightComponent !",
+        "button": "Bouton d'Utilisation Mixte"
+    },
+    "mixedLightToWeb": {
+        "title": "🔀 Mixte : LightComponent → Slot WebComponent",
+        "badge": "Utilisation Mixte",
+        "description": "LightComponent (Light DOM) contenant WebComponent (Shadow DOM) avec slots. Le contenu du slot de WebComponent provient de la méthode render de LightComponent. Cela démontre comment les slots fonctionnent à travers les limites de Shadow DOM.",
+        "header": "WebComponent dans LightComponent",
+        "content1": "Ce WebComponent est rendu à l'intérieur d'un LightComponent (App).",
+        "content2": "Le contenu du slot est projeté depuis le Light DOM de LightComponent vers le Shadow DOM de WebComponent !",
+        "button": "Bouton d'Utilisation Mixte"
+    },
+    "features": {
+        "title": "Caractéristiques des Slots",
+        "namedSlots": {
+            "label": "Slots Nommés",
+            "description": "Utilisez slot=\"name\" pour projeter du contenu vers des slots spécifiques"
+        },
+        "defaultSlot": {
+            "label": "Slot par Défaut",
+            "description": "Le contenu sans attribut slot va au slot par défaut"
+        },
+        "shadowDomSlots": {
+            "label": "Slots Shadow DOM",
+            "description": "Utilisez le sélecteur CSS ::slotted() pour styliser le contenu avec slots"
+        },
+        "lightDomSlots": {
+            "label": "Slots Light DOM",
+            "description": "Les slots fonctionnent dans Light DOM, rendant le contenu accessible aux bibliothèques tierces"
+        },
+        "mixedUsage": {
+            "label": "Utilisation Mixte",
+            "description": "Vous pouvez imbriquer WebComponent et LightComponent avec slots"
+        },
+        "smartRendering": {
+            "label": "Rendu Intelligent",
+            "description": "Notre connectedCallback optimisé assure que les slots fonctionnent correctement même lorsque les composants sont déplacés"
+        }
+    }
+}

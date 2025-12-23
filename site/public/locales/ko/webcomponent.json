@@ -1,0 +1,37 @@
+{
+    "title": "WebComponent 예제",
+    "description": "Shadow DOM 및 @state 데코레이터 지원을 갖춘 WebComponent 예제를 탐색하세요. 이러한 컴포넌트는 배열과 객체를 사용한 반응형 상태 관리를 보여줍니다.",
+    "todoList": {
+        "title": "📋 할 일 목록",
+        "badge": "@state 배열",
+        "description": "WebComponent에서 배열을 사용한 @state 데코레이터를 시연합니다. 자동 반응형 업데이트로 추가, 제거, 업데이트 및 필터 작업을 보여줍니다. 스타일 격리를 위해 Shadow DOM을 사용합니다."
+    },
+    "userProfile": {
+        "title": "👤 사용자 프로필",
+        "badge": "@state 객체",
+        "description": "WebComponent에서 객체를 사용한 @state 데코레이터를 시연합니다. 자동 반응형 업데이트로 객체 속성 업데이트, 중첩된 객체 업데이트 및 전체 객체 교체를 보여줍니다. 스타일 격리를 위해 Shadow DOM을 사용합니다."
+    },
+    "features": {
+        "title": "WebComponent 기능",
+        "shadowDom": {
+            "label": "Shadow DOM",
+            "description": "부모 페이지로부터 완전한 스타일 격리"
+        },
+        "stateDecorator": {
+            "label": "@state 데코레이터",
+            "description": "자동 반응형 상태 관리"
+        },
+        "arraySupport": {
+            "label": "배열 지원",
+            "description": "전체 배열 변이 메서드가 다시 렌더링을 트리거"
+        },
+        "objectSupport": {
+            "label": "객체 지원",
+            "description": "객체 속성 업데이트 및 교체가 다시 렌더링을 트리거"
+        },
+        "automaticRerender": {
+            "label": "자동 다시 렌더링",
+            "description": "상태 변경이 자동으로 컴포넌트 다시 렌더링을 트리거"
+        }
+    }
+}

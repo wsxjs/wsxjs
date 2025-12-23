@@ -1,0 +1,63 @@
+{
+    "title": "Política de Privacidad",
+    "lastUpdated": "Última actualización: Enero 2026",
+    "sections": {
+        "introduction": {
+            "title": "1. Introducción",
+            "content": "WSXJS ('nosotros', 'nuestro' o 'nosotros') se compromete a proteger su privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando utiliza nuestro framework de código abierto y sitio web."
+        },
+        "dataCollection": {
+            "title": "2. Información que Recopilamos",
+            "content": "Como proyecto de código abierto, recopilamos información mínima:",
+            "items": {
+                "usage": "Análisis de uso (anonimizado) para mejorar el framework",
+                "errors": "Registros de errores e informes de fallos para corregir errores",
+                "device": "Información del dispositivo y navegador para pruebas de compatibilidad"
+            }
+        },
+        "dataUsage": {
+            "title": "3. Cómo Usamos Su Información",
+            "content": "Usamos la información recopilada para:",
+            "items": {
+                "improve": "Mejorar y mantener el framework WSXJS",
+                "communicate": "Responder a sus consultas y brindar soporte",
+                "comply": "Cumplir con obligaciones legales"
+            }
+        },
+        "dataSharing": {
+            "title": "4. Compartir Datos",
+            "content": "No vendemos, intercambiamos ni alquilamos su información personal. Podemos compartir datos agregados y anonimizados con servicios de análisis de terceros para ayudarnos a comprender cómo se usa el framework."
+        },
+        "dataSecurity": {
+            "title": "5. Seguridad de Datos",
+            "content": "Implementamos medidas técnicas y organizativas apropiadas para proteger su información. Sin embargo, ningún método de transmisión por Internet es 100% seguro."
+        },
+        "cookies": {
+            "title": "6. Cookies y Seguimiento",
+            "content": "Utilizamos cookies y tecnologías de seguimiento similares para analizar el tráfico del sitio web y mejorar la experiencia del usuario. Puede controlar las cookies a través de la configuración de su navegador."
+        },
+        "userRights": {
+            "title": "7. Sus Derechos",
+            "content": "Dependiendo de su ubicación, puede tener los siguientes derechos:",
+            "items": {
+                "access": "Derecho a acceder a sus datos personales",
+                "correct": "Derecho a corregir datos inexactos",
+                "delete": "Derecho a solicitar la eliminación de sus datos",
+                "object": "Derecho a oponerse al procesamiento de sus datos"
+            }
+        },
+        "children": {
+            "title": "8. Privacidad de Menores",
+            "content": "Nuestros servicios no están dirigidos a menores de 13 años. No recopilamos conscientemente información personal de menores."
+        },
+        "changes": {
+            "title": "9. Cambios a Esta Política",
+            "content": "Podemos actualizar esta Política de Privacidad de vez en cuando. Le notificaremos de cualquier cambio publicando la nueva política en esta página y actualizando la fecha de 'Última actualización'."
+        },
+        "contact": {
+            "title": "10. Contáctenos",
+            "content": "Si tiene preguntas sobre esta Política de Privacidad, contáctenos:",
+            "email": "Correo electrónico"
+        }
+    }
+}

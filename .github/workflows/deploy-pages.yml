@@ -4,11 +4,14 @@ on:
     push:
         branches: [main]
         paths:
-            - "packages/examples/**"
+            - "site/**"
             - "packages/core/**"
             - "packages/base-components/**"
-            - "packages/wsx-router/**"
+            - "packages/router/**"
             - "packages/vite-plugin/**"
+            - "packages/i18next/**"
+            - "packages/eslint-plugin/**"
+            - "packages/tsconfig/**"
     workflow_dispatch:
 
 permissions:
@@ -56,9 +59,9 @@ jobs:
             - name: Build all packages
               run: pnpm build
 
-            - name: Build examples for GitHub Pages
+            - name: Build site for GitHub Pages
               run: |
-                  cd packages/examples
+                  cd site
                   pnpm build:pages
               env:
                   NODE_ENV: production
@@ -71,7 +74,7 @@ jobs:
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
               with:
-                  path: "./packages/examples/dist"
+                  path: "./site/dist"
 
     deploy:
         environment:

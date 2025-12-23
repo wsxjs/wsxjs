@@ -47,7 +47,7 @@ Thank you for your interest in contributing to WSXJS! This document provides gui
    pnpm dev
 
    # Run the examples showcase application
-   pnpm --filter @wsxjs/wsx-examples dev
+   pnpm --filter @wsxjs/wsx-site dev
    # This starts a local server at http://localhost:5173
 
    # Run tests continuously
@@ -63,15 +63,15 @@ Thank you for your interest in contributing to WSXJS! This document provides gui
 The examples package contains a comprehensive showcase of WSXJS features:
 
 ```bash
-# Start the examples development server
-cd packages/examples
+# Start the site development server
+cd site
 pnpm dev
 
 # Or from the root directory
-pnpm --filter @wsxjs/wsx-examples dev
+pnpm --filter @wsxjs/wsx-site dev
 
-# Build the examples for production
-pnpm --filter @wsxjs/wsx-examples build
+# Build the site for production
+pnpm --filter @wsxjs/wsx-site build
 ```
 
 The examples showcase includes:

@@ -1,0 +1,53 @@
+{
+    "name": "@wsxjs/wsx-site",
+    "version": "0.0.17",
+    "description": "WSXJS official website and examples",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "build:pages": "cross-env NODE_ENV=production GITHUB_PAGES=true CUSTOM_DOMAIN=true vite build",
+        "preview": "vite preview",
+        "deploy:pages": "pnpm build:pages && gh-pages -d dist",
+        "test": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "test:watch": "vitest watch",
+        "test:ui": "vitest --ui",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
+    },
+    "dependencies": {
+        "@editorjs/editorjs": "^2.29.1",
+        "@editorjs/header": "^2.8.8",
+        "@editorjs/paragraph": "^2.11.7",
+        "@unocss/preset-attributify": "^66.3.3",
+        "@unocss/preset-uno": "^66.3.3",
+        "@wsxjs/wsx-base-components": "workspace:*",
+        "@wsxjs/wsx-core": "workspace:*",
+        "@wsxjs/wsx-i18next": "workspace:*",
+        "@wsxjs/wsx-router": "workspace:*",
+        "i18next": "^23.0.0",
+        "i18next-browser-languagedetector": "^7.0.0",
+        "i18next-http-backend": "^2.0.0"
+    },
+    "devDependencies": {
+        "@testing-library/dom": "^10.4.0",
+        "@testing-library/jest-dom": "^6.6.3",
+        "@testing-library/user-event": "^14.6.1",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "@vitest/ui": "^3.2.4",
+        "@wsxjs/eslint-plugin-wsx": "workspace:*",
+        "@wsxjs/wsx-vite-plugin": "workspace:*",
+        "cross-env": "^7.0.3",
+        "eslint": "^8.0.0",
+        "gh-pages": "^6.1.1",
+        "happy-dom": "^18.0.1",
+        "typescript": "^5.0.0",
+        "unocss": "^66.3.3",
+        "vite": "^5.0.0",
+        "vitest": "^3.2.4"
+    }
+}

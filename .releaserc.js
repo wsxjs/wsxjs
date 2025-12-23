@@ -71,7 +71,7 @@ module.exports = {
                     "pnpm version ${nextRelease.version} --workspace-root --no-git-tag-version",
                 // Build all packages
                 publishCmd:
-                    'pnpm build && pnpm publish --filter "!@wsxjs/wsx-examples" --access public --no-git-checks',
+                    'pnpm build && pnpm publish --filter "!@wsxjs/wsx-site" --access public --no-git-checks',
             },
         ],
 

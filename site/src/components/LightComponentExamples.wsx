@@ -1,0 +1,97 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * LightComponent Examples Page
+ *
+ * Demonstrates all LightComponent examples with @state decorator:
+ * - TodoListLight (array reactive)
+ * - UserProfileLight (object reactive)
+ */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+import styles from "./LightComponentExamples.css?inline";
+import "@wsxjs/wsx-base-components";
+// Import example components from local examples directory
+import "./examples/TodoListLight.wsx";
+import "./examples/UserProfileLight.wsx";
+
+@autoRegister({ tagName: "lightcomponent-examples" })
+@i18n("lightcomponent")
+export default class LightComponentExamples extends LightComponent {
+    constructor() {
+        super({
+            styles,
+            styleName: "lightcomponent-examples",
+        });
+    }
+
+    render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        return (
+            <section class="lightcomponent-examples">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">{t("title")}</h1>
+                        <p class="section-description">{t("description")}</p>
+                    </div>
+
+                    <div class="examples-container">
+                        <div class="example-section">
+                            <div class="example-header">
+                                <h2>{t("todoList.title")}</h2>
+                                <span class="example-badge">{t("todoList.badge")}</span>
+                            </div>
+                            <p class="example-description">{t("todoList.description")}</p>
+                            <div class="example-demo">
+                                <todo-list-light></todo-list-light>
+                            </div>
+                        </div>
+
+                        <div class="example-section">
+                            <div class="example-header">
+                                <h2>{t("userProfile.title")}</h2>
+                                <span class="example-badge">{t("userProfile.badge")}</span>
+                            </div>
+                            <p class="example-description">{t("userProfile.description")}</p>
+                            <div class="example-demo">
+                                <user-profile-light></user-profile-light>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>{t("features.title")}</h3>
+                        <ul>
+                            <li>
+                                <strong>{t("features.lightDom.label")}:</strong>{" "}
+                                {t("features.lightDom.description")}
+                            </li>
+                            <li>
+                                <strong>{t("features.stateDecorator.label")}:</strong>{" "}
+                                {t("features.stateDecorator.description")}
+                            </li>
+                            <li>
+                                <strong>{t("features.arraySupport.label")}:</strong>{" "}
+                                {t("features.arraySupport.description")}
+                            </li>
+                            <li>
+                                <strong>{t("features.objectSupport.label")}:</strong>{" "}
+                                {t("features.objectSupport.description")}
+                            </li>
+                            <li>
+                                <strong>{t("features.automaticRerender.label")}:</strong>{" "}
+                                {t("features.automaticRerender.description")}
+                            </li>
+                            <li>
+                                <strong>{t("features.styleInheritance.label")}:</strong>{" "}
+                                {t("features.styleInheritance.description")}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+}

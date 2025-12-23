@@ -1,0 +1,38 @@
+{
+    "title": "快速开始",
+    "description": "几分钟内开始使用 WSXJS。使用 JSX 语法和 TypeScript 支持创建你的第一个 Web 组件。",
+    "installation": {
+        "title": "安装",
+        "copy": "📋 复制",
+        "copied": "✅ 已复制！"
+    },
+    "steps": {
+        "install": {
+            "title": "安装",
+            "description": "通过 npm 安装 WSXJS"
+        },
+        "create": {
+            "title": "创建",
+            "description": "使用 JSX 创建你的第一个组件"
+        },
+        "build": {
+            "title": "构建",
+            "description": "构建并部署你的 Web 组件"
+        }
+    },
+    "routerExample": {
+        "title": "🚀 路由示例",
+        "description": "此页面演示了 WSX Router 的实际应用！注意：",
+        "points": {
+            "highlight": "导航链接会高亮显示当前页面",
+            "url": "URL 变化时无需刷新页面",
+            "browser": "浏览器前进/后退按钮正常工作",
+            "components": "每个部分都是通过路由加载的独立组件"
+        }
+    },
+    "codeExample": {
+        "title": "60 秒快速开始",
+        "description": "安装 WSXJS 并在不到一分钟内创建你的第一个组件。",
+        "titleInstallation": "安装与示例"
+    }
+}

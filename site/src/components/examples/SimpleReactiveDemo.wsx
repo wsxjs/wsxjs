@@ -1,0 +1,65 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * 简单的响应式演示组件
+ * 展示 WSX 响应式状态系统的基本功能
+ * 使用 @state 装饰器自动初始化响应式状态
+ */
+
+import { WebComponent, state, autoRegister, createLogger } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+
+const logger = createLogger("SimpleReactiveDemo");
+
+@autoRegister({ tagName: "simple-reactive-demo" })
+@i18n("examples")
+export default class SimpleReactiveDemo extends WebComponent {
+    // 使用 @state 装饰器 - 自动初始化为响应式状态
+    @state private state = {
+        count: 0,
+        message: "",
+    };
+
+    constructor() {
+        super();
+        logger.info("SimpleReactiveDemo initialized");
+        // 初始化消息
+        this.state.message = this.t("simpleReactiveDemo.message");
+    }
+
+    render() {
+        return (
+            <div style="padding: 20px; border: 1px solid #ccc; border-radius: 8px; margin: 20px;">
+                <h3>{this.t("simpleReactiveDemo.title")}</h3>
+                <p>{this.state.message}</p>
+                <div style="font-size: 24px; margin: 16px 0;">
+                    {this.t("simpleReactiveDemo.count")}: <strong>{this.state.count}</strong>
+                </div>
+                <div>
+                    <button onClick={this.increment} style="margin-right: 8px; padding: 8px 16px;">
+                        {this.t("simpleReactiveDemo.increment")}
+                    </button>
+                    <button onClick={this.reset} style="padding: 8px 16px;">
+                        {this.t("simpleReactiveDemo.reset")}
+                    </button>
+                </div>
+                <div style="margin-top: 16px; font-size: 12px; color: #666;">
+                    {this.t("simpleReactiveDemo.hint")}
+                </div>
+            </div>
+        );
+    }
+
+    private increment = () => {
+        this.state.count++;
+        this.state.message = this.t("simpleReactiveDemo.clicked", {
+            count: this.state.count,
+        });
+        // 注意：不需要手动调用 this.rerender()！
+    };
+
+    private reset = () => {
+        this.state.count = 0;
+        this.state.message = this.t("simpleReactiveDemo.resetMessage");
+        // 注意：这里也不需要手动调用 this.rerender()！
+    };
+}

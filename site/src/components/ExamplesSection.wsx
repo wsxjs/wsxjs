@@ -1,0 +1,221 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+import styles from "./ExamplesSection.css?inline";
+import "@wsxjs/wsx-base-components";
+import "@wsxjs/wsx-router";
+import "../editorjs/EditorJSDemo.wsx";
+// Import example components from local examples directory
+import "./examples/SimpleReactiveDemo.wsx";
+import "./examples/SvgDemo.wsx";
+
+@autoRegister({ tagName: "examples-section" })
+@i18n("examples")
+export default class ExamplesSection extends WebComponent {
+    constructor() {
+        super({
+            styles,
+            styleName: "examples-section",
+        });
+    }
+
+    render() {
+        return (
+            <section id="examples" class="examples-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">{this.t("examplesSection.title")}</h2>
+                        <p class="section-description">{this.t("examplesSection.description")}</p>
+                    </div>
+
+                    {/* Core Features - Key Component Types (Prominent Display) */}
+                    <div class="category-section core-features-section">
+                        <h3 class="category-title">
+                            {this.t("examplesSection.categories.coreFeatures.title")}
+                        </h3>
+                        <p class="core-subtitle">
+                            {this.t("examplesSection.categories.coreFeatures.subtitle")}
+                        </p>
+                        <div class="core-features-grid">
+                            <wsx-link
+                                to="/webcomponent-examples"
+                                class="core-feature-card web-component-card"
+                            >
+                                <div class="core-feature-icon">🔷</div>
+                                <div class="core-feature-content">
+                                    <h3 class="core-feature-title">
+                                        {this.t("examplesSection.examples.webComponent.title")}
+                                    </h3>
+                                    <span class="core-feature-badge">
+                                        {this.t("examplesSection.examples.webComponent.badge")}
+                                    </span>
+                                    <p class="core-feature-description">
+                                        {this.t(
+                                            "examplesSection.examples.webComponent.description"
+                                        )}
+                                    </p>
+                                    <div class="core-feature-link">
+                                        {this.t("examplesSection.examples.webComponent.link")} →
+                                    </div>
+                                </div>
+                            </wsx-link>
+
+                            <wsx-link
+                                to="/lightcomponent-examples"
+                                class="core-feature-card light-component-card"
+                            >
+                                <div class="core-feature-icon">🔶</div>
+                                <div class="core-feature-content">
+                                    <h3 class="core-feature-title">
+                                        {this.t("examplesSection.examples.lightComponent.title")}
+                                    </h3>
+                                    <span class="core-feature-badge">
+                                        {this.t("examplesSection.examples.lightComponent.badge")}
+                                    </span>
+                                    <p class="core-feature-description">
+                                        {this.t(
+                                            "examplesSection.examples.lightComponent.description"
+                                        )}
+                                    </p>
+                                    <div class="core-feature-link">
+                                        {this.t("examplesSection.examples.lightComponent.link")} →
+                                    </div>
+                                </div>
+                            </wsx-link>
+
+                            <wsx-link to="/slot-examples" class="core-feature-card slot-card">
+                                <div class="core-feature-icon">🔸</div>
+                                <div class="core-feature-content">
+                                    <h3 class="core-feature-title">
+                                        {this.t("examplesSection.examples.slots.title")}
+                                    </h3>
+                                    <span class="core-feature-badge">
+                                        {this.t("examplesSection.examples.slots.badge")}
+                                    </span>
+                                    <p class="core-feature-description">
+                                        {this.t("examplesSection.examples.slots.description")}
+                                    </p>
+                                    <div class="core-feature-link">
+                                        {this.t("examplesSection.examples.slots.link")} →
+                                    </div>
+                                </div>
+                            </wsx-link>
+                        </div>
+                    </div>
+
+                    {/* Basic Features Category */}
+                    <div class="category-section">
+                        <h3 class="category-title">{this.t("examplesSection.categories.core")}</h3>
+                        <div class="examples-grid">
+                            <div class="example-card">
+                                <div class="example-header">
+                                    <h3>
+                                        {this.t("examplesSection.examples.reactiveState.title")}
+                                    </h3>
+                                    <span class="example-badge">
+                                        {this.t("examplesSection.examples.reactiveState.badge")}
+                                    </span>
+                                </div>
+                                <p>
+                                    {this.t("examplesSection.examples.reactiveState.description")}
+                                </p>
+                                <div class="example-demo">
+                                    <simple-reactive-demo></simple-reactive-demo>
+                                </div>
+                            </div>
+
+                            <div class="example-card">
+                                <div class="example-header">
+                                    <h3>{this.t("examplesSection.examples.router.title")}</h3>
+                                    <span class="example-badge">
+                                        {this.t("examplesSection.examples.router.badge")}
+                                    </span>
+                                </div>
+                                <p>{this.t("examplesSection.examples.router.description")}</p>
+                                <div class="example-demo">
+                                    <div class="router-demo">
+                                        <wsx-link to="/" class="demo-nav-btn">
+                                            {this.t("examplesSection.examples.router.home")}
+                                        </wsx-link>
+                                        <wsx-link to="/features" class="demo-nav-btn">
+                                            {this.t("examplesSection.examples.router.features")}
+                                        </wsx-link>
+                                        <wsx-link to="/ecosystem" class="demo-nav-btn">
+                                            {this.t("examplesSection.examples.router.ecosystem")}
+                                        </wsx-link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Advanced Features Category */}
+                    <div class="category-section">
+                        <h3 class="category-title">
+                            {this.t("examplesSection.categories.advanced")}
+                        </h3>
+                        <div class="examples-grid">
+                            <div class="example-card">
+                                <div class="example-header">
+                                    <h3>{this.t("examplesSection.examples.svg.title")}</h3>
+                                    <span class="example-badge">
+                                        {this.t("examplesSection.examples.svg.badge")}
+                                    </span>
+                                </div>
+                                <p>{this.t("examplesSection.examples.svg.description")}</p>
+                                <div class="example-demo">
+                                    <svg-demo></svg-demo>
+                                </div>
+                            </div>
+
+                            <div class="example-card">
+                                <div class="example-header">
+                                    <h3>{this.t("examplesSection.examples.colorPicker.title")}</h3>
+                                    <span class="example-badge">
+                                        {this.t("examplesSection.examples.colorPicker.badge")}
+                                    </span>
+                                </div>
+                                <p>{this.t("examplesSection.examples.colorPicker.description")}</p>
+                                <div class="example-demo">
+                                    <color-picker></color-picker>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Integrations Category */}
+                    <div class="category-section">
+                        <h3 class="category-title">
+                            {this.t("examplesSection.categories.integrations")}
+                        </h3>
+                        <div class="examples-grid">
+                            <div class="example-card full-width">
+                                <div class="example-header">
+                                    <h3>{this.t("examplesSection.examples.editorjs.title")}</h3>
+                                    <span class="example-badge">
+                                        {this.t("examplesSection.examples.editorjs.badge")}
+                                    </span>
+                                </div>
+                                <p>{this.t("examplesSection.examples.editorjs.description")}</p>
+                                <div class="example-demo">
+                                    <p style="padding: 20px; text-align: center; color: #666;">
+                                        <wsx-link
+                                            to="/editorjs"
+                                            style="
+                                                color: #3498db;
+                                                text-decoration: none;
+                                                font-weight: 600;
+                                            "
+                                        >
+                                            {this.t("examplesSection.examples.editorjs.link")}
+                                        </wsx-link>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+}

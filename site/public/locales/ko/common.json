@@ -1,0 +1,47 @@
+{
+    "language": {
+        "switcher": {
+            "label": "언어",
+            "current": "현재 언어"
+        },
+        "names": {
+            "en": "English",
+            "zh": "中文",
+            "es": "Español",
+            "fr": "Français",
+            "de": "Deutsch",
+            "ja": "日本語",
+            "ko": "한국어"
+        }
+    },
+    "nav": {
+        "home": "홈",
+        "features": "기능",
+        "quickStart": "빠른 시작",
+        "examples": "예제",
+        "web": "Web",
+        "light": "Light",
+        "slots": "슬롯",
+        "editorjs": "EditorJS",
+        "ecosystem": "생태계"
+    },
+    "footer": {
+        "tagline": "프로그레시브 Web Components 프레임워크",
+        "resources": "리소스",
+        "community": "커뮤니티",
+        "legal": "법적",
+        "documentation": "문서",
+        "githubRepo": "GitHub 저장소",
+        "examples": "예제",
+        "blog": "블로그",
+        "discordServer": "Discord 서버",
+        "twitter": "Twitter",
+        "githubDiscussions": "GitHub 토론",
+        "communityBlog": "커뮤니티 블로그",
+        "mitLicense": "MIT 라이선스",
+        "privacyPolicy": "개인정보 보호정책",
+        "termsOfService": "서비스 약관",
+        "copyright": "© 2026 WSXJS. MIT 라이선스 하에 출시되었습니다.",
+        "madeWith": "WSXJS 팀이 ❤️ 로 제작"
+    }
+}

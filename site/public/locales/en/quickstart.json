@@ -1,0 +1,38 @@
+{
+    "title": "Quick Start",
+    "description": "Get started with WSXJS in minutes. Create your first web component with JSX syntax and TypeScript support.",
+    "installation": {
+        "title": "Installation",
+        "copy": "📋 Copy",
+        "copied": "✅ Copied!"
+    },
+    "steps": {
+        "install": {
+            "title": "Install",
+            "description": "Install WSXJS via npm"
+        },
+        "create": {
+            "title": "Create",
+            "description": "Create your first component with JSX"
+        },
+        "build": {
+            "title": "Build",
+            "description": "Build and deploy your web components"
+        }
+    },
+    "routerExample": {
+        "title": "🚀 Router Example",
+        "description": "This page demonstrates WSX Router in action! Notice how:",
+        "points": {
+            "highlight": "Navigation links highlight the active page",
+            "url": "URL changes without page refresh",
+            "browser": "Browser back/forward buttons work properly",
+            "components": "Each section is a separate component loaded by route"
+        }
+    },
+    "codeExample": {
+        "title": "Get Started in 60 Seconds",
+        "description": "Install WSXJS and create your first component in less than a minute.",
+        "titleInstallation": "Installation & Example"
+    }
+}

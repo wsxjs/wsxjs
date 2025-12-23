@@ -1,0 +1,141 @@
+/* WebComponent Examples - Theme Aligned */
+.webcomponent-examples {
+    padding: 6rem 2rem;
+    padding-top: calc(70px + 6rem); /* Navigation height (70px) + top spacing */
+    min-height: 100vh;
+    /* Follow examples section design */
+    background: linear-gradient(135deg, var(--bg-secondary), rgba(220, 38, 38, 0.03));
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.section-description {
+    font-size: 1.2rem;
+    text-align: center;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.examples-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    margin-bottom: 3rem;
+}
+
+.example-section {
+    /* Use theme background with proper contrast */
+    background: var(--bg-primary);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px var(--card-shadow-hover);
+    border: 1px solid var(--border-color);
+}
+
+.example-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.example-header h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    color: var(--text-primary);
+}
+
+.example-badge {
+    background: var(--primary-red);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.example-description {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.example-demo {
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    background: var(--bg-secondary);
+}
+
+.info-section {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px var(--card-shadow-hover);
+    border: 1px solid var(--border-color);
+}
+
+.info-section h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--primary-red);
+    padding-bottom: 0.5rem;
+}
+
+.info-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-section li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.info-section li:last-child {
+    border-bottom: none;
+}
+
+.info-section strong {
+    color: var(--primary-red);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .example-section {
+        padding: 1.5rem;
+    }
+
+    .example-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}

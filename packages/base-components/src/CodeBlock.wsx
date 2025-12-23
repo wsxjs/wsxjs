@@ -34,14 +34,9 @@ import "prismjs/components/prism-tsx"; // 依赖 typescript 和 jsx
 
 @autoRegister({ tagName: "code-block" })
 export default class CodeBlock extends LightComponent {
-    static observedAttributes = [
-        "code",
-        "title",
-        "language",
-        "show-copy",
-        "show-try-online",
-        "try-online-url",
-    ];
+    static get observedAttributes(): string[] {
+        return ["code", "title", "language", "show-copy", "show-try-online", "try-online-url"];
+    }
 
     @state private copied: boolean = false;
     @state private highlighted: boolean = false;

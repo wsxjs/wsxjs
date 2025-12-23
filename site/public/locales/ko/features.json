@@ -1,0 +1,36 @@
+{
+    "title": "왜 WSXJS를 선택해야 할까요?",
+    "description": "단순성, 성능 및 개발자 경험에 중점을 둔 현대적인 웹 개발을 위해 구축되었습니다.",
+    "features": {
+        "approachable": {
+            "title": "접근하기 쉬움",
+            "description": "직관적인 JSX 구문과 세계적 수준의 TypeScript 지원을 갖춘 표준 Web Components를 기반으로 구축되었습니다. 배우고 사용하기 쉽습니다.",
+            "icon": "🎯",
+            "details": {
+                "jsx": "JSX 구문",
+                "typescript": "TypeScript 우선",
+                "standards": "Web 표준"
+            }
+        },
+        "performant": {
+            "title": "고성능",
+            "description": "의존성 없음, 네이티브 DOM 작업 및 수동 최적화가 거의 필요하지 않은 컴파일러 최적화 렌더링 시스템.",
+            "icon": "⚡",
+            "details": {
+                "zero": "의존성 없음",
+                "native": "네이티브 DOM",
+                "optimized": "최적화된 렌더링"
+            }
+        },
+        "versatile": {
+            "title": "다용도",
+            "description": "간단한 컴포넌트에서 기능이 풍부한 애플리케이션까지 확장 가능한 풍부하고 점진적으로 채택 가능한 생태계.",
+            "icon": "🔧",
+            "details": {
+                "incremental": "점진적 채택",
+                "ecosystem": "풍부한 생태계",
+                "scalable": "확장 가능"
+            }
+        }
+    }
+}

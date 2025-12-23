@@ -1,0 +1,45 @@
+{
+    "hero": {
+        "badge": "🚀 방금 출시됨",
+        "title": "WSXJS",
+        "subtitle": "네이티브 Web Components를 위한 JSX",
+        "description": "프레임워크가 아닙니다. 단지 더 나은 개발자 경험입니다. JSX 구문을 작성하고 네이티브 Web Components를 얻으세요. 의존성 없음, TypeScript 우선, 프로덕션 준비 완료.",
+        "getStarted": "시작하기",
+        "tryOnline": "온라인에서 시도하기",
+        "viewGitHub": "GitHub에서 보기"
+    },
+    "comparison": {
+        "title": "왜 WSXJS인가요?",
+        "description": "WSXJS를 다른 인기 있는 프레임워크와 비교하고 네이티브 Web Components를 구축하는 데 최선의 선택인 이유를 확인하세요.",
+        "vsReact": {
+            "title": "vs React",
+            "badge": "프레임워크",
+            "items": {
+                "native": "네이티브 Web Components (가상 DOM 없음)",
+                "zero": "런타임 오버헤드 제로",
+                "works": "모든 프레임워크와 작동",
+                "smaller": "더 작은 번들 크기"
+            }
+        },
+        "vsVue": {
+            "title": "vs Vue",
+            "badge": "프레임워크",
+            "items": {
+                "pure": "순수 Web 표준",
+                "noLock": "프레임워크 잠금 없음",
+                "better": "더 나은 성능",
+                "future": "미래 지향적"
+            }
+        },
+        "vsPlain": {
+            "title": "vs 일반 Web Components",
+            "badge": "네이티브",
+            "items": {
+                "jsx": "JSX 구문 (친숙함)",
+                "typescript": "TypeScript 지원",
+                "dx": "더 나은 개발자 경험",
+                "tooling": "현대적인 도구"
+            }
+        }
+    }
+}

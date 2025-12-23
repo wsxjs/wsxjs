@@ -94,7 +94,7 @@ export default class Button extends WebComponent {
 
         const linkElement = (
             <a
-                href={this.href}
+                href={this.disabled || this.loading ? undefined : this.href}
                 target={this.target}
                 rel={this.rel || undefined}
                 download={this.download || undefined}
@@ -103,6 +103,10 @@ export default class Button extends WebComponent {
                 onKeyDown={this.handleKeyDown}
                 ref={(el: HTMLAnchorElement) => {
                     this.btnElement = el;
+                    // Update button state after element is set
+                    if (el) {
+                        setTimeout(() => this.updateButtonState(), 0);
+                    }
                 }}
             >
                 {this.renderContent()}
@@ -118,6 +122,10 @@ export default class Button extends WebComponent {
                 onKeyDown={this.handleKeyDown}
                 ref={(el: HTMLButtonElement) => {
                     this.btnElement = el;
+                    // Update button state after element is set
+                    if (el) {
+                        setTimeout(() => this.updateButtonState(), 0);
+                    }
                 }}
             >
                 {this.renderContent()}
@@ -228,7 +236,8 @@ export default class Button extends WebComponent {
         switch (name) {
             case "disabled":
                 this.disabled = newValue !== null;
-                this.updateButtonState();
+                this.rerender();
+                // updateButtonState will be called in ref callback after rerender
                 break;
             case "loading":
                 this.loading = newValue !== null;

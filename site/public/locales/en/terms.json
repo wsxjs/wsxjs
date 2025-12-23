@@ -1,0 +1,62 @@
+{
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: January 2026",
+    "sections": {
+        "acceptance": {
+            "title": "1. Acceptance of Terms",
+            "content": "By accessing and using WSXJS, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service."
+        },
+        "license": {
+            "title": "2. License",
+            "content": "WSXJS is released under the MIT License. This license grants you the following rights:",
+            "items": {
+                "use": "Use the software for any purpose, including commercial use",
+                "modify": "Modify the software to suit your needs",
+                "distribute": "Distribute the software",
+                "sublicense": "Sublicense and/or sell copies of the software"
+            }
+        },
+        "restrictions": {
+            "title": "3. Restrictions",
+            "content": "The MIT License requires that you:",
+            "items": {
+                "remove": "Include the original copyright notice and license in all copies",
+                "liability": "Include a disclaimer of warranty and limitation of liability",
+                "warranty": "Not hold the authors or copyright holders liable for any damages"
+            }
+        },
+        "contributions": {
+            "title": "4. Contributions",
+            "content": "By contributing to WSXJS, you agree that your contributions will be licensed under the same MIT License. You represent that you have the right to grant this license for your contributions."
+        },
+        "disclaimer": {
+            "title": "5. Disclaimer of Warranties",
+            "content": "THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT."
+        },
+        "limitation": {
+            "title": "6. Limitation of Liability",
+            "content": "IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."
+        },
+        "indemnification": {
+            "title": "7. Indemnification",
+            "content": "You agree to indemnify and hold harmless WSXJS and its contributors from any claims, damages, losses, liabilities, and expenses arising out of your use of the software."
+        },
+        "termination": {
+            "title": "8. Termination",
+            "content": "We reserve the right to terminate or suspend access to our services immediately, without prior notice, for conduct that we believe violates these Terms of Service or is harmful to other users, us, or third parties."
+        },
+        "governingLaw": {
+            "title": "9. Governing Law",
+            "content": "These Terms shall be governed by and construed in accordance with the laws of the jurisdiction where the project is maintained, without regard to its conflict of law provisions."
+        },
+        "changes": {
+            "title": "10. Changes to Terms",
+            "content": "We reserve the right to modify these terms at any time. We will notify users of any changes by updating the 'Last updated' date. Your continued use of WSXJS after such changes constitutes acceptance of the new terms."
+        },
+        "contact": {
+            "title": "11. Contact Information",
+            "content": "If you have any questions about these Terms of Service, please contact us:",
+            "email": "Email"
+        }
+    }
+}

@@ -1,0 +1,79 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+import styles from "./FeaturesSection.css?inline";
+
+@autoRegister({ tagName: "features-section" })
+@i18n("features")
+export default class FeaturesSection extends WebComponent {
+    constructor() {
+        super({ styles });
+    }
+
+    render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        const features = [
+            {
+                title: t("features.approachable.title"),
+                description: t("features.approachable.description"),
+                icon: t("features.approachable.icon"),
+                color: "green",
+                details: [
+                    t("features.approachable.details.jsx"),
+                    t("features.approachable.details.typescript"),
+                    t("features.approachable.details.standards"),
+                ],
+            },
+            {
+                title: t("features.performant.title"),
+                description: t("features.performant.description"),
+                icon: t("features.performant.icon"),
+                color: "blue",
+                details: [
+                    t("features.performant.details.zero"),
+                    t("features.performant.details.native"),
+                    t("features.performant.details.optimized"),
+                ],
+            },
+            {
+                title: t("features.versatile.title"),
+                description: t("features.versatile.description"),
+                icon: t("features.versatile.icon"),
+                color: "purple",
+                details: [
+                    t("features.versatile.details.incremental"),
+                    t("features.versatile.details.ecosystem"),
+                    t("features.versatile.details.scalable"),
+                ],
+            },
+        ];
+
+        return (
+            <section id="features" class="features-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">{t("title")}</h2>
+                        <p class="section-description">{t("description")}</p>
+                    </div>
+
+                    <div class="features-grid">
+                        {features.map((feature, index) => (
+                            <div class={`feature-card feature-${feature.color}`} key={index}>
+                                <div class="feature-icon">{feature.icon}</div>
+                                <h3 class="feature-title">{feature.title}</h3>
+                                <p class="feature-description">{feature.description}</p>
+                                <ul class="feature-details">
+                                    {feature.details.map((detail, detailIndex) => (
+                                        <li key={detailIndex}>{detail}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+    }
+}

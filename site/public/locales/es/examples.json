@@ -1,0 +1,414 @@
+{
+    "simpleReactiveDemo": {
+        "title": "📱 Simple Reactive Demo",
+        "message": "Click the button!",
+        "count": "Count",
+        "increment": "+ Increment",
+        "reset": "🔄 Reset",
+        "hint": "💡 State changes automatically trigger re-renders!",
+        "clicked_one": "Clicked {{count}} time!",
+        "clicked_other": "Clicked {{count}} times!",
+        "resetMessage": "Reset! Click again!"
+    },
+    "reactiveCounter": {
+        "title": "🔄 Reactive Counter",
+        "subtitle": "Hello WSX Reactive!",
+        "step": "Step",
+        "stepSize": "Step Size:",
+        "theme": "Theme:",
+        "themes": {
+            "light": "Light",
+            "dark": "Dark",
+            "blue": "Blue"
+        },
+        "increment": "+{{step}}",
+        "decrement": "-{{step}}",
+        "reset": "Reset",
+        "autoIncrement": {
+            "start": "Start Auto Increment",
+            "stop": "Stop Auto Increment"
+        },
+        "placeholder": "Enter a message...",
+        "history": {
+            "title": "History (last 10):",
+            "clear": "Clear History"
+        },
+        "debugInfo": "Debug Info",
+        "readyMessage": "Ready to count! 🚀",
+        "countReached": "Count reached {{count}}!"
+    },
+    "todoList": {
+        "title": "📝 Todo List",
+        "webComponent": "(WebComponent)",
+        "lightComponent": "(LightComponent)",
+        "subtitle": "{{total}} total, {{active}} active, {{completed}} completed",
+        "placeholder": "Add a new todo...",
+        "add": "Add",
+        "filters": {
+            "all": "All ({{count}})",
+            "active": "Active ({{count}})",
+            "completed": "Completed ({{count}})"
+        },
+        "empty": {
+            "all": "No todos yet. Add one above! 🎉",
+            "active": "No active todos.",
+            "completed": "No completed todos."
+        },
+        "delete": "Delete",
+        "clearCompleted": "Clear Completed",
+        "clearAll": "Clear All",
+        "debugInfo": "Debug Info"
+    },
+    "userProfile": {
+        "title": "👤 User Profile",
+        "webComponent": "(WebComponent)",
+        "lightComponent": "(LightComponent)",
+        "subtitle": "Demonstrates @state decorator with objects",
+        "basicInfo": "Basic Information",
+        "name": "Name:",
+        "email": "Email:",
+        "age": "Age:",
+        "preferences": "Preferences",
+        "theme": "Theme:",
+        "themes": {
+            "light": "Light",
+            "dark": "Dark"
+        },
+        "language": "Language:",
+        "languages": {
+            "en": "English",
+            "zh": "中文",
+            "es": "Español",
+            "fr": "Français"
+        },
+        "notifications": "Enable Notifications",
+        "actions": {
+            "reset": "Reset to Default",
+            "updateLogin": "Update Last Login",
+            "replace": "Replace Entire Profile"
+        },
+        "currentData": "Current Profile Data"
+    },
+    "slotCard": {
+        "defaultHeader": "Default Header",
+        "defaultContent": "Default Content",
+        "defaultFooter": "Default Footer"
+    },
+    "examplesSection": {
+        "title": "Interactive Examples",
+        "description": "Explore WSXJS capabilities with these interactive examples. See how easy it is to build powerful web components.",
+        "categories": {
+            "core": "Core Features",
+            "coreFeatures": {
+                "title": "Tipos de Componentes Principales",
+                "subtitle": "Estos son los bloques fundamentales de WSXJS. Domínalos para desbloquear todo el poder del framework."
+            },
+            "componentTypes": "Component Types",
+            "advanced": "Advanced Features",
+            "integrations": "Integrations"
+        },
+        "examples": {
+            "reactiveState": {
+                "title": "🔄 Reactive State",
+                "badge": "Core",
+                "description": "Automatic re-rendering with state changes"
+            },
+            "router": {
+                "title": "🧭 Router Navigation",
+                "badge": "Router",
+                "description": "Navigate between sections using WSX Router components",
+                "home": "Home",
+                "features": "Features",
+                "ecosystem": "Ecosystem"
+            },
+            "webComponent": {
+                "title": "🌐 WebComponent Examples",
+                "badge": "@state Array & Object",
+                "description": "Complete WebComponent examples with Shadow DOM. Includes TodoList (array reactive) and UserProfile (object reactive) components. Demonstrates full @state decorator capabilities with automatic rerender.",
+                "link": "→ View WebComponent Examples"
+            },
+            "lightComponent": {
+                "title": "💡 LightComponent Examples",
+                "badge": "@state Array & Object",
+                "description": "Complete LightComponent examples without Shadow DOM. Includes TodoListLight (array reactive) and UserProfileLight (object reactive) components. Styles can be inherited from parent for easier theming.",
+                "link": "→ View LightComponent Examples"
+            },
+            "slots": {
+                "title": "🎯 Slot Examples",
+                "badge": "Shadow & Light DOM",
+                "description": "Learn how to use slots in both WebComponent (Shadow DOM) and LightComponent (Light DOM). Includes named slots, default slots, and mixed usage scenarios where components are nested.",
+                "link": "→ View Slot Examples"
+            },
+            "svg": {
+                "title": "SVG Graphics",
+                "badge": "Advanced",
+                "description": "Native SVG support with namespace handling and animations"
+            },
+            "colorPicker": {
+                "title": "Color Picker",
+                "badge": "Interactive",
+                "description": "Custom web component with color selection and state management"
+            },
+            "editorjs": {
+                "title": "📝 EditorJS Plugin Demo",
+                "badge": "Integration",
+                "description": "Build EditorJS plugins with WSX components for better developer experience",
+                "link": "→ Visit the EditorJS Demo page to try it out"
+            }
+        }
+    },
+    "featuresSection": {
+        "title": "Why Choose WSXJS?",
+        "description": "Built for modern web development with a focus on simplicity, performance, and developer experience.",
+        "features": {
+            "approachable": {
+                "title": "Approachable",
+                "description": "Builds on top of standard Web Components with intuitive JSX syntax and world-class TypeScript support. Easy to learn and use.",
+                "details": {
+                    "jsx": "JSX Syntax",
+                    "typescript": "TypeScript First",
+                    "standards": "Web Standards"
+                }
+            },
+            "performant": {
+                "title": "Performant",
+                "description": "Zero dependencies, native DOM operations, and compiler-optimized rendering system that rarely requires manual optimization.",
+                "details": {
+                    "zero": "Zero Dependencies",
+                    "native": "Native DOM",
+                    "optimized": "Optimized Rendering"
+                }
+            },
+            "versatile": {
+                "title": "Versatile",
+                "description": "A rich, incrementally adoptable ecosystem that scales from simple components to full-featured applications.",
+                "details": {
+                    "incremental": "Incremental Adoption",
+                    "ecosystem": "Rich Ecosystem",
+                    "scalable": "Scalable"
+                }
+            }
+        }
+    },
+    "quickStartSection": {
+        "title": "Quick Start",
+        "description": "Get started with WSXJS in minutes. Create your first web component with JSX syntax and TypeScript support.",
+        "installation": {
+            "title": "Installation",
+            "copy": "📋 Copy",
+            "copied": "✅ Copied!",
+            "code": "npm install @wsxjs/wsx-core\n\n# Create your first component\nimport { WebComponent } from '@wsxjs/wsx-core';\n\nclass MyButton extends WebComponent {\n    render() {\n        return <button>Hello WSX!</button>;\n    }\n}"
+        },
+        "steps": {
+            "install": {
+                "title": "Install",
+                "description": "Install WSXJS via npm"
+            },
+            "create": {
+                "title": "Create",
+                "description": "Create your first component with JSX"
+            },
+            "build": {
+                "title": "Build",
+                "description": "Build and deploy your web components"
+            }
+        },
+        "router": {
+            "title": "🚀 Router Example",
+            "description": "This page demonstrates WSX Router in action! Notice how:",
+            "points": {
+                "highlight": "Navigation links highlight the active page",
+                "url": "URL changes without page refresh",
+                "browser": "Browser back/forward buttons work properly",
+                "sections": "Each section is a separate component loaded by route"
+            },
+            "code": "<wsx-router>\n  <wsx-view route=\"/\" component=\"home-section\"></wsx-view>\n  <wsx-view route=\"/features\" component=\"features-section\"></wsx-view>\n  <wsx-view route=\"/quick-start\" component=\"quick-start-section\"></wsx-view>\n</wsx-router>"
+        }
+    },
+    "quickStartCode": {
+        "title": "Get Started in 60 Seconds",
+        "description": "Install WSXJS and create your first component in less than a minute.",
+        "codeTitle": "Installation & Example"
+    },
+    "statsSection": {
+        "downloads": "npm downloads/week",
+        "stars": "GitHub stars",
+        "runtimeSize": "Runtime size"
+    },
+    "performanceMetrics": {
+        "title": "Performance",
+        "description": "WSXJS delivers native performance with zero runtime overhead. No Virtual DOM, no framework overhead, just pure Web Components.",
+        "metrics": {
+            "runtimeSize": {
+                "value": "0 KB",
+                "label": "Runtime Size",
+                "description": "No runtime library, pure build-time transformation"
+            },
+            "nativePerformance": {
+                "value": "100%",
+                "label": "Native Performance",
+                "description": "Direct DOM manipulation, no Virtual DOM overhead"
+            },
+            "noVirtualDOM": {
+                "value": "∞",
+                "label": "No Virtual DOM",
+                "description": "Works directly with browser APIs"
+            }
+        }
+    },
+    "webComponentExamples": {
+        "title": "WebComponent Examples",
+        "description": "Explore WebComponent examples with Shadow DOM and @state decorator support. These components demonstrate reactive state management with arrays and objects.",
+        "todoList": {
+            "title": "📋 Todo List",
+            "badge": "@state Array",
+            "description": "Demonstrates @state decorator with arrays in WebComponent. Shows add, remove, update, and filter operations with automatic reactive updates. Uses Shadow DOM for style isolation."
+        },
+        "userProfile": {
+            "title": "👤 User Profile",
+            "badge": "@state Object",
+            "description": "Demonstrates @state decorator with objects in WebComponent. Shows object property updates, nested object updates, and entire object replacement with automatic reactive updates. Uses Shadow DOM for style isolation."
+        },
+        "features": {
+            "title": "WebComponent Features",
+            "items": {
+                "shadowDOM": {
+                    "label": "Shadow DOM:",
+                    "description": "Complete style isolation from parent page"
+                },
+                "stateDecorator": {
+                    "label": "@state Decorator:",
+                    "description": "Automatic reactive state management"
+                },
+                "arraySupport": {
+                    "label": "Array Support:",
+                    "description": "Full array mutation methods trigger rerender"
+                },
+                "objectSupport": {
+                    "label": "Object Support:",
+                    "description": "Object property updates and replacement trigger rerender"
+                },
+                "automaticRerender": {
+                    "label": "Automatic Rerender:",
+                    "description": "State changes automatically trigger component rerender"
+                }
+            }
+        }
+    },
+    "lightComponentExamples": {
+        "title": "LightComponent Examples",
+        "description": "Explore LightComponent examples without Shadow DOM. These components demonstrate reactive state management with arrays and objects, with styles that can be inherited from parent pages.",
+        "todoList": {
+            "title": "📋 Todo List",
+            "badge": "@state Array",
+            "description": "Demonstrates @state decorator with arrays in LightComponent. Shows add, remove, update, and filter operations with automatic reactive updates. Uses Light DOM - styles can be inherited from parent."
+        },
+        "userProfile": {
+            "title": "👤 User Profile",
+            "badge": "@state Object",
+            "description": "Demonstrates @state decorator with objects in LightComponent. Shows object property updates, nested object updates, and entire object replacement with automatic reactive updates. Uses Light DOM - styles can be inherited from parent."
+        },
+        "features": {
+            "title": "LightComponent Features",
+            "items": {
+                "lightDOM": {
+                    "label": "Light DOM:",
+                    "description": "No Shadow DOM - styles can be inherited from parent"
+                },
+                "stateDecorator": {
+                    "label": "@state Decorator:",
+                    "description": "Automatic reactive state management"
+                },
+                "arraySupport": {
+                    "label": "Array Support:",
+                    "description": "Full array mutation methods trigger rerender"
+                },
+                "objectSupport": {
+                    "label": "Object Support:",
+                    "description": "Object property updates and replacement trigger rerender"
+                },
+                "automaticRerender": {
+                    "label": "Automatic Rerender:",
+                    "description": "State changes automatically trigger component rerender"
+                },
+                "styleInheritance": {
+                    "label": "Style Inheritance:",
+                    "description": "Can use CSS from parent page for easier theming"
+                }
+            }
+        }
+    },
+    "slotExamples": {
+        "title": "Slot Examples",
+        "description": "Explore slot usage in WebComponent (Shadow DOM) and LightComponent (Light DOM), including mixed usage scenarios.",
+        "webComponent": {
+            "title": "🎯 WebComponent Slot (Shadow DOM)",
+            "badge": "Shadow DOM",
+            "description": "Demonstrates slot usage in WebComponent with Shadow DOM. Slots allow you to project content from Light DOM into Shadow DOM. Use ::slotted() CSS selector to style slotted content.",
+            "header": "WebComponent Card Header",
+            "content": "This is the main content in a WebComponent slot.",
+            "content2": "Slots work perfectly in Shadow DOM!",
+            "button": "Action Button",
+            "code": "<slot-card-web>\n  <span slot=\"header\">Header Content</span>\n  <p>Main Content</p>\n  <button slot=\"footer\">Footer Button</button>\n</slot-card-web>"
+        },
+        "lightComponent": {
+            "title": "💡 LightComponent Slot (Light DOM)",
+            "badge": "Light DOM",
+            "description": "Demonstrates slot usage in LightComponent with Light DOM. Slots work similarly, but content is in Light DOM, making it accessible to third-party libraries like Editor.js.",
+            "header": "LightComponent Card Header",
+            "content": "This is the main content in a LightComponent slot.",
+            "content2": "Slots work in Light DOM too!",
+            "button": "Action Button",
+            "code": "<slot-card-light>\n  <span slot=\"header\">Header Content</span>\n  <p>Main Content</p>\n  <button slot=\"footer\">Footer Button</button>\n</slot-card-light>"
+        },
+        "mixedWebToLight": {
+            "title": "🔀 Mixed: WebComponent → LightComponent Slot",
+            "badge": "Mixed Usage",
+            "description": "WebComponent (Shadow DOM) containing LightComponent (Light DOM) with slots. The LightComponent's slot content comes from the WebComponent's render method. This demonstrates how slots work when components are nested.",
+            "header": "LightComponent in WebComponent",
+            "content": "This LightComponent is rendered inside a WebComponent (SlotExamples).",
+            "content2": "The slot content is projected from WebComponent's Shadow DOM to LightComponent's Light DOM!",
+            "button": "Mixed Usage Button",
+            "code": "// In WebComponent (SlotExamples) render():\nreturn (\n  <div>\n    <slot-card-light>\n      <span slot=\"header\">Header</span>\n      <p>Content</p>\n      <button slot=\"footer\">Button</button>\n    </slot-card-light>\n  </div>\n);"
+        },
+        "mixedLightToWeb": {
+            "title": "🔀 Mixed: LightComponent → WebComponent Slot",
+            "badge": "Mixed Usage",
+            "description": "LightComponent (Light DOM) containing WebComponent (Shadow DOM) with slots. The WebComponent's slot content comes from the LightComponent's render method. This demonstrates how slots work across Shadow DOM boundaries.",
+            "header": "WebComponent in LightComponent",
+            "content": "This WebComponent is rendered inside a LightComponent (App).",
+            "content2": "The slot content is projected from LightComponent's Light DOM to WebComponent's Shadow DOM!",
+            "button": "Mixed Usage Button",
+            "code": "// In LightComponent (App) render():\nreturn (\n  <div>\n    <slot-card-web>\n      <span slot=\"header\">Header</span>\n      <p>Content</p>\n      <button slot=\"footer\">Button</button>\n    </slot-card-web>\n  </div>\n);"
+        },
+        "features": {
+            "title": "Slot Features",
+            "items": {
+                "namedSlots": {
+                    "label": "Named Slots:",
+                    "description": "Use slot=\"name\" to project content to specific slots"
+                },
+                "defaultSlot": {
+                    "label": "Default Slot:",
+                    "description": "Content without slot attribute goes to the default slot"
+                },
+                "shadowDOMSlots": {
+                    "label": "Shadow DOM Slots:",
+                    "description": "Use ::slotted() CSS selector to style slotted content"
+                },
+                "lightDOMSlots": {
+                    "label": "Light DOM Slots:",
+                    "description": "Slots work in Light DOM, making content accessible to third-party libraries"
+                },
+                "mixedUsage": {
+                    "label": "Mixed Usage:",
+                    "description": "You can nest WebComponent and LightComponent with slots"
+                },
+                "smartRendering": {
+                    "label": "Smart Rendering:",
+                    "description": "Our optimized connectedCallback ensures slots work correctly even when components are moved"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,47 @@
+{
+    "language": {
+        "switcher": {
+            "label": "言語",
+            "current": "現在の言語"
+        },
+        "names": {
+            "en": "English",
+            "zh": "中文",
+            "es": "Español",
+            "fr": "Français",
+            "de": "Deutsch",
+            "ja": "日本語",
+            "ko": "한국어"
+        }
+    },
+    "nav": {
+        "home": "ホーム",
+        "features": "機能",
+        "quickStart": "クイックスタート",
+        "examples": "例",
+        "web": "Web",
+        "light": "Light",
+        "slots": "スロット",
+        "editorjs": "EditorJS",
+        "ecosystem": "エコシステム"
+    },
+    "footer": {
+        "tagline": "プログレッシブ Web Components フレームワーク",
+        "resources": "リソース",
+        "community": "コミュニティ",
+        "legal": "法的",
+        "documentation": "ドキュメント",
+        "githubRepo": "GitHub リポジトリ",
+        "examples": "例",
+        "blog": "ブログ",
+        "discordServer": "Discord サーバー",
+        "twitter": "Twitter",
+        "githubDiscussions": "GitHub ディスカッション",
+        "communityBlog": "コミュニティブログ",
+        "mitLicense": "MIT ライセンス",
+        "privacyPolicy": "プライバシーポリシー",
+        "termsOfService": "利用規約",
+        "copyright": "© 2026 WSXJS。MIT ライセンスの下で公開されています。",
+        "madeWith": "WSXJS チームが ❤️ で作成"
+    }
+}

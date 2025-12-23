@@ -1,0 +1,62 @@
+{
+    "title": "Nutzungsbedingungen",
+    "lastUpdated": "Zuletzt aktualisiert: Januar 2026",
+    "sections": {
+        "acceptance": {
+            "title": "1. Annahme der Bedingungen",
+            "content": "Durch den Zugriff auf und die Nutzung von WSXJS akzeptieren und stimmen Sie zu, an die Bedingungen und Bestimmungen dieser Vereinbarung gebunden zu sein. Wenn Sie nicht zustimmen, sich an das oben Genannte zu halten, verwenden Sie diesen Dienst bitte nicht."
+        },
+        "license": {
+            "title": "2. Lizenz",
+            "content": "WSXJS wird unter der MIT-Lizenz veröffentlicht. Diese Lizenz gewährt Ihnen folgende Rechte:",
+            "items": {
+                "use": "Verwenden der Software für jeden Zweck, einschließlich kommerzieller Nutzung",
+                "modify": "Ändern der Software nach Ihren Bedürfnissen",
+                "distribute": "Verbreiten der Software",
+                "sublicense": "Unterlizenzieren und/oder Verkaufen von Kopien der Software"
+            }
+        },
+        "restrictions": {
+            "title": "3. Einschränkungen",
+            "content": "Die MIT-Lizenz erfordert, dass Sie:",
+            "items": {
+                "remove": "Den ursprünglichen Copyright-Hinweis und die Lizenz in allen Kopien enthalten",
+                "liability": "Einen Haftungsausschluss und Haftungsbeschränkung enthalten",
+                "warranty": "Die Autoren oder Copyright-Inhaber nicht für Schäden haftbar machen"
+            }
+        },
+        "contributions": {
+            "title": "4. Beiträge",
+            "content": "Durch Beiträge zu WSXJS stimmen Sie zu, dass Ihre Beiträge unter derselben MIT-Lizenz lizenziert werden. Sie erklären, dass Sie das Recht haben, diese Lizenz für Ihre Beiträge zu erteilen."
+        },
+        "disclaimer": {
+            "title": "5. Haftungsausschluss",
+            "content": "DIE SOFTWARE WIRD 'WIE BESEHEN' BEREITGESTELLT, OHNE GEWÄHRLEISTUNG JEGLICHER ART, AUSDRÜCKLICH ODER STILLSCHWEIGEND, EINSCHLIESSLICH, ABER NICHT BESCHRÄNKT AUF DIE GEWÄHRLEISTUNGEN DER MARKTGÄNGIGKEIT, EIGNUNG FÜR EINEN BESTIMMTEN ZWECK UND NICHTVERLETZUNG."
+        },
+        "limitation": {
+            "title": "6. Haftungsbeschränkung",
+            "content": "IN KEINEM FALL HAFTEN DIE AUTOREN ODER COPYRIGHT-INHABER FÜR JEGLICHE ANSPRÜCHE, SCHÄDEN ODER ANDERE HAFTUNG, OB IN EINER VERTRAGS-, DELIKTS- ODER ANDEREN KLAGE, DIE AUS, AUS ODER IN VERBINDUNG MIT DER SOFTWARE ODER DER NUTZUNG ODER ANDEREN GESCHÄFTEN IN DER SOFTWARE ENTSTEHT."
+        },
+        "indemnification": {
+            "title": "7. Freistellung",
+            "content": "Sie stimmen zu, WSXJS und seine Mitwirkenden von allen Ansprüchen, Schäden, Verlusten, Haftungen und Ausgaben freizustellen, die aus Ihrer Nutzung der Software entstehen."
+        },
+        "termination": {
+            "title": "8. Kündigung",
+            "content": "Wir behalten uns das Recht vor, den Zugang zu unseren Diensten sofort ohne Vorankündigung zu beenden oder zu sperren, wenn wir glauben, dass das Verhalten diese Nutzungsbedingungen verletzt oder anderen Benutzern, uns oder Dritten schadet."
+        },
+        "governingLaw": {
+            "title": "9. Anwendbares Recht",
+            "content": "Diese Bedingungen unterliegen den Gesetzen der Gerichtsbarkeit, in der das Projekt gepflegt wird, und werden in Übereinstimmung mit diesen ausgelegt, ohne Rücksicht auf ihre kollisionsrechtlichen Bestimmungen."
+        },
+        "changes": {
+            "title": "10. Änderungen der Bedingungen",
+            "content": "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Wir werden Benutzer über Änderungen informieren, indem wir das Datum 'Zuletzt aktualisiert' aktualisieren. Ihre fortgesetzte Nutzung von WSXJS nach solchen Änderungen stellt die Annahme der neuen Bedingungen dar."
+        },
+        "contact": {
+            "title": "11. Kontaktinformationen",
+            "content": "Wenn Sie Fragen zu diesen Nutzungsbedingungen haben, kontaktieren Sie uns:",
+            "email": "E-Mail"
+        }
+    }
+}

@@ -1,0 +1,67 @@
+{
+    "title": "슬롯 예제",
+    "description": "WebComponent (Shadow DOM) 및 LightComponent (Light DOM)에서 슬롯 사용을 탐색하세요. 혼합 사용 시나리오를 포함합니다.",
+    "webComponentSlot": {
+        "title": "🎯 WebComponent 슬롯 (Shadow DOM)",
+        "badge": "Shadow DOM",
+        "description": "Shadow DOM을 사용한 WebComponent에서 슬롯 사용을 시연합니다. 슬롯을 사용하면 Light DOM에서 Shadow DOM으로 콘텐츠를 투영할 수 있습니다. ::slotted() CSS 선택자를 사용하여 슬롯 콘텐츠를 스타일링합니다.",
+        "header": "WebComponent 카드 헤더",
+        "content1": "이것은 WebComponent 슬롯의 메인 콘텐츠입니다.",
+        "content2": "슬롯은 Shadow DOM에서 완벽하게 작동합니다!",
+        "button": "작업 버튼"
+    },
+    "lightComponentSlot": {
+        "title": "💡 LightComponent 슬롯 (Light DOM)",
+        "badge": "Light DOM",
+        "description": "Light DOM을 사용한 LightComponent에서 슬롯 사용을 시연합니다. 슬롯은 유사하게 작동하지만 콘텐츠는 Light DOM에 있어 Editor.js와 같은 타사 라이브러리에서 액세스할 수 있습니다.",
+        "header": "LightComponent 카드 헤더",
+        "content1": "이것은 LightComponent 슬롯의 메인 콘텐츠입니다.",
+        "content2": "슬롯은 Light DOM에서도 작동합니다!",
+        "button": "작업 버튼"
+    },
+    "mixedWebToLight": {
+        "title": "🔀 혼합: WebComponent → LightComponent 슬롯",
+        "badge": "혼합 사용",
+        "description": "슬롯이 있는 LightComponent (Light DOM)를 포함하는 WebComponent (Shadow DOM). LightComponent의 슬롯 콘텐츠는 WebComponent의 render 메서드에서 옵니다. 이것은 컴포넌트가 중첩될 때 슬롯이 어떻게 작동하는지 보여줍니다.",
+        "header": "WebComponent 내의 LightComponent",
+        "content1": "이 LightComponent는 WebComponent (SlotExamples) 내부에서 렌더링됩니다.",
+        "content2": "슬롯 콘텐츠는 WebComponent의 Shadow DOM에서 LightComponent의 Light DOM으로 투영됩니다!",
+        "button": "혼합 사용 버튼"
+    },
+    "mixedLightToWeb": {
+        "title": "🔀 혼합: LightComponent → WebComponent 슬롯",
+        "badge": "혼합 사용",
+        "description": "슬롯이 있는 WebComponent (Shadow DOM)를 포함하는 LightComponent (Light DOM). WebComponent의 슬롯 콘텐츠는 LightComponent의 render 메서드에서 옵니다. 이것은 슬롯이 Shadow DOM 경계를 넘어 어떻게 작동하는지 보여줍니다.",
+        "header": "LightComponent 내의 WebComponent",
+        "content1": "이 WebComponent는 LightComponent (App) 내부에서 렌더링됩니다.",
+        "content2": "슬롯 콘텐츠는 LightComponent의 Light DOM에서 WebComponent의 Shadow DOM으로 투영됩니다!",
+        "button": "혼합 사용 버튼"
+    },
+    "features": {
+        "title": "슬롯 기능",
+        "namedSlots": {
+            "label": "명명된 슬롯",
+            "description": "slot=\"name\"을 사용하여 콘텐츠를 특정 슬롯에 투영"
+        },
+        "defaultSlot": {
+            "label": "기본 슬롯",
+            "description": "slot 속성이 없는 콘텐츠는 기본 슬롯으로 이동"
+        },
+        "shadowDomSlots": {
+            "label": "Shadow DOM 슬롯",
+            "description": "::slotted() CSS 선택자를 사용하여 슬롯 콘텐츠를 스타일링"
+        },
+        "lightDomSlots": {
+            "label": "Light DOM 슬롯",
+            "description": "슬롯은 Light DOM에서 작동하여 콘텐츠를 타사 라이브러리에서 액세스할 수 있게 합니다"
+        },
+        "mixedUsage": {
+            "label": "혼합 사용",
+            "description": "슬롯이 있는 WebComponent와 LightComponent를 중첩할 수 있습니다"
+        },
+        "smartRendering": {
+            "label": "스마트 렌더링",
+            "description": "최적화된 connectedCallback은 컴포넌트가 이동되어도 슬롯이 올바르게 작동하도록 보장합니다"
+        }
+    }
+}

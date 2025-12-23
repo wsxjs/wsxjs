@@ -1,0 +1,112 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+import styles from "./QuickStartSection.css?inline";
+
+@autoRegister({ tagName: "quick-start-section" })
+@i18n("quickstart")
+export default class QuickStartSection extends WebComponent {
+    constructor() {
+        super({ styles });
+    }
+
+    render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        return (
+            <section id="quick-start" class="quick-start-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">{t("title")}</h2>
+                        <p class="section-description">{t("description")}</p>
+                    </div>
+
+                    <div class="quick-start-grid">
+                        <div class="code-example">
+                            <div class="code-header">
+                                <span class="code-title">{t("installation.title")}</span>
+                                <button class="copy-btn" onClick={this.copyCode}>
+                                    {t("installation.copy")}
+                                </button>
+                            </div>
+                            <pre class="code-block">
+                                <code>{`npm install @wsxjs/wsx-core
+
+# Create your first component
+import { WebComponent } from '@wsxjs/wsx-core';
+
+class MyButton extends WebComponent {
+    render() {
+        return <button>Hello WSX!</button>;
+    }
+}`}</code>
+                            </pre>
+                        </div>
+
+                        <div class="quick-start-steps">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>{t("steps.install.title")}</h4>
+                                    <p>{t("steps.install.description")}</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>{t("steps.create.title")}</h4>
+                                    <p>{t("steps.create.description")}</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>{t("steps.build.title")}</h4>
+                                    <p>{t("steps.build.description")}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="router-example">
+                        <h3>{t("routerExample.title")}</h3>
+                        <p>{t("routerExample.description")}</p>
+                        <ul>
+                            <li>{t("routerExample.points.highlight")}</li>
+                            <li>{t("routerExample.points.url")}</li>
+                            <li>{t("routerExample.points.browser")}</li>
+                            <li>{t("routerExample.points.components")}</li>
+                        </ul>
+                        <div class="router-code">
+                            <pre>
+                                <code>{`<wsx-router>
+  <wsx-view route="/" component="home-section"></wsx-view>
+  <wsx-view route="/features" component="features-section"></wsx-view>
+  <wsx-view route="/quick-start" component="quick-start-section"></wsx-view>
+</wsx-router>`}</code>
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    private copyCode = (): void => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        const codeBlock = this.shadowRoot?.querySelector(".code-block code");
+        if (codeBlock) {
+            navigator.clipboard.writeText(codeBlock.textContent || "");
+            const copyBtn = this.shadowRoot?.querySelector(".copy-btn");
+            if (copyBtn) {
+                copyBtn.textContent = t("installation.copied");
+                setTimeout(() => {
+                    copyBtn.textContent = t("installation.copy");
+                }, 2000);
+            }
+        }
+    };
+}

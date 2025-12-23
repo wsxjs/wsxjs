@@ -37,7 +37,7 @@ module.exports = {
                 "vite-plugin", // @wsxjs-vite-plugin
                 "eslint-plugin", // @wsxjs-eslint-plugin
                 "components", // @wsxjs-components
-                "examples", // @wsxjs-examples
+                "site", // @wsxjs-site
                 "release", // Release-related changes
                 "deps", // Dependency updates
                 "config", // Configuration changes

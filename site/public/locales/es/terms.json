@@ -1,0 +1,62 @@
+{
+    "title": "Términos de Servicio",
+    "lastUpdated": "Última actualización: Enero 2026",
+    "sections": {
+        "acceptance": {
+            "title": "1. Aceptación de Términos",
+            "content": "Al acceder y usar WSXJS, acepta y se compromete a cumplir con los términos y disposiciones de este acuerdo. Si no está de acuerdo en cumplir con lo anterior, no utilice este servicio."
+        },
+        "license": {
+            "title": "2. Licencia",
+            "content": "WSXJS se publica bajo la Licencia MIT. Esta licencia le otorga los siguientes derechos:",
+            "items": {
+                "use": "Usar el software para cualquier propósito, incluido el uso comercial",
+                "modify": "Modificar el software para satisfacer sus necesidades",
+                "distribute": "Distribuir el software",
+                "sublicense": "Sublicenciar y/o vender copias del software"
+            }
+        },
+        "restrictions": {
+            "title": "3. Restricciones",
+            "content": "La Licencia MIT requiere que:",
+            "items": {
+                "remove": "Incluya el aviso de copyright original y la licencia en todas las copias",
+                "liability": "Incluya un descargo de responsabilidad y limitación de responsabilidad",
+                "warranty": "No responsabilice a los autores o titulares de derechos de autor por ningún daño"
+            }
+        },
+        "contributions": {
+            "title": "4. Contribuciones",
+            "content": "Al contribuir a WSXJS, acepta que sus contribuciones se licenciarán bajo la misma Licencia MIT. Usted declara que tiene derecho a otorgar esta licencia para sus contribuciones."
+        },
+        "disclaimer": {
+            "title": "5. Descargo de Responsabilidad",
+            "content": "EL SOFTWARE SE PROPORCIONA 'TAL CUAL', SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A LAS GARANTÍAS DE COMERCIABILIDAD, IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN."
+        },
+        "limitation": {
+            "title": "6. Limitación de Responsabilidad",
+            "content": "EN NINGÚN CASO LOS AUTORES O TITULARES DE DERECHOS DE AUTOR SERÁN RESPONSABLES DE CUALQUIER RECLAMO, DAÑO U OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRA MANERA, QUE SURJA DE, FUERA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTROS NEGOCIOS EN EL SOFTWARE."
+        },
+        "indemnification": {
+            "title": "7. Indemnización",
+            "content": "Usted acepta indemnizar y eximir de responsabilidad a WSXJS y sus contribuyentes de cualquier reclamo, daño, pérdida, responsabilidad y gasto que surja de su uso del software."
+        },
+        "termination": {
+            "title": "8. Terminación",
+            "content": "Nos reservamos el derecho de terminar o suspender el acceso a nuestros servicios de inmediato, sin previo aviso, por conducta que creemos que viola estos Términos de Servicio o es perjudicial para otros usuarios, nosotros o terceros."
+        },
+        "governingLaw": {
+            "title": "9. Ley Aplicable",
+            "content": "Estos Términos se regirán e interpretarán de acuerdo con las leyes de la jurisdicción donde se mantiene el proyecto, sin tener en cuenta sus disposiciones de conflicto de leyes."
+        },
+        "changes": {
+            "title": "10. Cambios a los Términos",
+            "content": "Nos reservamos el derecho de modificar estos términos en cualquier momento. Notificaremos a los usuarios de cualquier cambio actualizando la fecha de 'Última actualización'. Su uso continuo de WSXJS después de tales cambios constituye la aceptación de los nuevos términos."
+        },
+        "contact": {
+            "title": "11. Información de Contacto",
+            "content": "Si tiene alguna pregunta sobre estos Términos de Servicio, contáctenos:",
+            "email": "Correo electrónico"
+        }
+    }
+}

@@ -21,7 +21,7 @@
         "format": "prettier --write \"**/*.{ts,tsx,js,jsx,wsx,json,css,md}\"",
         "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,wsx,json,css,md}\"",
         "typecheck": "turbo typecheck",
-        "dev": "pnpm --filter @wsxjs/wsx-examples dev",
+        "dev": "pnpm --filter @wsxjs/wsx-site dev",
         "debug:chrome": "node scripts/debug-chrome.js",
         "debug:wsx": "pnpm dev & pnpm debug:chrome",
         "clean": "turbo clean && rm -rf node_modules",
@@ -34,8 +34,8 @@
         "release": "node scripts/publish.mjs",
         "release:dry-run": "pnpm build && pnpm changeset:publish --dry-run",
         "version": "pnpm changeset:version",
-        "build:pages": "turbo build && pnpm --filter @wsxjs/wsx-examples build:pages",
-        "deploy:pages": "pnpm build:pages && pnpm --filter @wsxjs/wsx-examples deploy:pages"
+        "build:pages": "turbo build && pnpm --filter @wsxjs/wsx-site build:pages",
+        "deploy:pages": "pnpm build:pages && pnpm --filter @wsxjs/wsx-site deploy:pages"
     },
     "devDependencies": {
         "@changesets/cli": "^2.29.5",

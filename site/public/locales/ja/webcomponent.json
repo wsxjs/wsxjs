@@ -1,0 +1,37 @@
+{
+    "title": "WebComponent の例",
+    "description": "Shadow DOM と @state デコレータサポートを備えた WebComponent の例を探索します。これらのコンポーネントは、配列とオブジェクトを使用したリアクティブな状態管理を示します。",
+    "todoList": {
+        "title": "📋 タスクリスト",
+        "badge": "@state 配列",
+        "description": "WebComponent で配列を使用した @state デコレータを実演します。追加、削除、更新、フィルタ操作を自動リアクティブ更新で示します。スタイル分離のために Shadow DOM を使用します。"
+    },
+    "userProfile": {
+        "title": "👤 ユーザープロフィール",
+        "badge": "@state オブジェクト",
+        "description": "WebComponent でオブジェクトを使用した @state デコレータを実演します。オブジェクトプロパティの更新、ネストされたオブジェクトの更新、オブジェクト全体の置き換えを自動リアクティブ更新で示します。スタイル分離のために Shadow DOM を使用します。"
+    },
+    "features": {
+        "title": "WebComponent の機能",
+        "shadowDom": {
+            "label": "Shadow DOM",
+            "description": "親ページからの完全なスタイル分離"
+        },
+        "stateDecorator": {
+            "label": "@state デコレータ",
+            "description": "自動リアクティブ状態管理"
+        },
+        "arraySupport": {
+            "label": "配列サポート",
+            "description": "完全な配列変更メソッドが再レンダリングをトリガー"
+        },
+        "objectSupport": {
+            "label": "オブジェクトサポート",
+            "description": "オブジェクトプロパティの更新と置き換えが再レンダリングをトリガー"
+        },
+        "automaticRerender": {
+            "label": "自動再レンダリング",
+            "description": "状態の変更が自動的にコンポーネントの再レンダリングをトリガー"
+        }
+    }
+}

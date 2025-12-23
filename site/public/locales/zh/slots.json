@@ -1,0 +1,67 @@
+{
+    "title": "插槽示例",
+    "description": "探索 WebComponent (Shadow DOM) 和 LightComponent (Light DOM) 中的插槽用法，包括混合使用场景。",
+    "webComponentSlot": {
+        "title": "🎯 WebComponent 插槽 (Shadow DOM)",
+        "badge": "Shadow DOM",
+        "description": "演示 WebComponent 中使用 Shadow DOM 的插槽。插槽允许你将内容从 Light DOM 投影到 Shadow DOM。使用 ::slotted() CSS 选择器来样式化插槽内容。",
+        "header": "WebComponent 卡片标题",
+        "content1": "这是 WebComponent 插槽中的主要内容。",
+        "content2": "插槽在 Shadow DOM 中完美工作！",
+        "button": "操作按钮"
+    },
+    "lightComponentSlot": {
+        "title": "💡 LightComponent 插槽 (Light DOM)",
+        "badge": "Light DOM",
+        "description": "演示 LightComponent 中使用 Light DOM 的插槽。插槽工作方式类似，但内容在 Light DOM 中，使其可被第三方库（如 Editor.js）访问。",
+        "header": "LightComponent 卡片标题",
+        "content1": "这是 LightComponent 插槽中的主要内容。",
+        "content2": "插槽在 Light DOM 中也能工作！",
+        "button": "操作按钮"
+    },
+    "mixedWebToLight": {
+        "title": "🔀 混合：WebComponent → LightComponent 插槽",
+        "badge": "混合使用",
+        "description": "包含带插槽的 LightComponent (Light DOM) 的 WebComponent (Shadow DOM)。LightComponent 的插槽内容来自 WebComponent 的 render 方法。这演示了组件嵌套时插槽的工作方式。",
+        "header": "WebComponent 中的 LightComponent",
+        "content1": "这个 LightComponent 在 WebComponent (SlotExamples) 内部渲染。",
+        "content2": "插槽内容从 WebComponent 的 Shadow DOM 投影到 LightComponent 的 Light DOM！",
+        "button": "混合使用按钮"
+    },
+    "mixedLightToWeb": {
+        "title": "🔀 混合：LightComponent → WebComponent 插槽",
+        "badge": "混合使用",
+        "description": "包含带插槽的 WebComponent (Shadow DOM) 的 LightComponent (Light DOM)。WebComponent 的插槽内容来自 LightComponent 的 render 方法。这演示了插槽如何跨 Shadow DOM 边界工作。",
+        "header": "LightComponent 中的 WebComponent",
+        "content1": "这个 WebComponent 在 LightComponent (App) 内部渲染。",
+        "content2": "插槽内容从 LightComponent 的 Light DOM 投影到 WebComponent 的 Shadow DOM！",
+        "button": "混合使用按钮"
+    },
+    "features": {
+        "title": "插槽特性",
+        "namedSlots": {
+            "label": "命名插槽",
+            "description": "使用 slot=\"name\" 将内容投影到特定插槽"
+        },
+        "defaultSlot": {
+            "label": "默认插槽",
+            "description": "没有 slot 属性的内容会进入默认插槽"
+        },
+        "shadowDomSlots": {
+            "label": "Shadow DOM 插槽",
+            "description": "使用 ::slotted() CSS 选择器来样式化插槽内容"
+        },
+        "lightDomSlots": {
+            "label": "Light DOM 插槽",
+            "description": "插槽在 Light DOM 中工作，使内容可被第三方库访问"
+        },
+        "mixedUsage": {
+            "label": "混合使用",
+            "description": "你可以嵌套带插槽的 WebComponent 和 LightComponent"
+        },
+        "smartRendering": {
+            "label": "智能渲染",
+            "description": "我们优化的 connectedCallback 确保即使组件被移动时插槽也能正确工作"
+        }
+    }
+}

@@ -1,0 +1,38 @@
+{
+    "title": "クイックスタート",
+    "description": "数分で WSXJS を始めましょう。JSX 構文と TypeScript サポートを使用して最初の Web コンポーネントを作成します。",
+    "installation": {
+        "title": "インストール",
+        "copy": "📋 コピー",
+        "copied": "✅ コピーしました！"
+    },
+    "steps": {
+        "install": {
+            "title": "インストール",
+            "description": "npm 経由で WSXJS をインストール"
+        },
+        "create": {
+            "title": "作成",
+            "description": "JSX で最初のコンポーネントを作成"
+        },
+        "build": {
+            "title": "ビルド",
+            "description": "Web コンポーネントをビルドしてデプロイ"
+        }
+    },
+    "routerExample": {
+        "title": "🚀 ルーターの例",
+        "description": "このページは WSX Router の動作を実演しています！次の点に注目してください：",
+        "points": {
+            "highlight": "ナビゲーションリンクがアクティブなページを強調表示",
+            "url": "ページをリロードせずに URL が変更",
+            "browser": "ブラウザの戻る/進むボタンが正常に動作",
+            "components": "各セクションはルートによって読み込まれる個別のコンポーネント"
+        }
+    },
+    "codeExample": {
+        "title": "60 秒で始める",
+        "description": "WSXJS をインストールし、1 分以内に最初のコンポーネントを作成します。",
+        "titleInstallation": "インストールと例"
+    }
+}

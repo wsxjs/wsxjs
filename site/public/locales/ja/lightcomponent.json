@@ -1,0 +1,41 @@
+{
+    "title": "LightComponent の例",
+    "description": "Shadow DOM なしの LightComponent の例を探索します。これらのコンポーネントは、配列とオブジェクトを使用したリアクティブな状態管理を示し、親ページからスタイルを継承できます。",
+    "todoList": {
+        "title": "📋 タスクリスト",
+        "badge": "@state 配列",
+        "description": "LightComponent で配列を使用した @state デコレータを実演します。追加、削除、更新、フィルタ操作を自動リアクティブ更新で示します。Light DOM を使用 - スタイルは親から継承できます。"
+    },
+    "userProfile": {
+        "title": "👤 ユーザープロフィール",
+        "badge": "@state オブジェクト",
+        "description": "LightComponent でオブジェクトを使用した @state デコレータを実演します。オブジェクトプロパティの更新、ネストされたオブジェクトの更新、オブジェクト全体の置き換えを自動リアクティブ更新で示します。Light DOM を使用 - スタイルは親から継承できます。"
+    },
+    "features": {
+        "title": "LightComponent の機能",
+        "lightDom": {
+            "label": "Light DOM",
+            "description": "Shadow DOM なし - スタイルは親から継承できます"
+        },
+        "stateDecorator": {
+            "label": "@state デコレータ",
+            "description": "自動リアクティブ状態管理"
+        },
+        "arraySupport": {
+            "label": "配列サポート",
+            "description": "完全な配列変更メソッドが再レンダリングをトリガー"
+        },
+        "objectSupport": {
+            "label": "オブジェクトサポート",
+            "description": "オブジェクトプロパティの更新と置き換えが再レンダリングをトリガー"
+        },
+        "automaticRerender": {
+            "label": "自動再レンダリング",
+            "description": "状態の変更が自動的にコンポーネントの再レンダリングをトリガー"
+        },
+        "styleInheritance": {
+            "label": "スタイル継承",
+            "description": "親ページの CSS を使用してテーマ設定を簡単にできます"
+        }
+    }
+}

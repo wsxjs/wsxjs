@@ -1,0 +1,41 @@
+{
+    "title": "LightComponent Beispiele",
+    "description": "Erkunden Sie LightComponent-Beispiele ohne Shadow DOM. Diese Komponenten demonstrieren reaktives State-Management mit Arrays und Objekten, mit Styles, die von übergeordneten Seiten geerbt werden können.",
+    "todoList": {
+        "title": "📋 Aufgabenliste",
+        "badge": "@state Array",
+        "description": "Demonstriert den @state Decorator mit Arrays in LightComponent. Zeigt Add-, Remove-, Update- und Filter-Operationen mit automatischen reaktiven Updates. Verwendet Light DOM - Styles können vom Parent geerbt werden."
+    },
+    "userProfile": {
+        "title": "👤 Benutzerprofil",
+        "badge": "@state Object",
+        "description": "Demonstriert den @state Decorator mit Objekten in LightComponent. Zeigt Objekteigenschafts-Updates, verschachtelte Objekt-Updates und vollständigen Objektersatz mit automatischen reaktiven Updates. Verwendet Light DOM - Styles können vom Parent geerbt werden."
+    },
+    "features": {
+        "title": "LightComponent Funktionen",
+        "lightDom": {
+            "label": "Light DOM",
+            "description": "Kein Shadow DOM - Styles können vom Parent geerbt werden"
+        },
+        "stateDecorator": {
+            "label": "@state Decorator",
+            "description": "Automatisches reaktives State-Management"
+        },
+        "arraySupport": {
+            "label": "Array-Unterstützung",
+            "description": "Vollständige Array-Mutationsmethoden lösen Rerender aus"
+        },
+        "objectSupport": {
+            "label": "Objekt-Unterstützung",
+            "description": "Objekteigenschafts-Updates und -Ersetzungen lösen Rerender aus"
+        },
+        "automaticRerender": {
+            "label": "Automatischer Rerender",
+            "description": "State-Änderungen lösen automatisch den Komponenten-Rerender aus"
+        },
+        "styleInheritance": {
+            "label": "Style-Vererbung",
+            "description": "Kann CSS von der übergeordneten Seite für einfacheres Theming verwenden"
+        }
+    }
+}

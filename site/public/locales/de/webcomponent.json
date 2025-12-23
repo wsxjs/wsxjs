@@ -1,0 +1,37 @@
+{
+    "title": "WebComponent Beispiele",
+    "description": "Erkunden Sie WebComponent-Beispiele mit Shadow DOM und @state Decorator-Unterstützung. Diese Komponenten demonstrieren reaktives State-Management mit Arrays und Objekten.",
+    "todoList": {
+        "title": "📋 Aufgabenliste",
+        "badge": "@state Array",
+        "description": "Demonstriert den @state Decorator mit Arrays in WebComponent. Zeigt Add-, Remove-, Update- und Filter-Operationen mit automatischen reaktiven Updates. Verwendet Shadow DOM für Style-Isolation."
+    },
+    "userProfile": {
+        "title": "👤 Benutzerprofil",
+        "badge": "@state Object",
+        "description": "Demonstriert den @state Decorator mit Objekten in WebComponent. Zeigt Objekteigenschafts-Updates, verschachtelte Objekt-Updates und vollständigen Objektersatz mit automatischen reaktiven Updates. Verwendet Shadow DOM für Style-Isolation."
+    },
+    "features": {
+        "title": "WebComponent Funktionen",
+        "shadowDom": {
+            "label": "Shadow DOM",
+            "description": "Vollständige Style-Isolation von der übergeordneten Seite"
+        },
+        "stateDecorator": {
+            "label": "@state Decorator",
+            "description": "Automatisches reaktives State-Management"
+        },
+        "arraySupport": {
+            "label": "Array-Unterstützung",
+            "description": "Vollständige Array-Mutationsmethoden lösen Rerender aus"
+        },
+        "objectSupport": {
+            "label": "Objekt-Unterstützung",
+            "description": "Objekteigenschafts-Updates und -Ersetzungen lösen Rerender aus"
+        },
+        "automaticRerender": {
+            "label": "Automatischer Rerender",
+            "description": "State-Änderungen lösen automatisch den Komponenten-Rerender aus"
+        }
+    }
+}

@@ -1,0 +1,62 @@
+{
+    "title": "Conditions d'Utilisation",
+    "lastUpdated": "Dernière mise à jour : Janvier 2026",
+    "sections": {
+        "acceptance": {
+            "title": "1. Acceptation des Conditions",
+            "content": "En accédant et en utilisant WSXJS, vous acceptez et acceptez d'être lié par les termes et dispositions de cet accord. Si vous n'acceptez pas de respecter ce qui précède, veuillez ne pas utiliser ce service."
+        },
+        "license": {
+            "title": "2. Licence",
+            "content": "WSXJS est publié sous la Licence MIT. Cette licence vous accorde les droits suivants :",
+            "items": {
+                "use": "Utiliser le logiciel à toute fin, y compris un usage commercial",
+                "modify": "Modifier le logiciel selon vos besoins",
+                "distribute": "Distribuer le logiciel",
+                "sublicense": "Sous-licencier et/ou vendre des copies du logiciel"
+            }
+        },
+        "restrictions": {
+            "title": "3. Restrictions",
+            "content": "La Licence MIT exige que vous :",
+            "items": {
+                "remove": "Incluiez l'avis de copyright original et la licence dans toutes les copies",
+                "liability": "Incluiez un avertissement de garantie et une limitation de responsabilité",
+                "warranty": "Ne tenez pas les auteurs ou titulaires de droits d'auteur responsables de tout dommage"
+            }
+        },
+        "contributions": {
+            "title": "4. Contributions",
+            "content": "En contribuant à WSXJS, vous acceptez que vos contributions soient licenciées sous la même Licence MIT. Vous déclarez que vous avez le droit d'accorder cette licence pour vos contributions."
+        },
+        "disclaimer": {
+            "title": "5. Avertissement de Garantie",
+            "content": "LE LOGICIEL EST FOURNI 'TEL QUEL', SANS GARANTIE D'AUCUNE SORTE, EXPRESSE OU IMPLICITE, Y COMPRIS MAIS SANS S'Y LIMITER LES GARANTIES DE QUALITÉ MARCHANDE, D'ADÉQUATION À UN USAGE PARTICULIER ET D'ABSENCE DE CONTREFAÇON."
+        },
+        "limitation": {
+            "title": "6. Limitation de Responsabilité",
+            "content": "EN AUCUN CAS LES AUTEURS OU TITULAIRES DE DROITS D'AUTEUR NE SERONT RESPONSABLES DE TOUTE RÉCLAMATION, DOMMAGE OU AUTRE RESPONSABILITÉ, QUE CE SOIT DANS UNE ACTION EN CONTRAT, DÉLIT OU AUTRE, DÉCOULANT DE, HORS DE OU EN RELATION AVEC LE LOGICIEL OU L'UTILISATION OU D'AUTRES TRANSACTIONS DANS LE LOGICIEL."
+        },
+        "indemnification": {
+            "title": "7. Indemnisation",
+            "content": "Vous acceptez d'indemniser et de dégager de toute responsabilité WSXJS et ses contributeurs de toute réclamation, dommage, perte, responsabilité et dépense découlant de votre utilisation du logiciel."
+        },
+        "termination": {
+            "title": "8. Résiliation",
+            "content": "Nous nous réservons le droit de résilier ou de suspendre l'accès à nos services immédiatement, sans préavis, pour un comportement que nous croyons violer ces Conditions d'Utilisation ou nuire à d'autres utilisateurs, à nous ou à des tiers."
+        },
+        "governingLaw": {
+            "title": "9. Loi Applicable",
+            "content": "Ces Conditions seront régies et interprétées conformément aux lois de la juridiction où le projet est maintenu, sans égard à ses dispositions de conflit de lois."
+        },
+        "changes": {
+            "title": "10. Modifications des Conditions",
+            "content": "Nous nous réservons le droit de modifier ces conditions à tout moment. Nous informerons les utilisateurs de tout changement en mettant à jour la date de 'Dernière mise à jour'. Votre utilisation continue de WSXJS après de tels changements constitue l'acceptation des nouvelles conditions."
+        },
+        "contact": {
+            "title": "11. Informations de Contact",
+            "content": "Si vous avez des questions sur ces Conditions d'Utilisation, contactez-nous :",
+            "email": "E-mail"
+        }
+    }
+}

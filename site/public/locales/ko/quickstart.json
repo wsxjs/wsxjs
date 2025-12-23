@@ -1,0 +1,38 @@
+{
+    "title": "빠른 시작",
+    "description": "몇 분 안에 WSXJS를 시작하세요. JSX 구문과 TypeScript 지원으로 첫 번째 Web Component를 만듭니다.",
+    "installation": {
+        "title": "설치",
+        "copy": "📋 복사",
+        "copied": "✅ 복사됨!"
+    },
+    "steps": {
+        "install": {
+            "title": "설치",
+            "description": "npm을 통해 WSXJS 설치"
+        },
+        "create": {
+            "title": "생성",
+            "description": "JSX로 첫 번째 컴포넌트 생성"
+        },
+        "build": {
+            "title": "빌드",
+            "description": "Web Component 빌드 및 배포"
+        }
+    },
+    "routerExample": {
+        "title": "🚀 라우터 예제",
+        "description": "이 페이지는 WSX Router의 실제 작동을 보여줍니다! 다음을 확인하세요:",
+        "points": {
+            "highlight": "네비게이션 링크가 활성 페이지를 강조 표시",
+            "url": "페이지 새로고침 없이 URL 변경",
+            "browser": "브라우저 뒤로/앞으로 버튼이 정상 작동",
+            "components": "각 섹션은 라우트로 로드되는 별도의 컴포넌트"
+        }
+    },
+    "codeExample": {
+        "title": "60초 안에 시작하기",
+        "description": "WSXJS를 설치하고 1분 이내에 첫 번째 컴포넌트를 만듭니다.",
+        "titleInstallation": "설치 및 예제"
+    }
+}

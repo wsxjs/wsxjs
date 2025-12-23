@@ -1,0 +1,47 @@
+{
+    "language": {
+        "switcher": {
+            "label": "语言",
+            "current": "当前语言"
+        },
+        "names": {
+            "en": "English",
+            "zh": "中文",
+            "es": "Español",
+            "fr": "Français",
+            "de": "Deutsch",
+            "ja": "日本語",
+            "ko": "한국어"
+        }
+    },
+    "nav": {
+        "home": "首页",
+        "features": "特性",
+        "quickStart": "快速开始",
+        "examples": "示例",
+        "web": "Web",
+        "light": "Light",
+        "slots": "插槽",
+        "editorjs": "EditorJS",
+        "ecosystem": "生态系统"
+    },
+    "footer": {
+        "tagline": "渐进式 Web Components 框架",
+        "resources": "资源",
+        "community": "社区",
+        "legal": "法律",
+        "documentation": "文档",
+        "githubRepo": "GitHub 仓库",
+        "examples": "示例",
+        "blog": "博客",
+        "discordServer": "Discord 服务器",
+        "twitter": "Twitter",
+        "githubDiscussions": "GitHub 讨论",
+        "communityBlog": "社区博客",
+        "mitLicense": "MIT 许可证",
+        "privacyPolicy": "隐私政策",
+        "termsOfService": "服务条款",
+        "copyright": "© 2026 WSXJS。基于 MIT 许可证发布。",
+        "madeWith": "由 WSXJS 团队用 ❤️ 制作"
+    }
+}

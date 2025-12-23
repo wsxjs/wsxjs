@@ -1,0 +1,45 @@
+{
+    "hero": {
+        "badge": "🚀 Gerade Veröffentlicht",
+        "title": "WSXJS",
+        "subtitle": "JSX für Native Web Components",
+        "description": "Kein Framework, nur eine bessere Entwicklererfahrung. JSX-Syntax schreiben, native Web Components erhalten. Keine Abhängigkeiten, TypeScript-first, produktionsbereit.",
+        "getStarted": "Loslegen",
+        "tryOnline": "Online Ausprobieren",
+        "viewGitHub": "Auf GitHub Ansehen"
+    },
+    "comparison": {
+        "title": "Warum WSXJS?",
+        "description": "Vergleichen Sie WSXJS mit anderen beliebten Frameworks und sehen Sie, warum es die beste Wahl für den Aufbau nativer Web Components ist.",
+        "vsReact": {
+            "title": "vs React",
+            "badge": "Framework",
+            "items": {
+                "native": "Native Web Components (kein Virtual DOM)",
+                "zero": "Keine Laufzeit-Overhead",
+                "works": "Funktioniert mit jedem Framework",
+                "smaller": "Kleinere Bundle-Größe"
+            }
+        },
+        "vsVue": {
+            "title": "vs Vue",
+            "badge": "Framework",
+            "items": {
+                "pure": "Reine Web-Standards",
+                "noLock": "Kein Framework-Lock-in",
+                "better": "Bessere Leistung",
+                "future": "Zukunftssicher"
+            }
+        },
+        "vsPlain": {
+            "title": "vs Plain Web Components",
+            "badge": "Nativ",
+            "items": {
+                "jsx": "JSX-Syntax (vertraut)",
+                "typescript": "TypeScript-Unterstützung",
+                "dx": "Bessere Entwicklererfahrung",
+                "tooling": "Moderne Tools"
+            }
+        }
+    }
+}

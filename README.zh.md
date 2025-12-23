@@ -110,7 +110,7 @@ WSX 提供必要的工具，让 Web Components 开发现代化且愉快：
 WSX 组件的 ESLint 规则
 
 ### 开发包
-- **@wsxjs/wsx-examples** - 交互式展示应用，包含示例组件
+- **@wsxjs/wsx-site** - 官方网站和交互式展示应用，包含示例组件
 
 ## 快速开始
 
@@ -122,7 +122,7 @@ pnpm install
 pnpm build
 
 # 运行示例
-pnpm --filter @wsxjs/wsx-examples dev
+pnpm --filter @wsxjs/wsx-site dev
 
 # 运行测试
 pnpm test

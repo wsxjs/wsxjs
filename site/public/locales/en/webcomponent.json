@@ -1,0 +1,37 @@
+{
+    "title": "WebComponent Examples",
+    "description": "Explore WebComponent examples with Shadow DOM and @state decorator support. These components demonstrate reactive state management with arrays and objects.",
+    "todoList": {
+        "title": "📋 Todo List",
+        "badge": "@state Array",
+        "description": "Demonstrates @state decorator with arrays in WebComponent. Shows add, remove, update, and filter operations with automatic reactive updates. Uses Shadow DOM for style isolation."
+    },
+    "userProfile": {
+        "title": "👤 User Profile",
+        "badge": "@state Object",
+        "description": "Demonstrates @state decorator with objects in WebComponent. Shows object property updates, nested object updates, and entire object replacement with automatic reactive updates. Uses Shadow DOM for style isolation."
+    },
+    "features": {
+        "title": "WebComponent Features",
+        "shadowDom": {
+            "label": "Shadow DOM",
+            "description": "Complete style isolation from parent page"
+        },
+        "stateDecorator": {
+            "label": "@state Decorator",
+            "description": "Automatic reactive state management"
+        },
+        "arraySupport": {
+            "label": "Array Support",
+            "description": "Full array mutation methods trigger rerender"
+        },
+        "objectSupport": {
+            "label": "Object Support",
+            "description": "Object property updates and replacement trigger rerender"
+        },
+        "automaticRerender": {
+            "label": "Automatic Rerender",
+            "description": "State changes automatically trigger component rerender"
+        }
+    }
+}

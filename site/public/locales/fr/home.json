@@ -1,0 +1,45 @@
+{
+    "hero": {
+        "badge": "🚀 Tout Juste Sorti",
+        "title": "WSXJS",
+        "subtitle": "JSX pour Web Components Natifs",
+        "description": "Pas un framework, juste une meilleure expérience de développement. Écrivez la syntaxe JSX, obtenez des Web Components natifs. Zéro dépendance, TypeScript d'abord, prêt pour la production.",
+        "getStarted": "Commencer",
+        "tryOnline": "Essayer en Ligne",
+        "viewGitHub": "Voir sur GitHub"
+    },
+    "comparison": {
+        "title": "Pourquoi WSXJS ?",
+        "description": "Comparez WSXJS avec d'autres frameworks populaires et découvrez pourquoi c'est le meilleur choix pour construire des Web Components natifs.",
+        "vsReact": {
+            "title": "vs React",
+            "badge": "Framework",
+            "items": {
+                "native": "Web Components Natifs (pas de Virtual DOM)",
+                "zero": "Zéro surcoût d'exécution",
+                "works": "Fonctionne avec n'importe quel framework",
+                "smaller": "Taille de bundle plus petite"
+            }
+        },
+        "vsVue": {
+            "title": "vs Vue",
+            "badge": "Framework",
+            "items": {
+                "pure": "Standards Web Purs",
+                "noLock": "Pas de verrouillage de framework",
+                "better": "Meilleures performances",
+                "future": "Prêt pour l'avenir"
+            }
+        },
+        "vsPlain": {
+            "title": "vs Web Components Bruts",
+            "badge": "Natif",
+            "items": {
+                "jsx": "Syntaxe JSX (familière)",
+                "typescript": "Support TypeScript",
+                "dx": "Meilleure expérience de développement",
+                "tooling": "Outils modernes"
+            }
+        }
+    }
+}

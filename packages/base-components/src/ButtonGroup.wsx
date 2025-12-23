@@ -48,7 +48,10 @@ export default class ButtonGroup extends WebComponent {
         switch (name) {
             case "disabled":
                 this.disabled = newValue !== null;
-                this.updateChildrenDisabledState();
+                // Use setTimeout to ensure DOM is updated
+                setTimeout(() => {
+                    this.updateChildrenDisabledState();
+                }, 0);
                 break;
         }
     }
@@ -65,10 +68,10 @@ export default class ButtonGroup extends WebComponent {
      * 更新所有子按钮的disabled状态
      */
     private updateChildrenDisabledState(): void {
-        if (!this.disabled) return;
-
-        // 获取所有wsx-button子元素
-        const buttons = this.querySelectorAll("wsx-button");
+        // 获取所有wsx-button子元素（在 light DOM 中，通过 slot）
+        const buttons = Array.from(this.children).filter(
+            (child) => child.tagName === "WSX-BUTTON"
+        ) as Element[];
         buttons.forEach((button: Element) => {
             if (this.disabled) {
                 button.setAttribute("disabled", "");
@@ -96,8 +99,17 @@ export default class ButtonGroup extends WebComponent {
     /**
      * 公共API：获取组内的所有按钮
      */
-    public getButtons(): NodeListOf<Element> {
-        return this.querySelectorAll("wsx-button");
+    public getButtons(): Element[] {
+        // 获取所有wsx-button子元素（在 light DOM 中，通过 slot）
+        // Try querySelectorAll first, then fallback to children array
+        const buttons = this.querySelectorAll("wsx-button");
+        if (buttons.length > 0) {
+            return Array.from(buttons);
+        }
+        // Fallback to children array
+        return Array.from(this.children).filter(
+            (child) => child.tagName === "WSX-BUTTON"
+        ) as Element[];
     }
 
     /**

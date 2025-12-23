@@ -1,0 +1,37 @@
+{
+    "title": "Exemples de WebComponent",
+    "description": "Explorez des exemples de WebComponent avec support de Shadow DOM et décorateur @state. Ces composants démontrent la gestion d'état réactive avec des tableaux et des objets.",
+    "todoList": {
+        "title": "📋 Liste de Tâches",
+        "badge": "@state Array",
+        "description": "Démontre le décorateur @state avec des tableaux dans WebComponent. Montre les opérations d'ajout, de suppression, de mise à jour et de filtrage avec des mises à jour réactives automatiques. Utilise Shadow DOM pour l'isolation des styles."
+    },
+    "userProfile": {
+        "title": "👤 Profil Utilisateur",
+        "badge": "@state Object",
+        "description": "Démontre le décorateur @state avec des objets dans WebComponent. Montre les mises à jour de propriétés d'objets, les mises à jour d'objets imbriqués et le remplacement complet d'objets avec des mises à jour réactives automatiques. Utilise Shadow DOM pour l'isolation des styles."
+    },
+    "features": {
+        "title": "Caractéristiques de WebComponent",
+        "shadowDom": {
+            "label": "Shadow DOM",
+            "description": "Isolation complète des styles de la page parente"
+        },
+        "stateDecorator": {
+            "label": "Décorateur @state",
+            "description": "Gestion automatique de l'état réactif"
+        },
+        "arraySupport": {
+            "label": "Support des Tableaux",
+            "description": "Les méthodes de mutation de tableaux complètes déclenchent le rerender"
+        },
+        "objectSupport": {
+            "label": "Support des Objets",
+            "description": "Les mises à jour et remplacements de propriétés d'objets déclenchent le rerender"
+        },
+        "automaticRerender": {
+            "label": "Rerender Automatique",
+            "description": "Les changements d'état déclenchent automatiquement le rerender du composant"
+        }
+    }
+}

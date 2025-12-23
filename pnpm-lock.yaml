@@ -123,6 +123,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^8.37.0
         version: 8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
+      '@vitest/coverage-v8':
+        specifier: ^2.1.8
+        version: 2.1.9(vitest@2.1.9)
       '@wsxjs/eslint-plugin-wsx':
         specifier: workspace:*
         version: link:../eslint-plugin
@@ -144,6 +147,9 @@ importers:
       vite:
         specifier: ^5.4.19
         version: 5.4.19(@types/node@22.19.3)
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.3)(@vitest/ui@2.1.9)(happy-dom@18.0.1)(jsdom@26.1.0)
 
   packages/cli:
     dependencies:
@@ -243,35 +249,11 @@ importers:
         specifier: ^5.0.0
         version: 5.8.3
 
-  packages/examples:
+  packages/i18next:
     dependencies:
-      '@editorjs/editorjs':
-        specifier: ^2.29.1
-        version: 2.30.8
-      '@editorjs/header':
-        specifier: ^2.8.8
-        version: 2.8.8
-      '@editorjs/paragraph':
-        specifier: ^2.11.7
-        version: 2.11.7
-      '@unocss/preset-attributify':
-        specifier: ^66.3.3
-        version: 66.3.3
-      '@unocss/preset-uno':
-        specifier: ^66.3.3
-        version: 66.3.3
-      '@wsxjs/wsx-base-components':
-        specifier: workspace:*
-        version: link:../base-components
       '@wsxjs/wsx-core':
         specifier: workspace:*
         version: link:../core
-      '@wsxjs/wsx-i18next':
-        specifier: workspace:*
-        version: link:../wsx-i18next
-      '@wsxjs/wsx-router':
-        specifier: workspace:*
-        version: link:../wsx-router
       i18next:
         specifier: ^23.0.0
         version: 23.16.8
@@ -282,54 +264,66 @@ importers:
         specifier: ^2.0.0
         version: 2.7.3
     devDependencies:
-      '@testing-library/dom':
-        specifier: ^10.4.0
-        version: 10.4.0
-      '@testing-library/jest-dom':
-        specifier: ^6.6.3
-        version: 6.6.3
-      '@testing-library/user-event':
-        specifier: ^14.6.1
-        version: 14.6.1(@testing-library/dom@10.4.0)
+      '@types/jest':
+        specifier: ^29.0.0
+        version: 29.5.14
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.9
+      jest:
+        specifier: ^29.0.0
+        version: 29.7.0(@types/node@20.19.9)
+      ts-jest:
+        specifier: ^29.0.0
+        version: 29.4.0(@babel/core@7.28.0)(@jest/transform@30.0.4)(@jest/types@30.0.1)(babel-jest@30.0.4(@babel/core@7.28.0))(esbuild@0.25.6)(jest-util@30.0.2)(jest@29.7.0(@types/node@20.19.9))(typescript@5.8.3)
+      tsup:
+        specifier: ^8.0.0
+        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(typescript@5.8.3)(yaml@2.8.0)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.8.3
+
+  packages/router:
+    dependencies:
+      '@wsxjs/wsx-core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
       '@typescript-eslint/eslint-plugin':
-        specifier: ^6.0.0
-        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
+        specifier: ^8.37.0
+        version: 8.37.0(@typescript-eslint/parser@8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
       '@typescript-eslint/parser':
-        specifier: ^6.0.0
-        version: 6.21.0(eslint@8.57.1)(typescript@5.8.3)
+        specifier: ^8.37.0
+        version: 8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
+      '@vitest/coverage-v8':
+        specifier: ^2.1.8
+        version: 2.1.9(vitest@2.1.9)
       '@vitest/ui':
-        specifier: ^3.2.4
-        version: 3.2.4(vitest@3.2.4)
+        specifier: ^2.1.8
+        version: 2.1.9(vitest@2.1.9)
       '@wsxjs/eslint-plugin-wsx':
         specifier: workspace:*
         version: link:../eslint-plugin
       '@wsxjs/wsx-vite-plugin':
         specifier: workspace:*
         version: link:../vite-plugin
-      cross-env:
-        specifier: ^7.0.3
-        version: 7.0.3
       eslint:
-        specifier: ^8.0.0
-        version: 8.57.1
-      gh-pages:
-        specifier: ^6.1.1
-        version: 6.3.0
-      happy-dom:
-        specifier: ^18.0.1
-        version: 18.0.1
+        specifier: ^9.31.0
+        version: 9.31.0(jiti@2.4.2)
+      jsdom:
+        specifier: ^26.0.0
+        version: 26.1.0
       typescript:
         specifier: ^5.0.0
         version: 5.8.3
-      unocss:
-        specifier: ^66.3.3
-        version: 66.3.3(postcss@8.5.6)(vite@5.4.19(@types/node@22.19.3))(vue@3.5.17(typescript@5.8.3))
       vite:
-        specifier: ^5.0.0
+        specifier: ^5.4.19
         version: 5.4.19(@types/node@22.19.3)
       vitest:
-        specifier: ^3.2.4
-        version: 3.2.4(@types/node@22.19.3)(@vitest/ui@3.2.4)(happy-dom@18.0.1)(jsdom@26.1.0)
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.3)(@vitest/ui@2.1.9)(happy-dom@18.0.1)(jsdom@26.1.0)
+
+  packages/tsconfig: {}
 
   packages/vite-plugin:
     dependencies:
@@ -386,11 +380,35 @@ importers:
         specifier: ^5.0.0
         version: 5.4.19(@types/node@20.19.9)
 
-  packages/wsx-i18next:
+  site:
     dependencies:
+      '@editorjs/editorjs':
+        specifier: ^2.29.1
+        version: 2.30.8
+      '@editorjs/header':
+        specifier: ^2.8.8
+        version: 2.8.8
+      '@editorjs/paragraph':
+        specifier: ^2.11.7
+        version: 2.11.7
+      '@unocss/preset-attributify':
+        specifier: ^66.3.3
+        version: 66.3.3
+      '@unocss/preset-uno':
+        specifier: ^66.3.3
+        version: 66.3.3
+      '@wsxjs/wsx-base-components':
+        specifier: workspace:*
+        version: link:../packages/base-components
       '@wsxjs/wsx-core':
         specifier: workspace:*
-        version: link:../core
+        version: link:../packages/core
+      '@wsxjs/wsx-i18next':
+        specifier: workspace:*
+        version: link:../packages/i18next
+      '@wsxjs/wsx-router':
+        specifier: workspace:*
+        version: link:../packages/router
       i18next:
         specifier: ^23.0.0
         version: 23.16.8
@@ -401,66 +419,54 @@ importers:
         specifier: ^2.0.0
         version: 2.7.3
     devDependencies:
-      '@types/jest':
-        specifier: ^29.0.0
-        version: 29.5.14
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.19.9
-      jest:
-        specifier: ^29.0.0
-        version: 29.7.0(@types/node@20.19.9)
-      ts-jest:
-        specifier: ^29.0.0
-        version: 29.4.0(@babel/core@7.28.0)(@jest/transform@30.0.4)(@jest/types@30.0.1)(babel-jest@30.0.4(@babel/core@7.28.0))(esbuild@0.25.6)(jest-util@30.0.2)(jest@29.7.0(@types/node@20.19.9))(typescript@5.8.3)
-      tsup:
-        specifier: ^8.0.0
-        version: 8.5.0(jiti@2.4.2)(postcss@8.5.6)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.0.0
-        version: 5.8.3
-
-  packages/wsx-router:
-    dependencies:
-      '@wsxjs/wsx-core':
-        specifier: workspace:*
-        version: link:../core
-    devDependencies:
+      '@testing-library/dom':
+        specifier: ^10.4.0
+        version: 10.4.0
+      '@testing-library/jest-dom':
+        specifier: ^6.6.3
+        version: 6.6.3
+      '@testing-library/user-event':
+        specifier: ^14.6.1
+        version: 14.6.1(@testing-library/dom@10.4.0)
       '@typescript-eslint/eslint-plugin':
-        specifier: ^8.37.0
-        version: 8.37.0(@typescript-eslint/parser@8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
+        specifier: ^6.0.0
+        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
       '@typescript-eslint/parser':
-        specifier: ^8.37.0
-        version: 8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)
-      '@vitest/coverage-v8':
-        specifier: ^2.1.8
-        version: 2.1.9(vitest@2.1.9)
+        specifier: ^6.0.0
+        version: 6.21.0(eslint@8.57.1)(typescript@5.8.3)
       '@vitest/ui':
-        specifier: ^2.1.8
-        version: 2.1.9(vitest@2.1.9)
+        specifier: ^3.2.4
+        version: 3.2.4(vitest@3.2.4)
       '@wsxjs/eslint-plugin-wsx':
         specifier: workspace:*
-        version: link:../eslint-plugin
+        version: link:../packages/eslint-plugin
       '@wsxjs/wsx-vite-plugin':
         specifier: workspace:*
-        version: link:../vite-plugin
+        version: link:../packages/vite-plugin
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
       eslint:
-        specifier: ^9.31.0
-        version: 9.31.0(jiti@2.4.2)
-      jsdom:
-        specifier: ^26.0.0
-        version: 26.1.0
+        specifier: ^8.0.0
+        version: 8.57.1
+      gh-pages:
+        specifier: ^6.1.1
+        version: 6.3.0
+      happy-dom:
+        specifier: ^18.0.1
+        version: 18.0.1
       typescript:
         specifier: ^5.0.0
         version: 5.8.3
+      unocss:
+        specifier: ^66.3.3
+        version: 66.3.3(postcss@8.5.6)(vite@5.4.19(@types/node@22.19.3))(vue@3.5.17(typescript@5.8.3))
       vite:
-        specifier: ^5.4.19
+        specifier: ^5.0.0
         version: 5.4.19(@types/node@22.19.3)
       vitest:
-        specifier: ^2.1.8
-        version: 2.1.9(@types/node@22.19.3)(@vitest/ui@2.1.9)(happy-dom@18.0.1)(jsdom@26.1.0)
-
-  packages/wsx-tsconfig: {}
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@22.19.3)(@vitest/ui@3.2.4)(happy-dom@18.0.1)(jsdom@26.1.0)
 
 packages:
 
@@ -5652,7 +5658,7 @@ snapshots:
 
   '@babel/code-frame@7.27.1':
     dependencies:
-      '@babel/helper-validator-identifier': 7.27.1
+      '@babel/helper-validator-identifier': 7.28.5
       js-tokens: 4.0.0
       picocolors: 1.1.1
 

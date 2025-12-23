@@ -1,0 +1,36 @@
+{
+    "title": "Warum WSXJS wählen?",
+    "description": "Gebaut für moderne Webentwicklung mit Fokus auf Einfachheit, Leistung und Entwicklererfahrung.",
+    "features": {
+        "approachable": {
+            "title": "Zugänglich",
+            "description": "Baut auf Standard Web Components mit intuitiver JSX-Syntax und erstklassiger TypeScript-Unterstützung auf. Einfach zu lernen und zu verwenden.",
+            "icon": "🎯",
+            "details": {
+                "jsx": "JSX-Syntax",
+                "typescript": "TypeScript zuerst",
+                "standards": "Web-Standards"
+            }
+        },
+        "performant": {
+            "title": "Leistungsstark",
+            "description": "Keine Abhängigkeiten, native DOM-Operationen und ein compiler-optimiertes Rendering-System, das selten manuelle Optimierung erfordert.",
+            "icon": "⚡",
+            "details": {
+                "zero": "Keine Abhängigkeiten",
+                "native": "Natives DOM",
+                "optimized": "Optimiertes Rendering"
+            }
+        },
+        "versatile": {
+            "title": "Vielseitig",
+            "description": "Ein reiches, schrittweise adoptierbares Ökosystem, das von einfachen Komponenten bis zu vollständigen Anwendungen skaliert.",
+            "icon": "🔧",
+            "details": {
+                "incremental": "Schrittweise Einführung",
+                "ecosystem": "Reiches Ökosystem",
+                "scalable": "Skalierbar"
+            }
+        }
+    }
+}

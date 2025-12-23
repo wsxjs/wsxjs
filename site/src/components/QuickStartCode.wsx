@@ -1,0 +1,80 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Quick Start Code - 快速开始代码示例
+ * 使用 base-components 中的 CodeBlock 组件
+ */
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+import type { CodeBlockConfig } from "@wsxjs/wsx-base-components";
+import "@wsxjs/wsx-base-components";
+import styles from "./QuickStartCode.css?inline";
+
+// 定义 code-block 元素的类型接口
+interface CodeBlockElement extends HTMLElement {
+    updateConfig?(config: CodeBlockConfig): void;
+}
+
+@autoRegister({ tagName: "quick-start-code" })
+@i18n("quickstart")
+export class QuickStartCode extends WebComponent {
+    private segments = [
+        {
+            code: "npm install @wsxjs/wsx-core",
+            language: "bash",
+        },
+        {
+            code: `// MyComponent.wsx
+/** @jsxImportSource @wsxjs/wsx-core */
+import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
+
+@autoRegister()
+export class MyComponent extends WebComponent {
+    render() {
+        return <div>Hello WSXJS!</div>;
+    }
+}`,
+            language: "typescript",
+        },
+    ];
+
+    constructor() {
+        super({ styles });
+    }
+
+    protected onConnected() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        // 通过 updateConfig 方法设置多个代码段
+        const codeBlock = this.querySelector("code-block") as CodeBlockElement | null;
+        if (codeBlock && codeBlock.updateConfig) {
+            codeBlock.updateConfig({
+                segments: this.segments,
+                title: t("codeExample.titleInstallation"),
+                showCopy: true,
+                showTryOnline: true,
+                tryOnlineUrl: "/playground",
+            });
+        }
+    }
+
+    render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        return (
+            <section class="code-example-section">
+                <div class="container">
+                    <h2 class="section-title">{t("codeExample.title")}</h2>
+                    <p class="section-description">{t("codeExample.description")}</p>
+                    <code-block
+                        title={t("codeExample.titleInstallation")}
+                        show-copy="true"
+                        show-try-online="true"
+                        try-online-url="/playground"
+                    ></code-block>
+                </div>
+            </section>
+        );
+    }
+}

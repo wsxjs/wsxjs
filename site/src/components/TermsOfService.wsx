@@ -1,0 +1,103 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+import styles from "./TermsOfService.css?inline";
+
+@autoRegister({ tagName: "terms-of-service" })
+@i18n("terms")
+export default class TermsOfService extends WebComponent {
+    constructor() {
+        super({
+            styles,
+            styleName: "terms-of-service",
+        });
+    }
+
+    render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        return (
+            <section class="terms-of-service">
+                <div class="container">
+                    <div class="section-header">
+                        <h1 class="section-title">{t("title")}</h1>
+                        <p class="section-description">{t("lastUpdated")}</p>
+                    </div>
+
+                    <div class="content">
+                        <section class="content-section">
+                            <h2>{t("sections.acceptance.title")}</h2>
+                            <p>{t("sections.acceptance.content")}</p>
+                        </section>
+
+                        <section class="content-section">
+                            <h2>{t("sections.license.title")}</h2>
+                            <p>{t("sections.license.content")}</p>
+                            <ul>
+                                <li>{t("sections.license.items.use")}</li>
+                                <li>{t("sections.license.items.modify")}</li>
+                                <li>{t("sections.license.items.distribute")}</li>
+                                <li>{t("sections.license.items.sublicense")}</li>
+                            </ul>
+                        </section>
+
+                        <section class="content-section">
+                            <h2>{t("sections.restrictions.title")}</h2>
+                            <p>{t("sections.restrictions.content")}</p>
+                            <ul>
+                                <li>{t("sections.restrictions.items.remove")}</li>
+                                <li>{t("sections.restrictions.items.liability")}</li>
+                                <li>{t("sections.restrictions.items.warranty")}</li>
+                            </ul>
+                        </section>
+
+                        <section class="content-section">
+                            <h2>{t("sections.contributions.title")}</h2>
+                            <p>{t("sections.contributions.content")}</p>
+                        </section>
+
+                        <section class="content-section">
+                            <h2>{t("sections.disclaimer.title")}</h2>
+                            <p>{t("sections.disclaimer.content")}</p>
+                        </section>
+
+                        <section class="content-section">
+                            <h2>{t("sections.limitation.title")}</h2>
+                            <p>{t("sections.limitation.content")}</p>
+                        </section>
+
+                        <section class="content-section">
+                            <h2>{t("sections.indemnification.title")}</h2>
+                            <p>{t("sections.indemnification.content")}</p>
+                        </section>
+
+                        <section class="content-section">
+                            <h2>{t("sections.termination.title")}</h2>
+                            <p>{t("sections.termination.content")}</p>
+                        </section>
+
+                        <section class="content-section">
+                            <h2>{t("sections.governingLaw.title")}</h2>
+                            <p>{t("sections.governingLaw.content")}</p>
+                        </section>
+
+                        <section class="content-section">
+                            <h2>{t("sections.changes.title")}</h2>
+                            <p>{t("sections.changes.content")}</p>
+                        </section>
+
+                        <section class="content-section">
+                            <h2>{t("sections.contact.title")}</h2>
+                            <p>{t("sections.contact.content")}</p>
+                            <p>
+                                <strong>{t("sections.contact.email")}:</strong>{" "}
+                                <a href="mailto:legal@wsxjs.dev">legal@wsxjs.dev</a>
+                            </p>
+                        </section>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+}

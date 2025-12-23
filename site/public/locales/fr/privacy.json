@@ -1,0 +1,63 @@
+{
+    "title": "Politique de Confidentialité",
+    "lastUpdated": "Dernière mise à jour : Janvier 2026",
+    "sections": {
+        "introduction": {
+            "title": "1. Introduction",
+            "content": "WSXJS ('nous', 'notre' ou 'nos') s'engage à protéger votre vie privée. Cette Politique de Confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos informations lorsque vous utilisez notre framework open-source et notre site web."
+        },
+        "dataCollection": {
+            "title": "2. Informations que Nous Collectons",
+            "content": "En tant que projet open-source, nous collectons des informations minimales :",
+            "items": {
+                "usage": "Analyses d'utilisation (anonymisées) pour améliorer le framework",
+                "errors": "Journaux d'erreurs et rapports de crash pour corriger les bugs",
+                "device": "Informations sur l'appareil et le navigateur pour les tests de compatibilité"
+            }
+        },
+        "dataUsage": {
+            "title": "3. Comment Nous Utilisons Vos Informations",
+            "content": "Nous utilisons les informations collectées pour :",
+            "items": {
+                "improve": "Améliorer et maintenir le framework WSXJS",
+                "communicate": "Répondre à vos demandes et fournir un support",
+                "comply": "Se conformer aux obligations légales"
+            }
+        },
+        "dataSharing": {
+            "title": "4. Partage de Données",
+            "content": "Nous ne vendons, n'échangeons ni ne louons vos informations personnelles. Nous pouvons partager des données agrégées et anonymisées avec des services d'analyse tiers pour nous aider à comprendre comment le framework est utilisé."
+        },
+        "dataSecurity": {
+            "title": "5. Sécurité des Données",
+            "content": "Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos informations. Cependant, aucune méthode de transmission sur Internet n'est sécurisée à 100%."
+        },
+        "cookies": {
+            "title": "6. Cookies et Suivi",
+            "content": "Nous utilisons des cookies et des technologies de suivi similaires pour analyser le trafic du site web et améliorer l'expérience utilisateur. Vous pouvez contrôler les cookies via les paramètres de votre navigateur."
+        },
+        "userRights": {
+            "title": "7. Vos Droits",
+            "content": "Selon votre localisation, vous pouvez avoir les droits suivants :",
+            "items": {
+                "access": "Droit d'accéder à vos données personnelles",
+                "correct": "Droit de corriger les données inexactes",
+                "delete": "Droit de demander la suppression de vos données",
+                "object": "Droit de vous opposer au traitement de vos données"
+            }
+        },
+        "children": {
+            "title": "8. Confidentialité des Enfants",
+            "content": "Nos services ne sont pas destinés aux personnes de moins de 13 ans. Nous ne collectons pas sciemment d'informations personnelles d'enfants."
+        },
+        "changes": {
+            "title": "9. Modifications de Cette Politique",
+            "content": "Nous pouvons mettre à jour cette Politique de Confidentialité de temps à autre. Nous vous informerons de tout changement en publiant la nouvelle politique sur cette page et en mettant à jour la date de 'Dernière mise à jour'."
+        },
+        "contact": {
+            "title": "10. Contactez-Nous",
+            "content": "Si vous avez des questions sur cette Politique de Confidentialité, contactez-nous :",
+            "email": "E-mail"
+        }
+    }
+}

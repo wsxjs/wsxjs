@@ -1,0 +1,37 @@
+{
+    "title": "Ejemplos de WebComponent",
+    "description": "Explora ejemplos de WebComponent con soporte de Shadow DOM y decorador @state. Estos componentes demuestran la gestión de estado reactivo con arrays y objetos.",
+    "todoList": {
+        "title": "📋 Lista de Tareas",
+        "badge": "@state Array",
+        "description": "Demuestra el decorador @state con arrays en WebComponent. Muestra operaciones de agregar, eliminar, actualizar y filtrar con actualizaciones reactivas automáticas. Usa Shadow DOM para aislamiento de estilos."
+    },
+    "userProfile": {
+        "title": "👤 Perfil de Usuario",
+        "badge": "@state Object",
+        "description": "Demuestra el decorador @state con objetos en WebComponent. Muestra actualizaciones de propiedades de objetos, actualizaciones de objetos anidados y reemplazo completo de objetos con actualizaciones reactivas automáticas. Usa Shadow DOM para aislamiento de estilos."
+    },
+    "features": {
+        "title": "Características de WebComponent",
+        "shadowDom": {
+            "label": "Shadow DOM",
+            "description": "Aislamiento completo de estilos de la página padre"
+        },
+        "stateDecorator": {
+            "label": "Decorador @state",
+            "description": "Gestión automática de estado reactivo"
+        },
+        "arraySupport": {
+            "label": "Soporte de Arrays",
+            "description": "Los métodos de mutación de arrays completos activan el rerender"
+        },
+        "objectSupport": {
+            "label": "Soporte de Objetos",
+            "description": "Las actualizaciones y reemplazos de propiedades de objetos activan el rerender"
+        },
+        "automaticRerender": {
+            "label": "Rerender Automático",
+            "description": "Los cambios de estado activan automáticamente el rerender del componente"
+        }
+    }
+}

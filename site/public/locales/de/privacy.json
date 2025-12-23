@@ -1,0 +1,63 @@
+{
+    "title": "Datenschutzerklärung",
+    "lastUpdated": "Zuletzt aktualisiert: Januar 2026",
+    "sections": {
+        "introduction": {
+            "title": "1. Einführung",
+            "content": "WSXJS ('wir', 'unser' oder 'uns') verpflichtet sich, Ihre Privatsphäre zu schützen. Diese Datenschutzerklärung erläutert, wie wir Ihre Informationen sammeln, verwenden, offenlegen und schützen, wenn Sie unser Open-Source-Framework und unsere Website verwenden."
+        },
+        "dataCollection": {
+            "title": "2. Informationen, die Wir Sammeln",
+            "content": "Als Open-Source-Projekt sammeln wir minimale Informationen:",
+            "items": {
+                "usage": "Nutzungsanalysen (anonymisiert) zur Verbesserung des Frameworks",
+                "errors": "Fehlerprotokolle und Absturzberichte zur Fehlerbehebung",
+                "device": "Geräte- und Browserinformationen für Kompatibilitätstests"
+            }
+        },
+        "dataUsage": {
+            "title": "3. Wie Wir Ihre Informationen Verwenden",
+            "content": "Wir verwenden die gesammelten Informationen, um:",
+            "items": {
+                "improve": "Das WSXJS-Framework zu verbessern und zu warten",
+                "communicate": "Auf Ihre Anfragen zu antworten und Support zu bieten",
+                "comply": "Rechtlichen Verpflichtungen nachzukommen"
+            }
+        },
+        "dataSharing": {
+            "title": "4. Datenweitergabe",
+            "content": "Wir verkaufen, handeln oder vermieten Ihre persönlichen Informationen nicht. Wir können anonymisierte, aggregierte Daten mit Drittanbieter-Analysediensten teilen, um uns zu helfen zu verstehen, wie das Framework verwendet wird."
+        },
+        "dataSecurity": {
+            "title": "5. Datensicherheit",
+            "content": "Wir implementieren angemessene technische und organisatorische Maßnahmen zum Schutz Ihrer Informationen. Keine Übertragungsmethode über das Internet ist jedoch zu 100% sicher."
+        },
+        "cookies": {
+            "title": "6. Cookies und Tracking",
+            "content": "Wir verwenden Cookies und ähnliche Tracking-Technologien, um den Website-Traffic zu analysieren und die Benutzererfahrung zu verbessern. Sie können Cookies über Ihre Browsereinstellungen steuern."
+        },
+        "userRights": {
+            "title": "7. Ihre Rechte",
+            "content": "Je nach Ihrem Standort können Sie folgende Rechte haben:",
+            "items": {
+                "access": "Recht auf Zugang zu Ihren personenbezogenen Daten",
+                "correct": "Recht auf Korrektur ungenauer Daten",
+                "delete": "Recht auf Löschung Ihrer Daten",
+                "object": "Recht auf Widerspruch gegen die Verarbeitung Ihrer Daten"
+            }
+        },
+        "children": {
+            "title": "8. Datenschutz für Kinder",
+            "content": "Unsere Dienste richten sich nicht an Personen unter 13 Jahren. Wir sammeln nicht wissentlich persönliche Informationen von Kindern."
+        },
+        "changes": {
+            "title": "9. Änderungen an Dieser Richtlinie",
+            "content": "Wir können diese Datenschutzerklärung von Zeit zu Zeit aktualisieren. Wir werden Sie über Änderungen informieren, indem wir die neue Richtlinie auf dieser Seite veröffentlichen und das Datum 'Zuletzt aktualisiert' aktualisieren."
+        },
+        "contact": {
+            "title": "10. Kontaktieren Sie Uns",
+            "content": "Wenn Sie Fragen zu dieser Datenschutzerklärung haben, kontaktieren Sie uns:",
+            "email": "E-Mail"
+        }
+    }
+}
