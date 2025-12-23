@@ -142,13 +142,12 @@ export const noNullRender: WSXRuleModule = {
             // 检查类方法定义
             MethodDefinition(node: import("estree").MethodDefinition) {
                 // 检查是否继承自 WebComponent 或 LightComponent
-                // 使用 getAncestors 获取父节点链
+                // 使用 getAncestors 获取父节点链（不包括当前节点）
                 const ancestors = context.getAncestors();
-                const nodeIndex = ancestors.indexOf(node);
 
-                // 查找最近的 ClassDeclaration 父节点
+                // 查找最近的 ClassDeclaration 父节点（从后往前）
                 let classDeclaration: import("estree").ClassDeclaration | null = null;
-                for (let i = nodeIndex - 1; i >= 0; i--) {
+                for (let i = ancestors.length - 1; i >= 0; i--) {
                     const ancestor = ancestors[i];
                     if (ancestor && ancestor.type === "ClassDeclaration") {
                         classDeclaration = ancestor as import("estree").ClassDeclaration;
