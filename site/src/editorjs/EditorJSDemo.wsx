@@ -50,8 +50,153 @@ export default class EditorJSDemo extends LightComponent {
                         </button>
                     </div>
                 </div>
+                <div class="explanation-section">
+                    <h2 class="section-title">
+                        Why EditorJS Plugin Development is Hard (and How WSX Solves It)
+                    </h2>
+
+                    <div class="problem-solution-grid">
+                        <div class="problem-card">
+                            <h3 class="card-title">❌ The Traditional Way is Hard</h3>
+                            <div class="problem-list">
+                                <div class="problem-item">
+                                    <h4>1. Manual DOM Manipulation</h4>
+                                    <p>
+                                        You have to manually create, update, and manage DOM elements
+                                        using verbose JavaScript APIs like{" "}
+                                        <code>document.createElement</code>,{" "}
+                                        <code>appendChild</code>, <code>setAttribute</code>, etc.
+                                        This leads to hundreds of lines of boilerplate code.
+                                    </p>
+                                    <pre class="code-example">
+                                        {
+                                            "// Traditional way - lots of boilerplate\nconst wrapper = document.createElement('div');\nconst input = document.createElement('input');\ninput.setAttribute('type', 'text');\ninput.setAttribute('class', 'alert-input');\ninput.addEventListener('change', handleChange);\nwrapper.appendChild(input);\n// ... 50+ more lines for a simple component"
+                                        }
+                                    </pre>
+                                </div>
+
+                                <div class="problem-item">
+                                    <h4>2. No Type Safety</h4>
+                                    <p>
+                                        EditorJS tools are written in plain JavaScript with no type
+                                        checking. You'll discover bugs at runtime, not during
+                                        development. Property names, data structures, and method
+                                        signatures are all error-prone.
+                                    </p>
+                                </div>
+
+                                <div class="problem-item">
+                                    <h4>3. Complex State Management</h4>
+                                    <p>
+                                        You must manually track component state, sync it with
+                                        EditorJS data, handle updates, and ensure consistency. This
+                                        requires careful event handling and state synchronization
+                                        logic scattered throughout your code.
+                                    </p>
+                                </div>
+
+                                <div class="problem-item">
+                                    <h4>4. Style Isolation Issues</h4>
+                                    <p>
+                                        Styles leak between tools and conflict with EditorJS's own
+                                        styles. You need to use complex CSS selectors, BEM naming
+                                        conventions, or CSS-in-JS solutions to avoid conflicts.
+                                    </p>
+                                </div>
+
+                                <div class="problem-item">
+                                    <h4>5. Difficult to Maintain</h4>
+                                    <p>
+                                        Code becomes a mess of imperative DOM operations, event
+                                        listeners, and state management. Adding features or fixing
+                                        bugs requires understanding the entire codebase. Refactoring
+                                        is risky and time-consuming.
+                                    </p>
+                                </div>
+
+                                <div class="problem-item">
+                                    <h4>6. No Component Reusability</h4>
+                                    <p>
+                                        Each tool is a monolithic class with everything mixed
+                                        together. You can't easily reuse UI components, share logic,
+                                        or compose complex tools from simpler ones.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="solution-card">
+                            <h3 class="card-title">✅ How WSX Solves It</h3>
+                            <div class="solution-list">
+                                <div class="solution-item">
+                                    <h4>1. Declarative JSX Syntax</h4>
+                                    <p>
+                                        Write your UI declaratively with JSX, just like React. No
+                                        more manual DOM manipulation - WSX handles it all for you.
+                                    </p>
+                                    <pre class="code-example">
+                                        {
+                                            "// WSX way - clean and simple\nrender() {\n    return (\n        <div>\n            <wsx-alert-component\n                type={this.data.type}\n                message={this.data.message}\n                onchange={this.handleChange}\n            />\n        </div>\n    );\n}"
+                                        }
+                                    </pre>
+                                </div>
+
+                                <div class="solution-item">
+                                    <h4>2. Full TypeScript Support</h4>
+                                    <p>
+                                        Get compile-time type checking, autocomplete, and
+                                        refactoring support. Catch errors before they reach
+                                        production. Type-safe props, events, and data structures.
+                                    </p>
+                                </div>
+
+                                <div class="solution-item">
+                                    <h4>3. Built-in Reactive State</h4>
+                                    <p>
+                                        Use <code>@state</code> decorator for automatic reactivity.
+                                        State changes automatically trigger UI updates. No manual
+                                        synchronization needed.
+                                    </p>
+                                    <pre class="code-example">
+                                        {
+                                            "@state()\nprivate message = '';\n\n// Automatically updates UI when changed\nthis.message = 'New value';"
+                                        }
+                                    </pre>
+                                </div>
+
+                                <div class="solution-item">
+                                    <h4>4. Automatic Style Isolation</h4>
+                                    <p>
+                                        Web Components with Shadow DOM provide automatic style
+                                        scoping. Your styles are encapsulated and won't conflict
+                                        with EditorJS or other tools.
+                                    </p>
+                                </div>
+
+                                <div class="solution-item">
+                                    <h4>5. Clean Component Architecture</h4>
+                                    <p>
+                                        Separate concerns: UI components handle rendering, tools
+                                        handle EditorJS integration. Easy to understand, test, and
+                                        maintain. Refactoring is safe and straightforward.
+                                    </p>
+                                </div>
+
+                                <div class="solution-item">
+                                    <h4>6. Reusable Web Components</h4>
+                                    <p>
+                                        Build reusable components that work anywhere - in EditorJS,
+                                        standalone pages, or other frameworks. Compose complex tools
+                                        from simple components.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="benefits-section">
-                    <h2 class="benefits-title">🚀 Why WSX for EditorJS Plugin Development?</h2>
+                    <h2 class="benefits-title">🚀 Additional Benefits of WSX</h2>
                     <ul class="benefits-list">
                         <li>
                             <strong>Component-based Architecture:</strong> Each tool is a
@@ -86,6 +231,16 @@ export default class EditorJSDemo extends LightComponent {
                             with WSX. It features type selection, editable content, and proper data
                             persistence.
                         </p>
+                        <div class="info-card-link">
+                            <a
+                                href="https://github.com/wsxjs/wsxjs/tree/main/site/src/editorjs"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="github-link"
+                            >
+                                View Source Code on GitHub →
+                            </a>
+                        </div>
                     </div>
 
                     <div class="info-card">
@@ -95,6 +250,16 @@ export default class EditorJSDemo extends LightComponent {
                             WSX. Try selecting text and clicking the highlight button or use{" "}
                             <kbd>Cmd+Shift+H</kbd>.
                         </p>
+                        <div class="info-card-link">
+                            <a
+                                href="https://github.com/wsxjs/wsxjs/tree/main/site/src/editorjs"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="github-link"
+                            >
+                                View Source Code on GitHub →
+                            </a>
+                        </div>
                     </div>
                 </div>
 

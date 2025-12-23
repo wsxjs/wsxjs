@@ -40,11 +40,13 @@ import "./components/FeaturesSection.wsx";
 import "./components/QuickStartSection.wsx";
 import "./components/ExamplesSection.wsx";
 import "./components/EcosystemSection.wsx";
+import "./components/UseCaseSection.wsx";
 import "./components/WebComponentExamples.wsx";
 import "./components/LightComponentExamples.wsx";
 import "./components/SlotExamples.wsx";
 import "./components/PrivacyPolicy.wsx";
 import "./components/TermsOfService.wsx";
+import "./marked/MarkedBuilder.wsx";
 // Import LanguageSwitcher component
 import "./components/LanguageSwitcher.wsx";
 
@@ -75,6 +77,7 @@ export default class App extends LightComponent {
                     <wsx-view route="/features" component="features-section"></wsx-view>
                     <wsx-view route="/quick-start" component="quick-start-section"></wsx-view>
                     <wsx-view route="/examples" component="examples-section"></wsx-view>
+                    <wsx-view route="/use-cases" component="use-case-section"></wsx-view>
                     <wsx-view
                         route="/webcomponent-examples"
                         component="webcomponent-examples"
@@ -85,6 +88,7 @@ export default class App extends LightComponent {
                     ></wsx-view>
                     <wsx-view route="/slot-examples" component="slot-examples"></wsx-view>
                     <wsx-view route="/editorjs" component="editorjs-demo"></wsx-view>
+                    <wsx-view route="/marked" component="marked-builder"></wsx-view>
                     <wsx-view route="/ecosystem" component="ecosystem-section"></wsx-view>
                     <wsx-view route="/privacy" component="privacy-policy"></wsx-view>
                     <wsx-view route="/terms" component="terms-of-service"></wsx-view>
@@ -112,8 +116,8 @@ export default class App extends LightComponent {
                 { label: t("nav.features"), to: "/features" },
                 { label: t("nav.quickStart"), to: "/quick-start" },
                 { label: t("nav.examples"), to: "/examples" },
+                { label: t("nav.useCases"), to: "/use-cases" },
                 { label: t("nav.ecosystem"), to: "/ecosystem" },
-                { label: t("nav.editorjs"), to: "/editorjs" },
             ],
             actionTags: ["language-switcher", "theme-switcher"],
             autoOverflow: true,

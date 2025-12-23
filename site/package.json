@@ -30,7 +30,8 @@
         "@wsxjs/wsx-router": "workspace:*",
         "i18next": "^23.0.0",
         "i18next-browser-languagedetector": "^7.0.0",
-        "i18next-http-backend": "^2.0.0"
+        "i18next-http-backend": "^2.0.0",
+        "marked": "^17.0.1"
     },
     "devDependencies": {
         "@testing-library/dom": "^10.4.0",

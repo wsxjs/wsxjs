@@ -1,0 +1,55 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * WSX Marked List Component
+ */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+
+@autoRegister({ tagName: "wsx-marked-list" })
+export default class WsxMarkedList extends LightComponent {
+    private ordered: boolean = false;
+    private items: string[] = [];
+
+    constructor() {
+        super({
+            styleName: "wsx-marked-list",
+        });
+    }
+
+    static get observedAttributes() {
+        return ["ordered", "items"];
+    }
+
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        if (name === "ordered") {
+            this.ordered = newValue === "true";
+        } else if (name === "items") {
+            try {
+                this.items = JSON.parse(newValue || "[]");
+            } catch {
+                this.items = [];
+            }
+        }
+        this.rerender();
+    }
+
+    render() {
+        if (this.ordered) {
+            return (
+                <ol class="marked-list">
+                    {this.items.map((item, index) => (
+                        <li key={index} class="marked-list-item" innerHTML={item}></li>
+                    ))}
+                </ol>
+            );
+        } else {
+            return (
+                <ul class="marked-list">
+                    {this.items.map((item, index) => (
+                        <li key={index} class="marked-list-item" innerHTML={item}></li>
+                    ))}
+                </ul>
+            );
+        }
+    }
+}

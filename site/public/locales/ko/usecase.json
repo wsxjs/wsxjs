@@ -1,0 +1,110 @@
+{
+    "title": "실제 사용 사례",
+    "description": "WSXJS가 개발자에게 다양한 영역에서 강력한 애플리케이션을 구축할 수 있는 힘을 어떻게 제공하는지 알아보세요. 각 사용 사례는 실용적인 애플리케이션을 보여주고 WSXJS가 완벽한 선택인 이유를 설명합니다.",
+    "cases": {
+        "editorjs": {
+            "title": "EditorJS 플러그인 개발",
+            "badge": "통합",
+            "description": "WSXJS는 EditorJS 블록 및 인라인 도구를 작성하는 것의 어려움을 해결하기 위해 원래 생성되었습니다. 바닐라 JavaScript로 사용자 정의 EditorJS 플러그인을 구축하는 것은 매우 어렵고 쉽지 않습니다. WSXJS는 현대적인 JSX 구문과 Web Components로 이를 간단하게 만듭니다.",
+            "why": {
+                "title": "왜 EditorJS를 사용 사례로 선택하는가?",
+                "reason1": "이것이 WSXJS가 생성된 주요 이유입니다 - 바닐라 JavaScript로 EditorJS 블록 및 인라인 도구를 작성하는 것은 매우 어렵고 쉽지 않습니다",
+                "reason2": "WSXJS LightComponents는 EditorJS의 Light DOM 환경에서 원활하게 작동하여 복잡성을 해결합니다",
+                "reason3": "JSX 구문은 플러그인 개발을 바닐라 JavaScript보다 훨씬 더 간단하고 유지보수하기 쉽게 만듭니다",
+                "reason4": "타입 안전성과 현대적인 도구가 어려운 EditorJS 플러그인 개발 경험을 변화시킵니다"
+            },
+            "features": {
+                "title": "주요 기능",
+                "feature1": "WSX 컴포넌트로 구축된 사용자 정의 블록 도구 (Alert, Code, Table)",
+                "feature2": "WSX LightComponents를 사용한 인라인 도구 (Highlight)",
+                "feature3": "적절한 EditorJS 타입 정의를 포함한 완전한 TypeScript 지원"
+            },
+            "action": "EditorJS 데모 보기"
+        },
+        "cms": {
+            "title": "콘텐츠 관리 시스템",
+            "badge": "엔터프라이즈",
+            "description": "WSXJS 컴포넌트를 사용하여 동적 콘텐츠 편집, 미리보기 및 게시 워크플로우를 갖춘 유연한 CMS 인터페이스를 구축합니다.",
+            "why": {
+                "title": "왜 CMS를 사용 사례로 선택하는가?",
+                "reason1": "CMS는 콘텐츠 블록을 위한 재사용 가능하고 구성 가능한 컴포넌트가 필요합니다",
+                "reason2": "Web Components는 다양한 콘텐츠 유형에 완벽한 격리를 제공합니다",
+                "reason3": "LightComponents는 부모 페이지에서 쉽게 테마 지정 및 스타일링을 허용합니다"
+            },
+            "features": {
+                "title": "주요 기능",
+                "feature1": "독립적인 Web Components로서의 모듈식 콘텐츠 블록",
+                "feature2": "반응형 상태 관리가 있는 동적 콘텐츠 렌더링",
+                "feature3": "기존 CMS 프레임워크 및 API와의 쉬운 통합"
+            }
+        },
+        "formBuilder": {
+            "title": "동적 폼 빌더",
+            "badge": "인터랙티브",
+            "description": "WSXJS를 사용하여 실시간 검증, 조건부 로직 및 사용자 정의 필드 유형을 갖춘 드래그 앤 드롭 폼 빌더를 만듭니다.",
+            "why": {
+                "title": "왜 폼 빌더를 사용 사례로 선택하는가?",
+                "reason1": "폼은 일관된 동작을 가진 재사용 가능한 필드 컴포넌트가 필요합니다",
+                "reason2": "반응형 상태 관리는 복잡한 폼 검증 및 종속성을 처리합니다",
+                "reason3": "Web Components는 폼 필드가 다양한 프레임워크에서 작동하도록 보장합니다"
+            },
+            "features": {
+                "title": "주요 기능",
+                "feature1": "내장 검증이 있는 사용자 정의 폼 필드 컴포넌트",
+                "feature2": "@state 데코레이터를 사용한 반응형 폼 상태 관리",
+                "feature3": "최대 호환성을 위한 프레임워크 독립적 폼 컴포넌트"
+            }
+        },
+        "dashboard": {
+            "title": "데이터 대시보드",
+            "badge": "분석",
+            "description": "WSXJS 반응형 컴포넌트를 사용하여 차트, 위젯 및 실시간 데이터 업데이트가 있는 인터랙티브 대시보드를 구축합니다.",
+            "why": {
+                "title": "왜 대시보드를 사용 사례로 선택하는가?",
+                "reason1": "대시보드는 독립적으로 업데이트되는 여러 독립적인 위젯이 필요합니다",
+                "reason2": "반응형 상태 관리는 실시간 데이터 업데이트를 효율적으로 처리합니다",
+                "reason3": "Web Components는 대시보드 위젯에 완벽한 캡슐화를 제공합니다"
+            },
+            "features": {
+                "title": "주요 기능",
+                "feature1": "격리된 상태를 가진 독립적인 위젯 컴포넌트",
+                "feature2": "자동 재렌더링이 있는 실시간 데이터 바인딩",
+                "feature3": "쉬운 위젯 구성 및 레이아웃 관리"
+            }
+        },
+        "ecommerce": {
+            "title": "전자상거래 애플리케이션",
+            "badge": "비즈니스",
+            "description": "WSXJS 컴포넌트를 사용하여 제품 카탈로그, 쇼핑 카트 및 체크아웃 플로우가 있는 전자상거래 사이트를 구축합니다.",
+            "why": {
+                "title": "왜 전자상거래를 사용 사례로 선택하는가?",
+                "reason1": "전자상거래는 다양한 페이지에서 재사용 가능한 제품 컴포넌트가 필요합니다",
+                "reason2": "쇼핑 카트 상태 관리는 반응형 업데이트의 이점을 받습니다",
+                "reason3": "Web Components는 애플리케이션의 다양한 부분에서 일관된 UI를 보장합니다"
+            },
+            "features": {
+                "title": "주요 기능",
+                "feature1": "반응형 가격 및 재고가 있는 제품 카드 컴포넌트",
+                "feature2": "실시간 업데이트 및 계산이 있는 쇼핑 카트",
+                "feature3": "폼 검증 및 결제 통합이 있는 체크아웃 플로우"
+            }
+        },
+        "designSystem": {
+            "title": "디자인 시스템 컴포넌트",
+            "badge": "UI/UX",
+            "description": "다양한 프레임워크와 애플리케이션에서 작동하는 재사용 가능한 UI 컴포넌트를 갖춘 포괄적인 디자인 시스템을 만듭니다.",
+            "why": {
+                "title": "왜 디자인 시스템을 사용 사례로 선택하는가?",
+                "reason1": "디자인 시스템은 프레임워크 독립적 컴포넌트가 필요합니다",
+                "reason2": "Web Components는 완벽한 캡슐화와 재사용성을 제공합니다",
+                "reason3": "JSX 구문은 컴포넌트 개발을 템플릿 문자열보다 더 직관적으로 만듭니다"
+            },
+            "features": {
+                "title": "주요 기능",
+                "feature1": "일관된 API를 가진 재사용 가능한 컴포넌트 라이브러리",
+                "feature2": "CSS 사용자 정의 속성을 사용한 테마 지원",
+                "feature3": "최대 호환성을 위한 프레임워크 독립적 컴포넌트"
+            }
+        }
+    }
+}

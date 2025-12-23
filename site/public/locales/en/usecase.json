@@ -1,0 +1,129 @@
+{
+    "title": "Real-World Use Cases",
+    "description": "Discover how WSXJS empowers developers to build powerful applications across various domains. Each use case demonstrates practical applications and explains why WSXJS is the perfect choice.",
+    "cases": {
+        "editorjs": {
+            "title": "EditorJS Plugin Development",
+            "badge": "Integration",
+            "description": "WSXJS was originally created to solve the pain of writing EditorJS block and inline tools. Building custom EditorJS plugins with vanilla JavaScript is very hard and not easy. WSXJS makes it simple with modern JSX syntax and Web Components.",
+            "why": {
+                "title": "Why EditorJS as a Use Case?",
+                "reason1": "This is the main reason WSXJS was created - writing EditorJS block and inline tools with vanilla JavaScript is very hard and not easy",
+                "reason2": "WSXJS LightComponents work seamlessly in EditorJS's Light DOM environment, solving the complexity",
+                "reason3": "JSX syntax makes plugin development dramatically simpler and more maintainable than vanilla JavaScript",
+                "reason4": "Type safety and modern tooling transform the difficult EditorJS plugin development experience"
+            },
+            "features": {
+                "title": "Key Features",
+                "feature1": "Custom block tools (Alert, Code, Table) built with WSX components",
+                "feature2": "Inline tools (Highlight) using WSX LightComponents",
+                "feature3": "Full TypeScript support with proper EditorJS type definitions"
+            },
+            "action": "View EditorJS Demo"
+        },
+        "marked": {
+            "title": "Marked Custom Renderer",
+            "badge": "Markdown",
+            "description": "Override marked's default renderer with WSX components to create custom, interactive Markdown rendering. Transform plain HTML strings into rich, component-based output.",
+            "why": {
+                "title": "Why Marked Custom Renderer as a Use Case?",
+                "reason1": "Traditional marked renderers return HTML strings, making customization and interactivity difficult",
+                "reason2": "WSX components allow you to create custom renderers that return interactive Web Components instead of static HTML",
+                "reason3": "JSX syntax makes renderer methods much cleaner and more maintainable than string concatenation",
+                "reason4": "Type safety and component reusability transform the Markdown rendering experience"
+            },
+            "features": {
+                "title": "Key Features",
+                "feature1": "Custom renderer methods that return WSX components for headings, code blocks, and more",
+                "feature2": "Interactive Markdown elements with event handlers and reactive state",
+                "feature3": "Component-based rendering with automatic style isolation and reusability"
+            },
+            "action": "View Marked Builder Demo"
+        },
+        "cms": {
+            "title": "Content Management Systems",
+            "badge": "Enterprise",
+            "description": "Build flexible CMS interfaces with dynamic content editing, preview, and publishing workflows using WSXJS components.",
+            "why": {
+                "title": "Why CMS as a Use Case?",
+                "reason1": "CMS requires reusable, composable components for content blocks",
+                "reason2": "Web Components provide perfect isolation for different content types",
+                "reason3": "LightComponents allow easy theming and styling from parent pages"
+            },
+            "features": {
+                "title": "Key Features",
+                "feature1": "Modular content blocks as independent Web Components",
+                "feature2": "Dynamic content rendering with reactive state management",
+                "feature3": "Easy integration with existing CMS frameworks and APIs"
+            }
+        },
+        "formBuilder": {
+            "title": "Dynamic Form Builders",
+            "badge": "Interactive",
+            "description": "Create drag-and-drop form builders with real-time validation, conditional logic, and custom field types using WSXJS.",
+            "why": {
+                "title": "Why Form Builder as a Use Case?",
+                "reason1": "Forms need reusable field components with consistent behavior",
+                "reason2": "Reactive state management handles complex form validation and dependencies",
+                "reason3": "Web Components ensure form fields work across different frameworks"
+            },
+            "features": {
+                "title": "Key Features",
+                "feature1": "Custom form field components with built-in validation",
+                "feature2": "Reactive form state management with @state decorator",
+                "feature3": "Framework-agnostic form components for maximum compatibility"
+            }
+        },
+        "dashboard": {
+            "title": "Data Dashboards",
+            "badge": "Analytics",
+            "description": "Build interactive dashboards with charts, widgets, and real-time data updates using WSXJS reactive components.",
+            "why": {
+                "title": "Why Dashboard as a Use Case?",
+                "reason1": "Dashboards require multiple independent widgets that update independently",
+                "reason2": "Reactive state management handles real-time data updates efficiently",
+                "reason3": "Web Components provide perfect encapsulation for dashboard widgets"
+            },
+            "features": {
+                "title": "Key Features",
+                "feature1": "Independent widget components with isolated state",
+                "feature2": "Real-time data binding with automatic re-rendering",
+                "feature3": "Easy widget composition and layout management"
+            }
+        },
+        "ecommerce": {
+            "title": "E-commerce Applications",
+            "badge": "Business",
+            "description": "Build e-commerce sites with product catalogs, shopping carts, and checkout flows using WSXJS components.",
+            "why": {
+                "title": "Why E-commerce as a Use Case?",
+                "reason1": "E-commerce needs reusable product components across different pages",
+                "reason2": "Shopping cart state management benefits from reactive updates",
+                "reason3": "Web Components ensure consistent UI across different parts of the application"
+            },
+            "features": {
+                "title": "Key Features",
+                "feature1": "Product card components with reactive pricing and inventory",
+                "feature2": "Shopping cart with real-time updates and calculations",
+                "feature3": "Checkout flow with form validation and payment integration"
+            }
+        },
+        "designSystem": {
+            "title": "Design System Components",
+            "badge": "UI/UX",
+            "description": "Create comprehensive design systems with reusable UI components that work across different frameworks and applications.",
+            "why": {
+                "title": "Why Design System as a Use Case?",
+                "reason1": "Design systems need framework-agnostic components",
+                "reason2": "Web Components provide perfect encapsulation and reusability",
+                "reason3": "JSX syntax makes component development more intuitive than template strings"
+            },
+            "features": {
+                "title": "Key Features",
+                "feature1": "Reusable component library with consistent API",
+                "feature2": "Theme support with CSS custom properties",
+                "feature3": "Framework-agnostic components for maximum compatibility"
+            }
+        }
+    }
+}

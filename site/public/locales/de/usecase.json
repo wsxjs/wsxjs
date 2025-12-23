@@ -1,0 +1,110 @@
+{
+    "title": "Echte Anwendungsfälle",
+    "description": "Entdecken Sie, wie WSXJS Entwicklern ermöglicht, leistungsstarke Anwendungen in verschiedenen Bereichen zu erstellen. Jeder Anwendungsfall demonstriert praktische Anwendungen und erklärt, warum WSXJS die perfekte Wahl ist.",
+    "cases": {
+        "editorjs": {
+            "title": "EditorJS Plugin-Entwicklung",
+            "badge": "Integration",
+            "description": "WSXJS wurde ursprünglich erstellt, um die Schwierigkeit beim Schreiben von EditorJS Block- und Inline-Tools zu lösen. Das Erstellen benutzerdefinierter EditorJS-Plugins mit Vanilla JavaScript ist sehr schwierig und nicht einfach. WSXJS macht es einfach mit moderner JSX-Syntax und Web Components.",
+            "why": {
+                "title": "Warum EditorJS als Anwendungsfall?",
+                "reason1": "Dies ist der Hauptgrund, warum WSXJS erstellt wurde - das Schreiben von EditorJS Block- und Inline-Tools mit Vanilla JavaScript ist sehr schwierig und nicht einfach",
+                "reason2": "WSXJS LightComponents funktionieren nahtlos in EditorJS's Light DOM-Umgebung und lösen die Komplexität",
+                "reason3": "JSX-Syntax macht die Plugin-Entwicklung dramatisch einfacher und wartbarer als Vanilla JavaScript",
+                "reason4": "Typsicherheit und moderne Tools transformieren die schwierige EditorJS Plugin-Entwicklungserfahrung"
+            },
+            "features": {
+                "title": "Hauptmerkmale",
+                "feature1": "Benutzerdefinierte Block-Tools (Alert, Code, Table) mit WSX-Komponenten erstellt",
+                "feature2": "Inline-Tools (Highlight) mit WSX LightComponents",
+                "feature3": "Vollständige TypeScript-Unterstützung mit angemessenen EditorJS-Typdefinitionen"
+            },
+            "action": "EditorJS Demo ansehen"
+        },
+        "cms": {
+            "title": "Content-Management-Systeme",
+            "badge": "Unternehmen",
+            "description": "Erstellen Sie flexible CMS-Oberflächen mit dynamischer Inhaltsbearbeitung, Vorschau und Veröffentlichungs-Workflows mit WSXJS-Komponenten.",
+            "why": {
+                "title": "Warum CMS als Anwendungsfall?",
+                "reason1": "CMS erfordert wiederverwendbare, kombinierbare Komponenten für Inhaltsblöcke",
+                "reason2": "Web Components bieten perfekte Isolation für verschiedene Inhaltstypen",
+                "reason3": "LightComponents ermöglichen einfache Thematisierung und Styling von übergeordneten Seiten"
+            },
+            "features": {
+                "title": "Hauptmerkmale",
+                "feature1": "Modulare Inhaltsblöcke als unabhängige Web Components",
+                "feature2": "Dynamisches Content-Rendering mit reaktiver Zustandsverwaltung",
+                "feature3": "Einfache Integration mit bestehenden CMS-Frameworks und APIs"
+            }
+        },
+        "formBuilder": {
+            "title": "Dynamische Formular-Builder",
+            "badge": "Interaktiv",
+            "description": "Erstellen Sie Drag-and-Drop-Formular-Builder mit Echtzeitvalidierung, bedingter Logik und benutzerdefinierten Feldtypen mit WSXJS.",
+            "why": {
+                "title": "Warum Formular-Builder als Anwendungsfall?",
+                "reason1": "Formulare benötigen wiederverwendbare Feldkomponenten mit konsistentem Verhalten",
+                "reason2": "Reaktive Zustandsverwaltung behandelt komplexe Formularvalidierung und Abhängigkeiten",
+                "reason3": "Web Components stellen sicher, dass Formularfelder in verschiedenen Frameworks funktionieren"
+            },
+            "features": {
+                "title": "Hauptmerkmale",
+                "feature1": "Benutzerdefinierte Formularfeldkomponenten mit eingebauter Validierung",
+                "feature2": "Reaktive Formularzustandsverwaltung mit @state-Dekorator",
+                "feature3": "Framework-agnostische Formularkomponenten für maximale Kompatibilität"
+            }
+        },
+        "dashboard": {
+            "title": "Daten-Dashboards",
+            "badge": "Analytik",
+            "description": "Erstellen Sie interaktive Dashboards mit Diagrammen, Widgets und Echtzeitdaten-Updates mit WSXJS-Reaktionskomponenten.",
+            "why": {
+                "title": "Warum Dashboard als Anwendungsfall?",
+                "reason1": "Dashboards erfordern mehrere unabhängige Widgets, die unabhängig aktualisiert werden",
+                "reason2": "Reaktive Zustandsverwaltung behandelt Echtzeitdaten-Updates effizient",
+                "reason3": "Web Components bieten perfekte Kapselung für Dashboard-Widgets"
+            },
+            "features": {
+                "title": "Hauptmerkmale",
+                "feature1": "Unabhängige Widget-Komponenten mit isoliertem Zustand",
+                "feature2": "Echtzeitdatenbindung mit automatischem Re-Rendering",
+                "feature3": "Einfache Widget-Komposition und Layout-Verwaltung"
+            }
+        },
+        "ecommerce": {
+            "title": "E-Commerce-Anwendungen",
+            "badge": "Business",
+            "description": "Erstellen Sie E-Commerce-Sites mit Produktkatalogen, Warenkörben und Checkout-Flows mit WSXJS-Komponenten.",
+            "why": {
+                "title": "Warum E-Commerce als Anwendungsfall?",
+                "reason1": "E-Commerce benötigt wiederverwendbare Produktkomponenten auf verschiedenen Seiten",
+                "reason2": "Warenkorb-Zustandsverwaltung profitiert von reaktiven Updates",
+                "reason3": "Web Components stellen konsistente UI in verschiedenen Teilen der Anwendung sicher"
+            },
+            "features": {
+                "title": "Hauptmerkmale",
+                "feature1": "Produktkarten-Komponenten mit reaktiven Preisen und Inventar",
+                "feature2": "Warenkorb mit Echtzeit-Updates und Berechnungen",
+                "feature3": "Checkout-Flow mit Formularvalidierung und Zahlungsintegration"
+            }
+        },
+        "designSystem": {
+            "title": "Design-System-Komponenten",
+            "badge": "UI/UX",
+            "description": "Erstellen Sie umfassende Design-Systeme mit wiederverwendbaren UI-Komponenten, die in verschiedenen Frameworks und Anwendungen funktionieren.",
+            "why": {
+                "title": "Warum Design-System als Anwendungsfall?",
+                "reason1": "Design-Systeme benötigen Framework-agnostische Komponenten",
+                "reason2": "Web Components bieten perfekte Kapselung und Wiederverwendbarkeit",
+                "reason3": "JSX-Syntax macht die Komponentenentwicklung intuitiver als Template-Strings"
+            },
+            "features": {
+                "title": "Hauptmerkmale",
+                "feature1": "Wiederverwendbare Komponentenbibliothek mit konsistenter API",
+                "feature2": "Theme-Unterstützung mit CSS-Custom-Properties",
+                "feature3": "Framework-agnostische Komponenten für maximale Kompatibilität"
+            }
+        }
+    }
+}

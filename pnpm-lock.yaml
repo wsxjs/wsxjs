@@ -418,6 +418,9 @@ importers:
       i18next-http-backend:
         specifier: ^2.0.0
         version: 2.7.3
+      marked:
+        specifier: ^17.0.1
+        version: 17.0.1
     devDependencies:
       '@testing-library/dom':
         specifier: ^10.4.0
@@ -3984,6 +3987,11 @@ packages:
   marked@15.0.12:
     resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==}
     engines: {node: '>= 18'}
+    hasBin: true
+
+  marked@17.0.1:
+    resolution: {integrity: sha512-boeBdiS0ghpWcSwoNm/jJBwdpFaMnZWRzjA6SkUMYb40SVaN1x7mmfGKp0jvexGcx+7y2La5zRZsYFZI6Qpypg==}
+    engines: {node: '>= 20'}
     hasBin: true
 
   math-intrinsics@1.1.0:
@@ -10081,6 +10089,8 @@ snapshots:
       supports-hyperlinks: 3.2.0
 
   marked@15.0.12: {}
+
+  marked@17.0.1: {}
 
   math-intrinsics@1.1.0: {}
 

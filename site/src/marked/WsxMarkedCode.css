@@ -1,0 +1,33 @@
+/* WSX Marked Code Component Styles */
+wsx-marked-code {
+    display: block;
+    margin: 1rem 0;
+}
+
+wsx-marked-code pre {
+    background: var(--bg-secondary, #f5f5f5);
+    border: 1px solid var(--border-color, #e0e0e0);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: "Courier New", monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+wsx-marked-code code {
+    background: transparent;
+    padding: 0;
+    border: none;
+    font-family: inherit;
+}
+
+wsx-marked-code .language-label {
+    display: inline-block;
+    background: var(--primary-red, #dc2626);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: -1px;
+}

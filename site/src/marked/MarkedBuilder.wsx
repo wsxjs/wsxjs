@@ -1,0 +1,317 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Marked Builder Demo - Custom Renderer with WSX
+ *
+ * This demo shows how to use marked with custom renderers
+ * to override default rendering with WSX components
+ */
+
+import { LightComponent, autoRegister, createLogger, state } from "@wsxjs/wsx-core";
+import styles from "./MarkedBuilder.css?inline";
+import "./WsxMarkedRendererPattern1.wsx";
+import "./WsxMarkedRendererPattern2.wsx";
+import "./WsxMarkedHeading.wsx";
+import "./WsxMarkedCode.wsx";
+import "./WsxMarkedBlockquote.wsx";
+
+const logger = createLogger("MarkedBuilder");
+
+// 示例 Markdown 内容
+const SAMPLE_MARKDOWN = `# Welcome to Marked + WSX
+
+This is a **demonstration** of how to use \`marked\` with custom WSX renderers.
+
+## Features
+
+- Custom heading rendering with WSX components
+- Enhanced code blocks with syntax highlighting
+- Custom blockquotes with styled components
+- Interactive lists with WSX components
+
+### Code Example
+
+\`\`\`javascript
+// This is a code block
+function greet(name) {
+    return \`Hello, \${name}!\`;
+}
+\`\`\`
+
+> This is a blockquote demonstrating custom rendering
+
+### Lists
+
+1. First item
+2. Second item
+3. Third item
+
+- Unordered item
+- Another item
+
+### Links and Images
+
+Check out [WSXJS](https://wsxjs.dev) for more information.
+
+---
+
+**Bold text** and *italic text* are also supported.`;
+
+@autoRegister({ tagName: "marked-builder" })
+export default class MarkedBuilder extends LightComponent {
+    private markdownInput: string = SAMPLE_MARKDOWN;
+    @state private pattern: "pattern1" | "pattern2" = "pattern1";
+    private rendererContainer?: HTMLElement;
+    private wsxRenderer?: HTMLElement;
+
+    constructor() {
+        super({
+            styles,
+            styleName: "marked-builder",
+            lightDOM: true,
+        });
+        logger.info("MarkedBuilder initialized");
+    }
+
+    render() {
+        return (
+            <div class="marked-builder-container">
+                <h1 class="demo-title">Marked + WSX Custom Renderer Demo</h1>
+                <p class="demo-description">
+                    This demo shows how to override marked's default renderer with WSX components to
+                    create custom, interactive Markdown rendering.
+                </p>
+
+                <div class="demo-grid">
+                    {/* Markdown Input Section */}
+                    <div class="input-section">
+                        <h2 class="section-title">Markdown Input</h2>
+                        <textarea
+                            class="markdown-input"
+                            value={this.markdownInput}
+                            onInput={(e: Event) => {
+                                const target = e.target as HTMLTextAreaElement;
+                                this.markdownInput = target.value;
+                                this.renderMarkdown();
+                            }}
+                            placeholder="Enter your Markdown here..."
+                        />
+                        <div class="input-actions">
+                            <button onClick={this.loadSample} class="btn btn-secondary">
+                                Load Sample
+                            </button>
+                            <button onClick={this.clearInput} class="btn btn-secondary">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Rendered Output Section */}
+                    <div class="output-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h2 class="section-title">Rendered Output</h2>
+                            <div class="pattern-switcher">
+                                <button
+                                    onClick={() => {
+                                        this.pattern = "pattern1";
+                                        this.renderMarkdown();
+                                    }}
+                                    class={`btn ${this.pattern === "pattern1" ? "btn-active" : "btn-secondary"}`}
+                                >
+                                    Pattern 1
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        this.pattern = "pattern2";
+                                        this.renderMarkdown();
+                                    }}
+                                    class={`btn ${this.pattern === "pattern2" ? "btn-active" : "btn-secondary"}`}
+                                >
+                                    Pattern 2
+                                </button>
+                            </div>
+                        </div>
+                        <div class="pattern-info">
+                            {this.pattern === "pattern1" ? (
+                                <p class="pattern-description">
+                                    <strong>Pattern 1:</strong> Using{" "}
+                                    <code>marked.use({`{ renderer }`})</code> - Renderer returns
+                                    HTML strings with WSX custom element tags
+                                </p>
+                            ) : (
+                                <p class="pattern-description">
+                                    <strong>Pattern 2:</strong> Using <code>marked.lexer()</code> +
+                                    Manual WSX JSX rendering - Returns actual JSX elements
+                                </p>
+                            )}
+                        </div>
+                        <div
+                            ref={(el: HTMLElement) => {
+                                this.rendererContainer = el;
+                            }}
+                            class="renderer-output"
+                        />
+                    </div>
+                </div>
+
+                {/* Explanation Section */}
+                <div class="explanation-section">
+                    <h2 class="section-title">How It Works</h2>
+
+                    <div class="explanation-grid">
+                        <div class="explanation-card">
+                            <h3 class="card-title">Pattern 1: marked.use({`{ renderer }`})</h3>
+                            <p>
+                                Create a custom renderer object that returns HTML strings containing
+                                WSX custom element tags. Since WSX components are registered as
+                                custom elements, they work when inserted as HTML.
+                            </p>
+                            <pre class="code-example">
+                                <code>{`const renderer = {
+  heading(token) {
+    return \`<wsx-marked-heading level="\${token.depth}" text="..."></wsx-marked-heading>\`;
+  }
+};
+
+marked.use({ renderer });
+const html = marked.parse(markdown);
+element.innerHTML = html; // Browser auto-instantiates WSX components`}</code>
+                            </pre>
+                            <p>
+                                <strong>Pros:</strong> Uses marked's built-in system, simple
+                            </p>
+                            <p>
+                                <strong>Cons:</strong> Returns HTML strings, not JSX elements
+                            </p>
+                        </div>
+
+                        <div class="explanation-card">
+                            <h3 class="card-title">Pattern 2: marked.lexer() + WSX JSX</h3>
+                            <p>
+                                Use marked.lexer() to get tokens, then manually convert them to WSX
+                                JSX elements. This allows returning actual JSX elements instead of
+                                HTML strings.
+                            </p>
+                            <pre class="code-example">
+                                <code>{`const tokens = marked.lexer(markdown);
+
+render() {
+  return (
+    <div>
+      {tokens.map(token => this.renderToken(token))}
+    </div>
+  );
+}
+
+renderToken(token) {
+  return <wsx-marked-heading level={token.depth} text={token.text} />;
+}`}</code>
+                            </pre>
+                            <p>
+                                <strong>Pros:</strong> Returns actual JSX elements, fully type-safe
+                            </p>
+                            <p>
+                                <strong>Cons:</strong> More manual work, need to handle all token
+                                types
+                            </p>
+                        </div>
+
+                        <div class="explanation-card">
+                            <h3 class="card-title">WSX Components</h3>
+                            <p>
+                                Both patterns use the same WSX Web Components. The components are
+                                registered as custom elements, so they work in both HTML strings
+                                (Pattern 1) and JSX (Pattern 2).
+                            </p>
+                            <pre class="code-example">
+                                <code>{`@autoRegister({ tagName: 'wsx-marked-heading' })
+class WsxMarkedHeading extends LightComponent {
+  render() {
+    return <h{this.level}>{this.text}</h{this.level}>;
+  }
+}`}</code>
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Benefits Section */}
+                <div class="benefits-section">
+                    <h2 class="benefits-title">Benefits of WSX Custom Renderers</h2>
+                    <ul class="benefits-list">
+                        <li>
+                            <strong>Type Safety:</strong> Full TypeScript support for renderer
+                            methods
+                        </li>
+                        <li>
+                            <strong>Component Reusability:</strong> Reuse WSX components across
+                            different renderer methods
+                        </li>
+                        <li>
+                            <strong>Interactivity:</strong> Add event handlers and reactive state to
+                            rendered elements
+                        </li>
+                        <li>
+                            <strong>Style Isolation:</strong> Web Components provide automatic style
+                            scoping
+                        </li>
+                        <li>
+                            <strong>Maintainability:</strong> Clean, declarative JSX syntax instead
+                            of string concatenation
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        );
+    }
+
+    protected onConnected() {
+        this.renderMarkdown();
+    }
+
+    private renderMarkdown() {
+        if (!this.rendererContainer) return;
+
+        try {
+            // 清空容器
+            this.rendererContainer.innerHTML = "";
+
+            if (this.pattern === "pattern1") {
+                // Pattern 1: 使用 marked.use({ renderer })
+                this.wsxRenderer = (
+                    <wsx-marked-renderer-pattern1 markdown={this.markdownInput} />
+                ) as HTMLElement;
+            } else {
+                // Pattern 2: 使用 marked.lexer() + WSX JSX
+                this.wsxRenderer = (
+                    <wsx-marked-renderer-pattern2 markdown={this.markdownInput} />
+                ) as HTMLElement;
+            }
+
+            this.rendererContainer.appendChild(this.wsxRenderer);
+            logger.info(`Markdown rendered using ${this.pattern}`);
+        } catch (error) {
+            logger.error("Failed to render markdown", error);
+            if (this.rendererContainer) {
+                this.rendererContainer.innerHTML = `<div class="error">Error rendering markdown: ${error}</div>`;
+            }
+        }
+    }
+
+    private loadSample = () => {
+        this.markdownInput = SAMPLE_MARKDOWN;
+        const textarea = this.querySelector(".markdown-input") as HTMLTextAreaElement;
+        if (textarea) {
+            textarea.value = SAMPLE_MARKDOWN;
+        }
+        this.renderMarkdown();
+    };
+
+    private clearInput = () => {
+        this.markdownInput = "";
+        const textarea = this.querySelector(".markdown-input") as HTMLTextAreaElement;
+        if (textarea) {
+            textarea.value = "";
+        }
+        this.renderMarkdown();
+    };
+}

@@ -1,0 +1,110 @@
+{
+    "title": "Casos de Uso Reales",
+    "description": "Descubre cómo WSXJS permite a los desarrolladores construir aplicaciones poderosas en varios dominios. Cada caso de uso demuestra aplicaciones prácticas y explica por qué WSXJS es la elección perfecta.",
+    "cases": {
+        "editorjs": {
+            "title": "Desarrollo de Plugins EditorJS",
+            "badge": "Integración",
+            "description": "WSXJS fue creado originalmente para resolver el dolor de escribir herramientas de bloque e inline de EditorJS. Construir plugins personalizados de EditorJS con JavaScript vanilla es muy difícil y no es fácil. WSXJS lo hace simple con sintaxis JSX moderna y Web Components.",
+            "why": {
+                "title": "¿Por qué EditorJS como Caso de Uso?",
+                "reason1": "Esta es la razón principal por la que se creó WSXJS - escribir herramientas de bloque e inline de EditorJS con JavaScript vanilla es muy difícil y no es fácil",
+                "reason2": "WSXJS LightComponents funcionan perfectamente en el entorno Light DOM de EditorJS, resolviendo la complejidad",
+                "reason3": "La sintaxis JSX hace que el desarrollo de plugins sea dramáticamente más simple y mantenible que JavaScript vanilla",
+                "reason4": "La seguridad de tipos y las herramientas modernas transforman la difícil experiencia de desarrollo de plugins EditorJS"
+            },
+            "features": {
+                "title": "Características Clave",
+                "feature1": "Herramientas de bloque personalizadas (Alert, Code, Table) construidas con componentes WSX",
+                "feature2": "Herramientas inline (Highlight) usando WSX LightComponents",
+                "feature3": "Soporte completo de TypeScript con definiciones de tipo EditorJS apropiadas"
+            },
+            "action": "Ver Demo de EditorJS"
+        },
+        "cms": {
+            "title": "Sistemas de Gestión de Contenido",
+            "badge": "Empresarial",
+            "description": "Construye interfaces CMS flexibles con edición de contenido dinámico, vista previa y flujos de trabajo de publicación usando componentes WSXJS.",
+            "why": {
+                "title": "¿Por qué CMS como Caso de Uso?",
+                "reason1": "CMS requiere componentes reutilizables y componibles para bloques de contenido",
+                "reason2": "Web Components proporcionan aislamiento perfecto para diferentes tipos de contenido",
+                "reason3": "LightComponents permiten fácil tematización y estilizado desde páginas padre"
+            },
+            "features": {
+                "title": "Características Clave",
+                "feature1": "Bloques de contenido modulares como Web Components independientes",
+                "feature2": "Renderizado de contenido dinámico con gestión de estado reactivo",
+                "feature3": "Fácil integración con frameworks CMS existentes y APIs"
+            }
+        },
+        "formBuilder": {
+            "title": "Constructores de Formularios Dinámicos",
+            "badge": "Interactivo",
+            "description": "Crea constructores de formularios drag-and-drop con validación en tiempo real, lógica condicional y tipos de campo personalizados usando WSXJS.",
+            "why": {
+                "title": "¿Por qué Constructor de Formularios como Caso de Uso?",
+                "reason1": "Los formularios necesitan componentes de campo reutilizables con comportamiento consistente",
+                "reason2": "La gestión de estado reactivo maneja validación de formularios complejos y dependencias",
+                "reason3": "Web Components aseguran que los campos de formulario funcionen en diferentes frameworks"
+            },
+            "features": {
+                "title": "Características Clave",
+                "feature1": "Componentes de campo de formulario personalizados con validación incorporada",
+                "feature2": "Gestión de estado de formulario reactivo con decorador @state",
+                "feature3": "Componentes de formulario agnósticos de framework para máxima compatibilidad"
+            }
+        },
+        "dashboard": {
+            "title": "Paneles de Datos",
+            "badge": "Analítica",
+            "description": "Construye paneles interactivos con gráficos, widgets y actualizaciones de datos en tiempo real usando componentes reactivos WSXJS.",
+            "why": {
+                "title": "¿Por qué Panel como Caso de Uso?",
+                "reason1": "Los paneles requieren múltiples widgets independientes que se actualizan independientemente",
+                "reason2": "La gestión de estado reactivo maneja actualizaciones de datos en tiempo real eficientemente",
+                "reason3": "Web Components proporcionan encapsulación perfecta para widgets de panel"
+            },
+            "features": {
+                "title": "Características Clave",
+                "feature1": "Componentes de widget independientes con estado aislado",
+                "feature2": "Vinculación de datos en tiempo real con re-renderizado automático",
+                "feature3": "Composición de widgets y gestión de diseño fáciles"
+            }
+        },
+        "ecommerce": {
+            "title": "Aplicaciones E-commerce",
+            "badge": "Negocio",
+            "description": "Construye sitios de comercio electrónico con catálogos de productos, carritos de compra y flujos de pago usando componentes WSXJS.",
+            "why": {
+                "title": "¿Por qué E-commerce como Caso de Uso?",
+                "reason1": "E-commerce necesita componentes de producto reutilizables en diferentes páginas",
+                "reason2": "La gestión de estado del carrito de compra se beneficia de actualizaciones reactivas",
+                "reason3": "Web Components aseguran UI consistente en diferentes partes de la aplicación"
+            },
+            "features": {
+                "title": "Características Clave",
+                "feature1": "Componentes de tarjeta de producto con precios e inventario reactivos",
+                "feature2": "Carrito de compra con actualizaciones y cálculos en tiempo real",
+                "feature3": "Flujo de pago con validación de formulario e integración de pago"
+            }
+        },
+        "designSystem": {
+            "title": "Componentes de Sistema de Diseño",
+            "badge": "UI/UX",
+            "description": "Crea sistemas de diseño completos con componentes UI reutilizables que funcionan en diferentes frameworks y aplicaciones.",
+            "why": {
+                "title": "¿Por qué Sistema de Diseño como Caso de Uso?",
+                "reason1": "Los sistemas de diseño necesitan componentes agnósticos de framework",
+                "reason2": "Web Components proporcionan encapsulación y reutilización perfectas",
+                "reason3": "La sintaxis JSX hace que el desarrollo de componentes sea más intuitivo que las cadenas de plantilla"
+            },
+            "features": {
+                "title": "Características Clave",
+                "feature1": "Biblioteca de componentes reutilizables con API consistente",
+                "feature2": "Soporte de temas con propiedades CSS personalizadas",
+                "feature3": "Componentes agnósticos de framework para máxima compatibilidad"
+            }
+        }
+    }
+}

@@ -20,6 +20,7 @@ export const i18n = initI18n({
         "slots",
         "privacy",
         "terms",
+        "usecase",
     ],
     defaultNS: "common",
 });

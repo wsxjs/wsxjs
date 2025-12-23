@@ -1,0 +1,110 @@
+{
+    "title": "实际应用场景",
+    "description": "探索 WSXJS 如何帮助开发者在各个领域构建强大的应用程序。每个用例都展示了实际应用，并解释了为什么 WSXJS 是完美的选择。",
+    "cases": {
+        "editorjs": {
+            "title": "EditorJS 插件开发",
+            "badge": "集成",
+            "description": "WSXJS 最初是为了解决编写 EditorJS 块和内联工具的痛点而创建的。使用原生 JavaScript 构建自定义 EditorJS 插件非常困难且不容易。WSXJS 通过现代 JSX 语法和 Web Components 使其变得简单。",
+            "why": {
+                "title": "为什么选择 EditorJS 作为用例？",
+                "reason1": "这是创建 WSXJS 的主要原因 - 使用原生 JavaScript 编写 EditorJS 块和内联工具非常困难且不容易",
+                "reason2": "WSXJS LightComponents 在 EditorJS 的 Light DOM 环境中无缝工作，解决了复杂性",
+                "reason3": "JSX 语法使插件开发比原生 JavaScript 简单得多且更易维护",
+                "reason4": "类型安全和现代工具彻底改变了困难的 EditorJS 插件开发体验"
+            },
+            "features": {
+                "title": "主要特性",
+                "feature1": "使用 WSX 组件构建的自定义块工具（Alert、Code、Table）",
+                "feature2": "使用 WSX LightComponents 的内联工具（Highlight）",
+                "feature3": "完整的 TypeScript 支持，包含正确的 EditorJS 类型定义"
+            },
+            "action": "查看 EditorJS 演示"
+        },
+        "cms": {
+            "title": "内容管理系统",
+            "badge": "企业级",
+            "description": "使用 WSXJS 组件构建灵活的内容管理系统界面，包括动态内容编辑、预览和发布工作流。",
+            "why": {
+                "title": "为什么选择 CMS 作为用例？",
+                "reason1": "CMS 需要可重用、可组合的内容块组件",
+                "reason2": "Web Components 为不同类型的内容提供完美的隔离",
+                "reason3": "LightComponents 允许从父页面轻松进行主题和样式设置"
+            },
+            "features": {
+                "title": "主要特性",
+                "feature1": "作为独立 Web Components 的模块化内容块",
+                "feature2": "具有响应式状态管理的动态内容渲染",
+                "feature3": "与现有 CMS 框架和 API 轻松集成"
+            }
+        },
+        "formBuilder": {
+            "title": "动态表单构建器",
+            "badge": "交互式",
+            "description": "使用 WSXJS 创建拖放式表单构建器，具有实时验证、条件逻辑和自定义字段类型。",
+            "why": {
+                "title": "为什么选择表单构建器作为用例？",
+                "reason1": "表单需要具有一致行为的可重用字段组件",
+                "reason2": "响应式状态管理处理复杂的表单验证和依赖关系",
+                "reason3": "Web Components 确保表单字段在不同框架中工作"
+            },
+            "features": {
+                "title": "主要特性",
+                "feature1": "具有内置验证的自定义表单字段组件",
+                "feature2": "使用 @state 装饰器的响应式表单状态管理",
+                "feature3": "框架无关的表单组件，实现最大兼容性"
+            }
+        },
+        "dashboard": {
+            "title": "数据仪表板",
+            "badge": "分析",
+            "description": "使用 WSXJS 响应式组件构建交互式仪表板，包含图表、小部件和实时数据更新。",
+            "why": {
+                "title": "为什么选择仪表板作为用例？",
+                "reason1": "仪表板需要多个独立更新的小部件",
+                "reason2": "响应式状态管理高效处理实时数据更新",
+                "reason3": "Web Components 为仪表板小部件提供完美的封装"
+            },
+            "features": {
+                "title": "主要特性",
+                "feature1": "具有隔离状态的独立小部件组件",
+                "feature2": "具有自动重新渲染的实时数据绑定",
+                "feature3": "轻松的小部件组合和布局管理"
+            }
+        },
+        "ecommerce": {
+            "title": "电子商务应用",
+            "badge": "商业",
+            "description": "使用 WSXJS 组件构建电子商务网站，包括产品目录、购物车和结账流程。",
+            "why": {
+                "title": "为什么选择电子商务作为用例？",
+                "reason1": "电子商务需要在不同页面中可重用的产品组件",
+                "reason2": "购物车状态管理受益于响应式更新",
+                "reason3": "Web Components 确保应用程序不同部分的一致 UI"
+            },
+            "features": {
+                "title": "主要特性",
+                "feature1": "具有响应式定价和库存的产品卡片组件",
+                "feature2": "具有实时更新和计算的购物车",
+                "feature3": "具有表单验证和支付集成的结账流程"
+            }
+        },
+        "designSystem": {
+            "title": "设计系统组件",
+            "badge": "UI/UX",
+            "description": "创建全面的设计系统，包含可在不同框架和应用程序中工作的可重用 UI 组件。",
+            "why": {
+                "title": "为什么选择设计系统作为用例？",
+                "reason1": "设计系统需要框架无关的组件",
+                "reason2": "Web Components 提供完美的封装和可重用性",
+                "reason3": "JSX 语法使组件开发比模板字符串更直观"
+            },
+            "features": {
+                "title": "主要特性",
+                "feature1": "具有一致 API 的可重用组件库",
+                "feature2": "使用 CSS 自定义属性的主题支持",
+                "feature3": "框架无关的组件，实现最大兼容性"
+            }
+        }
+    }
+}

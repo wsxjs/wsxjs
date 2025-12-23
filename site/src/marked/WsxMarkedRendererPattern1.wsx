@@ -1,0 +1,222 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Pattern 1: Using marked.use({ renderer })
+ *
+ * This pattern uses marked's built-in renderer system.
+ * The renderer returns HTML strings containing WSX custom element tags.
+ * Since WSX components are registered as custom elements, they work in HTML strings.
+ */
+
+import { LightComponent, autoRegister, createLogger, state } from "@wsxjs/wsx-core";
+import { marked } from "marked";
+import type { RendererObject, Tokens } from "marked";
+import styles from "./WsxMarkedRenderer.css?inline";
+// Import WSX components so they're registered as custom elements
+import "./WsxMarkedHeading.wsx";
+import "./WsxMarkedCode.wsx";
+import "./WsxMarkedBlockquote.wsx";
+import "./WsxMarkedParagraph.wsx";
+import "./WsxMarkedList.wsx";
+import "./WsxMarkedError.wsx";
+
+const logger = createLogger("WsxMarkedRendererPattern1");
+
+/**
+ * Pattern 1: Custom Renderer using marked.use()
+ *
+ * This renderer returns HTML strings with WSX custom element tags.
+ * Since WSX components are registered as custom elements, the browser
+ * will automatically instantiate them when the HTML is inserted.
+ */
+@autoRegister({ tagName: "wsx-marked-renderer-pattern1" })
+export default class WsxMarkedRendererPattern1 extends LightComponent {
+    @state private markdown: string = "";
+    private rendererContainer?: HTMLElement;
+
+    constructor() {
+        super({
+            styles,
+            styleName: "wsx-marked-renderer-pattern1",
+            lightDOM: true,
+        });
+
+        // Register custom renderer with marked
+        this.setupCustomRenderer();
+
+        logger.info("WsxMarkedRendererPattern1 initialized");
+    }
+
+    static get observedAttributes() {
+        return ["markdown"];
+    }
+
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        if (name === "markdown") {
+            this.markdown = newValue || "";
+            this.renderMarkdown();
+        }
+    }
+
+    render() {
+        return (
+            <div
+                ref={(el: HTMLElement) => {
+                    this.rendererContainer = el;
+                }}
+                class="marked-content"
+            />
+        );
+    }
+
+    protected onConnected() {
+        const markdownAttr = this.getAttribute("markdown");
+        if (markdownAttr) {
+            this.markdown = markdownAttr;
+        }
+        // Use setTimeout to ensure rendererContainer is set after render()
+        setTimeout(() => {
+            this.renderMarkdown();
+        }, 0);
+    }
+
+    /**
+     * Setup custom renderer for marked
+     * This renderer returns HTML strings containing WSX custom element tags
+     */
+    private setupCustomRenderer() {
+        // Helper to escape HTML for attributes
+        const escapeHtml = (text: string): string => {
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        };
+
+        // Helper to render inline tokens
+        const renderInlineTokens = (tokens: Tokens.Generic[]): string => {
+            const renderer = new marked.Renderer();
+            return tokens
+                .map((token) => {
+                    switch (token.type) {
+                        case "text": {
+                            const textToken = token as Tokens.Text;
+                            return textToken.text;
+                        }
+                        case "strong": {
+                            const strongToken = token as Tokens.Strong;
+                            return `<strong>${renderInlineTokens(strongToken.tokens)}</strong>`;
+                        }
+                        case "em": {
+                            const emToken = token as Tokens.Em;
+                            return `<em>${renderInlineTokens(emToken.tokens)}</em>`;
+                        }
+                        case "link": {
+                            const linkToken = token as Tokens.Link;
+                            const title = linkToken.title
+                                ? ` title="${escapeHtml(linkToken.title)}"`
+                                : "";
+                            return `<a href="${linkToken.href}"${title}>${renderInlineTokens(linkToken.tokens)}</a>`;
+                        }
+                        case "code": {
+                            const codeToken = token as Tokens.Code;
+                            return `<code>${escapeHtml(codeToken.text)}</code>`;
+                        }
+                        case "br": {
+                            return "<br>";
+                        }
+                        default: {
+                            // 对于其他类型，尝试使用 renderer 方法
+                            const method = renderer[token.type as keyof RendererObject] as
+                                | ((token: unknown) => string)
+                                | undefined;
+                            return method?.(token) || "";
+                        }
+                    }
+                })
+                .join("");
+        };
+
+        const customRenderer: Partial<RendererObject> = {
+            // Heading renderer - returns HTML string with WSX custom element
+            heading(token: Tokens.Heading) {
+                const text = renderInlineTokens(token.tokens);
+                return `<wsx-marked-heading level="${token.depth}" text="${escapeHtml(text)}"></wsx-marked-heading>`;
+            },
+
+            // Code block renderer
+            code(token: Tokens.Code) {
+                const code = escapeHtml(token.text);
+                const lang = token.lang || "";
+                return `<wsx-marked-code code="${code}" language="${lang}"></wsx-marked-code>`;
+            },
+
+            // Blockquote renderer - use marked.parser() to handle block-level tokens
+            blockquote(token: Tokens.Blockquote) {
+                // Use marked.parser() to render the blockquote's tokens
+                // This will recursively use our custom renderer for nested elements
+                const content = marked.parser(token.tokens);
+                return `<wsx-marked-blockquote>${content}</wsx-marked-blockquote>`;
+            },
+
+            // Paragraph renderer
+            paragraph(token: Tokens.Paragraph) {
+                const text = renderInlineTokens(token.tokens);
+                return `<wsx-marked-paragraph content="${escapeHtml(text)}"></wsx-marked-paragraph>`;
+            },
+
+            // List renderer - use marked.parser() to handle list item tokens
+            list(token: Tokens.List) {
+                // For each list item, use marked.parser() to render its tokens
+                // This handles nested block-level elements within list items
+                const items = token.items.map((item) => {
+                    // Use marked.parser() to render the item's tokens
+                    // This will recursively use our custom renderer
+                    return marked.parser(item.tokens);
+                });
+                const itemsJson = escapeHtml(JSON.stringify(items));
+                return `<wsx-marked-list ordered="${token.ordered ? "true" : "false"}" items="${itemsJson}"></wsx-marked-list>`;
+            },
+        };
+
+        // Register the custom renderer with marked
+        marked.use({ renderer: customRenderer as RendererObject });
+    }
+
+    /**
+     * Render markdown using marked.parse() which uses our custom renderer
+     */
+    private renderMarkdown() {
+        if (!this.rendererContainer) {
+            logger.warn("rendererContainer not set yet, skipping render");
+            return;
+        }
+
+        if (!this.markdown) {
+            logger.warn("markdown is empty, clearing container");
+            this.rendererContainer.innerHTML = "";
+            return;
+        }
+
+        try {
+            logger.info("Rendering markdown", { markdownLength: this.markdown.length });
+
+            // marked.parse() will use our custom renderer registered via marked.use()
+            // The renderer returns HTML strings with WSX custom element tags
+            const html = marked.parse(this.markdown);
+
+            logger.info("Parsed HTML", {
+                htmlLength: html.length,
+                htmlPreview: html.substring(0, 100),
+            });
+
+            // Insert the HTML string - browser will automatically instantiate WSX custom elements
+            this.rendererContainer.innerHTML = html;
+
+            logger.info("Markdown rendered using Pattern 1 (marked.use renderer)");
+        } catch (error) {
+            logger.error("Failed to render markdown", error);
+            if (this.rendererContainer) {
+                this.rendererContainer.innerHTML = `<wsx-marked-error message="Error: ${String(error)}"></wsx-marked-error>`;
+            }
+        }
+    }
+}
