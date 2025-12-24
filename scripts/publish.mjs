@@ -157,6 +157,8 @@ async function checkGitStatus() {
         process.exit(1);
     }
 
+    // 先获取远程更新，避免检查过时的信息
+    execSilent("git fetch origin main 2>/dev/null");
     const unpushedCommits = execSilent("git log origin/main..HEAD 2>/dev/null");
     if (unpushedCommits) {
         const { continue: shouldContinue } = await inquirer.prompt([
@@ -164,7 +166,7 @@ async function checkGitStatus() {
                 type: "confirm",
                 name: "continue",
                 message: chalk.yellow("存在未推送的提交，是否继续?"),
-                default: false,
+                default: true,
             },
         ]);
         if (!shouldContinue) {
@@ -319,6 +321,7 @@ async function main() {
     // 检查 Git 状态
     const gitCheckSpinner = ora("检查 Git 状态").start();
     try {
+        gitCheckSpinner.stop(); // 停止 spinner 以便显示交互式提示
         await checkGitStatus();
         gitCheckSpinner.succeed("Git 状态检查通过");
     } catch (error) {
