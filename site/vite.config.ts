@@ -106,6 +106,10 @@ export default defineConfig({
                           __dirname,
                           "../packages/base-components/src/index.ts"
                       ),
+                      "@wsxjs/wsx-marked-components": path.resolve(
+                          __dirname,
+                          "../packages/marked-components/src/index.ts"
+                      ),
                       // Use built files for i18next to avoid module resolution issues
                       "@wsxjs/wsx-i18next": path.resolve(
                           __dirname,

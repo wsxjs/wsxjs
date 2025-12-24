@@ -193,8 +193,17 @@ export default class Markdown extends LightComponent {
                 // List items can contain block-level tokens (nested lists, blockquotes, etc.)
                 // So we need to use renderTokens() instead of renderInlineTokens()
                 const items = listToken.items.map((item) => {
+                    // 防御性检查：确保 item.tokens 存在且是数组
+                    if (!item.tokens || !Array.isArray(item.tokens)) {
+                        logger.warn("List item has no tokens or tokens is not an array", { item });
+                        return "";
+                    }
                     // Render all tokens in the list item (both inline and block-level)
                     const renderedElements = this.renderTokens(item.tokens);
+                    // 如果渲染结果为空，返回空字符串
+                    if (renderedElements.length === 0) {
+                        return "";
+                    }
                     // Convert rendered elements to HTML string for the List component
                     // Create a temporary container to collect the HTML
                     const tempContainer = document.createElement("div");
@@ -203,7 +212,15 @@ export default class Markdown extends LightComponent {
                             tempContainer.appendChild(el);
                         }
                     });
-                    return tempContainer.innerHTML;
+                    const html = tempContainer.innerHTML;
+                    // 如果 innerHTML 为空，记录警告
+                    if (!html) {
+                        logger.warn("tempContainer.innerHTML is empty after appending elements", {
+                            renderedElementsCount: renderedElements.length,
+                            itemTokens: item.tokens,
+                        });
+                    }
+                    return html;
                 });
                 return (
                     <wsx-marked-list
@@ -227,8 +244,16 @@ export default class Markdown extends LightComponent {
                 return null;
             }
 
+            case "text": {
+                // Text tokens are inline tokens, but if they appear as top-level tokens,
+                // render them directly as text nodes wrapped in a span
+                const textToken = token as Tokens.Text;
+                return <span>{textToken.text || ""}</span>;
+            }
+
             default: {
                 // For other types, use default marked renderer
+                // Note: marked.Renderer() only handles block-level tokens, not inline tokens
                 const renderer = new marked.Renderer();
                 const renderMethod = (
                     renderer as unknown as Record<string, (token: unknown) => string>

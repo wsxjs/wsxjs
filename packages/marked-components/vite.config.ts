@@ -22,8 +22,8 @@ export default defineConfig({
                 },
             },
         },
-        cssCodeSplit: false,
-        sourcemap: process.env.NODE_ENV === "development",
+        cssCodeSplit: false, // 禁用CSS代码分割，确保CSS内联到JS中
+        sourcemap: process.env.NODE_ENV === "development", // 只在开发环境生成 source maps
     },
     plugins: [
         wsx({
@@ -32,6 +32,8 @@ export default defineConfig({
             jsxFragment: "Fragment",
         }),
     ],
+    // Resolve workspace packages to source files in development mode
+    // In production, Vite will use package.json exports (dist files)
     resolve: {
         alias:
             process.env.NODE_ENV === "development"
