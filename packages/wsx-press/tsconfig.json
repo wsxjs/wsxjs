@@ -14,4 +14,3 @@
     "include": ["src/**/*", "src/types/**/*"],
     "exclude": ["dist", "node_modules", "**/__tests__/**", "**/*.test.ts"]
 }
-

@@ -75,7 +75,8 @@ export const routeMeta: Record<string, RouteMeta> = {
     },
     "/docs": {
         title: "Documentation - WSXJS",
-        description: "Complete documentation for WSXJS framework, including guides, API reference, and examples.",
+        description:
+            "Complete documentation for WSXJS framework, including guides, API reference, and examples.",
         keywords: "WSXJS documentation, WSXJS guide, WSXJS API",
         image: "/og-image.png",
     },

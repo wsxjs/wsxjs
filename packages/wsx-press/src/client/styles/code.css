@@ -5,69 +5,69 @@
 
 /* ===== 代码块容器 ===== */
 .wsx-press-code-block {
-  position: relative;
-  margin: var(--wsx-press-spacing-lg) 0;
+    position: relative;
+    margin: var(--wsx-press-spacing-lg) 0;
 }
 
 .wsx-press-code-block pre {
-  margin: 0;
-  border-radius: var(--wsx-press-radius-md);
+    margin: 0;
+    border-radius: var(--wsx-press-radius-md);
 }
 
 /* ===== 语言标签 ===== */
 .wsx-press-code-block[data-language]::before {
-  content: attr(data-language);
-  position: absolute;
-  top: var(--wsx-press-spacing-sm);
-  right: var(--wsx-press-spacing-md);
-  padding: 0.2em 0.6em;
-  font-family: var(--wsx-press-font-mono);
-  font-size: var(--wsx-press-font-size-xs);
-  color: var(--wsx-press-text-tertiary);
-  background: var(--wsx-press-bg-tertiary);
-  border: 1px solid var(--wsx-press-border);
-  border-radius: var(--wsx-press-radius-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+    content: attr(data-language);
+    position: absolute;
+    top: var(--wsx-press-spacing-sm);
+    right: var(--wsx-press-spacing-md);
+    padding: 0.2em 0.6em;
+    font-family: var(--wsx-press-font-mono);
+    font-size: var(--wsx-press-font-size-xs);
+    color: var(--wsx-press-text-tertiary);
+    background: var(--wsx-press-bg-tertiary);
+    border: 1px solid var(--wsx-press-border);
+    border-radius: var(--wsx-press-radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* ===== 行号 ===== */
 .wsx-press-code-line-numbers {
-  display: flex;
+    display: flex;
 }
 
 .wsx-press-code-line-numbers .line-numbers {
-  flex-shrink: 0;
-  padding-right: var(--wsx-press-spacing-md);
-  margin-right: var(--wsx-press-spacing-md);
-  border-right: 1px solid var(--wsx-press-border);
-  color: var(--wsx-press-text-tertiary);
-  user-select: none;
-  text-align: right;
+    flex-shrink: 0;
+    padding-right: var(--wsx-press-spacing-md);
+    margin-right: var(--wsx-press-spacing-md);
+    border-right: 1px solid var(--wsx-press-border);
+    color: var(--wsx-press-text-tertiary);
+    user-select: none;
+    text-align: right;
 }
 
 .wsx-press-code-line-numbers .line-content {
-  flex: 1;
-  overflow-x: auto;
+    flex: 1;
+    overflow-x: auto;
 }
 
 /* ===== 高亮行 ===== */
 .wsx-press-code-line.highlighted {
-  background: var(--wsx-press-bg-tertiary);
-  border-left: 4px solid var(--wsx-press-accent);
-  padding-left: calc(var(--wsx-press-spacing-sm) - 4px);
-  margin-left: calc(var(--wsx-press-spacing-sm) * -1);
+    background: var(--wsx-press-bg-tertiary);
+    border-left: 4px solid var(--wsx-press-accent);
+    padding-left: calc(var(--wsx-press-spacing-sm) - 4px);
+    margin-left: calc(var(--wsx-press-spacing-sm) * -1);
 }
 
 /* ===== 差异视图 ===== */
 .wsx-press-code-line.diff-add {
-  background: rgba(46, 160, 67, 0.15);
-  border-left: 4px solid #2ea043;
+    background: rgba(46, 160, 67, 0.15);
+    border-left: 4px solid #2ea043;
 }
 
 .wsx-press-code-line.diff-remove {
-  background: rgba(248, 81, 73, 0.15);
-  border-left: 4px solid #f85149;
+    background: rgba(248, 81, 73, 0.15);
+    border-left: 4px solid #f85149;
 }
 
 /* ===== 语法高亮（亮色模式） ===== */
@@ -75,11 +75,11 @@
 .wsx-press-code .token.prolog,
 .wsx-press-code .token.doctype,
 .wsx-press-code .token.cdata {
-  color: #6a737d;
+    color: #6a737d;
 }
 
 .wsx-press-code .token.punctuation {
-  color: #24292e;
+    color: #24292e;
 }
 
 .wsx-press-code .token.property,
@@ -89,7 +89,7 @@
 .wsx-press-code .token.constant,
 .wsx-press-code .token.symbol,
 .wsx-press-code .token.deleted {
-  color: #005cc5;
+    color: #005cc5;
 }
 
 .wsx-press-code .token.selector,
@@ -98,7 +98,7 @@
 .wsx-press-code .token.char,
 .wsx-press-code .token.builtin,
 .wsx-press-code .token.inserted {
-  color: #032f62;
+    color: #032f62;
 }
 
 .wsx-press-code .token.operator,
@@ -106,137 +106,137 @@
 .wsx-press-code .token.url,
 .wsx-press-code .language-css .token.string,
 .wsx-press-code .style .token.string {
-  color: #d73a49;
+    color: #d73a49;
 }
 
 .wsx-press-code .token.atrule,
 .wsx-press-code .token.attr-value,
 .wsx-press-code .token.keyword {
-  color: #d73a49;
+    color: #d73a49;
 }
 
 .wsx-press-code .token.function,
 .wsx-press-code .token.class-name {
-  color: #6f42c1;
+    color: #6f42c1;
 }
 
 .wsx-press-code .token.regex,
 .wsx-press-code .token.important,
 .wsx-press-code .token.variable {
-  color: #e36209;
+    color: #e36209;
 }
 
 /* ===== 语法高亮（暗色模式） ===== */
 @media (prefers-color-scheme: dark) {
-  .wsx-press-code .token.comment,
-  .wsx-press-code .token.prolog,
-  .wsx-press-code .token.doctype,
-  .wsx-press-code .token.cdata {
-    color: #8b949e;
-  }
+    .wsx-press-code .token.comment,
+    .wsx-press-code .token.prolog,
+    .wsx-press-code .token.doctype,
+    .wsx-press-code .token.cdata {
+        color: #8b949e;
+    }
 
-  .wsx-press-code .token.punctuation {
-    color: #c9d1d9;
-  }
+    .wsx-press-code .token.punctuation {
+        color: #c9d1d9;
+    }
 
-  .wsx-press-code .token.property,
-  .wsx-press-code .token.tag,
-  .wsx-press-code .token.boolean,
-  .wsx-press-code .token.number,
-  .wsx-press-code .token.constant,
-  .wsx-press-code .token.symbol,
-  .wsx-press-code .token.deleted {
-    color: #79c0ff;
-  }
+    .wsx-press-code .token.property,
+    .wsx-press-code .token.tag,
+    .wsx-press-code .token.boolean,
+    .wsx-press-code .token.number,
+    .wsx-press-code .token.constant,
+    .wsx-press-code .token.symbol,
+    .wsx-press-code .token.deleted {
+        color: #79c0ff;
+    }
 
-  .wsx-press-code .token.selector,
-  .wsx-press-code .token.attr-name,
-  .wsx-press-code .token.string,
-  .wsx-press-code .token.char,
-  .wsx-press-code .token.builtin,
-  .wsx-press-code .token.inserted {
-    color: #a5d6ff;
-  }
+    .wsx-press-code .token.selector,
+    .wsx-press-code .token.attr-name,
+    .wsx-press-code .token.string,
+    .wsx-press-code .token.char,
+    .wsx-press-code .token.builtin,
+    .wsx-press-code .token.inserted {
+        color: #a5d6ff;
+    }
 
-  .wsx-press-code .token.operator,
-  .wsx-press-code .token.entity,
-  .wsx-press-code .token.url,
-  .wsx-press-code .language-css .token.string,
-  .wsx-press-code .style .token.string {
-    color: #ff7b72;
-  }
+    .wsx-press-code .token.operator,
+    .wsx-press-code .token.entity,
+    .wsx-press-code .token.url,
+    .wsx-press-code .language-css .token.string,
+    .wsx-press-code .style .token.string {
+        color: #ff7b72;
+    }
 
-  .wsx-press-code .token.atrule,
-  .wsx-press-code .token.attr-value,
-  .wsx-press-code .token.keyword {
-    color: #ff7b72;
-  }
+    .wsx-press-code .token.atrule,
+    .wsx-press-code .token.attr-value,
+    .wsx-press-code .token.keyword {
+        color: #ff7b72;
+    }
 
-  .wsx-press-code .token.function,
-  .wsx-press-code .token.class-name {
-    color: #d2a8ff;
-  }
+    .wsx-press-code .token.function,
+    .wsx-press-code .token.class-name {
+        color: #d2a8ff;
+    }
 
-  .wsx-press-code .token.regex,
-  .wsx-press-code .token.important,
-  .wsx-press-code .token.variable {
-    color: #ffa657;
-  }
+    .wsx-press-code .token.regex,
+    .wsx-press-code .token.important,
+    .wsx-press-code .token.variable {
+        color: #ffa657;
+    }
 }
 
 [data-theme="dark"] {
-  .wsx-press-code .token.comment,
-  .wsx-press-code .token.prolog,
-  .wsx-press-code .token.doctype,
-  .wsx-press-code .token.cdata {
-    color: #8b949e;
-  }
+    .wsx-press-code .token.comment,
+    .wsx-press-code .token.prolog,
+    .wsx-press-code .token.doctype,
+    .wsx-press-code .token.cdata {
+        color: #8b949e;
+    }
 
-  .wsx-press-code .token.punctuation {
-    color: #c9d1d9;
-  }
+    .wsx-press-code .token.punctuation {
+        color: #c9d1d9;
+    }
 
-  .wsx-press-code .token.property,
-  .wsx-press-code .token.tag,
-  .wsx-press-code .token.boolean,
-  .wsx-press-code .token.number,
-  .wsx-press-code .token.constant,
-  .wsx-press-code .token.symbol,
-  .wsx-press-code .token.deleted {
-    color: #79c0ff;
-  }
+    .wsx-press-code .token.property,
+    .wsx-press-code .token.tag,
+    .wsx-press-code .token.boolean,
+    .wsx-press-code .token.number,
+    .wsx-press-code .token.constant,
+    .wsx-press-code .token.symbol,
+    .wsx-press-code .token.deleted {
+        color: #79c0ff;
+    }
 
-  .wsx-press-code .token.selector,
-  .wsx-press-code .token.attr-name,
-  .wsx-press-code .token.string,
-  .wsx-press-code .token.char,
-  .wsx-press-code .token.builtin,
-  .wsx-press-code .token.inserted {
-    color: #a5d6ff;
-  }
+    .wsx-press-code .token.selector,
+    .wsx-press-code .token.attr-name,
+    .wsx-press-code .token.string,
+    .wsx-press-code .token.char,
+    .wsx-press-code .token.builtin,
+    .wsx-press-code .token.inserted {
+        color: #a5d6ff;
+    }
 
-  .wsx-press-code .token.operator,
-  .wsx-press-code .token.entity,
-  .wsx-press-code .token.url,
-  .wsx-press-code .language-css .token.string,
-  .wsx-press-code .style .token.string {
-    color: #ff7b72;
-  }
+    .wsx-press-code .token.operator,
+    .wsx-press-code .token.entity,
+    .wsx-press-code .token.url,
+    .wsx-press-code .language-css .token.string,
+    .wsx-press-code .style .token.string {
+        color: #ff7b72;
+    }
 
-  .wsx-press-code .token.atrule,
-  .wsx-press-code .token.attr-value,
-  .wsx-press-code .token.keyword {
-    color: #ff7b72;
-  }
+    .wsx-press-code .token.atrule,
+    .wsx-press-code .token.attr-value,
+    .wsx-press-code .token.keyword {
+        color: #ff7b72;
+    }
 
-  .wsx-press-code .token.function,
-  .wsx-press-code .token.class-name {
-    color: #d2a8ff;
-  }
+    .wsx-press-code .token.function,
+    .wsx-press-code .token.class-name {
+        color: #d2a8ff;
+    }
 
-  .wsx-press-code .token.regex,
-  .wsx-press-code .token.important,
-  .wsx-press-code .token.variable {
-    color: #ffa657;
-  }
+    .wsx-press-code .token.regex,
+    .wsx-press-code .token.important,
+    .wsx-press-code .token.variable {
+        color: #ffa657;
+    }
 }

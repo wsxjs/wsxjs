@@ -76,17 +76,10 @@ export default class DocLayout extends LightComponent {
     render() {
         return (
             <div class="doc-layout">
-                <aside class="doc-layout-sidebar">
-                    {/* DocSidebar 实例将在这里动态创建 */}
-                </aside>
-                <main class="doc-layout-main">
-                    {/* DocPage 实例将在这里动态创建 */}
-                </main>
-                <aside class="doc-layout-toc">
-                    {/* DocTOC 实例将在这里动态创建 */}
-                </aside>
+                <aside class="doc-layout-sidebar">{/* DocSidebar 实例将在这里动态创建 */}</aside>
+                <main class="doc-layout-main">{/* DocPage 实例将在这里动态创建 */}</main>
+                <aside class="doc-layout-toc">{/* DocTOC 实例将在这里动态创建 */}</aside>
             </div>
         );
     }
 }
-

@@ -9,6 +9,9 @@
  * 5. LightComponent JSX children 保留
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// 测试需要访问私有方法，使用 any 类型是必要的
+
 import { LightComponent } from "../src/light-component";
 import { WebComponent } from "../src/web-component";
 import { h } from "../src/jsx-factory";
@@ -447,4 +450,3 @@ describe("RFC-0030: rerender() 调度机制重构", () => {
         document.body.innerHTML = "";
     });
 });
-

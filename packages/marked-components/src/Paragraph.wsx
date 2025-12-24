@@ -33,4 +33,3 @@ export default class Paragraph extends LightComponent {
         return <p class="marked-paragraph">{this.content}</p>;
     }
 }
-

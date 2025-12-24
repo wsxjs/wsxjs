@@ -1,1913 +1,1913 @@
 {
-  "guide/WSX_DESIGN": [
-    {
-      "level": 1,
-      "text": "WSXJS 设计说明文档",
-      "id": "wsxjs-",
-      "children": [
+    "guide/WSX_DESIGN": [
         {
-          "level": 2,
-          "text": "一、框架简介",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "二、项目结构",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "三、核心API与机制",
-          "id": "api",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. WebComponent 抽象基类",
-              "id": "1-webcomponent-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. JSX 工厂",
-              "id": "2-jsx-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. autoRegister 装饰器",
-              "id": "3-autoregister-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "4. 样式管理",
-              "id": "4-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "5. 日志系统",
-              "id": "5-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "四、examples 集成与自举",
-          "id": "examples-",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "五、Vite 插件",
-          "id": "vite-",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "六、ESLint 插件",
-          "id": "eslint-",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "七、CI/CD 与开发流程",
-          "id": "cicd-",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "八、最佳实践与未来规划",
-          "id": "",
-          "children": []
+            "level": 1,
+            "text": "WSXJS 设计说明文档",
+            "id": "wsxjs-",
+            "children": [
+                {
+                    "level": 2,
+                    "text": "一、框架简介",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "二、项目结构",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "三、核心API与机制",
+                    "id": "api",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. WebComponent 抽象基类",
+                            "id": "1-webcomponent-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. JSX 工厂",
+                            "id": "2-jsx-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. autoRegister 装饰器",
+                            "id": "3-autoregister-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "4. 样式管理",
+                            "id": "4-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "5. 日志系统",
+                            "id": "5-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "四、examples 集成与自举",
+                    "id": "examples-",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "五、Vite 插件",
+                    "id": "vite-",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "六、ESLint 插件",
+                    "id": "eslint-",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "七、CI/CD 与开发流程",
+                    "id": "cicd-",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "八、最佳实践与未来规划",
+                    "id": "",
+                    "children": []
+                }
+            ]
         }
-      ]
-    }
-  ],
-  "guide/WEB_COMPONENT_GUIDE": [
-    {
-      "level": 1,
-      "text": "WebComponent 使用指南",
-      "id": "webcomponent-",
-      "children": [
+    ],
+    "guide/WEB_COMPONENT_GUIDE": [
         {
-          "level": 2,
-          "text": "概述",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "为什么使用 WebComponent？",
-          "id": "-webcomponent",
-          "children": [
-            {
-              "level": 3,
-              "text": "适用场景",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "不适用场景",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "快速开始",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "基础用法",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "使用响应式状态",
-              "id": "",
-              "children": [
+            "level": 1,
+            "text": "WebComponent 使用指南",
+            "id": "webcomponent-",
+            "children": [
                 {
-                  "level": 4,
-                  "text": "方式 1: 使用 @state 装饰器（推荐）",
-                  "id": "-1-state-",
-                  "children": []
+                    "level": 2,
+                    "text": "概述",
+                    "id": "",
+                    "children": []
                 },
                 {
-                  "level": 4,
-                  "text": "方式 2: 使用 reactive() 方法",
-                  "id": "-2-reactive-",
-                  "children": []
+                    "level": 2,
+                    "text": "为什么使用 WebComponent？",
+                    "id": "-webcomponent",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "适用场景",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "不适用场景",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
                 },
                 {
-                  "level": 4,
-                  "text": "方式 3: 使用 useState Hook",
-                  "id": "-3-usestate-hook",
-                  "children": []
+                    "level": 2,
+                    "text": "快速开始",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "基础用法",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "使用响应式状态",
+                            "id": "",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "方式 1: 使用 @state 装饰器（推荐）",
+                                    "id": "-1-state-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "方式 2: 使用 reactive() 方法",
+                                    "id": "-2-reactive-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "方式 3: 使用 useState Hook",
+                                    "id": "-3-usestate-hook",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "核心特性",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. Shadow DOM 样式隔离",
+                            "id": "1-shadow-dom-",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "自动 CSS 注入（推荐）",
+                                    "id": "-css-",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. JSX 支持",
+                            "id": "2-jsx-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 响应式状态管理",
+                            "id": "3-",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "@state 装饰器（推荐）",
+                                    "id": "state-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "reactive() 方法",
+                                    "id": "reactive-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "useState() 方法",
+                                    "id": "usestate-",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "4. 生命周期钩子",
+                            "id": "4-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "5. 焦点保持",
+                            "id": "5-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "6. 错误处理",
+                            "id": "6-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "实际应用示例",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "示例 1: 按钮组件",
+                            "id": "-1-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "示例 2: 表单输入组件",
+                            "id": "-2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "示例 3: 卡片组件",
+                            "id": "-3-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "最佳实践",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. 样式隔离",
+                            "id": "1-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 事件转发",
+                            "id": "2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 响应式状态管理",
+                            "id": "3-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "4. 属性观察",
+                            "id": "4-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "5. 焦点保持",
+                            "id": "5-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "组件对比：WebComponent vs LightComponent",
+                    "id": "webcomponent-vs-lightcomponent",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "核心区别",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "详细对比",
+                            "id": "",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "1. DOM 渲染方式",
+                                    "id": "1-dom-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "2. 样式处理",
+                                    "id": "2-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "3. 第三方库集成",
+                                    "id": "3-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "4. 响应式 API",
+                                    "id": "4-api",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "5. 元素查询",
+                                    "id": "5-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "6. 事件处理",
+                                    "id": "6-",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "选择指南",
+                            "id": "",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "使用 WebComponent 当：",
+                                    "id": "-webcomponent-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "使用 LightComponent 当：",
+                                    "id": "-lightcomponent-",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "代码示例对比",
+                            "id": "",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "相同点：响应式状态",
+                                    "id": "",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "不同点：DOM 访问",
+                                    "id": "dom-",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "总结",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "常见问题",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "Q: WebComponent 支持 Light DOM 吗？",
+                            "id": "q-webcomponent-light-dom-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: Shadow DOM 会影响性能吗？",
+                            "id": "q-shadow-dom-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: 如何让外部样式影响 Shadow DOM？",
+                            "id": "q-shadow-dom",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: 响应式状态会自动清理吗？",
+                            "id": "q-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: 可以在 WebComponent 中使用 slot 吗？",
+                            "id": "q-webcomponent-slot-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: 如何自动注入 CSS 样式？",
+                            "id": "q-css-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: @state 装饰器为什么必须有初始值？",
+                            "id": "q-state-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "总结",
+                    "id": "",
+                    "children": []
                 }
-              ]
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "核心特性",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. Shadow DOM 样式隔离",
-              "id": "1-shadow-dom-",
-              "children": [
-                {
-                  "level": 4,
-                  "text": "自动 CSS 注入（推荐）",
-                  "id": "-css-",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "2. JSX 支持",
-              "id": "2-jsx-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 响应式状态管理",
-              "id": "3-",
-              "children": [
-                {
-                  "level": 4,
-                  "text": "@state 装饰器（推荐）",
-                  "id": "state-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "reactive() 方法",
-                  "id": "reactive-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "useState() 方法",
-                  "id": "usestate-",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "4. 生命周期钩子",
-              "id": "4-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "5. 焦点保持",
-              "id": "5-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "6. 错误处理",
-              "id": "6-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "实际应用示例",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "示例 1: 按钮组件",
-              "id": "-1-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "示例 2: 表单输入组件",
-              "id": "-2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "示例 3: 卡片组件",
-              "id": "-3-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "最佳实践",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. 样式隔离",
-              "id": "1-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 事件转发",
-              "id": "2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 响应式状态管理",
-              "id": "3-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "4. 属性观察",
-              "id": "4-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "5. 焦点保持",
-              "id": "5-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "组件对比：WebComponent vs LightComponent",
-          "id": "webcomponent-vs-lightcomponent",
-          "children": [
-            {
-              "level": 3,
-              "text": "核心区别",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "详细对比",
-              "id": "",
-              "children": [
-                {
-                  "level": 4,
-                  "text": "1. DOM 渲染方式",
-                  "id": "1-dom-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "2. 样式处理",
-                  "id": "2-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "3. 第三方库集成",
-                  "id": "3-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "4. 响应式 API",
-                  "id": "4-api",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "5. 元素查询",
-                  "id": "5-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "6. 事件处理",
-                  "id": "6-",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "选择指南",
-              "id": "",
-              "children": [
-                {
-                  "level": 4,
-                  "text": "使用 WebComponent 当：",
-                  "id": "-webcomponent-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "使用 LightComponent 当：",
-                  "id": "-lightcomponent-",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "代码示例对比",
-              "id": "",
-              "children": [
-                {
-                  "level": 4,
-                  "text": "相同点：响应式状态",
-                  "id": "",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "不同点：DOM 访问",
-                  "id": "dom-",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "总结",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "常见问题",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "Q: WebComponent 支持 Light DOM 吗？",
-              "id": "q-webcomponent-light-dom-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: Shadow DOM 会影响性能吗？",
-              "id": "q-shadow-dom-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: 如何让外部样式影响 Shadow DOM？",
-              "id": "q-shadow-dom",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: 响应式状态会自动清理吗？",
-              "id": "q-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: 可以在 WebComponent 中使用 slot 吗？",
-              "id": "q-webcomponent-slot-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: 如何自动注入 CSS 样式？",
-              "id": "q-css-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: @state 装饰器为什么必须有初始值？",
-              "id": "q-state-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "总结",
-          "id": "",
-          "children": []
+            ]
         }
-      ]
-    }
-  ],
-  "guide/TYPESCRIPT_WSX_TYPES": [
-    {
-      "level": 1,
-      "text": "WSX 类型系统指南",
-      "id": "wsx-",
-      "children": [
+    ],
+    "guide/TYPESCRIPT_WSX_TYPES": [
         {
-          "level": 2,
-          "text": "目录",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "为什么每个包都需要 wsx.d.ts？",
-          "id": "-wsxdts",
-          "children": [
-            {
-              "level": 3,
-              "text": "问题背景",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "TypeScript 模块类型声明的限制",
-              "id": "typescript-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "实际验证结果",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "业界最佳实践",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "参考资料",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "如何维护类型一致性？",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "自动同步机制",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Pre-commit Hook",
-              "id": "pre-commit-hook",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "CI/CD 验证",
-              "id": "cicd-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "开发者指南",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "修改类型定义",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "添加新包",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "检查类型一致性",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "故障排查",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "问题 1：TypeScript 报错 ",
-              "id": "-1typescript-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "问题 2：IDE 显示 &quot;React is not in scope&quot; 错误",
-              "id": "-2ide-quotreact-is-not-in-scopequot-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "问题 3：CI 验证失败 &quot;wsx.d.ts files are inconsistent&quot;",
-              "id": "-3ci-quotwsxdts-files-are-inconsistentquot",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "问题 4：Pre-commit hook 没有自动运行",
-              "id": "-4pre-commit-hook-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "问题 5：新创建的包无法识别 .wsx 文件",
-              "id": "-5-wsx-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "总结",
-          "id": "",
-          "children": []
-        }
-      ]
-    }
-  ],
-  "guide/TYPESCRIPT_SETUP": [
-    {
-      "level": 1,
-      "text": "TypeScript 配置指南",
-      "id": "typescript-",
-      "children": [
-        {
-          "level": 2,
-          "text": "📋 目录",
-          "id": "-",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "基本配置",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. JSX 配置",
-              "id": "1-jsx-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 类型引用配置",
-              "id": "2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 测试库类型（可选）",
-              "id": "3-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "完整配置示例",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "生产项目配置",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "测试环境配置",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Monorepo 工作区配置",
-              "id": "monorepo-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "类型引用机制",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "TypeScript 如何加载类型",
-              "id": "typescript-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "类型定义文件层次",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "为什么不需要三斜线指令",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "最佳实践",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. 使用标准的 TypeScript 类型解析",
-              "id": "1-typescript-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 分离生产和测试配置",
-              "id": "2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 保持 global.d.ts 简洁",
-              "id": "3-globaldts-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "4. 文件包含配置",
-              "id": "4-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "常见问题",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. IDE 报错：&quot;This JSX tag requires &#39;React&#39; to be in scope&quot;",
-              "id": "1-ide-quotthis-jsx-tag-requires-39react39-to-be-in-scopequot",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 找不到 JSX 类型定义",
-              "id": "2-jsx-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 测试文件中找不到  类型",
-              "id": "3-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "4. Monorepo 中类型找不到",
-              "id": "4-monorepo-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "5.  文件找不到类型声明",
-              "id": "5-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "6. 外部项目集成 WSXJS",
-              "id": "6-wsxjs",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "调试技巧",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "查看 TypeScript 解析的类型路径",
-              "id": "-typescript-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "验证类型定义加载",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "总结",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "✅ 推荐的配置方式",
-              "id": "-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "❌ 避免的做法",
-              "id": "-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "📚 相关文档",
-              "id": "-",
-              "children": []
-            }
-          ]
-        }
-      ]
-    }
-  ],
-  "guide/QUICK_START": [
-    {
-      "level": 1,
-      "text": "WSXJS 快速开始指南",
-      "id": "wsxjs-",
-      "children": [
-        {
-          "level": 2,
-          "text": "安装",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "配置",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. TypeScript 配置",
-              "id": "1-typescript-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. Vite 配置",
-              "id": "2-vite-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. ESLint 配置",
-              "id": "3-eslint-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "创建组件",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "基础组件",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "使用 @state 装饰器（响应式状态）",
-              "id": "-state-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "使用组件",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "主要特性",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "下一步",
-          "id": "",
-          "children": []
-        }
-      ]
-    }
-  ],
-  "guide/PUBLISH_GUIDE": [
-    {
-      "level": 1,
-      "text": "WSXJS 发布指南",
-      "id": "wsxjs-",
-      "children": [
-        {
-          "level": 2,
-          "text": "前置要求",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "发布流程",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "方法 1: 使用自动化发布脚本（推荐）",
-              "id": "-1-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "阶段 1: 版本管理（可选）",
-          "id": "-1-",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "阶段 2: 发布到 NPM",
-          "id": "-2-npm",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "最佳实践特性",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "方法 2: 手动发布流程",
-              "id": "-2-",
-              "children": [
+            "level": 1,
+            "text": "WSX 类型系统指南",
+            "id": "wsx-",
+            "children": [
                 {
-                  "level": 4,
-                  "text": "步骤 1: 创建 Changeset",
-                  "id": "-1-changeset",
-                  "children": []
+                    "level": 2,
+                    "text": "目录",
+                    "id": "",
+                    "children": []
                 },
                 {
-                  "level": 4,
-                  "text": "步骤 2: 构建和测试",
-                  "id": "-2-",
-                  "children": []
+                    "level": 2,
+                    "text": "为什么每个包都需要 wsx.d.ts？",
+                    "id": "-wsxdts",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "问题背景",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "TypeScript 模块类型声明的限制",
+                            "id": "typescript-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "实际验证结果",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "业界最佳实践",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "参考资料",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
                 },
                 {
-                  "level": 4,
-                  "text": "步骤 3: 应用版本更新",
-                  "id": "-3-",
-                  "children": []
+                    "level": 2,
+                    "text": "如何维护类型一致性？",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "自动同步机制",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Pre-commit Hook",
+                            "id": "pre-commit-hook",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "CI/CD 验证",
+                            "id": "cicd-",
+                            "children": []
+                        }
+                    ]
                 },
                 {
-                  "level": 4,
-                  "text": "步骤 4: 重新构建",
-                  "id": "-4-",
-                  "children": []
+                    "level": 2,
+                    "text": "开发者指南",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "修改类型定义",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "添加新包",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "检查类型一致性",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
                 },
                 {
-                  "level": 4,
-                  "text": "步骤 5: 发布到 NPM",
-                  "id": "-5-npm",
-                  "children": []
+                    "level": 2,
+                    "text": "故障排查",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "问题 1：TypeScript 报错 ",
+                            "id": "-1typescript-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "问题 2：IDE 显示 &quot;React is not in scope&quot; 错误",
+                            "id": "-2ide-quotreact-is-not-in-scopequot-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "问题 3：CI 验证失败 &quot;wsx.d.ts files are inconsistent&quot;",
+                            "id": "-3ci-quotwsxdts-files-are-inconsistentquot",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "问题 4：Pre-commit hook 没有自动运行",
+                            "id": "-4pre-commit-hook-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "问题 5：新创建的包无法识别 .wsx 文件",
+                            "id": "-5-wsx-",
+                            "children": []
+                        }
+                    ]
                 },
                 {
-                  "level": 4,
-                  "text": "步骤 6: 提交和推送",
-                  "id": "-6-",
-                  "children": []
+                    "level": 2,
+                    "text": "总结",
+                    "id": "",
+                    "children": []
                 }
-              ]
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "Turbo 的优势",
-          "id": "turbo-",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. 并行构建",
-              "id": "1-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 智能缓存",
-              "id": "2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 依赖感知",
-              "id": "3-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "4. 增量构建",
-              "id": "4-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "常用命令",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "构建相关",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "代码质量",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Changeset 相关",
-              "id": "changeset-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "发布检查清单",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "故障排除",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "构建失败",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "版本冲突",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "发布失败",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "CI/CD 集成",
-          "id": "cicd-",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "相关文档",
-          "id": "",
-          "children": []
+            ]
         }
-      ]
-    }
-  ],
-  "guide/LIGHT_COMPONENT_GUIDE": [
-    {
-      "level": 1,
-      "text": "LightComponent 使用指南",
-      "id": "lightcomponent-",
-      "children": [
+    ],
+    "guide/TYPESCRIPT_SETUP": [
         {
-          "level": 2,
-          "text": "概述",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "为什么使用 LightComponent？",
-          "id": "-lightcomponent",
-          "children": [
-            {
-              "level": 3,
-              "text": "适用场景",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "不适用场景",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "快速开始",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "基础用法",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "使用响应式状态",
-              "id": "",
-              "children": [
+            "level": 1,
+            "text": "TypeScript 配置指南",
+            "id": "typescript-",
+            "children": [
                 {
-                  "level": 4,
-                  "text": "方式 1: 使用 @state 装饰器（推荐）",
-                  "id": "-1-state-",
-                  "children": []
+                    "level": 2,
+                    "text": "📋 目录",
+                    "id": "-",
+                    "children": []
                 },
                 {
-                  "level": 4,
-                  "text": "方式 2: 使用 reactive() 方法",
-                  "id": "-2-reactive-",
-                  "children": []
+                    "level": 2,
+                    "text": "基本配置",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. JSX 配置",
+                            "id": "1-jsx-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 类型引用配置",
+                            "id": "2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 测试库类型（可选）",
+                            "id": "3-",
+                            "children": []
+                        }
+                    ]
                 },
                 {
-                  "level": 4,
-                  "text": "方式 3: 使用 useState Hook",
-                  "id": "-3-usestate-hook",
-                  "children": []
+                    "level": 2,
+                    "text": "完整配置示例",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "生产项目配置",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "测试环境配置",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Monorepo 工作区配置",
+                            "id": "monorepo-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "类型引用机制",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "TypeScript 如何加载类型",
+                            "id": "typescript-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "类型定义文件层次",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "为什么不需要三斜线指令",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "最佳实践",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. 使用标准的 TypeScript 类型解析",
+                            "id": "1-typescript-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 分离生产和测试配置",
+                            "id": "2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 保持 global.d.ts 简洁",
+                            "id": "3-globaldts-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "4. 文件包含配置",
+                            "id": "4-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "常见问题",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. IDE 报错：&quot;This JSX tag requires &#39;React&#39; to be in scope&quot;",
+                            "id": "1-ide-quotthis-jsx-tag-requires-39react39-to-be-in-scopequot",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 找不到 JSX 类型定义",
+                            "id": "2-jsx-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 测试文件中找不到  类型",
+                            "id": "3-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "4. Monorepo 中类型找不到",
+                            "id": "4-monorepo-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "5.  文件找不到类型声明",
+                            "id": "5-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "6. 外部项目集成 WSXJS",
+                            "id": "6-wsxjs",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "调试技巧",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "查看 TypeScript 解析的类型路径",
+                            "id": "-typescript-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "验证类型定义加载",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "总结",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "✅ 推荐的配置方式",
+                            "id": "-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "❌ 避免的做法",
+                            "id": "-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "📚 相关文档",
+                            "id": "-",
+                            "children": []
+                        }
+                    ]
                 }
-              ]
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "核心特性",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. JSX 支持",
-              "id": "1-jsx-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 响应式状态管理",
-              "id": "2-",
-              "children": [
-                {
-                  "level": 4,
-                  "text": "@state 装饰器（推荐）",
-                  "id": "state-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "reactive() 方法",
-                  "id": "reactive-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "useState() 方法",
-                  "id": "usestate-",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "3. 生命周期钩子",
-              "id": "3-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "4. 样式管理",
-              "id": "4-",
-              "children": [
-                {
-                  "level": 4,
-                  "text": "自动 CSS 注入（推荐）",
-                  "id": "-css-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "作用域样式",
-                  "id": "",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "5. 错误处理",
-              "id": "5-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "实际应用示例",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "示例 1: EditorJS 集成",
-              "id": "-1-editorjs-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "示例 2: 路由容器",
-              "id": "-2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "示例 3: 响应式表单",
-              "id": "-3-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "最佳实践",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. 样式作用域",
-              "id": "1-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 第三方库清理",
-              "id": "2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 响应式状态管理",
-              "id": "3-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "4. 属性观察",
-              "id": "4-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "组件对比：LightComponent vs WebComponent",
-          "id": "lightcomponent-vs-webcomponent",
-          "children": [
-            {
-              "level": 3,
-              "text": "核心区别",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "详细对比",
-              "id": "",
-              "children": [
-                {
-                  "level": 4,
-                  "text": "1. DOM 渲染方式",
-                  "id": "1-dom-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "2. 样式处理",
-                  "id": "2-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "3. 第三方库集成",
-                  "id": "3-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "4. 响应式 API",
-                  "id": "4-api",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "5. 元素查询",
-                  "id": "5-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "6. 事件处理",
-                  "id": "6-",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "选择指南",
-              "id": "",
-              "children": [
-                {
-                  "level": 4,
-                  "text": "使用 LightComponent 当：",
-                  "id": "-lightcomponent-",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "使用 WebComponent 当：",
-                  "id": "-webcomponent-",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "代码示例对比",
-              "id": "",
-              "children": [
-                {
-                  "level": 4,
-                  "text": "相同点：响应式状态",
-                  "id": "",
-                  "children": []
-                },
-                {
-                  "level": 4,
-                  "text": "不同点：DOM 访问",
-                  "id": "dom-",
-                  "children": []
-                }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "总结",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "常见问题",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "Q: LightComponent 支持 Shadow DOM 吗？",
-              "id": "q-lightcomponent-shadow-dom-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: 样式会被全局污染吗？",
-              "id": "q-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: 响应式状态会自动清理吗？",
-              "id": "q-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: 可以在 LightComponent 中使用 slot 吗？",
-              "id": "q-lightcomponent-slot-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: 如何自动注入 CSS 样式？",
-              "id": "q-css-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "Q: @state 装饰器为什么必须有初始值？",
-              "id": "q-state-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "总结",
-          "id": "",
-          "children": []
+            ]
         }
-      ]
-    }
-  ],
-  "guide/JSX_SUPPORT": [
-    {
-      "level": 1,
-      "text": "WSXJS JSX 支持文档",
-      "id": "wsxjs-jsx-",
-      "children": [
+    ],
+    "guide/QUICK_START": [
         {
-          "level": 2,
-          "text": "概述",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "核心特性",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "技术架构",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "JSX 工厂函数",
-              "id": "jsx-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "类型系统",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "配置指南",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. TypeScript 配置",
-              "id": "1-typescript-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. Vite 配置",
-              "id": "2-vite-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. ESLint 配置",
-              "id": "3-eslint-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "使用方法",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "基本 JSX 语法",
-              "id": "-jsx-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "事件处理",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "引用回调",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "条件渲染",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "列表渲染",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "框架内部实现",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "JSX 入口点",
-              "id": "jsx-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "包导出配置",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "最佳实践",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. 类型安全",
-              "id": "1-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 事件处理",
-              "id": "2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 组件组合",
-              "id": "3-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "故障排除",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "常见问题",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "调试技巧",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "迁移指南",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "从 React 迁移",
-              "id": "-react-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "从其他框架迁移",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "总结",
-          "id": "",
-          "children": []
-        }
-      ]
-    }
-  ],
-  "guide/EXAMPLE_DEVELOPMENT_PLAN": [
-    {
-      "level": 1,
-      "text": "WSX 示例组件开发计划",
-      "id": "wsx-",
-      "children": [
-        {
-          "level": 2,
-          "text": "目标",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "开发原则",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "第一阶段：核心功能示例（1-2周）",
-          "id": "1-2",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. 生命周期示例 ",
-              "id": "1-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 属性观察示例 ",
-              "id": "2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 事件系统示例 ",
-              "id": "3-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "第二阶段：交互模式示例（2-3周）",
-          "id": "2-3",
-          "children": [
-            {
-              "level": 3,
-              "text": "4. 表单集成示例 ",
-              "id": "4-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "5. 组件通信示例 ",
-              "id": "5-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "6. 动态内容示例 ",
-              "id": "6-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "第三阶段：高级特性示例（3-4周）",
-          "id": "3-4",
-          "children": [
-            {
-              "level": 3,
-              "text": "7. 异步数据示例 ",
-              "id": "7-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "8. 性能优化示例 ",
-              "id": "8-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "9. 原生 API 集成示例 ",
-              "id": "9-api-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "10. 组合模式示例 ",
-              "id": "10-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "实施计划",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "第一周",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "第二周",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "第三周",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "第四周",
-              "id": "",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "后续计划",
-              "id": "",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "成功标准",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "示例组件模板",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "文档要求",
-          "id": "",
-          "children": []
-        }
-      ]
-    }
-  ],
-  "guide/DESIGN_PHILOSOPHY": [
-    {
-      "level": 1,
-      "text": "WSXJS 设计理念",
-      "id": "wsxjs-",
-      "children": [
-        {
-          "level": 2,
-          "text": "概述",
-          "id": "",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "核心设计原则",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. 原生优先 (Native-First)",
-              "id": "1-native-first",
-              "children": [
+            "level": 1,
+            "text": "WSXJS 快速开始指南",
+            "id": "wsxjs-",
+            "children": [
                 {
-                  "level": 4,
-                  "text": "示例：class vs className",
-                  "id": "class-vs-classname",
-                  "children": []
+                    "level": 2,
+                    "text": "安装",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "配置",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. TypeScript 配置",
+                            "id": "1-typescript-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. Vite 配置",
+                            "id": "2-vite-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. ESLint 配置",
+                            "id": "3-eslint-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "创建组件",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "基础组件",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "使用 @state 装饰器（响应式状态）",
+                            "id": "-state-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "使用组件",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "主要特性",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "下一步",
+                    "id": "",
+                    "children": []
                 }
-              ]
-            },
-            {
-              "level": 3,
-              "text": "2. 零依赖 (Zero Dependencies)",
-              "id": "2-zero-dependencies",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 渐进增强 (Progressive Enhancement)",
-              "id": "3-progressive-enhancement",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "4. 标准兼容 (Standards Compliant)",
-              "id": "4-standards-compliant",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "与React的对比",
-          "id": "react",
-          "children": []
-        },
-        {
-          "level": 2,
-          "text": "性能优势",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. 无Virtual DOM",
-              "id": "1-virtual-dom",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 更小的运行时",
-              "id": "2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 原生性能",
-              "id": "3-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "开发体验",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. 熟悉的语法",
-              "id": "1-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. TypeScript支持",
-              "id": "2-typescript",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 工具链集成",
-              "id": "3-",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "迁移指南",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "从React迁移",
-              "id": "react",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "最佳实践",
-          "id": "",
-          "children": [
-            {
-              "level": 3,
-              "text": "1. 使用原生属性名",
-              "id": "1-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "2. 利用原生生命周期",
-              "id": "2-",
-              "children": []
-            },
-            {
-              "level": 3,
-              "text": "3. 使用Shadow DOM",
-              "id": "3-shadow-dom",
-              "children": []
-            }
-          ]
-        },
-        {
-          "level": 2,
-          "text": "总结",
-          "id": "",
-          "children": []
+            ]
         }
-      ]
-    }
-  ]
+    ],
+    "guide/PUBLISH_GUIDE": [
+        {
+            "level": 1,
+            "text": "WSXJS 发布指南",
+            "id": "wsxjs-",
+            "children": [
+                {
+                    "level": 2,
+                    "text": "前置要求",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "发布流程",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "方法 1: 使用自动化发布脚本（推荐）",
+                            "id": "-1-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "阶段 1: 版本管理（可选）",
+                    "id": "-1-",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "阶段 2: 发布到 NPM",
+                    "id": "-2-npm",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "最佳实践特性",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "方法 2: 手动发布流程",
+                            "id": "-2-",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "步骤 1: 创建 Changeset",
+                                    "id": "-1-changeset",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "步骤 2: 构建和测试",
+                                    "id": "-2-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "步骤 3: 应用版本更新",
+                                    "id": "-3-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "步骤 4: 重新构建",
+                                    "id": "-4-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "步骤 5: 发布到 NPM",
+                                    "id": "-5-npm",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "步骤 6: 提交和推送",
+                                    "id": "-6-",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "Turbo 的优势",
+                    "id": "turbo-",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. 并行构建",
+                            "id": "1-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 智能缓存",
+                            "id": "2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 依赖感知",
+                            "id": "3-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "4. 增量构建",
+                            "id": "4-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "常用命令",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "构建相关",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "代码质量",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Changeset 相关",
+                            "id": "changeset-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "发布检查清单",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "故障排除",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "构建失败",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "版本冲突",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "发布失败",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "CI/CD 集成",
+                    "id": "cicd-",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "相关文档",
+                    "id": "",
+                    "children": []
+                }
+            ]
+        }
+    ],
+    "guide/LIGHT_COMPONENT_GUIDE": [
+        {
+            "level": 1,
+            "text": "LightComponent 使用指南",
+            "id": "lightcomponent-",
+            "children": [
+                {
+                    "level": 2,
+                    "text": "概述",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "为什么使用 LightComponent？",
+                    "id": "-lightcomponent",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "适用场景",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "不适用场景",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "快速开始",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "基础用法",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "使用响应式状态",
+                            "id": "",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "方式 1: 使用 @state 装饰器（推荐）",
+                                    "id": "-1-state-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "方式 2: 使用 reactive() 方法",
+                                    "id": "-2-reactive-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "方式 3: 使用 useState Hook",
+                                    "id": "-3-usestate-hook",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "核心特性",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. JSX 支持",
+                            "id": "1-jsx-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 响应式状态管理",
+                            "id": "2-",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "@state 装饰器（推荐）",
+                                    "id": "state-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "reactive() 方法",
+                                    "id": "reactive-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "useState() 方法",
+                                    "id": "usestate-",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 生命周期钩子",
+                            "id": "3-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "4. 样式管理",
+                            "id": "4-",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "自动 CSS 注入（推荐）",
+                                    "id": "-css-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "作用域样式",
+                                    "id": "",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "5. 错误处理",
+                            "id": "5-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "实际应用示例",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "示例 1: EditorJS 集成",
+                            "id": "-1-editorjs-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "示例 2: 路由容器",
+                            "id": "-2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "示例 3: 响应式表单",
+                            "id": "-3-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "最佳实践",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. 样式作用域",
+                            "id": "1-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 第三方库清理",
+                            "id": "2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 响应式状态管理",
+                            "id": "3-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "4. 属性观察",
+                            "id": "4-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "组件对比：LightComponent vs WebComponent",
+                    "id": "lightcomponent-vs-webcomponent",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "核心区别",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "详细对比",
+                            "id": "",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "1. DOM 渲染方式",
+                                    "id": "1-dom-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "2. 样式处理",
+                                    "id": "2-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "3. 第三方库集成",
+                                    "id": "3-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "4. 响应式 API",
+                                    "id": "4-api",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "5. 元素查询",
+                                    "id": "5-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "6. 事件处理",
+                                    "id": "6-",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "选择指南",
+                            "id": "",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "使用 LightComponent 当：",
+                                    "id": "-lightcomponent-",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "使用 WebComponent 当：",
+                                    "id": "-webcomponent-",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "代码示例对比",
+                            "id": "",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "相同点：响应式状态",
+                                    "id": "",
+                                    "children": []
+                                },
+                                {
+                                    "level": 4,
+                                    "text": "不同点：DOM 访问",
+                                    "id": "dom-",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "总结",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "常见问题",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "Q: LightComponent 支持 Shadow DOM 吗？",
+                            "id": "q-lightcomponent-shadow-dom-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: 样式会被全局污染吗？",
+                            "id": "q-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: 响应式状态会自动清理吗？",
+                            "id": "q-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: 可以在 LightComponent 中使用 slot 吗？",
+                            "id": "q-lightcomponent-slot-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: 如何自动注入 CSS 样式？",
+                            "id": "q-css-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "Q: @state 装饰器为什么必须有初始值？",
+                            "id": "q-state-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "总结",
+                    "id": "",
+                    "children": []
+                }
+            ]
+        }
+    ],
+    "guide/JSX_SUPPORT": [
+        {
+            "level": 1,
+            "text": "WSXJS JSX 支持文档",
+            "id": "wsxjs-jsx-",
+            "children": [
+                {
+                    "level": 2,
+                    "text": "概述",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "核心特性",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "技术架构",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "JSX 工厂函数",
+                            "id": "jsx-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "类型系统",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "配置指南",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. TypeScript 配置",
+                            "id": "1-typescript-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. Vite 配置",
+                            "id": "2-vite-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. ESLint 配置",
+                            "id": "3-eslint-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "使用方法",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "基本 JSX 语法",
+                            "id": "-jsx-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "事件处理",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "引用回调",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "条件渲染",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "列表渲染",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "框架内部实现",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "JSX 入口点",
+                            "id": "jsx-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "包导出配置",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "最佳实践",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. 类型安全",
+                            "id": "1-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 事件处理",
+                            "id": "2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 组件组合",
+                            "id": "3-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "故障排除",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "常见问题",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "调试技巧",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "迁移指南",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "从 React 迁移",
+                            "id": "-react-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "从其他框架迁移",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "总结",
+                    "id": "",
+                    "children": []
+                }
+            ]
+        }
+    ],
+    "guide/EXAMPLE_DEVELOPMENT_PLAN": [
+        {
+            "level": 1,
+            "text": "WSX 示例组件开发计划",
+            "id": "wsx-",
+            "children": [
+                {
+                    "level": 2,
+                    "text": "目标",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "开发原则",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "第一阶段：核心功能示例（1-2周）",
+                    "id": "1-2",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. 生命周期示例 ",
+                            "id": "1-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 属性观察示例 ",
+                            "id": "2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 事件系统示例 ",
+                            "id": "3-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "第二阶段：交互模式示例（2-3周）",
+                    "id": "2-3",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "4. 表单集成示例 ",
+                            "id": "4-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "5. 组件通信示例 ",
+                            "id": "5-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "6. 动态内容示例 ",
+                            "id": "6-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "第三阶段：高级特性示例（3-4周）",
+                    "id": "3-4",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "7. 异步数据示例 ",
+                            "id": "7-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "8. 性能优化示例 ",
+                            "id": "8-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "9. 原生 API 集成示例 ",
+                            "id": "9-api-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "10. 组合模式示例 ",
+                            "id": "10-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "实施计划",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "第一周",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "第二周",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "第三周",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "第四周",
+                            "id": "",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "后续计划",
+                            "id": "",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "成功标准",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "示例组件模板",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "文档要求",
+                    "id": "",
+                    "children": []
+                }
+            ]
+        }
+    ],
+    "guide/DESIGN_PHILOSOPHY": [
+        {
+            "level": 1,
+            "text": "WSXJS 设计理念",
+            "id": "wsxjs-",
+            "children": [
+                {
+                    "level": 2,
+                    "text": "概述",
+                    "id": "",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "核心设计原则",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. 原生优先 (Native-First)",
+                            "id": "1-native-first",
+                            "children": [
+                                {
+                                    "level": 4,
+                                    "text": "示例：class vs className",
+                                    "id": "class-vs-classname",
+                                    "children": []
+                                }
+                            ]
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 零依赖 (Zero Dependencies)",
+                            "id": "2-zero-dependencies",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 渐进增强 (Progressive Enhancement)",
+                            "id": "3-progressive-enhancement",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "4. 标准兼容 (Standards Compliant)",
+                            "id": "4-standards-compliant",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "与React的对比",
+                    "id": "react",
+                    "children": []
+                },
+                {
+                    "level": 2,
+                    "text": "性能优势",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. 无Virtual DOM",
+                            "id": "1-virtual-dom",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 更小的运行时",
+                            "id": "2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 原生性能",
+                            "id": "3-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "开发体验",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. 熟悉的语法",
+                            "id": "1-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. TypeScript支持",
+                            "id": "2-typescript",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 工具链集成",
+                            "id": "3-",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "迁移指南",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "从React迁移",
+                            "id": "react",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "最佳实践",
+                    "id": "",
+                    "children": [
+                        {
+                            "level": 3,
+                            "text": "1. 使用原生属性名",
+                            "id": "1-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "2. 利用原生生命周期",
+                            "id": "2-",
+                            "children": []
+                        },
+                        {
+                            "level": 3,
+                            "text": "3. 使用Shadow DOM",
+                            "id": "3-shadow-dom",
+                            "children": []
+                        }
+                    ]
+                },
+                {
+                    "level": 2,
+                    "text": "总结",
+                    "id": "",
+                    "children": []
+                }
+            ]
+        }
+    ]
 }

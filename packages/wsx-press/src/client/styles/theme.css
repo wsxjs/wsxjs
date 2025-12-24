@@ -4,87 +4,147 @@
  */
 
 :root {
-  /* ===== 颜色系统 - 亮色模式 ===== */
-  --wsx-press-bg-primary: #ffffff;
-  --wsx-press-bg-secondary: #f6f8fa;
-  --wsx-press-bg-tertiary: #f0f2f5;
+    /* ===== 颜色系统 - 亮色模式 ===== */
+    --wsx-press-bg-primary: #ffffff;
+    --wsx-press-bg-secondary: #f6f8fa;
+    --wsx-press-bg-tertiary: #f0f2f5;
 
-  --wsx-press-text-primary: #1f2328;
-  --wsx-press-text-secondary: #636c76;
-  --wsx-press-text-tertiary: #8c959f;
+    --wsx-press-text-primary: #1f2328;
+    --wsx-press-text-secondary: #636c76;
+    --wsx-press-text-tertiary: #8c959f;
 
-  --wsx-press-border: #d0d7de;
-  --wsx-press-border-hover: #8c959f;
+    --wsx-press-border: #d0d7de;
+    --wsx-press-border-hover: #8c959f;
 
-  --wsx-press-link: #0969da;
-  --wsx-press-link-hover: #0550ae;
+    --wsx-press-link: #0969da;
+    --wsx-press-link-hover: #0550ae;
 
-  --wsx-press-accent: #dc2626;        /* 继承 wsxjs 主色 */
-  --wsx-press-accent-hover: #b91c1c;
+    --wsx-press-accent: #dc2626; /* 继承 wsxjs 主色 */
+    --wsx-press-accent-hover: #b91c1c;
 
-  /* 代码高亮 */
-  --wsx-press-code-bg: #f6f8fa;
-  --wsx-press-code-text: #24292f;
-  --wsx-press-code-border: #d0d7de;
+    /* 代码高亮 */
+    --wsx-press-code-bg: #f6f8fa;
+    --wsx-press-code-text: #24292f;
+    --wsx-press-code-border: #d0d7de;
 
-  /* ===== 间距系统 ===== */
-  --wsx-press-spacing-xs: 0.25rem;    /* 4px */
-  --wsx-press-spacing-sm: 0.5rem;     /* 8px */
-  --wsx-press-spacing-md: 1rem;       /* 16px */
-  --wsx-press-spacing-lg: 1.5rem;     /* 24px */
-  --wsx-press-spacing-xl: 2rem;       /* 32px */
-  --wsx-press-spacing-2xl: 3rem;      /* 48px */
-  --wsx-press-spacing-3xl: 4rem;      /* 64px */
+    /* ===== 间距系统 ===== */
+    --wsx-press-spacing-xs: 0.25rem; /* 4px */
+    --wsx-press-spacing-sm: 0.5rem; /* 8px */
+    --wsx-press-spacing-md: 1rem; /* 16px */
+    --wsx-press-spacing-lg: 1.5rem; /* 24px */
+    --wsx-press-spacing-xl: 2rem; /* 32px */
+    --wsx-press-spacing-2xl: 3rem; /* 48px */
+    --wsx-press-spacing-3xl: 4rem; /* 64px */
 
-  /* ===== 字体系统 ===== */
-  --wsx-press-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --wsx-press-font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+    /* ===== 字体系统 ===== */
+    --wsx-press-font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --wsx-press-font-mono:
+        "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
 
-  --wsx-press-font-size-xs: 0.75rem;   /* 12px */
-  --wsx-press-font-size-sm: 0.875rem;  /* 14px */
-  --wsx-press-font-size-base: 1rem;    /* 16px */
-  --wsx-press-font-size-lg: 1.125rem;  /* 18px */
-  --wsx-press-font-size-xl: 1.25rem;   /* 20px */
-  --wsx-press-font-size-2xl: 1.5rem;   /* 24px */
-  --wsx-press-font-size-3xl: 1.875rem; /* 30px */
-  --wsx-press-font-size-4xl: 2.25rem;  /* 36px */
+    --wsx-press-font-size-xs: 0.75rem; /* 12px */
+    --wsx-press-font-size-sm: 0.875rem; /* 14px */
+    --wsx-press-font-size-base: 1rem; /* 16px */
+    --wsx-press-font-size-lg: 1.125rem; /* 18px */
+    --wsx-press-font-size-xl: 1.25rem; /* 20px */
+    --wsx-press-font-size-2xl: 1.5rem; /* 24px */
+    --wsx-press-font-size-3xl: 1.875rem; /* 30px */
+    --wsx-press-font-size-4xl: 2.25rem; /* 36px */
 
-  --wsx-press-line-height-tight: 1.25;
-  --wsx-press-line-height-normal: 1.5;
-  --wsx-press-line-height-relaxed: 1.75;
+    --wsx-press-line-height-tight: 1.25;
+    --wsx-press-line-height-normal: 1.5;
+    --wsx-press-line-height-relaxed: 1.75;
 
-  /* ===== 圆角 ===== */
-  --wsx-press-radius-sm: 0.25rem;
-  --wsx-press-radius-md: 0.5rem;
-  --wsx-press-radius-lg: 0.75rem;
-  --wsx-press-radius-xl: 1rem;
+    /* ===== 圆角 ===== */
+    --wsx-press-radius-sm: 0.25rem;
+    --wsx-press-radius-md: 0.5rem;
+    --wsx-press-radius-lg: 0.75rem;
+    --wsx-press-radius-xl: 1rem;
 
-  /* ===== 阴影 ===== */
-  --wsx-press-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --wsx-press-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --wsx-press-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --wsx-press-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    /* ===== 阴影 ===== */
+    --wsx-press-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --wsx-press-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --wsx-press-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --wsx-press-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 
-  /* ===== 布局 ===== */
-  --wsx-press-sidebar-width: 280px;
-  --wsx-press-toc-width: 240px;
-  --wsx-press-content-max-width: 800px;
-  --wsx-press-layout-max-width: 1440px;
+    /* ===== 布局 ===== */
+    --wsx-press-sidebar-width: 280px;
+    --wsx-press-toc-width: 240px;
+    --wsx-press-content-max-width: 800px;
+    --wsx-press-layout-max-width: 1440px;
 
-  /* ===== 动画 ===== */
-  --wsx-press-transition-fast: 150ms ease;
-  --wsx-press-transition-base: 200ms ease;
-  --wsx-press-transition-slow: 300ms ease;
+    /* ===== 动画 ===== */
+    --wsx-press-transition-fast: 150ms ease;
+    --wsx-press-transition-base: 200ms ease;
+    --wsx-press-transition-slow: 300ms ease;
 
-  /* ===== Z-index ===== */
-  --wsx-press-z-dropdown: 1000;
-  --wsx-press-z-modal: 1050;
-  --wsx-press-z-tooltip: 1100;
+    /* ===== Z-index ===== */
+    --wsx-press-z-dropdown: 1000;
+    --wsx-press-z-modal: 1050;
+    --wsx-press-z-tooltip: 1100;
 }
 
 /* ===== 暗色模式（系统偏好） ===== */
 @media (prefers-color-scheme: dark) {
-  :root {
+    :root {
+        --wsx-press-bg-primary: #0d1117;
+        --wsx-press-bg-secondary: #161b22;
+        --wsx-press-bg-tertiary: #21262d;
+
+        --wsx-press-text-primary: #e6edf3;
+        --wsx-press-text-secondary: #8b949e;
+        --wsx-press-text-tertiary: #6e7681;
+
+        --wsx-press-border: #30363d;
+        --wsx-press-border-hover: #484f58;
+
+        --wsx-press-link: #58a6ff;
+        --wsx-press-link-hover: #79c0ff;
+
+        --wsx-press-accent: #f87171;
+        --wsx-press-accent-hover: #fca5a5;
+
+        --wsx-press-code-bg: #161b22;
+        --wsx-press-code-text: #e6edf3;
+        --wsx-press-code-border: #30363d;
+
+        --wsx-press-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        --wsx-press-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+        --wsx-press-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        --wsx-press-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
+    }
+}
+
+/* ===== 显式主题类（强制覆盖） ===== */
+[data-theme="light"] {
+    --wsx-press-bg-primary: #ffffff;
+    --wsx-press-bg-secondary: #f6f8fa;
+    --wsx-press-bg-tertiary: #f0f2f5;
+
+    --wsx-press-text-primary: #1f2328;
+    --wsx-press-text-secondary: #636c76;
+    --wsx-press-text-tertiary: #8c959f;
+
+    --wsx-press-border: #d0d7de;
+    --wsx-press-border-hover: #8c959f;
+
+    --wsx-press-link: #0969da;
+    --wsx-press-link-hover: #0550ae;
+
+    --wsx-press-accent: #dc2626;
+    --wsx-press-accent-hover: #b91c1c;
+
+    --wsx-press-code-bg: #f6f8fa;
+    --wsx-press-code-text: #24292f;
+    --wsx-press-code-border: #d0d7de;
+
+    --wsx-press-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --wsx-press-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --wsx-press-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --wsx-press-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
     --wsx-press-bg-primary: #0d1117;
     --wsx-press-bg-secondary: #161b22;
     --wsx-press-bg-tertiary: #21262d;
@@ -110,62 +170,4 @@
     --wsx-press-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
     --wsx-press-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
     --wsx-press-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
-  }
-}
-
-/* ===== 显式主题类（强制覆盖） ===== */
-[data-theme="light"] {
-  --wsx-press-bg-primary: #ffffff;
-  --wsx-press-bg-secondary: #f6f8fa;
-  --wsx-press-bg-tertiary: #f0f2f5;
-
-  --wsx-press-text-primary: #1f2328;
-  --wsx-press-text-secondary: #636c76;
-  --wsx-press-text-tertiary: #8c959f;
-
-  --wsx-press-border: #d0d7de;
-  --wsx-press-border-hover: #8c959f;
-
-  --wsx-press-link: #0969da;
-  --wsx-press-link-hover: #0550ae;
-
-  --wsx-press-accent: #dc2626;
-  --wsx-press-accent-hover: #b91c1c;
-
-  --wsx-press-code-bg: #f6f8fa;
-  --wsx-press-code-text: #24292f;
-  --wsx-press-code-border: #d0d7de;
-
-  --wsx-press-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --wsx-press-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --wsx-press-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --wsx-press-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="dark"] {
-  --wsx-press-bg-primary: #0d1117;
-  --wsx-press-bg-secondary: #161b22;
-  --wsx-press-bg-tertiary: #21262d;
-
-  --wsx-press-text-primary: #e6edf3;
-  --wsx-press-text-secondary: #8b949e;
-  --wsx-press-text-tertiary: #6e7681;
-
-  --wsx-press-border: #30363d;
-  --wsx-press-border-hover: #484f58;
-
-  --wsx-press-link: #58a6ff;
-  --wsx-press-link-hover: #79c0ff;
-
-  --wsx-press-accent: #f87171;
-  --wsx-press-accent-hover: #fca5a5;
-
-  --wsx-press-code-bg: #161b22;
-  --wsx-press-code-text: #e6edf3;
-  --wsx-press-code-border: #30363d;
-
-  --wsx-press-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --wsx-press-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --wsx-press-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  --wsx-press-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
 }

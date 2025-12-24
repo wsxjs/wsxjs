@@ -31,4 +31,3 @@ export default class Error extends LightComponent {
         return <div class="error">{this.message}</div>;
     }
 }
-

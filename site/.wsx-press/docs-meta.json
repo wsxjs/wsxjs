@@ -1,72 +1,72 @@
 {
-  "guide/WSX_DESIGN": {
-    "title": "WSX_DESIGN",
-    "category": "guide",
-    "route": "/docs/guide/WSX_DESIGN",
-    "prev": "/docs/guide/WEB_COMPONENT_GUIDE",
-    "next": null
-  },
-  "guide/WEB_COMPONENT_GUIDE": {
-    "title": "WEB_COMPONENT_GUIDE",
-    "category": "guide",
-    "route": "/docs/guide/WEB_COMPONENT_GUIDE",
-    "prev": "/docs/guide/TYPESCRIPT_WSX_TYPES",
-    "next": "/docs/guide/WSX_DESIGN"
-  },
-  "guide/TYPESCRIPT_WSX_TYPES": {
-    "title": "TYPESCRIPT_WSX_TYPES",
-    "category": "guide",
-    "route": "/docs/guide/TYPESCRIPT_WSX_TYPES",
-    "prev": "/docs/guide/TYPESCRIPT_SETUP",
-    "next": "/docs/guide/WEB_COMPONENT_GUIDE"
-  },
-  "guide/TYPESCRIPT_SETUP": {
-    "title": "TYPESCRIPT_SETUP",
-    "category": "guide",
-    "route": "/docs/guide/TYPESCRIPT_SETUP",
-    "prev": "/docs/guide/QUICK_START",
-    "next": "/docs/guide/TYPESCRIPT_WSX_TYPES"
-  },
-  "guide/QUICK_START": {
-    "title": "QUICK_START",
-    "category": "guide",
-    "route": "/docs/guide/QUICK_START",
-    "prev": "/docs/guide/PUBLISH_GUIDE",
-    "next": "/docs/guide/TYPESCRIPT_SETUP"
-  },
-  "guide/PUBLISH_GUIDE": {
-    "title": "PUBLISH_GUIDE",
-    "category": "guide",
-    "route": "/docs/guide/PUBLISH_GUIDE",
-    "prev": "/docs/guide/LIGHT_COMPONENT_GUIDE",
-    "next": "/docs/guide/QUICK_START"
-  },
-  "guide/LIGHT_COMPONENT_GUIDE": {
-    "title": "LIGHT_COMPONENT_GUIDE",
-    "category": "guide",
-    "route": "/docs/guide/LIGHT_COMPONENT_GUIDE",
-    "prev": "/docs/guide/JSX_SUPPORT",
-    "next": "/docs/guide/PUBLISH_GUIDE"
-  },
-  "guide/JSX_SUPPORT": {
-    "title": "JSX_SUPPORT",
-    "category": "guide",
-    "route": "/docs/guide/JSX_SUPPORT",
-    "prev": "/docs/guide/EXAMPLE_DEVELOPMENT_PLAN",
-    "next": "/docs/guide/LIGHT_COMPONENT_GUIDE"
-  },
-  "guide/EXAMPLE_DEVELOPMENT_PLAN": {
-    "title": "EXAMPLE_DEVELOPMENT_PLAN",
-    "category": "guide",
-    "route": "/docs/guide/EXAMPLE_DEVELOPMENT_PLAN",
-    "prev": "/docs/guide/DESIGN_PHILOSOPHY",
-    "next": "/docs/guide/JSX_SUPPORT"
-  },
-  "guide/DESIGN_PHILOSOPHY": {
-    "title": "DESIGN_PHILOSOPHY",
-    "category": "guide",
-    "route": "/docs/guide/DESIGN_PHILOSOPHY",
-    "prev": null,
-    "next": "/docs/guide/EXAMPLE_DEVELOPMENT_PLAN"
-  }
+    "guide/WSX_DESIGN": {
+        "title": "WSX_DESIGN",
+        "category": "guide",
+        "route": "/docs/guide/WSX_DESIGN",
+        "prev": "/docs/guide/WEB_COMPONENT_GUIDE",
+        "next": null
+    },
+    "guide/WEB_COMPONENT_GUIDE": {
+        "title": "WEB_COMPONENT_GUIDE",
+        "category": "guide",
+        "route": "/docs/guide/WEB_COMPONENT_GUIDE",
+        "prev": "/docs/guide/TYPESCRIPT_WSX_TYPES",
+        "next": "/docs/guide/WSX_DESIGN"
+    },
+    "guide/TYPESCRIPT_WSX_TYPES": {
+        "title": "TYPESCRIPT_WSX_TYPES",
+        "category": "guide",
+        "route": "/docs/guide/TYPESCRIPT_WSX_TYPES",
+        "prev": "/docs/guide/TYPESCRIPT_SETUP",
+        "next": "/docs/guide/WEB_COMPONENT_GUIDE"
+    },
+    "guide/TYPESCRIPT_SETUP": {
+        "title": "TYPESCRIPT_SETUP",
+        "category": "guide",
+        "route": "/docs/guide/TYPESCRIPT_SETUP",
+        "prev": "/docs/guide/QUICK_START",
+        "next": "/docs/guide/TYPESCRIPT_WSX_TYPES"
+    },
+    "guide/QUICK_START": {
+        "title": "QUICK_START",
+        "category": "guide",
+        "route": "/docs/guide/QUICK_START",
+        "prev": "/docs/guide/PUBLISH_GUIDE",
+        "next": "/docs/guide/TYPESCRIPT_SETUP"
+    },
+    "guide/PUBLISH_GUIDE": {
+        "title": "PUBLISH_GUIDE",
+        "category": "guide",
+        "route": "/docs/guide/PUBLISH_GUIDE",
+        "prev": "/docs/guide/LIGHT_COMPONENT_GUIDE",
+        "next": "/docs/guide/QUICK_START"
+    },
+    "guide/LIGHT_COMPONENT_GUIDE": {
+        "title": "LIGHT_COMPONENT_GUIDE",
+        "category": "guide",
+        "route": "/docs/guide/LIGHT_COMPONENT_GUIDE",
+        "prev": "/docs/guide/JSX_SUPPORT",
+        "next": "/docs/guide/PUBLISH_GUIDE"
+    },
+    "guide/JSX_SUPPORT": {
+        "title": "JSX_SUPPORT",
+        "category": "guide",
+        "route": "/docs/guide/JSX_SUPPORT",
+        "prev": "/docs/guide/EXAMPLE_DEVELOPMENT_PLAN",
+        "next": "/docs/guide/LIGHT_COMPONENT_GUIDE"
+    },
+    "guide/EXAMPLE_DEVELOPMENT_PLAN": {
+        "title": "EXAMPLE_DEVELOPMENT_PLAN",
+        "category": "guide",
+        "route": "/docs/guide/EXAMPLE_DEVELOPMENT_PLAN",
+        "prev": "/docs/guide/DESIGN_PHILOSOPHY",
+        "next": "/docs/guide/JSX_SUPPORT"
+    },
+    "guide/DESIGN_PHILOSOPHY": {
+        "title": "DESIGN_PHILOSOPHY",
+        "category": "guide",
+        "route": "/docs/guide/DESIGN_PHILOSOPHY",
+        "prev": null,
+        "next": "/docs/guide/EXAMPLE_DEVELOPMENT_PLAN"
+    }
 }

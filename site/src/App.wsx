@@ -457,7 +457,10 @@ export default class App extends LightComponent {
             // 加载文档元数据
             const response = await fetch("/.wsx-press/docs-meta.json");
             if (response.ok) {
-                const metadataMap = (await response.json()) as Record<string, { title: string; description?: string }>;
+                const metadataMap = (await response.json()) as Record<
+                    string,
+                    { title: string; description?: string }
+                >;
                 const docPath = `${category}/${page}`;
                 const docMeta = metadataMap[docPath];
 
