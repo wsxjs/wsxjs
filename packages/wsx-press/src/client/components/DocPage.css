@@ -6,7 +6,7 @@
 
 .doc-page {
     flex: 1;
-    padding: 2rem;
+    padding: var(--doc-page-padding-y, 1rem) var(--doc-page-padding-x, 2rem);
     max-width: 1200px;
     margin: 0 auto;
     width: 100%;
@@ -54,4 +54,3 @@
 .doc-content {
     line-height: 1.6;
 }
-

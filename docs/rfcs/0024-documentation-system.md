@@ -912,29 +912,81 @@ export function wsxPress(config: WsxPressConfig): Plugin {
         },
 
         configureServer(server) {
-            // 开发模式：提供 Markdown 文件和生成的 JSON
+            // 开发模式：通过 /.wsx-press 路径提供生成的 JSON 文件
+            // 这样与生产环境的路径保持一致（生产环境文件在 dist/.wsx-press/ 目录）
+            server.middlewares.use('/.wsx-press', async (req, res, next) => {
+                try {
+                    const url = new URL(req.url || '/', `http://${req.headers.host}`);
+                    const fullPath = url.pathname;
+                    // 移除 /.wsx-press 前缀，提取文件名
+                    const fileName = fullPath.replace(/^\/\.wsx-press\/?/, '').replace(/^\//, '');
+
+                    // 提供 docs-meta.json
+                    if (fileName === 'docs-meta.json') {
+                        const filePath = path.join(outDir, 'docs-meta.json');
+                        if (await fs.pathExists(filePath)) {
+                            const content = await fs.readFile(filePath, 'utf-8');
+                            res.setHeader('Content-Type', 'application/json');
+                            res.end(content);
+                            return;
+                        }
+                        // 如果文件不存在，尝试重新生成
+                        const metadata = await scanDocsMetadata(config.docsRoot);
+                        await fs.ensureDir(outDir);
+                        await fs.writeJSON(filePath, metadata, { spaces: 2 });
+                        res.setHeader('Content-Type', 'application/json');
+                        res.end(JSON.stringify(metadata, null, 2));
+                        return;
+                    }
+
+                    // 提供 search-index.json
+                    if (fileName === 'search-index.json') {
+                        const filePath = path.join(outDir, 'search-index.json');
+                        if (await fs.pathExists(filePath)) {
+                            const content = await fs.readFile(filePath, 'utf-8');
+                            res.setHeader('Content-Type', 'application/json');
+                            res.end(content);
+                            return;
+                        }
+                        // 如果文件不存在，尝试重新生成
+                        const metadata = await scanDocsMetadata(config.docsRoot);
+                        const searchIndex = await generateSearchIndex(metadata, config.docsRoot);
+                        await fs.ensureDir(outDir);
+                        await fs.writeJSON(filePath, searchIndex, { spaces: 2 });
+                        res.setHeader('Content-Type', 'application/json');
+                        res.end(JSON.stringify(searchIndex, null, 2));
+                        return;
+                    }
+
+                    // 提供 docs-toc.json
+                    if (fileName === 'docs-toc.json') {
+                        const filePath = path.join(outDir, 'docs-toc.json');
+                        if (await fs.pathExists(filePath)) {
+                            const content = await fs.readFile(filePath, 'utf-8');
+                            res.setHeader('Content-Type', 'application/json');
+                            res.end(content);
+                            return;
+                        }
+                        // 如果文件不存在，尝试重新生成
+                        const metadata = await scanDocsMetadata(config.docsRoot);
+                        const tocCollection = await generateTOCCollection(metadata, config.docsRoot);
+                        await fs.ensureDir(outDir);
+                        await fs.writeJSON(filePath, tocCollection, { spaces: 2 });
+                        res.setHeader('Content-Type', 'application/json');
+                        res.end(JSON.stringify(tocCollection, null, 2));
+                        return;
+                    }
+
+                    next();
+                } catch (error) {
+                    console.error('[wsx-press] Middleware error:', error);
+                    res.statusCode = 500;
+                    res.end(JSON.stringify({ error: String(error) }));
+                }
+            });
+
+            // 提供 Markdown 文件
             server.middlewares.use((req, res, next) => {
-                // 提供 docs-meta.json
-                if (req.url === '/docs-meta.json') {
-                    const filePath = path.join(outDir, 'docs-meta.json');
-                    if (fs.existsSync(filePath)) {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.end(fs.readFileSync(filePath, 'utf-8'));
-                        return;
-                    }
-                }
-
-                // 提供 search-index.json
-                if (req.url === '/search-index.json') {
-                    const filePath = path.join(outDir, 'search-index.json');
-                    if (fs.existsSync(filePath)) {
-                        res.setHeader('Content-Type', 'application/json');
-                        res.end(fs.readFileSync(filePath, 'utf-8'));
-                        return;
-                    }
-                }
-
-                // 提供 Markdown 文件
                 if (req.url?.startsWith('/docs/') && req.url.endsWith('.md')) {
                     const filePath = path.join(config.docsRoot, req.url.replace('/docs/', ''));
                     if (fs.existsSync(filePath)) {
@@ -943,7 +995,6 @@ export function wsxPress(config: WsxPressConfig): Plugin {
                         return;
                     }
                 }
-
                 next();
             });
         },

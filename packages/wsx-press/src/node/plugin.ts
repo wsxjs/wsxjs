@@ -6,10 +6,13 @@
 import type { Plugin } from "vite";
 import path from "path";
 import fs from "fs-extra";
+import { createLogger } from "@wsxjs/wsx-logger";
 import { scanDocsMetadata } from "./metadata";
 import { generateSearchIndex } from "./search";
 import { generateTOCCollection } from "./toc";
 import { generateApiDocs, type TypeDocConfig } from "./typedoc";
+
+const logger = createLogger("WSXPress");
 
 /**
  * WSX-Press 插件配置
@@ -83,35 +86,35 @@ export function wsxPress(options: WSXPressOptions): Plugin {
                 // 确保输出目录存在
                 await fs.ensureDir(absoluteOutputDir);
 
-                console.log("[wsx-press] Starting documentation generation...");
-                console.log(`[wsx-press] Docs root: ${absoluteDocsRoot}`);
-                console.log(`[wsx-press] Output dir: ${absoluteOutputDir}`);
+                logger.info("Starting documentation generation...");
+                logger.info(`Docs root: ${absoluteDocsRoot}`);
+                logger.info(`Output dir: ${absoluteOutputDir}`);
 
                 // 扫描文档元数据
                 const metadata = await scanDocsMetadata(absoluteDocsRoot);
                 const metadataPath = path.join(absoluteOutputDir, "docs-meta.json");
                 await fs.writeJSON(metadataPath, metadata, { spaces: 2 });
-                console.log(
-                    `[wsx-press] ✅ Generated docs-meta.json with ${Object.keys(metadata).length} documents`
+                logger.info(
+                    `✅ Generated docs-meta.json with ${Object.keys(metadata).length} documents`
                 );
 
                 // 生成搜索索引
                 const searchIndex = await generateSearchIndex(metadata, absoluteDocsRoot);
                 const searchIndexPath = path.join(absoluteOutputDir, "search-index.json");
                 await fs.writeJSON(searchIndexPath, searchIndex, { spaces: 2 });
-                console.log(`[wsx-press] ✅ Generated search-index.json`);
+                logger.info("✅ Generated search-index.json");
 
                 // 生成 TOC 数据
-                console.log("[wsx-press] Generating TOC collection...");
+                logger.info("Generating TOC collection...");
                 try {
                     const tocCollection = await generateTOCCollection(metadata, absoluteDocsRoot);
                     const tocPath = path.join(absoluteOutputDir, "docs-toc.json");
                     await fs.writeJSON(tocPath, tocCollection, { spaces: 2 });
-                    console.log(
-                        `[wsx-press] ✅ Generated docs-toc.json with ${Object.keys(tocCollection).length} documents`
+                    logger.info(
+                        `✅ Generated docs-toc.json with ${Object.keys(tocCollection).length} documents`
                     );
                 } catch (tocError) {
-                    console.error("[wsx-press] ❌ Failed to generate TOC collection:", tocError);
+                    logger.error("❌ Failed to generate TOC collection:", tocError);
                     // 不抛出错误，继续构建流程
                 }
 
@@ -126,27 +129,33 @@ export function wsxPress(options: WSXPressOptions): Plugin {
                     });
                 }
             } catch (error) {
-                console.error("[wsx-press] Failed to generate documentation:", error);
+                logger.error("Failed to generate documentation:", error);
                 throw error;
             }
         },
 
         /**
          * 配置开发服务器
+         * 在开发模式下通过 /.wsx-press 路径提供元数据和搜索索引
          */
         configureServer(server) {
             // 添加中间件，在开发模式下提供元数据和搜索索引
             server.middlewares.use("/.wsx-press", async (req, res, next) => {
                 try {
                     const url = new URL(req.url || "/", `http://${req.headers.host}`);
-                    const filePath = url.pathname;
+                    // 当中间件挂载在 /.wsx-press 下时，url.pathname 会是 /.wsx-press/docs-meta.json
+                    // 需要提取文件名部分（移除 /.wsx-press 前缀）
+                    const fullPath = url.pathname;
+                    // 移除 /.wsx-press 前缀，处理有/无尾部斜杠的情况
+                    const fileName = fullPath.replace(/^\/\.wsx-press\/?/, "").replace(/^\//, "");
 
+                    // 检查是否是支持的文件
                     if (
-                        filePath === "/docs-meta.json" ||
-                        filePath === "/search-index.json" ||
-                        filePath === "/docs-toc.json"
+                        fileName === "docs-meta.json" ||
+                        fileName === "search-index.json" ||
+                        fileName === "docs-toc.json"
                     ) {
-                        const file = path.join(absoluteOutputDir, filePath);
+                        const file = path.join(absoluteOutputDir, fileName);
                         if (await fs.pathExists(file)) {
                             const content = await fs.readFile(file, "utf-8");
                             res.setHeader("Content-Type", "application/json");
@@ -156,7 +165,7 @@ export function wsxPress(options: WSXPressOptions): Plugin {
                     }
 
                     // 如果文件不存在，尝试重新生成
-                    if (filePath === "/docs-meta.json") {
+                    if (fileName === "docs-meta.json") {
                         const metadata = await scanDocsMetadata(absoluteDocsRoot);
                         await fs.ensureDir(absoluteOutputDir);
                         await fs.writeJSON(
@@ -171,7 +180,7 @@ export function wsxPress(options: WSXPressOptions): Plugin {
                         return;
                     }
 
-                    if (filePath === "/search-index.json") {
+                    if (fileName === "search-index.json") {
                         const metadata = await scanDocsMetadata(absoluteDocsRoot);
                         const searchIndex = await generateSearchIndex(metadata, absoluteDocsRoot);
                         await fs.ensureDir(absoluteOutputDir);
@@ -185,7 +194,7 @@ export function wsxPress(options: WSXPressOptions): Plugin {
                         return;
                     }
 
-                    if (filePath === "/docs-toc.json") {
+                    if (fileName === "docs-toc.json") {
                         const metadata = await scanDocsMetadata(absoluteDocsRoot);
                         const tocCollection = await generateTOCCollection(
                             metadata,
@@ -204,7 +213,7 @@ export function wsxPress(options: WSXPressOptions): Plugin {
 
                     next();
                 } catch (error) {
-                    console.error("[wsx-press] Middleware error:", error);
+                    logger.error("Middleware error:", error);
                     res.statusCode = 500;
                     res.end(JSON.stringify({ error: String(error) }));
                 }

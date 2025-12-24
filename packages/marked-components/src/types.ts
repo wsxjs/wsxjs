@@ -6,11 +6,11 @@ import type { Tokens } from "marked";
 
 /**
  * Custom token renderer function type
- * 
+ *
  * @param token - The token to render
  * @param defaultRender - Function to call default rendering logic
  * @returns HTMLElement or null (null means use default rendering)
- * 
+ *
  * @example
  * ```typescript
  * const customHeadingRenderer: TokenRenderer = (token, defaultRender) => {
@@ -44,15 +44,14 @@ export interface MarkdownOptions {
      * Custom renderers for specific token types
      */
     customRenderers?: CustomRenderers;
-    
+
     /**
      * Custom CSS class name for the content container
      */
     contentClass?: string;
-    
+
     /**
      * Whether to enable debug logging
      */
     debug?: boolean;
 }
-

@@ -1,12 +1,12 @@
 /* DocSection - Documentation Section */
 doc-section {
-    display: flex !important;
-    flex-direction: column !important;
-    padding: 6rem 2rem !important;
-    padding-top: calc(70px + 2rem) !important; /* Navigation height (70px) + top spacing to prevent header overlap */
-    min-height: 100vh !important;
-    width: 100% !important;
-    
+    /* Expose layout variables to wsx-press components */
+    --nav-height: var(--nav-height, 70px);
+    --doc-layout-main-padding-y: var(--doc-layout-main-padding-y, 1.5rem);
+    --doc-layout-main-padding-x: var(--doc-layout-main-padding-x, 2rem);
+    --doc-page-padding-y: var(--doc-page-padding-y, 1rem);
+    --doc-page-padding-x: var(--doc-page-padding-x, 2rem);
+
     /* Map wsx-press CSS variables to site theme variables */
     --wsx-press-text-primary: var(--text-primary);
     --wsx-press-text-secondary: var(--text-secondary);
@@ -15,6 +15,15 @@ doc-section {
     --wsx-press-error-border: rgba(220, 38, 38, 0.3);
     --wsx-press-error-text: var(--primary-red);
     --wsx-press-error-title: var(--secondary-red);
+
+    display: flex;
+    flex-direction: column;
+    padding-right: var(--doc-section-padding);
+    padding-bottom: var(--doc-section-padding);
+    padding-left: var(--doc-section-padding);
+    padding-top: var(--doc-section-padding-top);
+    min-height: 100vh;
+    width: 100%;
 }
 
 .doc-section-content {
@@ -30,4 +39,3 @@ doc-section {
     display: flex;
     flex-direction: column;
 }
-

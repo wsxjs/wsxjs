@@ -2,8 +2,7 @@ wsx-doc-layout {
     display: flex;
     flex-direction: row;
     width: 100%;
-    min-height: calc(100vh - 70px); /* 减去导航栏高度 */
-    margin-top: 70px; /* 导航栏高度 */
+    min-height: calc(100vh - var(--nav-height, 70px));
 }
 
 .doc-layout {
@@ -23,7 +22,7 @@ wsx-doc-layout {
 .doc-layout-main {
     flex: 1;
     min-width: 0; /* 允许 flex 子元素收缩 */
-    padding: 2rem;
+    padding: var(--doc-layout-main-padding-y, 1.5rem) var(--doc-layout-main-padding-x, 2rem);
     max-width: 100%;
 }
 
@@ -43,9 +42,8 @@ wsx-doc-layout {
     .doc-layout-sidebar {
         display: none; /* 隐藏侧边栏 */
     }
-    
+
     .doc-layout-main {
-        padding: 1.5rem;
+        padding: var(--doc-layout-main-padding-y, 1.5rem);
     }
 }
-

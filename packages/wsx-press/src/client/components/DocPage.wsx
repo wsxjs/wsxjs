@@ -30,7 +30,34 @@ export const metadataCache: {
 };
 
 /**
- * 加载元数据（带缓存）
+ * 创建带超时的 fetch 请求（工具函数）
+ */
+async function fetchWithTimeout(
+    url: string,
+    options: RequestInit = {},
+    timeout: number = 10000
+): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        return response;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error instanceof Error && error.name === "AbortError") {
+            throw new Error(`Request timeout after ${timeout}ms`);
+        }
+        throw error;
+    }
+}
+
+/**
+ * 加载元数据（带缓存和超时）
  */
 async function loadMetadata(): Promise<Record<string, DocMetadata>> {
     // 如果已有缓存，直接返回
@@ -43,10 +70,10 @@ async function loadMetadata(): Promise<Record<string, DocMetadata>> {
         return metadataCache.promise;
     }
 
-    // 创建新的加载请求
+    // 创建新的加载请求（带超时）
     metadataCache.promise = (async () => {
         try {
-            const response = await fetch("/.wsx-press/docs-meta.json");
+            const response = await fetchWithTimeout("/.wsx-press/docs-meta.json", {}, 5000);
             if (!response.ok) {
                 throw new Error(`Failed to load metadata: ${response.statusText}`);
             }
@@ -77,6 +104,9 @@ export default class DocPage extends LightComponent {
 
     private currentLoadingPath: string | null = null;
     private routeChangeUnsubscribe: (() => void) | null = null;
+    private loadingAbortController: AbortController | null = null;
+    private isLoading: boolean = false;
+    private visibilityChangeHandler: (() => void) | null = null;
 
     constructor() {
         super({
@@ -90,8 +120,25 @@ export default class DocPage extends LightComponent {
         // 监听路由变化（当路由参数更新时重新加载文档）
         // 注意：使用 onRouteChange 确保在路由匹配完成后再加载文档
         this.routeChangeUnsubscribe = RouterUtils.onRouteChange(() => {
+            // 路由切换时，重置加载状态并重新加载
+            this.cancelLoading();
             this.loadDocument();
         });
+
+        // 监听标签页/视图切换
+        this.visibilityChangeHandler = () => {
+            if (document.hidden) {
+                // 标签页隐藏时，取消正在进行的加载
+                this.cancelLoading();
+            } else {
+                // 标签页重新可见时，如果当前是 loading 状态，重新加载
+                if (this.loadingState === "loading" && this.currentLoadingPath) {
+                    logger.info("Tab became visible, reloading document");
+                    this.loadDocument();
+                }
+            }
+        };
+        document.addEventListener("visibilitychange", this.visibilityChangeHandler);
 
         // 延迟加载，确保路由已经初始化
         // 使用双重 requestAnimationFrame 确保路由匹配完成
@@ -109,6 +156,31 @@ export default class DocPage extends LightComponent {
             this.routeChangeUnsubscribe();
             this.routeChangeUnsubscribe = null;
         }
+
+        // 清理标签页切换监听器
+        if (this.visibilityChangeHandler) {
+            document.removeEventListener("visibilitychange", this.visibilityChangeHandler);
+            this.visibilityChangeHandler = null;
+        }
+
+        // 取消正在进行的加载请求
+        this.cancelLoading();
+    }
+
+    /**
+     * 取消正在进行的加载请求
+     */
+    private cancelLoading(): void {
+        if (this.loadingAbortController) {
+            this.loadingAbortController.abort();
+            this.loadingAbortController = null;
+        }
+        this.isLoading = false;
+        // 如果当前是 loading 状态，重置为 idle
+        if (this.loadingState === "loading") {
+            this.loadingState = "idle";
+        }
+        this.currentLoadingPath = null;
     }
 
     protected onAttributeChanged(name: string, _oldValue: string, _newValue: string) {
@@ -119,10 +191,27 @@ export default class DocPage extends LightComponent {
     }
 
     /**
+     * 创建带超时的 fetch 请求（实例方法）
+     */
+    private async fetchWithTimeout(
+        url: string,
+        options: RequestInit = {},
+        timeout: number = 10000
+    ): Promise<Response> {
+        return fetchWithTimeout(url, options, timeout);
+    }
+
+    /**
      * 从 RouterUtils 获取当前路由参数并加载文档
      */
     private async loadDocument(): Promise<void> {
+        // 取消之前的加载请求（如果有）
+        this.cancelLoading();
+
         try {
+            // 创建新的 AbortController
+            this.loadingAbortController = new AbortController();
+
             // 从 RouterUtils 获取当前路由信息（包含参数）
             const routeInfo = RouterUtils.getCurrentRoute();
             logger.debug("DocPage loadDocument - routeInfo:", routeInfo);
@@ -149,6 +238,7 @@ export default class DocPage extends LightComponent {
 
             // 防止竞态条件：记录当前加载路径
             this.currentLoadingPath = docPath;
+            this.isLoading = true;
 
             // 重置状态
             this.loadingState = "loading";
@@ -156,12 +246,14 @@ export default class DocPage extends LightComponent {
             this.error = null;
             this.metadata = null;
 
-            // 加载元数据
+            // 加载元数据（内部已有超时处理）
             const metadataMap = await loadMetadata();
 
             // 检查是否已切换文档（防止竞态条件）
-            if (this.currentLoadingPath !== docPath) {
+            if (this.currentLoadingPath !== docPath || this.loadingAbortController.signal.aborted) {
                 logger.info(`Document switched, ignoring result for ${docPath}`);
+                this.isLoading = false;
+                this.loadingState = "idle";
                 return;
             }
 
@@ -169,23 +261,35 @@ export default class DocPage extends LightComponent {
             const meta = metadataMap[docPath];
             if (!meta) {
                 // 检查是否已切换文档
-                if (this.currentLoadingPath !== docPath) {
+                if (
+                    this.currentLoadingPath !== docPath ||
+                    this.loadingAbortController.signal.aborted
+                ) {
+                    this.isLoading = false;
+                    this.loadingState = "idle";
                     return;
                 }
                 this.loadingState = "error";
                 this.error = new DocumentLoadError(`Document not found: ${docPath}`, "NOT_FOUND");
+                this.isLoading = false;
                 return;
             }
 
             this.metadata = meta;
 
-            // 加载 Markdown 内容
+            // 加载 Markdown 内容（带超时和取消支持）
             const markdownPath = `/docs/${docPath}.md`;
-            const response = await fetch(markdownPath);
+            const response = await this.fetchWithTimeout(
+                markdownPath,
+                { signal: this.loadingAbortController.signal },
+                10000
+            );
 
             // 再次检查是否已切换文档
-            if (this.currentLoadingPath !== docPath) {
+            if (this.currentLoadingPath !== docPath || this.loadingAbortController.signal.aborted) {
                 logger.info(`Document switched during fetch, ignoring result for ${docPath}`);
+                this.isLoading = false;
+                this.loadingState = "idle";
                 return;
             }
 
@@ -204,23 +308,41 @@ export default class DocPage extends LightComponent {
                         { status: response.status }
                     );
                 }
+                this.isLoading = false;
                 return;
             }
 
             const markdownContent = await response.text();
 
             // 最后一次检查是否已切换文档
-            if (this.currentLoadingPath !== docPath) {
+            if (this.currentLoadingPath !== docPath || this.loadingAbortController.signal.aborted) {
                 logger.info(`Document switched after fetch, ignoring result for ${docPath}`);
+                this.isLoading = false;
+                this.loadingState = "idle";
                 return;
             }
 
             this.markdown = markdownContent;
             this.loadingState = "success";
+            this.isLoading = false;
         } catch (error) {
+            this.isLoading = false;
+
+            // 如果是取消请求，重置为 idle 状态，不显示错误
+            if (error instanceof Error && error.name === "AbortError") {
+                logger.info("Document loading was cancelled");
+                // 如果当前路径还存在，说明是用户切换了路由，保持 idle 状态
+                // 如果当前路径已被清除，说明组件已卸载，不需要更新状态
+                if (this.currentLoadingPath) {
+                    this.loadingState = "idle";
+                    this.currentLoadingPath = null;
+                }
+                return;
+            }
+
             // 检查是否已切换文档（使用当前加载路径）
             if (!this.currentLoadingPath) {
-                // 如果没有当前加载路径，说明参数获取失败
+                // 如果没有当前加载路径，说明参数获取失败或已切换
                 this.loadingState = "error";
                 this.error = new DocumentLoadError(
                     `Failed to load document: ${error instanceof Error ? error.message : String(error)}`,
@@ -232,10 +354,13 @@ export default class DocPage extends LightComponent {
             }
 
             const docPath = this.currentLoadingPath;
+            // 如果路径已改变，说明用户切换了路由，不显示错误
             if (this.currentLoadingPath !== docPath) {
+                this.loadingState = "idle";
                 return;
             }
 
+            // 显示错误信息
             this.loadingState = "error";
             this.error = new DocumentLoadError(
                 `Failed to load document: ${error instanceof Error ? error.message : String(error)}`,

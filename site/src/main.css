@@ -33,6 +33,15 @@
     --language-switcher-focus-color: var(--primary-red);
     --combobox-focus-border: var(--primary-red);
     --combobox-focus-outline: rgba(220, 38, 38, 0.2);
+
+    /* 布局间距变量 */
+    --nav-height: 70px;
+    --doc-section-padding: 10rem;
+    --doc-section-padding-top: var(--nav-height);
+    --doc-layout-main-padding-y: 1.5rem;
+    --doc-layout-main-padding-x: 2rem;
+    --doc-page-padding-y: 1rem;
+    --doc-page-padding-x: 2rem;
 }
 
 /* 深色主题变量 */

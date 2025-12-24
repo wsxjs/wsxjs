@@ -73,26 +73,25 @@ export function renderInlineTokens(tokens: Tokens.Generic[] | undefined): string
                 case "strong": {
                     const strongToken = token as Tokens.Strong;
                     // 防御性检查：确保 strongToken.tokens 存在
-                    const nestedTokens = strongToken.tokens && Array.isArray(strongToken.tokens) 
-                        ? strongToken.tokens 
-                        : [];
+                    const nestedTokens =
+                        strongToken.tokens && Array.isArray(strongToken.tokens)
+                            ? strongToken.tokens
+                            : [];
                     return `<strong>${renderInlineTokens(nestedTokens)}</strong>`;
                 }
                 case "em": {
                     const emToken = token as Tokens.Em;
                     // 防御性检查：确保 emToken.tokens 存在
-                    const nestedTokens = emToken.tokens && Array.isArray(emToken.tokens) 
-                        ? emToken.tokens 
-                        : [];
+                    const nestedTokens =
+                        emToken.tokens && Array.isArray(emToken.tokens) ? emToken.tokens : [];
                     return `<em>${renderInlineTokens(nestedTokens)}</em>`;
                 }
                 case "link": {
                     const linkToken = token as Tokens.Link;
                     const title = linkToken.title ? ` title="${escapeHtml(linkToken.title)}"` : "";
                     // 防御性检查：确保 linkToken.tokens 存在
-                    const nestedTokens = linkToken.tokens && Array.isArray(linkToken.tokens) 
-                        ? linkToken.tokens 
-                        : [];
+                    const nestedTokens =
+                        linkToken.tokens && Array.isArray(linkToken.tokens) ? linkToken.tokens : [];
                     return `<a href="${linkToken.href || "#"}"${title}>${renderInlineTokens(nestedTokens)}</a>`;
                 }
                 case "code": {

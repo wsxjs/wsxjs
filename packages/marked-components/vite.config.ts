@@ -18,7 +18,7 @@ export default defineConfig({
             output: {
                 globals: {
                     "@wsxjs/wsx-core": "WSXCore",
-                    "marked": "marked",
+                    marked: "marked",
                 },
             },
         },
@@ -41,4 +41,3 @@ export default defineConfig({
                 : undefined,
     },
 });
-

@@ -9,9 +9,9 @@
         "jsxImportSource": "@wsxjs/wsx-core",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
-        "useDefineForClassFields": false
+        "useDefineForClassFields": false,
+        "skipLibCheck": true
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "src/types/wsx.d.ts"],
     "exclude": ["dist", "node_modules", "**/__tests__/**", "**/*.test.ts"]
 }
-

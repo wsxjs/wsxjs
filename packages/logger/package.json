@@ -20,8 +20,8 @@
         "!**/test"
     ],
     "scripts": {
-        "build": "vite build && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist",
-        "build:dev": "NODE_ENV=development vite build && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist",
+        "build": "vite build && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist src/index.ts --moduleResolution node --esModuleInterop",
+        "build:dev": "NODE_ENV=development vite build && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist src/index.ts --moduleResolution node --esModuleInterop",
         "dev": "NODE_ENV=development vite build --watch",
         "clean": "rm -rf dist",
         "typecheck": "tsc --noEmit",

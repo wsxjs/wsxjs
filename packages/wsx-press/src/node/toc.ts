@@ -6,6 +6,7 @@
 import path from "path";
 import fs from "fs-extra";
 import { marked, type Tokens } from "marked";
+import type { Token } from "marked";
 import type { DocsMetaCollection } from "../types";
 
 /**
@@ -93,7 +94,7 @@ export function extractTOCFromMarkdown(markdown: string): TOCItem[] {
 /**
  * 从 tokens 中提取纯文本
  */
-function extractTextFromTokens(tokens: Tokens.Token[]): string {
+function extractTextFromTokens(tokens: Token[]): string {
     return tokens
         .map((token) => {
             if (token.type === "text") {
@@ -145,4 +146,3 @@ export async function generateTOCCollection(
 
     return tocCollection;
 }
-

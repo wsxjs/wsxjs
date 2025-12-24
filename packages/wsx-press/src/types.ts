@@ -114,7 +114,11 @@ export type LoadingState = "idle" | "loading" | "success" | "error";
 /**
  * 文档加载错误代码
  */
-export type DocumentLoadErrorCode = "NOT_FOUND" | "NETWORK_ERROR" | "PARSE_ERROR" | "INVALID_PARAMS";
+export type DocumentLoadErrorCode =
+    | "NOT_FOUND"
+    | "NETWORK_ERROR"
+    | "PARSE_ERROR"
+    | "INVALID_PARAMS";
 
 /**
  * 文档加载错误

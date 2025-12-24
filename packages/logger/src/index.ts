@@ -49,6 +49,13 @@ function isNodeEnvironment(): boolean {
 }
 
 /**
+ * Check if we're in a browser environment
+ */
+function isBrowserEnvironment(): boolean {
+    return typeof window !== "undefined" && typeof document !== "undefined";
+}
+
+/**
  * Default logger configuration
  * - Production: info level, no pretty printing
  * - Development: debug level, pretty printing enabled
@@ -70,6 +77,17 @@ function createPinoLogger(config: LoggerConfig = {}): PinoLoggerType {
         level: level || DEFAULT_CONFIG.level,
         ...pinoOptions,
     };
+
+    // Configure browser-specific options if in browser environment
+    if (isBrowserEnvironment()) {
+        // In browser, pino automatically uses console methods
+        // We can optionally configure browser-specific behavior
+        options.browser = {
+            asObject: false, // Use console methods directly (default behavior)
+            write: undefined, // Use default console write
+            ...(pinoOptions?.browser || {}), // Allow override via pinoOptions
+        };
+    }
 
     // In development and Node.js environment, use pino-pretty for better readability
     if (pretty && isNodeEnvironment() && !isProduction()) {
