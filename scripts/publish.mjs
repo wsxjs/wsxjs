@@ -457,9 +457,12 @@ async function main() {
                         const hasChanges = execSilent("git status --porcelain");
                         if (hasChanges) {
                             // 使用 --no-verify 跳过 hooks，避免交互式询问
-                            exec(`git commit --no-verify -m "chore: release v${ctx.version}\n\n[skip ci]"`, {
-                                silent: true,
-                            });
+                            exec(
+                                `git commit --no-verify -m "chore: release v${ctx.version}\n\n[skip ci]"`,
+                                {
+                                    silent: true,
+                                }
+                            );
                         }
                     },
                 },
@@ -497,9 +500,12 @@ async function main() {
                         const hasChanges = execSilent("git status --porcelain");
                         if (hasChanges) {
                             // 使用 --no-verify 跳过 hooks，避免交互式询问
-                            exec(`git commit --no-verify -m "chore: release v${ctx.version}\n\n[skip ci]"`, {
-                                silent: true,
-                            });
+                            exec(
+                                `git commit --no-verify -m "chore: release v${ctx.version}\n\n[skip ci]"`,
+                                {
+                                    silent: true,
+                                }
+                            );
                         }
                     },
                 },
