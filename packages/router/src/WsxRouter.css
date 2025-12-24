@@ -1,11 +1,14 @@
 /* WSX Router 样式 */
 :host {
-    display: block;
+    display: grid;
     width: 100%;
-    height: 100%;
 }
 
 .router-outlet {
     width: 100%;
-    height: 100%;
+}
+
+/* 关键修复：使用 CSS Grid 让所有视图重叠在同一个 grid cell，防止页面高度闪烁 */
+:host > wsx-view {
+    grid-area: 1 / 1;
 }

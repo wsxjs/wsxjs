@@ -33,7 +33,7 @@
 }
 
 .language-switcher-btn:focus {
-    outline: 2px solid var(--language-switcher-focus-color, #dc2626);
+    outline: 2px solid var(--language-switcher-focus-color, var(--focus-color, #dc2626));
     outline-offset: 2px;
 }
 

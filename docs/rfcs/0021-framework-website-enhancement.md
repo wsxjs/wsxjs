@@ -1472,7 +1472,7 @@ window.addEventListener('error', (event) => {
 ### 其他相关文档
 
 - [RFC-0019: 零配置初始化](./0019-zero-config-initialization.md)
-- [RFC-0020: JSX Import Source Pragma](./0020-jsx-import-source-pragma-auto-injection.md)
+- [RFC-0020: JSX Import Source Pragma](./completed/0020-jsx-import-source-pragma-auto-injection.md)
 - [网站审查文档](../../packages/examples/WEBSITE_REVIEW.md)
 - [执行计划](../../packages/examples/EXECUTION_PLAN.md)
 

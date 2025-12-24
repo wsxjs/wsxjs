@@ -278,7 +278,7 @@ src/
 
 ## 相关文档
 
-- [RFC-0008: 自动样式注入](./0008-auto-style-injection.md)
+- [RFC-0008: 自动样式注入](../0008-auto-style-injection.md)
 - [RFC-0006: Light DOM Components](./0006-light-dom-components.md)
 - [WebComponent 使用指南](../guide/WEB_COMPONENT_GUIDE.md)
 

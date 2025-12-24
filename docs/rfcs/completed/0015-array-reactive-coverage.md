@@ -354,6 +354,6 @@ class TodoList extends WebComponent {
 ## 相关文档
 
 - [RFC-0004: 响应式状态系统](./0004-reactive-state-system.md)
-- [RFC-0007: 响应式装饰器](./0007-reactive-decorator.md)
+- [RFC-0007: 响应式装饰器](../0007-reactive-decorator.md)
 - [RFC-0013: @state 装饰器初始值验证](./0013-state-initial-value-validation.md)
 

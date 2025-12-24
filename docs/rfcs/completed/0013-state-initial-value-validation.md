@@ -494,7 +494,7 @@ describe("babel-plugin-wsx-state", () => {
 
 - **ESLint 规则**: `packages/eslint-plugin/README.md`
 - **使用指南**: `docs/LIGHT_COMPONENT_GUIDE.md` 和 `docs/QUICK_START.md`
-- **错误处理**: `docs/rfcs/0012-babel-transform-error-handling.md`
+- **错误处理**: `docs/rfcs/completed/0012-babel-transform-error-handling.md`
 
 ## 向后兼容性
 

@@ -34,7 +34,7 @@
 }
 
 .dropdown-button:focus:not(.disabled) {
-    outline: 2px solid var(--dropdown-focus-color, #dc2626);
+    outline: 2px solid var(--dropdown-focus-color, var(--focus-color, #dc2626));
     outline-offset: 2px;
 }
 

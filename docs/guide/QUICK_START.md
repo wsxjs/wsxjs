@@ -163,7 +163,7 @@ export class Counter extends WebComponent {
 - ⚠️ `@state` 装饰器的属性**必须有初始值**
 - ✅ ESLint 规则会在开发时检查（`wsx/state-requires-initial-value`）
 - ✅ Babel 插件会在构建时验证，缺少初始值会导致构建失败
-- 📖 查看 [RFC-0013](./rfcs/0013-state-initial-value-validation.md) 了解详细说明
+- 📖 查看 [RFC-0013](./rfcs/completed/0013-state-initial-value-validation.md) 了解详细说明
 
 **有效示例**：
 ```typescript

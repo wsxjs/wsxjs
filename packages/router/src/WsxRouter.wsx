@@ -26,7 +26,14 @@ const logger = createLogger("WsxRouter");
 export default class WsxRouter extends LightComponent {
     private views: Map<string, HTMLElement> = new Map();
     private currentView: HTMLElement | null = null;
+    private currentPath: string = "";
     private isHandlingRoute: boolean = false; // 防止递归调用的标志
+    // RFC 0032: 路由匹配优化 - 缓存预编译的正则表达式和匹配结果
+    private compiledRoutes: Map<string, RegExp> = new Map();
+    private matchCache: Map<string, string> = new Map();
+    // RFC 0033: 现代路由特性
+    private enableViewTransitions: boolean = true;
+    private scrollRestoration: "auto" | "manual" = "manual";
 
     constructor() {
         super({
@@ -44,24 +51,52 @@ export default class WsxRouter extends LightComponent {
     }
 
     protected onRendered() {
-        // 在渲染完成后收集视图，确保所有子元素都已渲染
-        this.collectViews();
-        logger.debug("WsxRouter collected views:", this.views.size);
+        // 在渲染完成后也收集视图和处理路由（作为备用）
+        // 注意：onRendered 可能不会被调用（如果 hasActualContent 为 true）
+        // 所以主要逻辑在 onConnected() 中
+        if (this.views.size === 0) {
+            this.collectViews();
+            logger.debug("WsxRouter collected views in onRendered:", this.views.size);
+        }
 
-        // 延迟初始路由，确保视图收集完成
-        requestAnimationFrame(() => {
-            this.handleRouteChange();
-        });
+        // 如果视图已收集但还没有处理路由，现在处理
+        if (this.views.size > 0 && !this.currentView) {
+            requestAnimationFrame(() => {
+                this.handleRouteChange();
+            });
+        }
     }
 
     protected onConnected() {
         logger.debug("WsxRouter connected to DOM");
+
+        // RFC 0033: 设置浏览器滚动恢复模式
+        if ("scrollRestoration" in history) {
+            history.scrollRestoration = this.scrollRestoration;
+        }
 
         // 监听原生 popstate 事件
         window.addEventListener("popstate", this.handleRouteChange);
 
         // 拦截所有链接点击，让 History API 接管
         this.addEventListener("click", this.interceptLinks);
+
+        // 关键修复：在 onConnected() 中也收集视图和处理初始路由
+        // 因为 onRendered() 可能不会被调用（如果 hasActualContent 为 true）
+        // 这解决了页面刷新时路由无法恢复的问题
+        requestAnimationFrame(() => {
+            // 收集视图（如果还没有收集）
+            if (this.views.size === 0) {
+                this.collectViews();
+                logger.debug("WsxRouter collected views in onConnected:", this.views.size);
+            }
+
+            // 处理初始路由（页面刷新时）
+            // 使用双重 requestAnimationFrame 确保所有子元素都已连接
+            requestAnimationFrame(() => {
+                this.handleRouteChange();
+            });
+        });
     }
 
     protected onDisconnected() {
@@ -75,12 +110,25 @@ export default class WsxRouter extends LightComponent {
         );
         logger.debug("WsxRouter found views:", views.length);
 
+        // RFC 0032: 清除旧的缓存
+        this.views.clear();
+        this.compiledRoutes.clear();
+        this.matchCache.clear();
+
         views.forEach((view) => {
             const route = view.getAttribute("route") || "/";
             this.views.set(route, view as HTMLElement);
-            // 初始隐藏所有视图
-            (view as HTMLElement).style.display = "none";
-            logger.debug(`WsxRouter hiding view for route: ${route}`);
+
+            // RFC 0032: 预编译参数路由的正则表达式
+            if (route.includes(":")) {
+                const pattern = route.replace(/:[^/]+/g, "([^/]+)");
+                const regex = new RegExp(`^${pattern}$`);
+                this.compiledRoutes.set(route, regex);
+                logger.debug(`WsxRouter compiled regex for route: ${route}`);
+            }
+
+            // 关键修复：不在这里隐藏视图，而是在 performNavigation 中一次性处理
+            // 这样可以避免页面加载时所有视图都被隐藏导致的页脚跳动
         });
     }
 
@@ -100,41 +148,27 @@ export default class WsxRouter extends LightComponent {
         this.isHandlingRoute = true;
 
         try {
-            const path = window.location.pathname;
-            logger.debug(`Route changed to: ${path}`);
+            const nextPath = window.location.pathname;
+            logger.debug(`Route changed to: ${nextPath}`);
 
-            // 隐藏当前视图
-            if (this.currentView) {
-                this.currentView.style.display = "none";
-                logger.debug("Hiding previous view");
+            // RFC 0033: 1. 触发 before-navigate 事件（可取消）
+            const beforeEvent = new CustomEvent("before-navigate", {
+                detail: {
+                    to: nextPath,
+                    from: this.currentPath,
+                },
+                bubbles: true,
+                cancelable: true,
+            });
+
+            if (!this.dispatchEvent(beforeEvent)) {
+                // 事件被取消，阻止导航
+                logger.debug(`Navigation to ${nextPath} was cancelled`);
+                return;
             }
 
-            // 查找匹配的视图
-            const view = this.matchRoute(path);
-            if (view) {
-                view.style.display = "block";
-                this.currentView = view;
-                logger.debug(`Showing view for route: ${view.getAttribute("route")}`);
-
-                // 传递路由参数（延迟设置，避免触发 attributeChangedCallback 导致递归）
-                const params = this.extractParams(view.getAttribute("route") || "/", path);
-                if (params) {
-                    requestAnimationFrame(() => {
-                        view.setAttribute("params", JSON.stringify(params));
-                    });
-                }
-            } else {
-                logger.warn(`No view found for path: ${path}`);
-            }
-
-            // 触发路由变化事件
-            this.dispatchEvent(
-                new CustomEvent("route-changed", {
-                    detail: { path, view },
-                    bubbles: true,
-                    composed: true,
-                })
-            );
+            // RFC 0033: 2. 执行导航（可能带 View Transition）
+            this.performNavigation(nextPath);
         } finally {
             // 延迟重置标志，确保所有异步操作完成
             requestAnimationFrame(() => {
@@ -143,25 +177,155 @@ export default class WsxRouter extends LightComponent {
         }
     };
 
+    /**
+     * RFC 0033: 执行导航（带 View Transitions 支持）
+     */
+    private performNavigation(nextPath: string): void {
+        const performTransition = () => {
+            // 查找匹配的视图
+            const view = this.matchRoute(nextPath);
+
+            if (view) {
+                // 关键修复：先显示新视图，再隐藏其他所有视图
+                // 这样可以确保页面始终有内容，防止页脚跳动
+                // Step 1: 立即显示新视图
+                view.style.display = "block";
+                view.style.visibility = "visible";
+                logger.debug(`Showing view for route: ${view.getAttribute("route")}`);
+
+                // Step 2: 隐藏所有其他视图（包括旧的 currentView）
+                for (const [_route, otherView] of this.views) {
+                    if (otherView !== view) {
+                        otherView.style.display = "none";
+                        otherView.style.visibility = "";
+                    }
+                }
+
+                // Step 3: 更新 currentView
+                this.currentView = view;
+
+                // 传递路由参数（延迟设置，避免触发 attributeChangedCallback 导致递归）
+                const params = this.extractParams(view.getAttribute("route") || "/", nextPath);
+                if (params) {
+                    requestAnimationFrame(() => {
+                        view.setAttribute("params", JSON.stringify(params));
+                    });
+                }
+            } else {
+                // 如果没有找到视图，隐藏所有视图
+                for (const [_route, otherView] of this.views) {
+                    otherView.style.display = "none";
+                }
+                this.currentView = null;
+                logger.warn(`No view found for path: ${nextPath}`);
+            }
+
+            // RFC 0033: 滚动管理
+            this.handleScrollRestoration(nextPath);
+
+            // RFC 0033: 触发 after-navigate 事件
+            this.dispatchEvent(
+                new CustomEvent("after-navigate", {
+                    detail: {
+                        to: nextPath,
+                        from: this.currentPath,
+                    },
+                    bubbles: true,
+                })
+            );
+
+            // 保留旧的 route-changed 事件以保持向后兼容
+            this.dispatchEvent(
+                new CustomEvent("route-changed", {
+                    detail: { path: nextPath, view },
+                    bubbles: true,
+                    composed: true,
+                })
+            );
+
+            // 更新当前路径
+            this.currentPath = nextPath;
+        };
+
+        // RFC 0033: View Transitions API（渐进增强）
+        if (this.enableViewTransitions && "startViewTransition" in document) {
+            (
+                document as Document & { startViewTransition: (callback: () => void) => void }
+            ).startViewTransition(performTransition);
+        } else {
+            performTransition();
+        }
+    }
+
+    /**
+     * RFC 0033: 滚动恢复处理
+     */
+    private handleScrollRestoration(_nextPath: string): void {
+        if (this.scrollRestoration === "manual") {
+            // 判断是否是后退导航
+            const isBackNavigation = this.isBackNavigation();
+
+            if (!isBackNavigation) {
+                // 前进导航：滚动到顶部
+                window.scrollTo(0, 0);
+                logger.debug("Scrolled to top for forward navigation");
+            }
+            // 后退导航：浏览器自动恢复滚动位置
+        }
+        // scrollRestoration === 'auto' 时，完全交给浏览器处理
+    }
+
+    /**
+     * RFC 0033: 检测是否是后退导航
+     */
+    private isBackNavigation(): boolean {
+        // 通过 performance.navigation API 检测（已废弃但仍可用）
+        if (
+            "navigation" in performance &&
+            (performance as Performance & { navigation: { type: number } }).navigation
+        ) {
+            const nav = (performance as Performance & { navigation: { type: number } }).navigation;
+            return nav.type === 2; // TYPE_BACK_FORWARD
+        }
+
+        // 降级方案：检查 history.state
+        if (window.history.state?.navigationType === "back") {
+            return true;
+        }
+
+        return false;
+    }
+
     private matchRoute(path: string): HTMLElement | null {
-        // 精确匹配
+        // RFC 0032: 1. 检查匹配缓存
+        if (this.matchCache.has(path)) {
+            const route = this.matchCache.get(path)!;
+            return this.views.get(route) || null;
+        }
+
+        // RFC 0032: 2. 精确匹配
         if (this.views.has(path)) {
+            this.matchCache.set(path, path);
             return this.views.get(path)!;
         }
 
-        // 参数匹配
+        // RFC 0032: 3. 参数匹配（使用预编译的正则表达式）
         for (const [route, view] of this.views) {
             if (route.includes(":")) {
-                const pattern = route.replace(/:[^/]+/g, "([^/]+)");
-                const regex = new RegExp(`^${pattern}$`);
-                if (regex.test(path)) {
+                const regex = this.compiledRoutes.get(route);
+                if (regex && regex.test(path)) {
+                    this.matchCache.set(path, route);
                     return view;
                 }
             }
         }
 
-        // 通配符匹配
-        return this.views.get("*") || null;
+        // RFC 0032: 4. 通配符匹配
+        const wildcardView = this.views.get("*") || null;
+        if (wildcardView) {
+            this.matchCache.set(path, "*");
+        }
+        return wildcardView;
     }
 
     private extractParams(route: string, path: string): Record<string, string> | null {
@@ -192,6 +356,34 @@ export default class WsxRouter extends LightComponent {
         event.preventDefault();
         this.navigate(href);
     };
+
+    /**
+     * RFC 0032: 清除匹配缓存
+     * 当路由配置变更时调用，确保使用最新的路由规则
+     */
+    private clearMatchCache(): void {
+        this.matchCache.clear();
+        logger.debug("WsxRouter cleared match cache");
+    }
+
+    /**
+     * RFC 0033: 配置 View Transitions
+     */
+    public setViewTransitions(enabled: boolean): void {
+        this.enableViewTransitions = enabled;
+        logger.debug(`View Transitions ${enabled ? "enabled" : "disabled"}`);
+    }
+
+    /**
+     * RFC 0033: 配置 Scroll Restoration
+     */
+    public setScrollRestoration(mode: "auto" | "manual"): void {
+        this.scrollRestoration = mode;
+        if ("scrollRestoration" in history) {
+            history.scrollRestoration = mode;
+        }
+        logger.debug(`Scroll Restoration set to ${mode}`);
+    }
 
     /**
      * 编程式导航 - 使用原生 History API

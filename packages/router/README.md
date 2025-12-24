@@ -207,7 +207,7 @@ wsx-link {
   --link-color: #007bff;
   --link-hover-color: #0056b3;
   --link-active-color: #6c757d;
-  --link-focus-color: #007bff;
+  --link-focus-color: var(--primary-red); /* 使用主题颜色 */
 }
 
 wsx-view {

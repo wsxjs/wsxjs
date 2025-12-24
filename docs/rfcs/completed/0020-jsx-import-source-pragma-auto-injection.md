@@ -278,7 +278,7 @@ export default [
 
 - ESLint 规则文档：`packages/eslint-plugin/README.md`
 - 使用指南：`docs/guide/JSX_SUPPORT.md`
-- RFC 文档：`docs/rfcs/0020-jsx-import-source-pragma-auto-injection.md`
+- RFC 文档：`docs/rfcs/completed/0020-jsx-import-source-pragma-auto-injection.md`
 
 ## 向后兼容性
 

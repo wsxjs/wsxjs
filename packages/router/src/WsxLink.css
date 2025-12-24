@@ -23,7 +23,7 @@
 }
 
 .wsx-link:focus {
-    outline: 2px solid var(--link-focus-color, #007bff);
+    outline: 2px solid var(--link-focus-color, var(--focus-color, #dc2626));
     outline-offset: 2px;
 }
 

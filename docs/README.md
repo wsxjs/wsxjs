@@ -11,7 +11,7 @@
 ### 🎯 核心概念
 - **[设计理念](wiki/DESIGN_PHILOSOPHY.md)** - WSXJS的设计哲学和原生优先理念
 - **[Web Components基础](wiki/WSX_DESIGN.md)** - Web Components标准介绍
-- **[组件架构](wiki/COMPONENT_ARCHITECTURE.md)** - Container vs Leaf 组件策略（已合并到 [RFC-0006](../rfcs/0006-light-dom-components.md)）
+- **[组件架构](wiki/COMPONENT_ARCHITECTURE.md)** - Container vs Leaf 组件策略（已合并到 [RFC-0006](../rfcs/completed/0006-light-dom-components.md)）
 
 ### 🛠️ WSXJS 使用指南（给使用 WSXJS 的开发者）
 
@@ -31,11 +31,11 @@
 所有重要的设计决策和技术方案都记录在 RFC 中：
 
 - **[RFC 索引](rfcs/README.md)** - 查看所有 RFC 文档
-- **[RFC-0004: 响应式状态系统](rfcs/0004-reactive-state-system.md)** - 响应式状态管理设计
-- **[RFC-0006: Light DOM Components](rfcs/0006-light-dom-components.md)** - Light DOM 组件设计（包含 Container vs Leaf 策略）
+- **[RFC-0004: 响应式状态系统](rfcs/completed/0004-reactive-state-system.md)** - 响应式状态管理设计
+- **[RFC-0006: Light DOM Components](rfcs/completed/0006-light-dom-components.md)** - Light DOM 组件设计（包含 Container vs Leaf 策略）
 - **[RFC-0007: 响应式装饰器](rfcs/0007-reactive-decorator.md)** - @state 装饰器设计
 - **[RFC-0008: 自动样式注入](rfcs/0008-auto-style-injection.md)** - CSS 自动注入机制
-- **[RFC-0016: 组件库构建指南](rfcs/0016-component-library-build-guide.md)** - 组件库构建标准
+- **[RFC-0016: 组件库构建指南](rfcs/completed/0016-component-library-build-guide.md)** - 组件库构建标准
 
 ### 🔧 工具链
 - **[ESLint插件](../packages/eslint-plugin/README.md)** - 代码质量检查
@@ -71,8 +71,10 @@ docs/
 │
 ├── rfcs/               # 📋 设计决策文档（RFC）
 │   ├── README.md
-│   ├── 0004-reactive-state-system.md
-│   ├── 0006-light-dom-components.md
+│   ├── completed/
+│   │   ├── 0004-reactive-state-system.md
+│   │   ├── 0006-light-dom-components.md
+│   │   └── ...
 │   └── ...
 │
 ├── wiki/               # 📚 知识库（常识、历史记录、技术知识）

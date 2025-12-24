@@ -25,6 +25,14 @@
     --border-color: #fed7aa;
     --card-shadow: rgba(220, 38, 38, 0.1);
     --card-shadow-hover: rgba(220, 38, 38, 0.15);
+
+    /* 焦点颜色变量 - 使用主题颜色 */
+    --focus-color: var(--primary-red);
+    --link-focus-color: var(--primary-red);
+    --dropdown-focus-color: var(--primary-red);
+    --language-switcher-focus-color: var(--primary-red);
+    --combobox-focus-border: var(--primary-red);
+    --combobox-focus-outline: rgba(220, 38, 38, 0.2);
 }
 
 /* 深色主题变量 */

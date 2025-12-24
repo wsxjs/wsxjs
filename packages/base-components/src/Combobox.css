@@ -26,7 +26,7 @@
 
 .combobox-input-wrapper:focus-within {
     background: var(--combobox-focus-bg, rgba(255, 255, 255, 0.15));
-    border-color: var(--combobox-focus-border, #dc2626);
+    border-color: var(--combobox-focus-border, var(--focus-color, #dc2626));
     outline: 2px solid var(--combobox-focus-outline, rgba(220, 38, 38, 0.2));
     outline-offset: 2px;
 }

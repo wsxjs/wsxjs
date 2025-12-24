@@ -50,7 +50,11 @@
             "Bash(pnpm --filter @wsxjs/wsx-vite-plugin lint:*)",
             "Bash(npx eslint:*)",
             "WebSearch",
-            "Bash(git checkout:*)"
+            "Bash(git checkout:*)",
+            "Bash(pnpm --filter @wsxjs/wsx-router test)",
+            "Bash(pnpm --filter @wsxjs/wsx-router typecheck:*)",
+            "Bash(pnpm --filter @wsxjs/wsx-router lint:*)",
+            "Bash(pnpm --filter @wsxjs/wsx-router build:*)"
         ],
         "deny": []
     }

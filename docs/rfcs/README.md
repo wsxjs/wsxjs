@@ -66,18 +66,20 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 
 | RFC | 标题 | 状态 | 提议人 |
 |-----|------|------|--------|
-| [RFC-0001](./0001-wsx-router.md) | WSX Router | Implemented | Claude |
-| [RFC-0004](./0004-reactive-state-system.md) | 响应式状态系统 | Implemented | Claude |
-| [RFC-0006](./0006-light-dom-components.md) | Light DOM 组件 | Implemented | Claude |
-| [RFC-0011](./0011-focus-preservation.md) | 焦点保持机制 | Implemented | Claude |
-| [RFC-0012](./0012-babel-transform-error-handling.md) | Babel Transform 错误处理策略 | Implemented | Claude |
-| [RFC-0013](./0013-state-initial-value-validation.md) | @state 装饰器初始值验证 | Implemented | Claude |
-| [RFC-0014](./0014-connected-callback-optimization.md) | connectedCallback 智能渲染优化 | Implemented | WSX Team |
-| [RFC-0015](./0015-array-reactive-coverage.md) | 数组响应式覆盖说明 | Implemented | WSX Team |
-| [RFC-0016](./0016-component-library-build-guide.md) | 组件库构建指南 | Implemented | WSX Team |
-| [RFC-0017](./0017-jsx-factory-auto-injection-bug-fix.md) | JSX Factory 自动注入 Bug 修复 | Implemented | WSX Team |
-| [RFC-0020](./0020-jsx-import-source-pragma-auto-injection.md) | JSX Import Source Pragma 自动注入方案 | Implemented | WSX Team |
-| [RFC-0031](./0031-jsx-factory-html-string-infinite-recursion-fix.md) | JSX Factory HTML 字符串解析无限递归修复 | Implemented | WSX Team |
+| [RFC-0001](./completed/0001-wsx-router.md) | WSX Router | Implemented | Claude |
+| [RFC-0004](./completed/0004-reactive-state-system.md) | 响应式状态系统 | Implemented | Claude |
+| [RFC-0006](./completed/0006-light-dom-components.md) | Light DOM 组件 | Implemented | Claude |
+| [RFC-0011](./completed/0011-focus-preservation.md) | 焦点保持机制 | Implemented | Claude |
+| [RFC-0012](./completed/0012-babel-transform-error-handling.md) | Babel Transform 错误处理策略 | Implemented | Claude |
+| [RFC-0013](./completed/0013-state-initial-value-validation.md) | @state 装饰器初始值验证 | Implemented | Claude |
+| [RFC-0014](./completed/0014-connected-callback-optimization.md) | connectedCallback 智能渲染优化 | Implemented | WSX Team |
+| [RFC-0015](./completed/0015-array-reactive-coverage.md) | 数组响应式覆盖说明 | Implemented | WSX Team |
+| [RFC-0016](./completed/0016-component-library-build-guide.md) | 组件库构建指南 | Implemented | WSX Team |
+| [RFC-0017](./completed/0017-jsx-factory-auto-injection-bug-fix.md) | JSX Factory 自动注入 Bug 修复 | Implemented | WSX Team |
+| [RFC-0020](./completed/0020-jsx-import-source-pragma-auto-injection.md) | JSX Import Source Pragma 自动注入方案 | Implemented | WSX Team |
+| [RFC-0031](./completed/0031-jsx-factory-html-string-infinite-recursion-fix.md) | JSX Factory HTML 字符串解析无限递归修复 | Implemented | WSX Team |
+| [RFC-0032](./completed/0032-wsx-router-refactor.md) | WSX Router 和 WSX View 重构（稳定性修复和性能优化 - 阶段1） | Implemented | WSX Team |
+| [RFC-0033](./completed/0033-modern-router-features.md) | Modern Router Features - View Transitions, Scroll Restoration & Navigation Events | Implemented | WSX Team |
 
 ### 提议中的RFCs
 
