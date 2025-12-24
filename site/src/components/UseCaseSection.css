@@ -33,19 +33,15 @@
 
 .use-cases-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 2.5rem;
     margin-top: 3rem;
-    max-width: 900px;
+    max-width: 1400px;
     margin-left: auto;
     margin-right: auto;
 }
 
-.use-case-card-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
+/* Ensure no underlines in card content */
 
 .use-case-card {
     background: var(--bg-primary);
@@ -229,6 +225,7 @@
 .use-case-link:hover {
     color: var(--secondary-red);
     gap: 0.75rem;
+    text-decoration: none;
 }
 
 /* Responsive adjustments */

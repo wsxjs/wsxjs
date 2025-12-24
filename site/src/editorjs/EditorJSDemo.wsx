@@ -273,10 +273,15 @@ export default class EditorJSDemo extends LightComponent {
     }
 
     protected onDisconnected() {
-        if (this.editor) {
-            this.editor.destroy();
-            logger.info("Editor destroyed");
+        if (this.editor && typeof this.editor.destroy === "function") {
+            try {
+                this.editor.destroy();
+                logger.info("Editor destroyed");
+            } catch (error) {
+                logger.error("Error destroying editor", error);
+            }
         }
+        this.editor = undefined;
     }
 
     private initializeEditor() {

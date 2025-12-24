@@ -11,6 +11,7 @@ import { LightComponent, autoRegister, createLogger, state } from "@wsxjs/wsx-co
 import { marked } from "marked";
 import type { RendererObject, Tokens } from "marked";
 import styles from "./WsxMarkedRenderer.css?inline";
+import { extractInlineTokens, renderInlineTokens, escapeHtml } from "./marked-utils";
 // Import WSX components so they're registered as custom elements
 import "./WsxMarkedHeading.wsx";
 import "./WsxMarkedCode.wsx";
@@ -84,56 +85,7 @@ export default class WsxMarkedRendererPattern1 extends LightComponent {
      * This renderer returns HTML strings containing WSX custom element tags
      */
     private setupCustomRenderer() {
-        // Helper to escape HTML for attributes
-        const escapeHtml = (text: string): string => {
-            const div = document.createElement("div");
-            div.textContent = text;
-            return div.innerHTML;
-        };
-
-        // Helper to render inline tokens
-        const renderInlineTokens = (tokens: Tokens.Generic[]): string => {
-            const renderer = new marked.Renderer();
-            return tokens
-                .map((token) => {
-                    switch (token.type) {
-                        case "text": {
-                            const textToken = token as Tokens.Text;
-                            return textToken.text;
-                        }
-                        case "strong": {
-                            const strongToken = token as Tokens.Strong;
-                            return `<strong>${renderInlineTokens(strongToken.tokens)}</strong>`;
-                        }
-                        case "em": {
-                            const emToken = token as Tokens.Em;
-                            return `<em>${renderInlineTokens(emToken.tokens)}</em>`;
-                        }
-                        case "link": {
-                            const linkToken = token as Tokens.Link;
-                            const title = linkToken.title
-                                ? ` title="${escapeHtml(linkToken.title)}"`
-                                : "";
-                            return `<a href="${linkToken.href}"${title}>${renderInlineTokens(linkToken.tokens)}</a>`;
-                        }
-                        case "code": {
-                            const codeToken = token as Tokens.Code;
-                            return `<code>${escapeHtml(codeToken.text)}</code>`;
-                        }
-                        case "br": {
-                            return "<br>";
-                        }
-                        default: {
-                            // 对于其他类型，尝试使用 renderer 方法
-                            const method = renderer[token.type as keyof RendererObject] as
-                                | ((token: unknown) => string)
-                                | undefined;
-                            return method?.(token) || "";
-                        }
-                    }
-                })
-                .join("");
-        };
+        // renderInlineTokens, extractInlineTokens, and escapeHtml are imported from marked-utils
 
         const customRenderer: Partial<RendererObject> = {
             // Heading renderer - returns HTML string with WSX custom element
@@ -160,20 +112,27 @@ export default class WsxMarkedRendererPattern1 extends LightComponent {
             // Paragraph renderer
             paragraph(token: Tokens.Paragraph) {
                 const text = renderInlineTokens(token.tokens);
-                return `<wsx-marked-paragraph content="${escapeHtml(text)}"></wsx-marked-paragraph>`;
+                // renderInlineTokens returns HTML, so we only need to escape quotes for the attribute value
+                // Don't use escapeHtml() which would escape the entire HTML content
+                const escapedForAttr = text.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+                return `<wsx-marked-paragraph content="${escapedForAttr}"></wsx-marked-paragraph>`;
             },
 
-            // List renderer - use marked.parser() to handle list item tokens
+            // List renderer - render inline tokens from list item tokens
             list(token: Tokens.List) {
-                // For each list item, use marked.parser() to render its tokens
-                // This handles nested block-level elements within list items
+                // List items contain tokens - use extractInlineTokens to handle paragraph tokens
+                // This matches Pattern 2's approach but handles paragraph tokens correctly
                 const items = token.items.map((item) => {
-                    // Use marked.parser() to render the item's tokens
-                    // This will recursively use our custom renderer
-                    return marked.parser(item.tokens);
+                    // item.tokens may contain paragraph tokens, so extract inline tokens first
+                    const inlineTokens = extractInlineTokens(item.tokens);
+                    return renderInlineTokens(inlineTokens);
                 });
-                const itemsJson = escapeHtml(JSON.stringify(items));
-                return `<wsx-marked-list ordered="${token.ordered ? "true" : "false"}" items="${itemsJson}"></wsx-marked-list>`;
+                // JSON.stringify will escape quotes in the JSON string as \"
+                // Use single quotes for the HTML attribute to avoid escaping double quotes
+                const jsonStr = JSON.stringify(items);
+                // Escape single quotes in the JSON string for the HTML attribute
+                const escapedJson = jsonStr.replace(/'/g, "&#39;");
+                return `<wsx-marked-list ordered="${token.ordered ? "true" : "false"}" items='${escapedJson}'></wsx-marked-list>`;
             },
         };
 
@@ -184,7 +143,7 @@ export default class WsxMarkedRendererPattern1 extends LightComponent {
     /**
      * Render markdown using marked.parse() which uses our custom renderer
      */
-    private renderMarkdown() {
+    private async renderMarkdown() {
         if (!this.rendererContainer) {
             logger.warn("rendererContainer not set yet, skipping render");
             return;
@@ -192,6 +151,7 @@ export default class WsxMarkedRendererPattern1 extends LightComponent {
 
         if (!this.markdown) {
             logger.warn("markdown is empty, clearing container");
+            // Framework-level DOM management for marked renderer Pattern 1
             this.rendererContainer.innerHTML = "";
             return;
         }
@@ -201,7 +161,9 @@ export default class WsxMarkedRendererPattern1 extends LightComponent {
 
             // marked.parse() will use our custom renderer registered via marked.use()
             // The renderer returns HTML strings with WSX custom element tags
-            const html = marked.parse(this.markdown);
+            const htmlResult = marked.parse(this.markdown);
+            // marked.parse() may return a Promise in async mode, but in sync mode it returns a string
+            const html = typeof htmlResult === "string" ? htmlResult : await htmlResult;
 
             logger.info("Parsed HTML", {
                 htmlLength: html.length,
@@ -209,12 +171,14 @@ export default class WsxMarkedRendererPattern1 extends LightComponent {
             });
 
             // Insert the HTML string - browser will automatically instantiate WSX custom elements
+            // Framework-level DOM management for marked renderer Pattern 1
             this.rendererContainer.innerHTML = html;
 
             logger.info("Markdown rendered using Pattern 1 (marked.use renderer)");
         } catch (error) {
             logger.error("Failed to render markdown", error);
             if (this.rendererContainer) {
+                // Framework-level error rendering for marked renderer
                 this.rendererContainer.innerHTML = `<wsx-marked-error message="Error: ${String(error)}"></wsx-marked-error>`;
             }
         }

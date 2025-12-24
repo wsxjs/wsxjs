@@ -55,6 +55,7 @@ export default [
             "wsx/web-component-naming": "warn",
             "wsx/state-requires-initial-value": "error",
             "wsx/require-jsx-import-source": "error",
+            "wsx/no-inner-html": "error",
             "no-undef": "off", // TypeScript handles this
         },
     },
@@ -63,6 +64,13 @@ export default [
         files: ["**/*.wsx"],
         rules: {
             "@typescript-eslint/no-unused-vars": "warn",
+        },
+    },
+    {
+        // Pattern 1 marked renderer intentionally uses innerHTML for framework-level DOM manipulation
+        files: ["**/marked/WsxMarkedRendererPattern1.wsx", "**/marked/marked-utils.ts"],
+        rules: {
+            "wsx/no-inner-html": "off",
         },
     },
 ];

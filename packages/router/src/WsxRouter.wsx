@@ -26,6 +26,7 @@ const logger = createLogger("WsxRouter");
 export default class WsxRouter extends LightComponent {
     private views: Map<string, HTMLElement> = new Map();
     private currentView: HTMLElement | null = null;
+    private isHandlingRoute: boolean = false; // 防止递归调用的标志
 
     constructor() {
         super({
@@ -42,21 +43,25 @@ export default class WsxRouter extends LightComponent {
         );
     }
 
-    protected onConnected() {
-        logger.debug("WsxRouter connected to DOM");
-
-        // 收集所有视图
+    protected onRendered() {
+        // 在渲染完成后收集视图，确保所有子元素都已渲染
         this.collectViews();
         logger.debug("WsxRouter collected views:", this.views.size);
+
+        // 延迟初始路由，确保视图收集完成
+        requestAnimationFrame(() => {
+            this.handleRouteChange();
+        });
+    }
+
+    protected onConnected() {
+        logger.debug("WsxRouter connected to DOM");
 
         // 监听原生 popstate 事件
         window.addEventListener("popstate", this.handleRouteChange);
 
         // 拦截所有链接点击，让 History API 接管
         this.addEventListener("click", this.interceptLinks);
-
-        // 初始路由
-        this.handleRouteChange();
     }
 
     protected onDisconnected() {
@@ -80,39 +85,62 @@ export default class WsxRouter extends LightComponent {
     }
 
     private handleRouteChange = () => {
-        const path = window.location.pathname;
-        logger.debug(`Route changed to: ${path}`);
-
-        // 隐藏当前视图
-        if (this.currentView) {
-            this.currentView.style.display = "none";
-            logger.debug("Hiding previous view");
+        // 防止递归调用
+        if (this.isHandlingRoute) {
+            logger.debug("Route change already in progress, skipping");
+            return;
         }
 
-        // 查找匹配的视图
-        const view = this.matchRoute(path);
-        if (view) {
-            view.style.display = "block";
-            this.currentView = view;
-            logger.debug(`Showing view for route: ${view.getAttribute("route")}`);
+        // 如果视图为空，重新收集（可能子元素还未渲染）
+        if (this.views.size === 0) {
+            this.collectViews();
+            logger.debug("WsxRouter re-collected views:", this.views.size);
+        }
 
-            // 传递路由参数
-            const params = this.extractParams(view.getAttribute("route") || "/", path);
-            if (params) {
-                view.setAttribute("params", JSON.stringify(params));
+        this.isHandlingRoute = true;
+
+        try {
+            const path = window.location.pathname;
+            logger.debug(`Route changed to: ${path}`);
+
+            // 隐藏当前视图
+            if (this.currentView) {
+                this.currentView.style.display = "none";
+                logger.debug("Hiding previous view");
             }
-        } else {
-            logger.warn(`No view found for path: ${path}`);
-        }
 
-        // 触发路由变化事件
-        this.dispatchEvent(
-            new CustomEvent("route-changed", {
-                detail: { path, view },
-                bubbles: true,
-                composed: true,
-            })
-        );
+            // 查找匹配的视图
+            const view = this.matchRoute(path);
+            if (view) {
+                view.style.display = "block";
+                this.currentView = view;
+                logger.debug(`Showing view for route: ${view.getAttribute("route")}`);
+
+                // 传递路由参数（延迟设置，避免触发 attributeChangedCallback 导致递归）
+                const params = this.extractParams(view.getAttribute("route") || "/", path);
+                if (params) {
+                    requestAnimationFrame(() => {
+                        view.setAttribute("params", JSON.stringify(params));
+                    });
+                }
+            } else {
+                logger.warn(`No view found for path: ${path}`);
+            }
+
+            // 触发路由变化事件
+            this.dispatchEvent(
+                new CustomEvent("route-changed", {
+                    detail: { path, view },
+                    bubbles: true,
+                    composed: true,
+                })
+            );
+        } finally {
+            // 延迟重置标志，确保所有异步操作完成
+            requestAnimationFrame(() => {
+                this.isHandlingRoute = false;
+            });
+        }
     };
 
     private matchRoute(path: string): HTMLElement | null {

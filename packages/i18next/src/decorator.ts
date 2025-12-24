@@ -47,8 +47,10 @@ export function i18nDecorator(namespace: string = "common") {
 
             // 生命周期：组件连接时订阅语言变化
             public onConnected(): void {
-                // 创建回调函数并保存引用，以便后续取消订阅
+                // 先调用父类的 onConnected（如果存在）
+                super.onConnected?.();
 
+                // 创建回调函数并保存引用，以便后续取消订阅
                 const handler = (() => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     if ((this as any).rerender) {
@@ -107,6 +109,9 @@ export function i18nDecorator(namespace: string = "common") {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     delete (this as any)._languageChangedHandler;
                 }
+
+                // 调用父类的 onDisconnected（如果存在）
+                super.onDisconnected?.();
             }
         }
         // 复制静态属性和方法

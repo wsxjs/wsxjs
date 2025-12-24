@@ -22,8 +22,16 @@ export default class SimpleReactiveDemo extends WebComponent {
     constructor() {
         super();
         logger.info("SimpleReactiveDemo initialized");
-        // 初始化消息
-        this.state.message = this.t("simpleReactiveDemo.message");
+    }
+
+    protected onConnected() {
+        // 初始化消息 - 在 onConnected 中确保 state 已经初始化
+        // 使用 setTimeout 确保 @state 装饰器已经完全初始化
+        setTimeout(() => {
+            if (this.state && typeof this.state === "object") {
+                this.state.message = this.t("simpleReactiveDemo.message");
+            }
+        }, 0);
     }
 
     render() {

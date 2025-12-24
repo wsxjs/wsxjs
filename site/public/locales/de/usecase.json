@@ -21,6 +21,25 @@
             },
             "action": "EditorJS Demo ansehen"
         },
+        "marked": {
+            "title": "Marked Benutzerdefinierter Renderer",
+            "badge": "Markdown",
+            "description": "Überschreiben Sie den Standard-Renderer von marked mit WSX-Komponenten, um benutzerdefiniertes, interaktives Markdown-Rendering zu erstellen. Transformieren Sie einfache HTML-Strings in reichhaltige, komponentenbasierte Ausgabe.",
+            "why": {
+                "title": "Warum Marked Benutzerdefinierter Renderer als Anwendungsfall?",
+                "reason1": "Traditionelle marked-Renderer geben HTML-Strings zurück, was Anpassung und Interaktivität erschwert",
+                "reason2": "WSX-Komponenten ermöglichen es, benutzerdefinierte Renderer zu erstellen, die interaktive Web Components statt statischem HTML zurückgeben",
+                "reason3": "JSX-Syntax macht Renderer-Methoden viel sauberer und wartbarer als String-Verkettung",
+                "reason4": "Typsicherheit und Komponenten-Wiederverwendbarkeit transformieren die Markdown-Rendering-Erfahrung"
+            },
+            "features": {
+                "title": "Hauptmerkmale",
+                "feature1": "Benutzerdefinierte Renderer-Methoden, die WSX-Komponenten für Überschriften, Code-Blöcke und mehr zurückgeben",
+                "feature2": "Interaktive Markdown-Elemente mit Event-Handlern und reaktivem Zustand",
+                "feature3": "Komponentenbasiertes Rendering mit automatischer Stil-Isolation und Wiederverwendbarkeit"
+            },
+            "action": "Marked Builder Demo ansehen"
+        },
         "cms": {
             "title": "Content-Management-Systeme",
             "badge": "Unternehmen",

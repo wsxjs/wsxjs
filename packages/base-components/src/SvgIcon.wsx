@@ -7,7 +7,6 @@ const logger = createLogger("SvgIcon");
 export default class SvgIcon extends WebComponent {
     constructor() {
         super();
-        logger.info("SvgIcon component initialized");
     }
 
     render() {

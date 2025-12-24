@@ -21,6 +21,25 @@
             },
             "action": "Ver Demo de EditorJS"
         },
+        "marked": {
+            "title": "Renderizador Personalizado Marked",
+            "badge": "Markdown",
+            "description": "Sobrescribe el renderizador predeterminado de marked con componentes WSX para crear renderizado de Markdown personalizado e interactivo. Transforma cadenas HTML simples en salida rica basada en componentes.",
+            "why": {
+                "title": "¿Por qué Renderizador Personalizado Marked como Caso de Uso?",
+                "reason1": "Los renderizadores tradicionales de marked devuelven cadenas HTML, lo que hace difícil la personalización y la interactividad",
+                "reason2": "Los componentes WSX permiten crear renderizadores personalizados que devuelven Web Components interactivos en lugar de HTML estático",
+                "reason3": "La sintaxis JSX hace que los métodos de renderizado sean mucho más limpios y mantenibles que la concatenación de cadenas",
+                "reason4": "La seguridad de tipos y la reutilización de componentes transforman la experiencia de renderizado de Markdown"
+            },
+            "features": {
+                "title": "Características Clave",
+                "feature1": "Métodos de renderizado personalizados que devuelven componentes WSX para encabezados, bloques de código y más",
+                "feature2": "Elementos Markdown interactivos con manejadores de eventos y estado reactivo",
+                "feature3": "Renderizado basado en componentes con aislamiento de estilo automático y reutilización"
+            },
+            "action": "Ver Demo de Marked Builder"
+        },
         "cms": {
             "title": "Sistemas de Gestión de Contenido",
             "badge": "Empresarial",

@@ -92,6 +92,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0027](./0027-community-features.md) | 社区功能（M5） | Proposed | WSX Team |
 | [RFC-0028](./0028-advanced-features.md) | 高级功能（M6） | Proposed | WSX Team |
 | [RFC-0029](./0029-i18next-integration.md) | i18next 国际化支持（包含 @wsxjs/wsx-i18next 包设计） | Proposed | WSX Team |
+| [RFC-0030](./0030-rerender-scheduling-refactor.md) | rerender() 调度机制重构 | Proposed | WSX Team |
 
 ### 被拒绝的RFCs
 

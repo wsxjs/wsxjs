@@ -21,6 +21,25 @@
             },
             "action": "Voir la Démo EditorJS"
         },
+        "marked": {
+            "title": "Rendu Personnalisé Marked",
+            "badge": "Markdown",
+            "description": "Remplacez le rendu par défaut de marked par des composants WSX pour créer un rendu Markdown personnalisé et interactif. Transformez des chaînes HTML simples en sortie riche basée sur des composants.",
+            "why": {
+                "title": "Pourquoi Rendu Personnalisé Marked comme Cas d'Usage ?",
+                "reason1": "Les rendus traditionnels de marked renvoient des chaînes HTML, ce qui rend la personnalisation et l'interactivité difficiles",
+                "reason2": "Les composants WSX permettent de créer des rendus personnalisés qui renvoient des Web Components interactifs au lieu de HTML statique",
+                "reason3": "La syntaxe JSX rend les méthodes de rendu beaucoup plus propres et maintenables que la concaténation de chaînes",
+                "reason4": "La sécurité de type et la réutilisabilité des composants transforment l'expérience de rendu Markdown"
+            },
+            "features": {
+                "title": "Caractéristiques Clés",
+                "feature1": "Méthodes de rendu personnalisées qui renvoient des composants WSX pour les titres, blocs de code et plus",
+                "feature2": "Éléments Markdown interactifs avec gestionnaires d'événements et état réactif",
+                "feature3": "Rendu basé sur des composants avec isolation de style automatique et réutilisabilité"
+            },
+            "action": "Voir la Démo Marked Builder"
+        },
         "cms": {
             "title": "Systèmes de Gestion de Contenu",
             "badge": "Entreprise",

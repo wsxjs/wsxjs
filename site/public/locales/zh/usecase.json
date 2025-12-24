@@ -21,6 +21,25 @@
             },
             "action": "查看 EditorJS 演示"
         },
+        "marked": {
+            "title": "Marked 自定义渲染器",
+            "badge": "Markdown",
+            "description": "使用 WSX 组件覆盖 marked 的默认渲染器，创建自定义的交互式 Markdown 渲染。将纯 HTML 字符串转换为丰富的基于组件的输出。",
+            "why": {
+                "title": "为什么选择 Marked 自定义渲染器作为用例？",
+                "reason1": "传统的 marked 渲染器返回 HTML 字符串，使得自定义和交互变得困难",
+                "reason2": "WSX 组件允许您创建返回交互式 Web Components 而不是静态 HTML 的自定义渲染器",
+                "reason3": "JSX 语法使渲染器方法比字符串拼接更清晰、更易维护",
+                "reason4": "类型安全和组件可重用性彻底改变了 Markdown 渲染体验"
+            },
+            "features": {
+                "title": "主要特性",
+                "feature1": "返回 WSX 组件的自定义渲染器方法，用于标题、代码块等",
+                "feature2": "具有事件处理程序和响应式状态的交互式 Markdown 元素",
+                "feature3": "基于组件的渲染，具有自动样式隔离和可重用性"
+            },
+            "action": "查看 Marked Builder 演示"
+        },
         "cms": {
             "title": "内容管理系统",
             "badge": "企业级",

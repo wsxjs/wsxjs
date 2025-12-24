@@ -882,6 +882,7 @@ wsx-link[active]::part(link)::after {
     font-weight: 600;
     font-size: 1rem;
     color: var(--primary-red);
+    text-decoration: none;
     transition: all 0.2s ease;
 }
 
@@ -899,6 +900,7 @@ wsx-link[active]::part(link)::after {
 
 .core-feature-card:hover .core-feature-link {
     transform: translateX(4px);
+    text-decoration: none;
 }
 
 .category-title {

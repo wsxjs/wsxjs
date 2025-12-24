@@ -17,6 +17,10 @@ export default class WsxMarkedBlockquote extends LightComponent {
     }
 
     render() {
-        return <blockquote></blockquote>;
+        return (
+            <blockquote>
+                <slot />
+            </blockquote>
+        );
     }
 }

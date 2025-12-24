@@ -32,6 +32,9 @@ export { StyleManager } from "../src/styles/style-manager";
 export { WSXLogger, logger, createLogger } from "../src/utils/logger.ts";
 export type { Logger, LogLevel } from "../src/utils/logger.ts";
 
+// 导出 DOM 工具函数
+export { parseHTMLToNodes } from "../src/utils/dom-utils";
+
 // 重新导出 JSX 运行时
 export { h as jsx, h as jsxs, Fragment as F } from "../src/jsx-factory";
 export type { JSXChildren as J } from "../src/jsx-factory";

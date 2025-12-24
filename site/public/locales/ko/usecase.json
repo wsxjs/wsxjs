@@ -21,6 +21,25 @@
             },
             "action": "EditorJS 데모 보기"
         },
+        "marked": {
+            "title": "Marked 사용자 정의 렌더러",
+            "badge": "Markdown",
+            "description": "WSX 컴포넌트로 marked의 기본 렌더러를 재정의하여 사용자 정의 및 대화형 Markdown 렌더링을 만듭니다. 일반 HTML 문자열을 풍부한 컴포넌트 기반 출력으로 변환합니다.",
+            "why": {
+                "title": "왜 Marked 사용자 정의 렌더러를 사용 사례로 선택하는가?",
+                "reason1": "전통적인 marked 렌더러는 HTML 문자열을 반환하여 사용자 정의 및 대화형 기능을 어렵게 만듭니다",
+                "reason2": "WSX 컴포넌트를 사용하면 정적 HTML 대신 대화형 Web Components를 반환하는 사용자 정의 렌더러를 만들 수 있습니다",
+                "reason3": "JSX 구문은 렌더러 메서드를 문자열 연결보다 훨씬 더 깨끗하고 유지보수하기 쉽게 만듭니다",
+                "reason4": "타입 안전성과 컴포넌트 재사용성이 Markdown 렌더링 경험을 변화시킵니다"
+            },
+            "features": {
+                "title": "주요 기능",
+                "feature1": "제목, 코드 블록 등에 WSX 컴포넌트를 반환하는 사용자 정의 렌더러 메서드",
+                "feature2": "이벤트 핸들러 및 반응형 상태를 가진 대화형 Markdown 요소",
+                "feature3": "자동 스타일 격리 및 재사용성을 갖춘 컴포넌트 기반 렌더링"
+            },
+            "action": "Marked Builder 데모 보기"
+        },
         "cms": {
             "title": "콘텐츠 관리 시스템",
             "badge": "엔터프라이즈",

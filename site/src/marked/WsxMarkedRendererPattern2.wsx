@@ -11,6 +11,7 @@ import { LightComponent, autoRegister, createLogger, state } from "@wsxjs/wsx-co
 import { marked } from "marked";
 import type { Tokens } from "marked";
 import styles from "./WsxMarkedRenderer.css?inline";
+import { renderInlineTokens } from "./marked-utils";
 // Import WSX components
 import "./WsxMarkedHeading.wsx";
 import "./WsxMarkedCode.wsx";
@@ -95,7 +96,7 @@ export default class WsxMarkedRenderer extends LightComponent {
                 return (
                     <wsx-marked-heading
                         level={headingToken.depth.toString()}
-                        text={this.renderInlineTokens(headingToken.tokens)}
+                        text={renderInlineTokens(headingToken.tokens)}
                     />
                 );
             }
@@ -116,12 +117,12 @@ export default class WsxMarkedRenderer extends LightComponent {
 
             case "paragraph": {
                 const paraToken = token as Tokens.Paragraph;
-                return <wsx-marked-paragraph content={this.renderInlineTokens(paraToken.tokens)} />;
+                return <wsx-marked-paragraph content={renderInlineTokens(paraToken.tokens)} />;
             }
 
             case "list": {
                 const listToken = token as Tokens.List;
-                const items = listToken.items.map((item) => this.renderInlineTokens(item.tokens));
+                const items = listToken.items.map((item) => renderInlineTokens(item.tokens));
                 return (
                     <wsx-marked-list
                         ordered={listToken.ordered ? "true" : "false"}
@@ -132,7 +133,7 @@ export default class WsxMarkedRenderer extends LightComponent {
 
             case "html": {
                 const htmlToken = token as Tokens.HTML;
-                return <div innerHTML={htmlToken.text}></div>;
+                return <div>{htmlToken.text}</div>;
             }
 
             case "hr": {
@@ -152,44 +153,10 @@ export default class WsxMarkedRenderer extends LightComponent {
                 )[token.type];
                 const html = renderMethod?.(token) || "";
                 if (html) {
-                    return <div innerHTML={html}></div>;
+                    return <div>{html}</div>;
                 }
                 return null;
             }
         }
-    }
-
-    /**
-     * 渲染内联 tokens（如 strong, em, link 等）
-     */
-    private renderInlineTokens(tokens: Tokens.Generic[]): string {
-        return tokens
-            .map((token) => {
-                switch (token.type) {
-                    case "strong": {
-                        const strongToken = token as Tokens.Strong;
-                        return `<strong>${this.renderInlineTokens(strongToken.tokens)}</strong>`;
-                    }
-                    case "em": {
-                        const emToken = token as Tokens.Em;
-                        return `<em>${this.renderInlineTokens(emToken.tokens)}</em>`;
-                    }
-                    case "link": {
-                        const linkToken = token as Tokens.Link;
-                        return `<a href="${linkToken.href}" title="${linkToken.title || ""}">${this.renderInlineTokens(linkToken.tokens)}</a>`;
-                    }
-                    case "text": {
-                        const textToken = token as Tokens.Text;
-                        return textToken.text;
-                    }
-                    case "code": {
-                        const codeToken = token as Tokens.Code;
-                        return `<code>${codeToken.text}</code>`;
-                    }
-                    default:
-                        return "";
-                }
-            })
-            .join("");
     }
 }

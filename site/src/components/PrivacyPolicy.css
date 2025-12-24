@@ -78,7 +78,7 @@
 
 .content-section a:hover {
     color: var(--secondary-red);
-    text-decoration: underline;
+    text-decoration: none;
 }
 
 .content-section strong {

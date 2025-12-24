@@ -40,76 +40,68 @@ export default class CodeBlock extends LightComponent {
 
     @state private copied: boolean = false;
     @state private highlighted: boolean = false;
-    private code: string = "";
-    private segments: CodeSegment[] = [];
-    private codeTitle: string = "";
-    private language: string = "typescript";
-    private showCopy: boolean = true;
-    private showTryOnline: boolean = false;
-    private tryOnlineUrl: string = "";
+    @state private code: string = "";
+    @state private segments: CodeSegment[] = [];
+    @state private codeTitle: string = "";
+    @state private language: string = "typescript";
+    @state private showCopy: boolean = true;
+    @state private showTryOnline: boolean = false;
+    @state private tryOnlineUrl: string = "";
     private onTryOnlineCallback?: () => void;
     private codeElements: HTMLElement[] = [];
+    private isHighlighting: boolean = false; // 防止重复高亮
 
     constructor() {
         super({ styles });
     }
 
     protected onConnected() {
-        // 从属性初始化
+        // 从属性初始化（使用 @state 会自动触发重渲染）
         this.code = this.getAttribute("code") || "";
         this.codeTitle = this.getAttribute("title") || "";
         this.language = this.getAttribute("language") || "typescript";
         this.showCopy = this.getAttribute("show-copy") !== "false";
         this.showTryOnline = this.getAttribute("show-try-online") === "true";
         this.tryOnlineUrl = this.getAttribute("try-online-url") || "";
+    }
 
-        // 如果通过属性设置了代码，更新显示
-        if (this.code) {
-            this.rerender();
-            // 等待 DOM 更新后应用语法高亮
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    this.highlightCode();
-                });
-            });
+    protected onRendered() {
+        // 在渲染完成后应用语法高亮（防止重复高亮）
+        if (!this.isHighlighting) {
+            this.highlightCode();
         }
     }
 
     protected onAttributeChanged(name: string, _oldValue: string, newValue: string) {
+        // 只在组件已连接时处理属性变化，避免在 render() 阶段触发重渲染
+        if (!this.connected) {
+            return;
+        }
+
         switch (name) {
             case "code":
                 this.code = newValue || "";
-                this.rerender();
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        this.highlightCode();
-                    });
-                });
+                // @state 会自动触发重渲染，onRendered 会在渲染完成后调用 highlightCode()
                 break;
             case "title":
                 this.codeTitle = newValue || "";
-                this.rerender();
+                // @state 会自动触发重渲染
                 break;
             case "language":
                 this.language = newValue || "typescript";
-                this.rerender();
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        this.highlightCode();
-                    });
-                });
+                // @state 会自动触发重渲染，onRendered 会在渲染完成后调用 highlightCode()
                 break;
             case "show-copy":
                 this.showCopy = newValue !== "false";
-                this.rerender();
+                // @state 会自动触发重渲染
                 break;
             case "show-try-online":
                 this.showTryOnline = newValue === "true";
-                this.rerender();
+                // @state 会自动触发重渲染
                 break;
             case "try-online-url":
                 this.tryOnlineUrl = newValue || "";
-                this.rerender();
+                // @state 会自动触发重渲染
                 break;
         }
     }
@@ -118,6 +110,8 @@ export default class CodeBlock extends LightComponent {
      * 通过方法设置配置（用于编程式使用）
      */
     public updateConfig(config: CodeBlockConfig): void {
+        // 批量更新所有属性，减少重渲染次数
+        // 由于 @state 使用 scheduleRerender()，多个属性更新会被批量处理
         if (config.segments && config.segments.length > 0) {
             this.segments = config.segments;
             this.code = ""; // 清空单个代码块
@@ -125,18 +119,25 @@ export default class CodeBlock extends LightComponent {
             this.code = config.code;
             this.segments = []; // 清空代码段
         }
+
+        // 清除高亮标记和元素引用，允许重新高亮
+        this.highlighted = false;
+        this.codeElements = []; // 清空元素引用，让 onRendered 重新收集
+
+        // 清除已高亮的标记（如果元素还在 DOM 中）
+        if (this.connected) {
+            this.querySelectorAll("code[data-prism-highlighted]").forEach((el) => {
+                el.removeAttribute("data-prism-highlighted");
+            });
+        }
+
         this.codeTitle = config.title || "";
         this.language = config.language || "typescript";
         this.showCopy = config.showCopy !== false;
         this.showTryOnline = config.showTryOnline === true;
         this.tryOnlineUrl = config.tryOnlineUrl || "";
         this.onTryOnlineCallback = config.onTryOnline;
-        this.rerender();
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                this.highlightCode();
-            });
-        });
+        // @state 会自动触发重渲染，onRendered 会在渲染完成后调用 highlightCode()
     }
 
     render() {
@@ -185,16 +186,8 @@ export default class CodeBlock extends LightComponent {
                                 class={`language-${segment.language}`}
                                 ref={(element) => {
                                     if (element) {
+                                        // 只保存引用，高亮在 onRendered() 中统一处理
                                         this.codeElements[index] = element as HTMLElement;
-                                        // 当 ref 设置后，立即应用语法高亮
-                                        requestAnimationFrame(() => {
-                                            requestAnimationFrame(() => {
-                                                // 确保 class 正确设置
-                                                const lang = segment.language.toLowerCase();
-                                                element.className = `language-${lang}`;
-                                                Prism.highlightElement(element);
-                                            });
-                                        });
                                     }
                                 }}
                             >
@@ -251,33 +244,53 @@ export default class CodeBlock extends LightComponent {
      * 应用语法高亮
      */
     private highlightCode(): void {
+        // 防止重复高亮
+        if (this.isHighlighting) {
+            return;
+        }
+
+        this.isHighlighting = true;
+
         try {
-            // 如果有代码段，高亮所有代码段
-            if (this.segments.length > 0) {
-                this.segments.forEach((segment, index) => {
-                    const codeEl =
-                        this.codeElements[index] ||
-                        (this.querySelectorAll("code")[index] as HTMLElement | null);
-                    if (codeEl) {
-                        const lang = segment.language.toLowerCase();
-                        codeEl.className = `language-${lang}`;
-                        Prism.highlightElement(codeEl);
+            // 使用 requestAnimationFrame 确保 DOM 已完全更新
+            requestAnimationFrame(() => {
+                try {
+                    // 如果有代码段，高亮所有代码段
+                    if (this.segments.length > 0) {
+                        this.segments.forEach((segment, index) => {
+                            const codeEl =
+                                this.codeElements[index] ||
+                                (this.querySelectorAll("code")[index] as HTMLElement | null);
+                            if (codeEl && !codeEl.hasAttribute("data-prism-highlighted")) {
+                                const lang = segment.language.toLowerCase();
+                                codeEl.className = `language-${lang}`;
+                                Prism.highlightElement(codeEl);
+                                codeEl.setAttribute("data-prism-highlighted", "true");
+                            }
+                        });
+                    } else if (this.code) {
+                        // 单个代码块
+                        const codeEl =
+                            this.codeElements[0] ||
+                            (this.querySelector("code") as HTMLElement | null);
+                        if (codeEl && !codeEl.hasAttribute("data-prism-highlighted")) {
+                            const lang = this.language.toLowerCase();
+                            codeEl.className = `language-${lang}`;
+                            Prism.highlightElement(codeEl);
+                            codeEl.setAttribute("data-prism-highlighted", "true");
+                        }
                     }
-                });
-            } else if (this.code) {
-                // 单个代码块
-                const codeEl =
-                    this.codeElements[0] || (this.querySelector("code") as HTMLElement | null);
-                if (codeEl) {
-                    const lang = this.language.toLowerCase();
-                    codeEl.className = `language-${lang}`;
-                    Prism.highlightElement(codeEl);
+                    this.highlighted = true;
+                } catch (error) {
+                    console.error("Failed to highlight code:", error);
+                    // 如果高亮失败，仍然显示原始代码
+                } finally {
+                    this.isHighlighting = false;
                 }
-            }
-            this.highlighted = true;
+            });
         } catch (error) {
-            console.error("Failed to highlight code:", error);
-            // 如果高亮失败，仍然显示原始代码
+            console.error("Failed to schedule highlight:", error);
+            this.isHighlighting = false;
         }
     }
 }

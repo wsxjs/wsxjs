@@ -58,10 +58,8 @@ Check out [WSXJS](https://wsxjs.dev) for more information.
 
 @autoRegister({ tagName: "marked-builder" })
 export default class MarkedBuilder extends LightComponent {
-    private markdownInput: string = SAMPLE_MARKDOWN;
+    @state private markdownInput: string = SAMPLE_MARKDOWN;
     @state private pattern: "pattern1" | "pattern2" = "pattern1";
-    private rendererContainer?: HTMLElement;
-    private wsxRenderer?: HTMLElement;
 
     constructor() {
         super({
@@ -91,7 +89,6 @@ export default class MarkedBuilder extends LightComponent {
                             onInput={(e: Event) => {
                                 const target = e.target as HTMLTextAreaElement;
                                 this.markdownInput = target.value;
-                                this.renderMarkdown();
                             }}
                             placeholder="Enter your Markdown here..."
                         />
@@ -113,7 +110,6 @@ export default class MarkedBuilder extends LightComponent {
                                 <button
                                     onClick={() => {
                                         this.pattern = "pattern1";
-                                        this.renderMarkdown();
                                     }}
                                     class={`btn ${this.pattern === "pattern1" ? "btn-active" : "btn-secondary"}`}
                                 >
@@ -122,7 +118,6 @@ export default class MarkedBuilder extends LightComponent {
                                 <button
                                     onClick={() => {
                                         this.pattern = "pattern2";
-                                        this.renderMarkdown();
                                     }}
                                     class={`btn ${this.pattern === "pattern2" ? "btn-active" : "btn-secondary"}`}
                                 >
@@ -144,12 +139,13 @@ export default class MarkedBuilder extends LightComponent {
                                 </p>
                             )}
                         </div>
-                        <div
-                            ref={(el: HTMLElement) => {
-                                this.rendererContainer = el;
-                            }}
-                            class="renderer-output"
-                        />
+                        <div class="renderer-output">
+                            {this.pattern === "pattern1" ? (
+                                <wsx-marked-renderer-pattern1 markdown={this.markdownInput} />
+                            ) : (
+                                <wsx-marked-renderer-pattern2 markdown={this.markdownInput} />
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -264,46 +260,12 @@ class WsxMarkedHeading extends LightComponent {
         );
     }
 
-    protected onConnected() {
-        this.renderMarkdown();
-    }
-
-    private renderMarkdown() {
-        if (!this.rendererContainer) return;
-
-        try {
-            // 清空容器
-            this.rendererContainer.innerHTML = "";
-
-            if (this.pattern === "pattern1") {
-                // Pattern 1: 使用 marked.use({ renderer })
-                this.wsxRenderer = (
-                    <wsx-marked-renderer-pattern1 markdown={this.markdownInput} />
-                ) as HTMLElement;
-            } else {
-                // Pattern 2: 使用 marked.lexer() + WSX JSX
-                this.wsxRenderer = (
-                    <wsx-marked-renderer-pattern2 markdown={this.markdownInput} />
-                ) as HTMLElement;
-            }
-
-            this.rendererContainer.appendChild(this.wsxRenderer);
-            logger.info(`Markdown rendered using ${this.pattern}`);
-        } catch (error) {
-            logger.error("Failed to render markdown", error);
-            if (this.rendererContainer) {
-                this.rendererContainer.innerHTML = `<div class="error">Error rendering markdown: ${error}</div>`;
-            }
-        }
-    }
-
     private loadSample = () => {
         this.markdownInput = SAMPLE_MARKDOWN;
         const textarea = this.querySelector(".markdown-input") as HTMLTextAreaElement;
         if (textarea) {
             textarea.value = SAMPLE_MARKDOWN;
         }
-        this.renderMarkdown();
     };
 
     private clearInput = () => {
@@ -312,6 +274,5 @@ class WsxMarkedHeading extends LightComponent {
         if (textarea) {
             textarea.value = "";
         }
-        this.renderMarkdown();
     };
 }

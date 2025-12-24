@@ -5,11 +5,21 @@
  */
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
 import { i18n } from "@wsxjs/wsx-i18next";
-import type { CodeBlockConfig } from "@wsxjs/wsx-base-components";
 import "@wsxjs/wsx-base-components";
 import styles from "./QuickStartCode.css?inline";
 
 // 定义 code-block 元素的类型接口
+interface CodeBlockConfig {
+    segments?: Array<{ code: string; language: string }>;
+    code?: string;
+    title?: string;
+    language?: string;
+    showCopy?: boolean;
+    showTryOnline?: boolean;
+    tryOnlineUrl?: string;
+    onTryOnline?: () => void;
+}
+
 interface CodeBlockElement extends HTMLElement {
     updateConfig?(config: CodeBlockConfig): void;
 }
@@ -37,17 +47,25 @@ export class MyComponent extends WebComponent {
         },
     ];
 
+    private configUpdated: boolean = false; // 防止重复更新配置
+
     constructor() {
         super({ styles });
     }
 
-    protected onConnected() {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+    protected onRendered() {
+        // 防止重复更新配置（避免循环重渲染）
+        if (this.configUpdated) {
+            return;
+        }
 
-        // 通过 updateConfig 方法设置多个代码段
-        const codeBlock = this.querySelector("code-block") as CodeBlockElement | null;
+        // 确保 code-block 元素在 Shadow DOM 中可用
+        const codeBlock = this.shadowRoot?.querySelector("code-block") as CodeBlockElement | null;
         if (codeBlock && codeBlock.updateConfig) {
+            this.configUpdated = true; // 标记已更新
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+            // 通过 updateConfig 方法设置多个代码段
             codeBlock.updateConfig({
                 segments: this.segments,
                 title: t("codeExample.titleInstallation"),

@@ -26,7 +26,8 @@ function initApp() {
     }
 
     // Mount the WSX App component
-    appContainer.innerHTML = "<wsx-app></wsx-app>";
+    const appElement = document.createElement("wsx-app");
+    appContainer.appendChild(appElement);
 
     logger.info("WSXJS Example App initialized");
 }

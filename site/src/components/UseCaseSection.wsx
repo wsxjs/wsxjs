@@ -1,9 +1,9 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
 import { i18n } from "@wsxjs/wsx-i18next";
+import { RouterUtils } from "@wsxjs/wsx-router";
 import styles from "./UseCaseSection.css?inline";
 import "@wsxjs/wsx-base-components";
-import "@wsxjs/wsx-router";
 
 @autoRegister({ tagName: "use-case-section" })
 @i18n("usecase")
@@ -14,6 +14,10 @@ export default class UseCaseSection extends WebComponent {
             styleName: "use-case-section",
         });
     }
+
+    private handleCardClick = (path: string) => {
+        RouterUtils.navigate(path);
+    };
 
     render() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,86 +33,81 @@ export default class UseCaseSection extends WebComponent {
 
                     <div class="use-cases-grid">
                         {/* EditorJS Use Case */}
-                        <wsx-link to="/editorjs" class="use-case-card-link">
-                            <div class="use-case-card">
-                                <div class="use-case-icon">📝</div>
-                                <div class="use-case-content">
-                                    <h3 class="use-case-title">{t("cases.editorjs.title")}</h3>
-                                    <span class="use-case-badge">{t("cases.editorjs.badge")}</span>
-                                    <p class="use-case-description">
-                                        {t("cases.editorjs.description")}
-                                    </p>
+                        <div
+                            class="use-case-card"
+                            onClick={() => this.handleCardClick("/editorjs")}
+                        >
+                            <div class="use-case-icon">📝</div>
+                            <div class="use-case-content">
+                                <h3 class="use-case-title">{t("cases.editorjs.title")}</h3>
+                                <span class="use-case-badge">{t("cases.editorjs.badge")}</span>
+                                <p class="use-case-description">
+                                    {t("cases.editorjs.description")}
+                                </p>
 
-                                    <div class="use-case-why">
-                                        <h4 class="why-title">{t("cases.editorjs.why.title")}</h4>
-                                        <ul class="why-list">
-                                            <li>{t("cases.editorjs.why.reason1")}</li>
-                                            <li>{t("cases.editorjs.why.reason2")}</li>
-                                            <li>{t("cases.editorjs.why.reason3")}</li>
-                                            <li>{t("cases.editorjs.why.reason4")}</li>
-                                        </ul>
-                                    </div>
+                                <div class="use-case-why">
+                                    <h4 class="why-title">{t("cases.editorjs.why.title")}</h4>
+                                    <ul class="why-list">
+                                        <li>{t("cases.editorjs.why.reason1")}</li>
+                                        <li>{t("cases.editorjs.why.reason2")}</li>
+                                        <li>{t("cases.editorjs.why.reason3")}</li>
+                                        <li>{t("cases.editorjs.why.reason4")}</li>
+                                    </ul>
+                                </div>
 
-                                    <div class="use-case-features">
-                                        <h4 class="features-title">
-                                            {t("cases.editorjs.features.title")}
-                                        </h4>
-                                        <ul class="features-list">
-                                            <li>{t("cases.editorjs.features.feature1")}</li>
-                                            <li>{t("cases.editorjs.features.feature2")}</li>
-                                            <li>{t("cases.editorjs.features.feature3")}</li>
-                                        </ul>
-                                    </div>
+                                <div class="use-case-features">
+                                    <h4 class="features-title">
+                                        {t("cases.editorjs.features.title")}
+                                    </h4>
+                                    <ul class="features-list">
+                                        <li>{t("cases.editorjs.features.feature1")}</li>
+                                        <li>{t("cases.editorjs.features.feature2")}</li>
+                                        <li>{t("cases.editorjs.features.feature3")}</li>
+                                    </ul>
+                                </div>
 
-                                    <div class="use-case-action">
-                                        <span class="use-case-link">
-                                            {t("cases.editorjs.action")} →
-                                        </span>
-                                    </div>
+                                <div class="use-case-action">
+                                    <span class="use-case-link">
+                                        {t("cases.editorjs.action")} →
+                                    </span>
                                 </div>
                             </div>
-                        </wsx-link>
+                        </div>
 
                         {/* Marked Use Case */}
-                        <wsx-link to="/marked" class="use-case-card-link">
-                            <div class="use-case-card">
-                                <div class="use-case-icon">📄</div>
-                                <div class="use-case-content">
-                                    <h3 class="use-case-title">{t("cases.marked.title")}</h3>
-                                    <span class="use-case-badge">{t("cases.marked.badge")}</span>
-                                    <p class="use-case-description">
-                                        {t("cases.marked.description")}
-                                    </p>
+                        <div class="use-case-card" onClick={() => this.handleCardClick("/marked")}>
+                            <div class="use-case-icon">📄</div>
+                            <div class="use-case-content">
+                                <h3 class="use-case-title">{t("cases.marked.title")}</h3>
+                                <span class="use-case-badge">{t("cases.marked.badge")}</span>
+                                <p class="use-case-description">{t("cases.marked.description")}</p>
 
-                                    <div class="use-case-why">
-                                        <h4 class="why-title">{t("cases.marked.why.title")}</h4>
-                                        <ul class="why-list">
-                                            <li>{t("cases.marked.why.reason1")}</li>
-                                            <li>{t("cases.marked.why.reason2")}</li>
-                                            <li>{t("cases.marked.why.reason3")}</li>
-                                            <li>{t("cases.marked.why.reason4")}</li>
-                                        </ul>
-                                    </div>
+                                <div class="use-case-why">
+                                    <h4 class="why-title">{t("cases.marked.why.title")}</h4>
+                                    <ul class="why-list">
+                                        <li>{t("cases.marked.why.reason1")}</li>
+                                        <li>{t("cases.marked.why.reason2")}</li>
+                                        <li>{t("cases.marked.why.reason3")}</li>
+                                        <li>{t("cases.marked.why.reason4")}</li>
+                                    </ul>
+                                </div>
 
-                                    <div class="use-case-features">
-                                        <h4 class="features-title">
-                                            {t("cases.marked.features.title")}
-                                        </h4>
-                                        <ul class="features-list">
-                                            <li>{t("cases.marked.features.feature1")}</li>
-                                            <li>{t("cases.marked.features.feature2")}</li>
-                                            <li>{t("cases.marked.features.feature3")}</li>
-                                        </ul>
-                                    </div>
+                                <div class="use-case-features">
+                                    <h4 class="features-title">
+                                        {t("cases.marked.features.title")}
+                                    </h4>
+                                    <ul class="features-list">
+                                        <li>{t("cases.marked.features.feature1")}</li>
+                                        <li>{t("cases.marked.features.feature2")}</li>
+                                        <li>{t("cases.marked.features.feature3")}</li>
+                                    </ul>
+                                </div>
 
-                                    <div class="use-case-action">
-                                        <span class="use-case-link">
-                                            {t("cases.marked.action")} →
-                                        </span>
-                                    </div>
+                                <div class="use-case-action">
+                                    <span class="use-case-link">{t("cases.marked.action")} →</span>
                                 </div>
                             </div>
-                        </wsx-link>
+                        </div>
                     </div>
                 </div>
             </section>

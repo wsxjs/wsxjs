@@ -24,6 +24,7 @@ export default class WsxView extends LightComponent {
     private component: string | null = null;
     private params: Record<string, string> = {};
     private componentInstance: HTMLElement | null = null;
+    private isLoading: boolean = false; // 防止重复加载的标志
 
     constructor() {
         super({
@@ -41,16 +42,33 @@ export default class WsxView extends LightComponent {
     }
 
     protected onConnected() {
-        // Check if component attribute is already set and load it
-        const componentName = this.getAttribute("component");
-        if (componentName && !this.componentInstance) {
-            this.loadComponent(componentName);
-        }
+        // 延迟加载，避免在 connectedCallback 中同步执行
+        requestAnimationFrame(() => {
+            // 重新检查，防止在延迟期间已经加载
+            if (!this.connected || this.isLoading || this.componentInstance) {
+                return;
+            }
+
+            const componentName = this.getAttribute("component");
+            if (componentName) {
+                this.loadComponent(componentName);
+            }
+        });
     }
 
     protected onAttributeChanged(name: string, _oldValue: string, newValue: string) {
-        if (name === "component" && newValue && !this.componentInstance) {
-            this.loadComponent(newValue);
+        // 只在组件已连接时处理属性变化
+        if (!this.connected) {
+            return;
+        }
+
+        if (name === "component" && newValue && !this.componentInstance && !this.isLoading) {
+            // 延迟加载，避免在 attributeChangedCallback 中同步执行
+            requestAnimationFrame(() => {
+                if (this.connected && !this.componentInstance && !this.isLoading) {
+                    this.loadComponent(newValue);
+                }
+            });
         } else if (name === "params" && this.componentInstance) {
             // 更新组件参数
             try {
@@ -65,34 +83,54 @@ export default class WsxView extends LightComponent {
     }
 
     private async loadComponent(componentName: string) {
-        // 清理旧组件
-        if (this.componentInstance) {
-            this.componentInstance.remove();
-            this.componentInstance = null;
-        }
-
-        // 检查组件是否已注册
-        const elementClass = customElements.get(componentName);
-
-        if (!elementClass) {
-            logger.warn(`Component ${componentName} not found in customElements registry`);
+        // 防止重复加载
+        if (!this.connected || this.isLoading || this.componentInstance) {
+            logger.debug(
+                `Skipping loadComponent for ${componentName}: connected=${this.connected}, isLoading=${this.isLoading}, hasInstance=${!!this.componentInstance}`
+            );
             return;
         }
 
-        this.componentInstance = document.createElement(componentName);
+        this.isLoading = true; // 设置标志
 
-        // 传递初始参数
-        if (Object.keys(this.params).length > 0) {
-            Object.entries(this.params).forEach(([key, value]) => {
-                this.componentInstance!.setAttribute(key, value);
-            });
-        }
+        try {
+            // 清理旧组件（虽然理论上不应该有，但为了安全起见）
+            const instance = this.componentInstance;
+            if (instance) {
+                (instance as HTMLElement).remove();
+                this.componentInstance = null;
+            }
 
-        const container = this.querySelector(".route-view");
-        if (container) {
-            container.appendChild(this.componentInstance);
-        } else {
-            logger.error("Route view container not found");
+            // 检查组件是否已注册
+            const elementClass = customElements.get(componentName);
+
+            if (!elementClass) {
+                logger.warn(`Component ${componentName} not found in customElements registry`);
+                this.isLoading = false; // 重置标志
+                return;
+            }
+
+            this.componentInstance = document.createElement(componentName); // 立即设置实例，防止重复创建
+
+            // 传递初始参数
+            if (Object.keys(this.params).length > 0) {
+                Object.entries(this.params).forEach(([key, value]) => {
+                    this.componentInstance!.setAttribute(key, value);
+                });
+            }
+
+            const container = this.querySelector(".route-view");
+            if (container) {
+                container.appendChild(this.componentInstance); // 这会触发新组件的 connectedCallback
+            } else {
+                logger.error("Route view container not found");
+                this.componentInstance = null; // 清除实例
+            }
+        } catch (error) {
+            logger.error(`Error loading component ${componentName}:`, error);
+            this.componentInstance = null; // 清除实例
+        } finally {
+            this.isLoading = false; // 重置标志
         }
     }
 
