@@ -1,6 +1,21 @@
 // Global test setup
 import "@testing-library/jest-dom";
 
+// Polyfill setImmediate for JSDOM environment (required by pino's thread-stream)
+if (typeof setImmediate === "undefined") {
+    (global as typeof globalThis).setImmediate = (
+        callback: (...args: unknown[]) => void,
+        ...args: unknown[]
+    ) => {
+        return setTimeout(() => {
+            callback(...args);
+        }, 0);
+    };
+    (global as typeof globalThis).clearImmediate = (id: ReturnType<typeof setTimeout>) => {
+        clearTimeout(id);
+    };
+}
+
 // Mock window.customElements if not available
 if (typeof window !== "undefined" && !window.customElements) {
     const mockCustomElements = {
