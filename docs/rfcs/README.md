@@ -77,6 +77,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0016](./0016-component-library-build-guide.md) | 组件库构建指南 | Implemented | WSX Team |
 | [RFC-0017](./0017-jsx-factory-auto-injection-bug-fix.md) | JSX Factory 自动注入 Bug 修复 | Implemented | WSX Team |
 | [RFC-0020](./0020-jsx-import-source-pragma-auto-injection.md) | JSX Import Source Pragma 自动注入方案 | Implemented | WSX Team |
+| [RFC-0031](./0031-jsx-factory-html-string-infinite-recursion-fix.md) | JSX Factory HTML 字符串解析无限递归修复 | Implemented | WSX Team |
 
 ### 提议中的RFCs
 

@@ -174,8 +174,15 @@ export abstract class BaseComponent extends HTMLElement {
      * 统一的调度机制：
      * 1. 检查 connected 状态
      * 2. 处理输入元素的防抖（避免用户输入时频繁重渲染）
-     * 3. 使用 queueMicrotask 批量处理
+     * 3. 使用 requestAnimationFrame 确保在下一个渲染帧执行
      * 4. 最终调用 _rerender() 执行实际渲染
+     * 
+     * 为什么使用 requestAnimationFrame 而不是 queueMicrotask？
+     * - render() 是同步执行的，如果 render() 中访问 @state 属性
+     * - 会触发 reactive 系统的 queueMicrotask 调度 scheduleRerender()
+     * - 如果 scheduleRerender() 也使用 queueMicrotask，会在同一个微任务队列中执行
+     * - 此时 _isRendering 标志可能还没有设置，导致重复渲染
+     * - 使用 requestAnimationFrame 可以确保在下一个渲染帧执行，此时 _isRendering 已经设置
      */
     protected scheduleRerender(): void {
         if (!this.connected) {
@@ -214,13 +221,21 @@ export abstract class BaseComponent extends HTMLElement {
             return;
         }
 
-        // 立即调度重渲染（使用 queueMicrotask 批量处理）
+        // 立即调度重渲染（使用 requestAnimationFrame 确保在下一个渲染帧执行）
+        // 注意：不能使用 queueMicrotask，原因如下：
+        // 1. render() 是同步执行的，如果 render() 中访问 @state 属性
+        // 2. 会触发 reactive 系统的 queueMicrotask 调度 scheduleRerender()
+        // 3. 如果 scheduleRerender() 也使用 queueMicrotask，会在同一个微任务队列中执行
+        // 4. 此时 _isRendering 标志可能还没有设置，导致重复渲染
+        // 5. 使用 requestAnimationFrame 可以确保在下一个渲染帧执行，此时 _isRendering 已经设置
         if (this._pendingRerender) {
             this._pendingRerender = false;
         }
         
-        queueMicrotask(() => {
-            if (this.connected) {
+        requestAnimationFrame(() => {
+            if (this.connected && !this._isRendering) {
+                // 设置渲染标志，防止在 _rerender() 执行期间再次触发
+                this._isRendering = true;
                 // 最终调用 _rerender() 执行实际渲染
                 this._rerender();
             }
@@ -366,17 +381,25 @@ protected scheduleRerender(): void {
         return;
     }
 
-    // 立即调度重渲染（使用 queueMicrotask 批量处理）
-    if (this._pendingRerender) {
-        this._pendingRerender = false;
-    }
-    
-    queueMicrotask(() => {
-        if (this.connected) {
-            // 最终调用 _rerender() 执行实际渲染（不再调用 rerender()，避免循环）
-            this._rerender();
+    // 立即调度重渲染（使用 requestAnimationFrame 确保在下一个渲染帧执行）
+        // 注意：不能使用 queueMicrotask，原因如下：
+        // 1. render() 是同步执行的，如果 render() 中访问 @state 属性
+        // 2. 会触发 reactive 系统的 queueMicrotask 调度 scheduleRerender()
+        // 3. 如果 scheduleRerender() 也使用 queueMicrotask，会在同一个微任务队列中执行
+        // 4. 此时 _isRendering 标志可能还没有设置，导致重复渲染
+        // 5. 使用 requestAnimationFrame 可以确保在下一个渲染帧执行，此时 _isRendering 已经设置
+        if (this._pendingRerender) {
+            this._pendingRerender = false;
         }
-    });
+        
+        requestAnimationFrame(() => {
+            if (this.connected && !this._isRendering) {
+                // 设置渲染标志，防止在 _rerender() 执行期间再次触发
+                this._isRendering = true;
+                // 最终调用 _rerender() 执行实际渲染（不再调用 rerender()，避免循环）
+                this._rerender();
+            }
+        });
 }
 ```
 
@@ -751,6 +774,261 @@ protected someMethod() {
 5. **性能影响**：
    - 标记和保留 JSX children 是否会影响性能？
    - 是否需要优化 `getJSXChildren()` 的实现？
+
+## 为什么使用 requestAnimationFrame 而不是 queueMicrotask？
+
+### 问题场景
+
+当 `scheduleRerender()` 使用 `queueMicrotask` 时，会出现以下时序问题：
+
+```typescript
+// 场景：render() 中访问 @state 属性
+scheduleRerender() {
+    queueMicrotask(() => {
+        this._isRendering = true;  // 在微任务中设置标志
+        this._rerender();          // 调用 _rerender()
+    });
+}
+
+_rerender() {
+    const content = this.render();  // render() 是同步执行的
+    // 如果 render() 中访问 @state 属性
+    // 会触发 reactive 系统的 queueMicrotask
+    // 新的 scheduleRerender() 也会使用 queueMicrotask
+    // 问题：会在同一个微任务队列中执行！
+}
+```
+
+### 时序问题分析
+
+#### 使用 queueMicrotask 的问题
+
+**时序图**：
+
+```mermaid
+sequenceDiagram
+    participant User as 用户操作
+    participant Reactive as Reactive系统
+    participant Schedule as scheduleRerender()
+    participant Render as _rerender()
+    participant RenderMethod as render()
+    participant Microtask as 微任务队列
+
+    User->>Reactive: 修改 @state 属性
+    Reactive->>Schedule: 调用 scheduleRerender()
+    Schedule->>Microtask: queueMicrotask(_rerender callback)
+    Note over Microtask: 微任务队列: [_rerender callback]
+    
+    Microtask->>Render: 执行 _rerender callback
+    Note over Render: _isRendering = true (在回调中设置)
+    Render->>RenderMethod: 调用 render()
+    RenderMethod->>RenderMethod: 访问 @state 属性
+    RenderMethod->>Reactive: 触发 reactive 系统
+    Reactive->>Schedule: 再次调用 scheduleRerender()
+    Schedule->>Microtask: queueMicrotask(scheduleRerender callback)
+    Note over Microtask: 微任务队列: [_rerender callback, scheduleRerender callback]
+    
+    Note over Microtask: ❌ 问题：两个回调在同一个微任务队列中
+    Note over Microtask: scheduleRerender callback 可能在 _rerender callback 之前执行
+    Note over Microtask: 导致 _isRendering 标志检查失效
+    Microtask->>Schedule: 执行 scheduleRerender callback
+    Schedule->>Microtask: queueMicrotask(_rerender callback)
+    Note over Microtask: 无限递归！
+```
+
+**问题根源**：
+
+1. `scheduleRerender()` 和 reactive 系统都使用 `queueMicrotask`
+2. 它们被添加到同一个微任务队列中
+3. `_isRendering` 标志在 `_rerender()` 回调中设置，但此时可能已经有新的 `scheduleRerender()` 回调在队列中
+4. 导致重复渲染或无限递归
+
+#### 使用 requestAnimationFrame 的解决方案
+
+**时序图**：
+
+```mermaid
+sequenceDiagram
+    participant User as 用户操作
+    participant Reactive as Reactive系统
+    participant Schedule as scheduleRerender()
+    participant Render as _rerender()
+    participant RenderMethod as render()
+    participant RAF as requestAnimationFrame队列
+    participant Microtask as 微任务队列
+
+    User->>Reactive: 修改 @state 属性
+    Reactive->>Schedule: 调用 scheduleRerender()
+    Schedule->>RAF: requestAnimationFrame(_rerender callback)
+    Note over RAF: 渲染帧队列: [_rerender callback]
+    
+    Note over RAF: 等待下一个渲染帧...
+    RAF->>Render: 执行 _rerender callback (下一个渲染帧)
+    Note over Render: _isRendering = true (立即设置)
+    Render->>RenderMethod: 调用 render()
+    RenderMethod->>RenderMethod: 访问 @state 属性
+    RenderMethod->>Reactive: 触发 reactive 系统
+    Reactive->>Microtask: queueMicrotask(scheduleRerender callback)
+    Note over Microtask: 微任务队列: [scheduleRerender callback]
+    
+    Note over Microtask,RAF: ✅ 关键：微任务队列和渲染帧队列分离
+    Microtask->>Schedule: 执行 scheduleRerender callback
+    Schedule->>RAF: requestAnimationFrame(_rerender callback)
+    Note over RAF: 渲染帧队列: [_rerender callback (新的)]
+    
+    Note over RAF: 在下一个渲染帧检查 _isRendering
+    RAF->>Schedule: 检查 _isRendering 标志
+    Note over Schedule: ✅ _isRendering = true，跳过渲染
+    Note over Schedule: 避免了重复渲染！
+```
+
+**解决方案优势**：
+
+1. `scheduleRerender()` 使用 `requestAnimationFrame`，reactive 系统使用 `queueMicrotask`
+2. 它们在不同的队列中执行，不会冲突
+3. `_isRendering` 标志在 `requestAnimationFrame` 回调中立即设置
+4. 新的 `scheduleRerender()` 调用会在下一个渲染帧检查，此时 `_isRendering` 已经设置
+5. 避免了重复渲染和无限递归
+
+### 执行流程对比
+
+**流程图：queueMicrotask vs requestAnimationFrame**
+
+```mermaid
+flowchart TD
+    Start([用户操作触发状态变更])
+    
+    subgraph MicrotaskFlow["使用 queueMicrotask (❌ 有问题)"]
+        M1[scheduleRerender<br/>queueMicrotask]
+        M2[微任务队列]
+        M3[_rerender 回调执行]
+        M4[设置 _isRendering = true]
+        M5[render 方法执行]
+        M6[访问 @state 属性]
+        M7[Reactive 系统<br/>queueMicrotask]
+        M8[新的 scheduleRerender<br/>添加到微任务队列]
+        M9{检查 _isRendering?}
+        M10[❌ 标志可能未设置<br/>导致重复渲染]
+        
+        M1 --> M2
+        M2 --> M3
+        M3 --> M4
+        M4 --> M5
+        M5 --> M6
+        M6 --> M7
+        M7 --> M8
+        M8 --> M9
+        M9 -->|标志未设置| M10
+        M9 -->|标志已设置| M11[✅ 跳过渲染]
+    end
+    
+    subgraph RAFFlow["使用 requestAnimationFrame (✅ 正确)"]
+        R1[scheduleRerender<br/>requestAnimationFrame]
+        R2[渲染帧队列]
+        R3[等待下一个渲染帧]
+        R4[_rerender 回调执行]
+        R5[立即设置 _isRendering = true]
+        R6[render 方法执行]
+        R7[访问 @state 属性]
+        R8[Reactive 系统<br/>queueMicrotask]
+        R9[新的 scheduleRerender<br/>requestAnimationFrame]
+        R10[下一个渲染帧检查]
+        R11{检查 _isRendering?}
+        R12[✅ 标志已设置<br/>跳过渲染]
+        
+        R1 --> R2
+        R2 --> R3
+        R3 --> R4
+        R4 --> R5
+        R5 --> R6
+        R6 --> R7
+        R7 --> R8
+        R8 --> R9
+        R9 --> R10
+        R10 --> R11
+        R11 -->|标志已设置| R12
+    end
+    
+    Start --> MicrotaskFlow
+    Start --> RAFFlow
+    
+    style M10 fill:#ffcccc
+    style R12 fill:#ccffcc
+```
+
+### 关键区别
+
+| 特性 | queueMicrotask | requestAnimationFrame |
+|------|----------------|----------------------|
+| **执行时机** | 当前微任务队列 | 下一个渲染帧 |
+| **与 render() 的时序** | 可能在 render() 执行期间 | 在 render() 完成后 |
+| **_isRendering 标志设置时机** | 在微任务回调中 | 在 requestAnimationFrame 回调中 |
+| **防止重复渲染** | ❌ 可能失效 | ✅ 有效 |
+| **与 reactive 系统的交互** | ❌ 冲突（都使用微任务） | ✅ 兼容（不同队列） |
+| **队列隔离** | ❌ 与 reactive 系统共享微任务队列 | ✅ 使用独立的渲染帧队列 |
+| **时序保证** | ❌ 无法保证标志设置时机 | ✅ 保证在下一个渲染帧检查 |
+
+### 为什么 _rerender() 内部也使用 requestAnimationFrame？
+
+`_rerender()` 内部使用 `requestAnimationFrame` 执行 DOM 操作的原因：
+
+1. **批量 DOM 操作**：将 DOM 操作延迟到下一个渲染帧，可以批量处理多个更新
+2. **性能优化**：避免在同一个渲染帧中进行多次 DOM 操作
+3. **与浏览器渲染周期对齐**：确保 DOM 更新在浏览器渲染之前完成
+4. **焦点恢复时机**：在 DOM 更新完成后恢复焦点状态
+
+**DOM 操作时序图**：
+
+```mermaid
+sequenceDiagram
+    participant Schedule as scheduleRerender()
+    participant Render as _rerender()
+    participant RenderMethod as render()
+    participant RAF1 as requestAnimationFrame #1
+    participant DOM as DOM 操作
+    participant RAF2 as requestAnimationFrame #2
+    participant Browser as 浏览器渲染
+    participant Focus as 焦点恢复
+
+    Schedule->>RAF1: requestAnimationFrame(_rerender)
+    Note over RAF1: 渲染帧 1: 执行 _rerender
+    
+    RAF1->>Render: 调用 _rerender()
+    Render->>RenderMethod: 调用 render()
+    RenderMethod-->>Render: 返回 JSX 内容
+    
+    Render->>RAF1: requestAnimationFrame(DOM 操作)
+    Note over RAF1: 渲染帧 1: 调度 DOM 操作
+    
+    RAF1->>DOM: 执行 DOM 操作
+    Note over DOM: 1. 添加新内容<br/>2. 移除旧内容<br/>3. 批量更新
+    
+    DOM->>RAF2: requestAnimationFrame(焦点恢复)
+    Note over RAF2: 渲染帧 2: 恢复焦点
+    
+    RAF2->>Focus: 恢复焦点状态
+    Focus->>Browser: 触发 onRendered 钩子
+    
+    Note over Browser: 浏览器开始渲染
+    Browser->>Browser: 绘制到屏幕
+```
+
+**关键点**：
+
+- **渲染帧 1**：执行 `_rerender()` 和 DOM 操作（批量更新）
+- **渲染帧 2**：恢复焦点状态和调用 `onRendered` 钩子
+- **浏览器渲染**：在 DOM 更新完成后进行，确保用户看到的是最新内容
+
+### 总结
+
+- **scheduleRerender() 使用 requestAnimationFrame**：避免与 reactive 系统的 queueMicrotask 冲突，确保 `_isRendering` 标志在检查时已经设置
+- **_rerender() 内部使用 requestAnimationFrame**：批量 DOM 操作，性能优化，与浏览器渲染周期对齐
+
+这种设计确保了：
+1. 防止重复渲染和无限递归
+2. 与 reactive 系统兼容
+3. 性能优化（批量更新）
+4. 正确的生命周期时机
 
 ## 总结
 

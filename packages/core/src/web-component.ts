@@ -86,6 +86,8 @@ export abstract class WebComponent extends BaseComponent {
             } else {
                 // 没有内容，需要渲染
                 // 清空 Shadow DOM（包括可能的旧内容）
+                // Note: innerHTML is used here for framework-level DOM management
+                // This is an exception to the no-inner-html rule for framework code
                 this.shadowRoot.innerHTML = "";
 
                 // 重新应用样式（因为上面清空了）
@@ -106,6 +108,14 @@ export abstract class WebComponent extends BaseComponent {
 
             // 调用子类的初始化钩子
             this.onConnected?.();
+
+            // 如果进行了渲染，调用 onRendered 钩子
+            if (hasActualContent === false || hasErrorElement) {
+                // 使用 requestAnimationFrame 确保 DOM 已完全更新
+                requestAnimationFrame(() => {
+                    this.onRendered?.();
+                });
+            }
         } catch (error) {
             logger.error(`Error in connectedCallback:`, error);
             this.renderError(error);
@@ -142,25 +152,28 @@ export abstract class WebComponent extends BaseComponent {
     }
 
     /**
-     * 重新渲染组件
+     * 内部重渲染实现
+     * 包含从 rerender() 方法迁移的实际渲染逻辑
+     * WebComponent 使用 Shadow DOM，不存在 JSX children 问题
+     *
+     * @override
      */
-    protected rerender(): void {
+    protected _rerender(): void {
         if (!this.connected) {
-            logger.warn("Component is not connected, skipping rerender.");
+            // 如果组件未连接，清除渲染标志
+            this._isRendering = false;
             return;
         }
 
         // 1. 捕获焦点状态（在 DOM 替换之前）
         const focusState = this.captureFocusState();
-        // 保存到实例变量，供 render() 使用（如果需要）
         this._pendingFocusState = focusState;
 
-        // 保存当前的 adopted stylesheets (jsdom may not support this)
+        // 2. 保存当前的 adopted stylesheets
         const adoptedStyleSheets = this.shadowRoot.adoptedStyleSheets || [];
 
         try {
-            // 只有在没有 adopted stylesheets 时才重新应用样式
-            // Check both _autoStyles getter and config.styles getter
+            // 3. 只有在没有 adopted stylesheets 时才重新应用样式
             if (adoptedStyleSheets.length === 0) {
                 const stylesToApply = this._autoStyles || this.config.styles;
                 if (stylesToApply) {
@@ -169,13 +182,11 @@ export abstract class WebComponent extends BaseComponent {
                 }
             }
 
-            // 重新渲染JSX
+            // 4. 重新渲染JSX
             const content = this.render();
 
-            // 在添加到 DOM 之前恢复值，避免浏览器渲染状态值
-            // 这样可以确保值在元素添加到 DOM 之前就是正确的
+            // 5. 在添加到 DOM 之前恢复值
             if (focusState && focusState.key && focusState.value !== undefined) {
-                // 在 content 树中查找目标元素
                 const target = content.querySelector(
                     `[data-wsx-key="${focusState.key}"]`
                 ) as HTMLElement;
@@ -190,35 +201,37 @@ export abstract class WebComponent extends BaseComponent {
                 }
             }
 
-            // 恢复 adopted stylesheets (避免重新应用样式)
+            // 6. 恢复 adopted stylesheets
             if (this.shadowRoot.adoptedStyleSheets) {
                 this.shadowRoot.adoptedStyleSheets = adoptedStyleSheets;
             }
 
-            // 使用 requestAnimationFrame 批量执行 DOM 操作，减少重绘
-            // 在同一帧中完成添加和移除，避免中间状态
+            // 7. 使用 requestAnimationFrame 批量执行 DOM 操作
             requestAnimationFrame(() => {
-                // 先添加新内容
+                // 添加新内容
                 this.shadowRoot.appendChild(content);
 
-                // 立即移除旧内容（在同一帧中，浏览器会批量处理）
+                // 移除旧内容
                 const oldChildren = Array.from(this.shadowRoot.children).filter(
                     (child) => child !== content
                 );
                 oldChildren.forEach((child) => child.remove());
 
-                // 恢复焦点状态（在 DOM 替换之后）
-                // 值已经在添加到 DOM 之前恢复了，这里只需要恢复焦点和光标位置
-                // 使用另一个 requestAnimationFrame 确保 DOM 已完全更新
+                // 恢复焦点状态
                 requestAnimationFrame(() => {
                     this.restoreFocusState(focusState);
-                    // 清除待处理的焦点状态
                     this._pendingFocusState = null;
+                    // 调用 onRendered 生命周期钩子
+                    this.onRendered?.();
+                    // 在 onRendered() 完成后清除渲染标志，允许后续的 scheduleRerender()
+                    this._isRendering = false;
                 });
             });
         } catch (error) {
-            logger.error("Error in rerender:", error);
+            logger.error("Error in _rerender:", error);
             this.renderError(error);
+            // 即使出错也要清除渲染标志，允许后续的 scheduleRerender()
+            this._isRendering = false;
         }
     }
 
@@ -229,6 +242,8 @@ export abstract class WebComponent extends BaseComponent {
      */
     private renderError(error: unknown): void {
         // 清空现有内容
+        // Note: innerHTML is used here for framework-level error handling
+        // This is an exception to the no-inner-html rule for framework code
         this.shadowRoot.innerHTML = "";
 
         const errorElement = h(

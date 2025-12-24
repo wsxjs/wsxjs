@@ -59,8 +59,9 @@ export abstract class LightComponent extends BaseComponent {
                 this.applyScopedStyles(styleName, stylesToApply);
             }
 
-            // 检查是否有实际内容（排除样式元素）
+            // 检查是否有实际内容（排除样式元素和 slot 元素）
             // 错误元素：如果存在错误信息，需要重新渲染以恢复正常
+            // Slot 元素：不算"内容"，因为 slot 的内容在 Light DOM 中（通过 JSX children 传递）
             const styleElement = this.querySelector(
                 `style[data-wsx-light-component="${styleName}"]`
             ) as HTMLStyleElement | null;
@@ -71,14 +72,16 @@ export abstract class LightComponent extends BaseComponent {
                     child.style.color === "red" &&
                     child.textContent?.includes("Component Error")
             );
+            // 排除样式元素和 slot 元素
             const hasActualContent = Array.from(this.children).some(
-                (child) => child !== styleElement
+                (child) => child !== styleElement && !(child instanceof HTMLSlotElement)
             );
 
             // 如果有错误元素，需要重新渲染以恢复正常
             // 如果有实际内容且没有错误，跳过渲染（避免重复元素）
             if (hasActualContent && !hasErrorElement) {
-                // 已经有内容且没有错误，跳过渲染（避免重复元素）
+                // 已经有内容（JSX children），标记它们
+                this.markJSXChildren(); // 标记 JSX children，以便在 _rerender() 中保留
                 // 但确保样式元素在正确位置
                 if (styleElement && styleElement !== this.firstChild) {
                     this.insertBefore(styleElement, this.firstChild);
@@ -106,6 +109,14 @@ export abstract class LightComponent extends BaseComponent {
 
             // 调用子类的初始化钩子（无论是否渲染，都需要调用，因为组件已连接）
             this.onConnected?.();
+
+            // 如果进行了渲染，调用 onRendered 钩子
+            if (hasActualContent === false || hasErrorElement) {
+                // 使用 requestAnimationFrame 确保 DOM 已完全更新
+                requestAnimationFrame(() => {
+                    this.onRendered?.();
+                });
+            }
         } catch (error) {
             logger.error(`[${this.constructor.name}] Error in connectedCallback:`, error);
             this.renderError(error);
@@ -144,29 +155,33 @@ export abstract class LightComponent extends BaseComponent {
     }
 
     /**
-     * 重新渲染组件
+     * 内部重渲染实现
+     * 包含从 rerender() 方法迁移的实际渲染逻辑
+     * 处理 JSX children 的保留（Light DOM 特有）
+     *
+     * @override
      */
-    protected rerender(): void {
+    protected _rerender(): void {
         if (!this.connected) {
-            logger.warn(
-                `[${this.constructor.name}] Component is not connected, skipping rerender.`
-            );
+            // 如果组件未连接，清除渲染标志
+            this._isRendering = false;
             return;
         }
 
         // 1. 捕获焦点状态（在 DOM 替换之前）
         const focusState = this.captureFocusState();
-        // 保存到实例变量，供 render() 使用（如果需要）
         this._pendingFocusState = focusState;
 
+        // 2. 保存 JSX children（通过 JSX factory 直接添加的 children）
+        // 这些 children 不是 render() 返回的内容，应该保留
+        const jsxChildren = this.getJSXChildren();
+
         try {
-            // 重新渲染JSX内容
+            // 3. 重新渲染JSX内容
             const content = this.render();
 
-            // 在添加到 DOM 之前恢复值，避免浏览器渲染状态值
-            // 这样可以确保值在元素添加到 DOM 之前就是正确的
+            // 4. 在添加到 DOM 之前恢复值，避免浏览器渲染状态值
             if (focusState && focusState.key && focusState.value !== undefined) {
-                // 在 content 树中查找目标元素
                 const target = content.querySelector(
                     `[data-wsx-key="${focusState.key}"]`
                 ) as HTMLElement;
@@ -181,10 +196,10 @@ export abstract class LightComponent extends BaseComponent {
                 }
             }
 
-            // 确保样式元素存在
+            // 5. 确保样式元素存在
             const stylesToApply = this._autoStyles || this.config.styles;
+            const styleName = this.config.styleName || this.constructor.name;
             if (stylesToApply) {
-                const styleName = this.config.styleName || this.constructor.name;
                 let styleElement = this.querySelector(
                     `style[data-wsx-light-component="${styleName}"]`
                 ) as HTMLStyleElement;
@@ -201,25 +216,27 @@ export abstract class LightComponent extends BaseComponent {
                 }
             }
 
-            // 使用 requestAnimationFrame 批量执行 DOM 操作，减少重绘
-            // 在同一帧中完成添加和移除，避免中间状态
+            // 6. 使用 requestAnimationFrame 批量执行 DOM 操作
             requestAnimationFrame(() => {
                 // 先添加新内容
                 this.appendChild(content);
 
-                // 立即移除旧内容（在同一帧中，浏览器会批量处理）
+                // 移除旧内容（保留 JSX children 和样式元素）
                 const oldChildren = Array.from(this.children).filter((child) => {
                     // 保留新添加的内容
                     if (child === content) {
                         return false;
                     }
-                    // 保留样式元素（如果存在）
+                    // 保留样式元素
                     if (
                         stylesToApply &&
                         child instanceof HTMLStyleElement &&
-                        child.getAttribute("data-wsx-light-component") ===
-                            (this.config.styleName || this.constructor.name)
+                        child.getAttribute("data-wsx-light-component") === styleName
                     ) {
+                        return false;
+                    }
+                    // 保留 JSX children（关键修复）
+                    if (child instanceof HTMLElement && jsxChildren.includes(child)) {
                         return false;
                     }
                     return true;
@@ -229,26 +246,72 @@ export abstract class LightComponent extends BaseComponent {
                 // 确保样式元素在第一个位置
                 if (stylesToApply && this.children.length > 1) {
                     const styleElement = this.querySelector(
-                        `style[data-wsx-light-component="${this.config.styleName || this.constructor.name}"]`
+                        `style[data-wsx-light-component="${styleName}"]`
                     );
                     if (styleElement && styleElement !== this.firstChild) {
                         this.insertBefore(styleElement, this.firstChild);
                     }
                 }
 
-                // 恢复焦点状态（在 DOM 替换之后）
-                // 值已经在添加到 DOM 之前恢复了，这里只需要恢复焦点和光标位置
-                // 使用另一个 requestAnimationFrame 确保 DOM 已完全更新
+                // 恢复焦点状态
                 requestAnimationFrame(() => {
                     this.restoreFocusState(focusState);
-                    // 清除待处理的焦点状态
                     this._pendingFocusState = null;
+                    // 调用 onRendered 生命周期钩子
+                    this.onRendered?.();
+                    // 在 onRendered() 完成后清除渲染标志，允许后续的 scheduleRerender()
+                    this._isRendering = false;
                 });
             });
         } catch (error) {
-            logger.error(`[${this.constructor.name}] Error in rerender:`, error);
+            logger.error(`[${this.constructor.name}] Error in _rerender:`, error);
             this.renderError(error);
+            // 即使出错也要清除渲染标志，允许后续的 scheduleRerender()
+            this._isRendering = false;
         }
+    }
+
+    /**
+     * 获取 JSX children（通过 JSX factory 直接添加的 children）
+     *
+     * 在 Light DOM 中，JSX children 是通过 JSX factory 直接添加到组件元素的
+     * 这些 children 不是 render() 返回的内容，应该保留
+     */
+    private getJSXChildren(): HTMLElement[] {
+        // 在 connectedCallback 中标记的 JSX children
+        // 使用 data 属性标记：data-wsx-jsx-child="true"
+        const jsxChildren = Array.from(this.children)
+            .filter(
+                (child) =>
+                    child instanceof HTMLElement &&
+                    child.getAttribute("data-wsx-jsx-child") === "true"
+            )
+            .map((child) => child as HTMLElement);
+
+        return jsxChildren;
+    }
+
+    /**
+     * 标记 JSX children（在 connectedCallback 中调用）
+     */
+    private markJSXChildren(): void {
+        // 在 connectedCallback 中，如果 hasActualContent 为 true
+        // 说明这些 children 是 JSX children，不是 render() 返回的内容
+        // 标记它们，以便在 _rerender() 中保留
+        const styleName = this.config.styleName || this.constructor.name;
+        const styleElement = this.querySelector(
+            `style[data-wsx-light-component="${styleName}"]`
+        ) as HTMLStyleElement | null;
+
+        Array.from(this.children).forEach((child) => {
+            if (
+                child instanceof HTMLElement &&
+                child !== styleElement &&
+                !(child instanceof HTMLSlotElement)
+            ) {
+                child.setAttribute("data-wsx-jsx-child", "true");
+            }
+        });
     }
 
     /**
@@ -258,6 +321,8 @@ export abstract class LightComponent extends BaseComponent {
      */
     private renderError(error: unknown): void {
         // 清空现有内容
+        // Note: innerHTML is used here for framework-level error handling
+        // This is an exception to the no-inner-html rule for framework code
         this.innerHTML = "";
 
         const errorElement = h(

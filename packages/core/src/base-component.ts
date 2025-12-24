@@ -79,6 +79,12 @@ export abstract class BaseComponent extends HTMLElement {
     private _pendingRerender: boolean = false;
 
     /**
+     * 正在渲染标志（防止在 _rerender() 执行期间再次触发 scheduleRerender()）
+     * @internal
+     */
+    protected _isRendering: boolean = false;
+
+    /**
      * 子类应该重写这个方法来定义观察的属性
      * @returns 要观察的属性名数组
      */
@@ -127,6 +133,12 @@ export abstract class BaseComponent extends HTMLElement {
     protected onConnected?(): void;
 
     /**
+     * 可选生命周期钩子：组件渲染完成后调用
+     * 在 DOM 更新完成后调用，适合执行需要访问 DOM 的操作（如语法高亮、初始化第三方库等）
+     */
+    protected onRendered?(): void;
+
+    /**
      * 处理 blur 事件，在用户停止输入时执行待处理的重渲染
      * @internal
      */
@@ -146,9 +158,14 @@ export abstract class BaseComponent extends HTMLElement {
 
                 // 延迟一小段时间后重渲染，确保 blur 事件完全处理
                 requestAnimationFrame(() => {
-                    if (this._pendingRerender && this.connected) {
+                    if (this._pendingRerender && this.connected && !this._isRendering) {
                         this._pendingRerender = false;
-                        this.rerender();
+                        // 设置渲染标志，防止在 _rerender() 执行期间再次触发
+                        // 注意：_isRendering 标志会在 _rerender() 的 onRendered() 调用完成后清除
+                        this._isRendering = true;
+                        // 调用 _rerender() 执行实际渲染（不再调用 rerender()，避免循环）
+                        // _isRendering 标志会在 _rerender() 完成所有异步操作后清除
+                        this._rerender();
                     }
                 });
             }
@@ -229,6 +246,11 @@ export abstract class BaseComponent extends HTMLElement {
             return;
         }
 
+        // 如果正在渲染，跳过本次调度（防止无限循环）
+        if (this._isRendering) {
+            return;
+        }
+
         // 检查是否有需要持续输入的元素获得焦点（input、textarea、select、contenteditable）
         // 按钮等其他元素应该立即重渲染，以反映状态变化
         const root = this.getActiveRoot();
@@ -273,17 +295,49 @@ export abstract class BaseComponent extends HTMLElement {
             // 对于按钮等其他元素，或者有 data-wsx-force-render 属性的输入元素，继续执行重渲染（不跳过）
         }
 
-        // 没有焦点元素，立即重渲染（使用 queueMicrotask 批量处理）
+        // 没有焦点元素，立即重渲染（使用 requestAnimationFrame 确保在下一个渲染帧执行）
         // 如果有待处理的重渲染，也立即执行
         if (this._pendingRerender) {
             this._pendingRerender = false;
         }
-        queueMicrotask(() => {
-            if (this.connected) {
-                this.rerender();
+        // 使用 requestAnimationFrame 而不是 queueMicrotask，确保在渲染帧中执行
+        // 这样可以避免在 render() 执行期间触发的 scheduleRerender() 立即执行
+        requestAnimationFrame(() => {
+            if (this.connected && !this._isRendering) {
+                // 设置渲染标志，防止在 _rerender() 执行期间再次触发
+                // 注意：_isRendering 标志会在 _rerender() 的 onRendered() 调用完成后清除
+                this._isRendering = true;
+                // 调用 _rerender() 执行实际渲染（不再调用 rerender()，避免循环）
+                // _isRendering 标志会在 _rerender() 完成所有异步操作后清除
+                this._rerender();
+            } else if (!this.connected) {
+                // 如果组件已断开，确保清除渲染标志
+                this._isRendering = false;
             }
         });
     }
+
+    /**
+     * 调度重渲染（公开 API）
+     *
+     * 与 scheduleRerender() 对齐：所有重渲染都通过统一的调度机制
+     * 使用异步调度机制，自动处理防抖和批量更新
+     *
+     * 注意：此方法现在是异步的，使用调度机制
+     * 如果需要同步执行，使用 _rerender()（不推荐，仅内部使用）
+     */
+    protected rerender(): void {
+        // 对齐到 scheduleRerender()，统一调度机制
+        this.scheduleRerender();
+    }
+
+    /**
+     * 内部重渲染实现（同步执行）
+     * 由 scheduleRerender() 在适当时机调用
+     *
+     * @internal - 子类需要实现此方法
+     */
+    protected abstract _rerender(): void;
 
     /**
      * 清理资源（在组件断开连接时调用）
@@ -311,11 +365,6 @@ export abstract class BaseComponent extends HTMLElement {
         // 添加 blur 事件监听器，在用户停止输入时执行待处理的重渲染
         document.addEventListener("blur", this.handleGlobalBlur, true);
     }
-
-    /**
-     * 重新渲染组件（子类需要实现）
-     */
-    protected abstract rerender(): void;
 
     /**
      * 获取配置值
