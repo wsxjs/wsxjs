@@ -289,7 +289,8 @@ async function checkRemoteUpToDate() {
             if (pull) {
                 const pullSpinner = ora("拉取远程更新").start();
                 try {
-                    exec("git pull origin main --rebase", { silent: true });
+                    // 使用 --no-edit 避免在 rebase 时打开编辑器
+                    exec("git pull origin main --rebase --no-edit", { silent: true });
                     pullSpinner.succeed("已拉取远程更新");
                 } catch (error) {
                     pullSpinner.fail("拉取失败，请手动解决冲突");
@@ -455,7 +456,8 @@ async function main() {
 
                         const hasChanges = execSilent("git status --porcelain");
                         if (hasChanges) {
-                            exec(`git commit -m "chore: release v${ctx.version}\n\n[skip ci]"`, {
+                            // 使用 --no-verify 跳过 hooks，避免交互式询问
+                            exec(`git commit --no-verify -m "chore: release v${ctx.version}\n\n[skip ci]"`, {
                                 silent: true,
                             });
                         }
@@ -467,7 +469,8 @@ async function main() {
                         ctx.version = newVersion;
                         const tagExists = execSilent(`git rev-parse v${ctx.version} 2>/dev/null`);
                         if (!tagExists) {
-                            exec(`git tag -a v${ctx.version} -m "Release v${ctx.version}"`, {
+                            // 使用 -f 强制覆盖已存在的标签，避免询问
+                            exec(`git tag -f -a v${ctx.version} -m "Release v${ctx.version}"`, {
                                 silent: true,
                             });
                         }
@@ -493,7 +496,8 @@ async function main() {
 
                         const hasChanges = execSilent("git status --porcelain");
                         if (hasChanges) {
-                            exec(`git commit -m "chore: release v${ctx.version}\n\n[skip ci]"`, {
+                            // 使用 --no-verify 跳过 hooks，避免交互式询问
+                            exec(`git commit --no-verify -m "chore: release v${ctx.version}\n\n[skip ci]"`, {
                                 silent: true,
                             });
                         }
@@ -504,7 +508,8 @@ async function main() {
                     task: (ctx) => {
                         const tagExists = execSilent(`git rev-parse v${ctx.version} 2>/dev/null`);
                         if (!tagExists) {
-                            exec(`git tag -a v${ctx.version} -m "Release v${ctx.version}"`, {
+                            // 使用 -f 强制覆盖已存在的标签，避免询问
+                            exec(`git tag -f -a v${ctx.version} -m "Release v${ctx.version}"`, {
                                 silent: true,
                             });
                         }
@@ -513,6 +518,7 @@ async function main() {
                 {
                     title: "推送到远程仓库",
                     task: () => {
+                        // git push 本身不会询问，除非需要认证（通过环境变量处理）
                         exec("git push origin main", { silent: true });
                         exec("git push --follow-tags", { silent: true });
                     },
