@@ -1,0 +1,239 @@
+/**
+ * WSX-Press 排版系统
+ * Markdown 内容样式
+ */
+
+.wsx-press-typography {
+  font-family: var(--wsx-press-font-family);
+  font-size: var(--wsx-press-font-size-base);
+  line-height: var(--wsx-press-line-height-normal);
+  color: var(--wsx-press-text-primary);
+  word-wrap: break-word;
+}
+
+/* ===== 标题 ===== */
+.wsx-press-typography h1,
+.wsx-press-typography h2,
+.wsx-press-typography h3,
+.wsx-press-typography h4,
+.wsx-press-typography h5,
+.wsx-press-typography h6 {
+  margin-top: var(--wsx-press-spacing-xl);
+  margin-bottom: var(--wsx-press-spacing-md);
+  font-weight: 600;
+  line-height: var(--wsx-press-line-height-tight);
+  color: var(--wsx-press-text-primary);
+}
+
+.wsx-press-typography h1:first-child,
+.wsx-press-typography h2:first-child,
+.wsx-press-typography h3:first-child {
+  margin-top: 0;
+}
+
+.wsx-press-typography h1 {
+  font-size: var(--wsx-press-font-size-3xl);
+  font-weight: 700;
+  padding-bottom: var(--wsx-press-spacing-md);
+  border-bottom: 2px solid var(--wsx-press-border);
+}
+
+.wsx-press-typography h2 {
+  font-size: var(--wsx-press-font-size-2xl);
+  padding-bottom: var(--wsx-press-spacing-sm);
+  border-bottom: 1px solid var(--wsx-press-border);
+}
+
+.wsx-press-typography h3 {
+  font-size: var(--wsx-press-font-size-xl);
+}
+
+.wsx-press-typography h4 {
+  font-size: var(--wsx-press-font-size-lg);
+}
+
+.wsx-press-typography h5,
+.wsx-press-typography h6 {
+  font-size: var(--wsx-press-font-size-base);
+}
+
+/* ===== 段落 ===== */
+.wsx-press-typography p {
+  margin-top: 0;
+  margin-bottom: var(--wsx-press-spacing-md);
+  line-height: var(--wsx-press-line-height-relaxed);
+}
+
+/* ===== 链接 ===== */
+.wsx-press-typography a {
+  color: var(--wsx-press-link);
+  text-decoration: none;
+  transition: color var(--wsx-press-transition-fast);
+}
+
+.wsx-press-typography a:hover {
+  color: var(--wsx-press-link-hover);
+  text-decoration: underline;
+}
+
+/* ===== 列表 ===== */
+.wsx-press-typography ul,
+.wsx-press-typography ol {
+  margin-top: 0;
+  margin-bottom: var(--wsx-press-spacing-md);
+  padding-left: var(--wsx-press-spacing-xl);
+}
+
+.wsx-press-typography li {
+  margin-bottom: var(--wsx-press-spacing-sm);
+  line-height: var(--wsx-press-line-height-relaxed);
+}
+
+.wsx-press-typography li > p {
+  margin-bottom: var(--wsx-press-spacing-sm);
+}
+
+.wsx-press-typography ul ul,
+.wsx-press-typography ol ul,
+.wsx-press-typography ul ol,
+.wsx-press-typography ol ol {
+  margin-top: var(--wsx-press-spacing-sm);
+  margin-bottom: 0;
+}
+
+/* ===== 引用 ===== */
+.wsx-press-typography blockquote {
+  margin: var(--wsx-press-spacing-lg) 0;
+  padding: var(--wsx-press-spacing-sm) var(--wsx-press-spacing-md);
+  padding-left: var(--wsx-press-spacing-lg);
+  border-left: 4px solid var(--wsx-press-accent);
+  background: var(--wsx-press-bg-secondary);
+  border-radius: var(--wsx-press-radius-sm);
+  color: var(--wsx-press-text-secondary);
+}
+
+.wsx-press-typography blockquote > :first-child {
+  margin-top: 0;
+}
+
+.wsx-press-typography blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+/* ===== 行内代码 ===== */
+.wsx-press-typography code {
+  font-family: var(--wsx-press-font-mono);
+  font-size: 0.9em;
+  padding: 0.2em 0.4em;
+  background: var(--wsx-press-code-bg);
+  border: 1px solid var(--wsx-press-code-border);
+  border-radius: var(--wsx-press-radius-sm);
+  color: var(--wsx-press-code-text);
+}
+
+.wsx-press-typography a code {
+  color: var(--wsx-press-link);
+}
+
+/* ===== 代码块 ===== */
+.wsx-press-typography pre {
+  margin: var(--wsx-press-spacing-lg) 0;
+  padding: var(--wsx-press-spacing-md);
+  background: var(--wsx-press-code-bg);
+  border: 1px solid var(--wsx-press-code-border);
+  border-radius: var(--wsx-press-radius-md);
+  overflow-x: auto;
+  line-height: var(--wsx-press-line-height-normal);
+}
+
+.wsx-press-typography pre code {
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: var(--wsx-press-font-size-sm);
+  color: var(--wsx-press-code-text);
+}
+
+/* ===== 表格 ===== */
+.wsx-press-typography table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--wsx-press-spacing-lg) 0;
+  display: block;
+  overflow-x: auto;
+}
+
+.wsx-press-typography th,
+.wsx-press-typography td {
+  padding: var(--wsx-press-spacing-sm) var(--wsx-press-spacing-md);
+  border: 1px solid var(--wsx-press-border);
+  text-align: left;
+}
+
+.wsx-press-typography thead th {
+  background: var(--wsx-press-bg-secondary);
+  font-weight: 600;
+  color: var(--wsx-press-text-primary);
+}
+
+.wsx-press-typography tbody tr:hover {
+  background: var(--wsx-press-bg-tertiary);
+}
+
+/* ===== 分隔线 ===== */
+.wsx-press-typography hr {
+  height: 1px;
+  border: none;
+  background: var(--wsx-press-border);
+  margin: var(--wsx-press-spacing-2xl) 0;
+}
+
+/* ===== 图片 ===== */
+.wsx-press-typography img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: var(--wsx-press-spacing-lg) auto;
+  border-radius: var(--wsx-press-radius-md);
+}
+
+/* ===== 任务列表 ===== */
+.wsx-press-typography input[type="checkbox"] {
+  margin-right: var(--wsx-press-spacing-sm);
+}
+
+.wsx-press-typography .task-list-item {
+  list-style-type: none;
+}
+
+.wsx-press-typography .task-list-item input[type="checkbox"] {
+  margin-left: calc(var(--wsx-press-spacing-xl) * -1);
+}
+
+/* ===== 强调 ===== */
+.wsx-press-typography strong {
+  font-weight: 600;
+  color: var(--wsx-press-text-primary);
+}
+
+.wsx-press-typography em {
+  font-style: italic;
+}
+
+/* ===== 删除线 ===== */
+.wsx-press-typography del {
+  text-decoration: line-through;
+  color: var(--wsx-press-text-tertiary);
+}
+
+/* ===== 键盘按键 ===== */
+.wsx-press-typography kbd {
+  display: inline-block;
+  padding: 0.1em 0.4em;
+  font-family: var(--wsx-press-font-mono);
+  font-size: 0.85em;
+  background: var(--wsx-press-bg-tertiary);
+  border: 1px solid var(--wsx-press-border);
+  border-radius: var(--wsx-press-radius-sm);
+  box-shadow: inset 0 -1px 0 var(--wsx-press-border);
+}

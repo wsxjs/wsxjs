@@ -10,26 +10,14 @@
     },
     "output": {
         "title": "レンダリングされた出力",
-        "pattern1": {
-            "label": "パターン1",
-            "title": "パターン1：",
-            "description": "marked.use({ renderer })を使用 - レンダラーはWSXカスタム要素タグを含むHTML文字列を返します"
-        },
         "pattern2": {
             "label": "パターン2",
             "title": "パターン2：",
-            "description": "marked.lexer() + 手動WSX JSXレンダリングを使用 - 実際のJSX要素を返します"
+            "description": "WSX + marked を使用して Markdown をレンダリング"
         }
     },
     "explanation": {
         "title": "仕組み",
-        "pattern1": {
-            "title": "パターン1：marked.use({ renderer })",
-            "description": "WSXカスタム要素タグを含むHTML文字列を返すカスタムレンダラーオブジェクトを作成します。WSXコンポーネントはカスタム要素として登録されているため、HTMLとして挿入されると機能します。",
-            "code": "const renderer = {\n  heading(token) {\n    return `<wsx-marked-heading level=\"${token.depth}\" text=\"...\"></wsx-marked-heading>`;\n  }\n};\n\nmarked.use({ renderer });\nconst html = marked.parse(markdown);\nelement.innerHTML = html; // ブラウザがWSXコンポーネントを自動インスタンス化",
-            "pros": "markedの組み込みシステムを使用、シンプル",
-            "cons": "HTML文字列を返す、JSX要素ではない"
-        },
         "pattern2": {
             "title": "パターン2：marked.lexer() + WSX JSX",
             "description": "marked.lexer()を使用してトークンを取得し、それらを手動でWSX JSX要素に変換します。これにより、HTML文字列の代わりに実際のJSX要素を返すことができます。",
@@ -39,7 +27,7 @@
         },
         "components": {
             "title": "WSXコンポーネント",
-            "description": "両方のパターンは同じWSX Web Componentsを使用します。コンポーネントはカスタム要素として登録されているため、HTML文字列（パターン1）とJSX（パターン2）の両方で機能します。",
+            "description": "WSX Web Componentsはカスタム要素として登録され、JSXレンダリングとシームレスに連携します。",
             "code": "@autoRegister({ tagName: 'wsx-marked-heading' })\nclass WsxMarkedHeading extends LightComponent {\n  render() {\n    return <h{this.level}>{this.text}</h{this.level}>;\n  }\n}"
         },
         "pros": "利点：",

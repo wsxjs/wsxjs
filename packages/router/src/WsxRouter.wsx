@@ -1,5 +1,7 @@
 /** @jsxImportSource @wsxjs/wsx-core */
-import { LightComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import { createLogger } from "@wsxjs/wsx-logger";
+import { RouterUtils, type RouteInfo } from "./RouterUtils";
 import styles from "./WsxRouter.css?inline";
 
 const logger = createLogger("WsxRouter");
@@ -68,7 +70,7 @@ export default class WsxRouter extends LightComponent {
     }
 
     protected onConnected() {
-        logger.debug("WsxRouter connected to DOM");
+        logger.warn("WsxRouter connected to DOM");
 
         // RFC 0033: 设置浏览器滚动恢复模式
         if ("scrollRestoration" in history) {
@@ -88,12 +90,13 @@ export default class WsxRouter extends LightComponent {
             // 收集视图（如果还没有收集）
             if (this.views.size === 0) {
                 this.collectViews();
-                logger.debug("WsxRouter collected views in onConnected:", this.views.size);
+                logger.warn(`WsxRouter collected views in onConnected: ${this.views.size}`);
             }
 
             // 处理初始路由（页面刷新时）
             // 使用双重 requestAnimationFrame 确保所有子元素都已连接
             requestAnimationFrame(() => {
+                logger.warn(`WsxRouter handling initial route: ${window.location.pathname}`);
                 this.handleRouteChange();
             });
         });
@@ -108,7 +111,7 @@ export default class WsxRouter extends LightComponent {
         const views = Array.from(this.children).filter(
             (el) => el.tagName.toLowerCase() === "wsx-view"
         );
-        logger.debug("WsxRouter found views:", views.length);
+        logger.warn(`WsxRouter found ${views.length} views`);
 
         // RFC 0032: 清除旧的缓存
         this.views.clear();
@@ -118,13 +121,14 @@ export default class WsxRouter extends LightComponent {
         views.forEach((view) => {
             const route = view.getAttribute("route") || "/";
             this.views.set(route, view as HTMLElement);
+            logger.warn(`WsxRouter registered route: ${route}`);
 
             // RFC 0032: 预编译参数路由的正则表达式
             if (route.includes(":")) {
                 const pattern = route.replace(/:[^/]+/g, "([^/]+)");
                 const regex = new RegExp(`^${pattern}$`);
                 this.compiledRoutes.set(route, regex);
-                logger.debug(`WsxRouter compiled regex for route: ${route}`);
+                logger.warn(`WsxRouter compiled regex for route: ${route} -> ${regex}`);
             }
 
             // 初始状态：隐藏所有视图，等待路由匹配后再显示
@@ -136,21 +140,21 @@ export default class WsxRouter extends LightComponent {
     private handleRouteChange = () => {
         // 防止递归调用
         if (this.isHandlingRoute) {
-            logger.debug("Route change already in progress, skipping");
+            logger.warn("Route change already in progress, skipping");
             return;
         }
 
         // 如果视图为空，重新收集（可能子元素还未渲染）
         if (this.views.size === 0) {
             this.collectViews();
-            logger.debug("WsxRouter re-collected views:", this.views.size);
+            logger.warn(`WsxRouter re-collected views: ${this.views.size}`);
         }
 
         this.isHandlingRoute = true;
 
         try {
             const nextPath = window.location.pathname;
-            logger.debug(`Route changed to: ${nextPath}`);
+            logger.warn(`WsxRouter: Route changed to: ${nextPath}`);
 
             // RFC 0033: 1. 触发 before-navigate 事件（可取消）
             const beforeEvent = new CustomEvent("before-navigate", {
@@ -192,7 +196,8 @@ export default class WsxRouter extends LightComponent {
                 // Step 1: 立即显示新视图
                 view.style.display = "block";
                 view.style.visibility = "visible";
-                logger.debug(`Showing view for route: ${view.getAttribute("route")}`);
+                const viewRoute = view.getAttribute("route") || "/";
+                logger.warn(`Showing view for route: ${viewRoute}`);
 
                 // Step 2: 隐藏所有其他视图（包括旧的 currentView）
                 for (const [_route, otherView] of this.views) {
@@ -206,12 +211,28 @@ export default class WsxRouter extends LightComponent {
                 this.currentView = view;
 
                 // 传递路由参数（延迟设置，避免触发 attributeChangedCallback 导致递归）
-                const params = this.extractParams(view.getAttribute("route") || "/", nextPath);
+                const params = this.extractParams(viewRoute, nextPath);
+                logger.warn(
+                    `Extracted params for route ${viewRoute} and path ${nextPath}:`,
+                    params
+                );
                 if (params) {
                     requestAnimationFrame(() => {
                         view.setAttribute("params", JSON.stringify(params));
+                        logger.warn(`Set params attribute on view: ${JSON.stringify(params)}`);
                     });
                 }
+
+                // 更新 RouterUtils 中的全局路由信息（包含参数）
+                const url = new URL(window.location.href);
+                const routeInfo: RouteInfo = {
+                    path: nextPath,
+                    params: params || {},
+                    query: Object.fromEntries(url.searchParams.entries()),
+                    hash: url.hash.slice(1),
+                };
+                RouterUtils._setCurrentRoute(routeInfo);
+                logger.warn(`Updated RouterUtils._currentRoute:`, routeInfo);
             } else {
                 // 如果没有找到视图，隐藏所有视图
                 for (const [_route, otherView] of this.views) {
@@ -219,6 +240,16 @@ export default class WsxRouter extends LightComponent {
                 }
                 this.currentView = null;
                 logger.warn(`No view found for path: ${nextPath}`);
+
+                // 更新 RouterUtils 中的全局路由信息（无参数）
+                const url = new URL(window.location.href);
+                const routeInfo: RouteInfo = {
+                    path: nextPath,
+                    params: {},
+                    query: Object.fromEntries(url.searchParams.entries()),
+                    hash: url.hash.slice(1),
+                };
+                RouterUtils._setCurrentRoute(routeInfo);
             }
 
             // RFC 0033: 滚动管理
@@ -298,25 +329,43 @@ export default class WsxRouter extends LightComponent {
     }
 
     private matchRoute(path: string): HTMLElement | null {
+        logger.warn(`matchRoute called for path: ${path}, views count: ${this.views.size}`);
+
         // RFC 0032: 1. 检查匹配缓存
         if (this.matchCache.has(path)) {
             const route = this.matchCache.get(path)!;
+            logger.warn(`matchRoute: found in cache, route: ${route}`);
             return this.views.get(route) || null;
         }
 
         // RFC 0032: 2. 精确匹配
         if (this.views.has(path)) {
             this.matchCache.set(path, path);
+            logger.warn(`matchRoute: exact match found for ${path}`);
             return this.views.get(path)!;
         }
 
         // RFC 0032: 3. 参数匹配（使用预编译的正则表达式）
+        logger.warn(
+            `matchRoute: checking parameter routes, compiledRoutes count: ${this.compiledRoutes.size}`
+        );
         for (const [route, view] of this.views) {
             if (route.includes(":")) {
                 const regex = this.compiledRoutes.get(route);
-                if (regex && regex.test(path)) {
-                    this.matchCache.set(path, route);
-                    return view;
+                if (regex) {
+                    const matches = regex.test(path);
+                    logger.warn(
+                        `matchRoute: testing route ${route} against ${path}, matches: ${matches}`
+                    );
+                    if (matches) {
+                        this.matchCache.set(path, route);
+                        logger.warn(
+                            `matchRoute: parameter match found, route: ${route}, path: ${path}`
+                        );
+                        return view;
+                    }
+                } else {
+                    logger.warn(`matchRoute: route ${route} has ':' but no compiled regex found`);
                 }
             }
         }
@@ -325,6 +374,9 @@ export default class WsxRouter extends LightComponent {
         const wildcardView = this.views.get("*") || null;
         if (wildcardView) {
             this.matchCache.set(path, "*");
+            logger.warn(`matchRoute: wildcard match found for ${path}`);
+        } else {
+            logger.warn(`matchRoute: no match found for ${path}, no wildcard view available`);
         }
         return wildcardView;
     }

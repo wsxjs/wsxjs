@@ -1,0 +1,12 @@
+/**
+ * WSX-Press 样式入口
+ * 导入所有全局样式
+ */
+
+/* 基础样式 */
+@import './reset.css';
+@import './theme.css';
+
+/* 内容样式 */
+@import './typography.css';
+@import './code.css';

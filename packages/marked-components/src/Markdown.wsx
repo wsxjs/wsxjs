@@ -1,0 +1,244 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * WSX Markdown Component
+ *
+ * A reusable component that renders markdown into WSX marked components.
+ * Supports customization through custom token renderers.
+ *
+ * @example
+ * ```html
+ * <wsx-markdown markdown="# Hello World"></wsx-markdown>
+ * ```
+ */
+
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import { createLogger } from "@wsxjs/wsx-logger";
+import { marked } from "marked";
+import type { Tokens } from "marked";
+import styles from "./Markdown.css?inline";
+import { renderInlineTokens } from "./marked-utils";
+// Import WSX components so they're registered as custom elements
+import "./Heading.wsx";
+import "./Code.wsx";
+import "./Blockquote.wsx";
+import "./Paragraph.wsx";
+import "./List.wsx";
+import "./Error.wsx";
+
+const logger = createLogger("Markdown");
+
+/**
+ * Custom token renderer function type
+ * Return null to use default rendering, or return an HTMLElement to override
+ */
+export type TokenRenderer = (
+    token: Tokens.Generic,
+    defaultRender: () => HTMLElement | null
+) => HTMLElement | null;
+
+/**
+ * Custom renderers configuration
+ */
+export interface CustomRenderers {
+    [tokenType: string]: TokenRenderer;
+}
+
+/**
+ * Markdown Component
+ *
+ * Renders markdown content into WSX marked components using marked.lexer()
+ * and manual JSX conversion.
+ */
+@autoRegister({ tagName: "wsx-markdown" })
+export default class Markdown extends LightComponent {
+    @state private markdown: string = "";
+    private customRenderers: CustomRenderers = {};
+
+    constructor() {
+        super({
+            styles,
+            styleName: "wsx-markdown",
+            lightDOM: true,
+        });
+        logger.info("Markdown initialized");
+    }
+
+    static get observedAttributes() {
+        return ["markdown"];
+    }
+
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        if (name === "markdown") {
+            this.markdown = newValue || "";
+            this.rerender();
+        }
+    }
+
+    /**
+     * Set custom renderers for specific token types
+     *
+     * @example
+     * ```typescript
+     * markdown.setCustomRenderers({
+     *   heading: (token, defaultRender) => {
+     *     // Custom heading rendering
+     *     return defaultRender();
+     *   }
+     * });
+     * ```
+     */
+    setCustomRenderers(renderers: CustomRenderers): void {
+        this.customRenderers = { ...this.customRenderers, ...renderers };
+        this.rerender();
+    }
+
+    /**
+     * Get current custom renderers
+     */
+    getCustomRenderers(): CustomRenderers {
+        return { ...this.customRenderers };
+    }
+
+    render() {
+        if (!this.markdown) {
+            return <div class="marked-content"></div>;
+        }
+
+        try {
+            // Use marked.lexer to get tokens, then render with WSX JSX
+            const tokens = marked.lexer(this.markdown);
+            return <div class="marked-content">{this.renderTokens(tokens)}</div>;
+        } catch (error) {
+            logger.error("Failed to render markdown", error);
+            return (
+                <div class="marked-content">
+                    <wsx-marked-error message={`Error: ${error}`} />
+                </div>
+            );
+        }
+    }
+
+    protected onConnected() {
+        // Get initial value from attribute
+        const markdownAttr = this.getAttribute("markdown");
+        if (markdownAttr) {
+            this.markdown = markdownAttr;
+        }
+    }
+
+    /**
+     * Convert marked tokens to WSX JSX elements
+     */
+    private renderTokens(tokens: Tokens.Generic[]): (HTMLElement | null)[] {
+        return tokens
+            .map((token) => this.renderToken(token))
+            .filter((el): el is HTMLElement => el !== null);
+    }
+
+    /**
+     * Render a single token to WSX JSX element
+     * Supports custom renderers for extensibility
+     */
+    private renderToken(token: Tokens.Generic): HTMLElement | null {
+        // Check for custom renderer first
+        const customRenderer = this.customRenderers[token.type];
+        if (customRenderer) {
+            const result = customRenderer(token, () => this.defaultRenderToken(token));
+            if (result !== null) {
+                return result;
+            }
+            // If custom renderer returns null, fall back to default
+        }
+
+        return this.defaultRenderToken(token);
+    }
+
+    /**
+     * Default token rendering logic
+     * This is the core rendering implementation
+     */
+    private defaultRenderToken(token: Tokens.Generic): HTMLElement | null {
+        switch (token.type) {
+            case "heading": {
+                const headingToken = token as Tokens.Heading;
+                return (
+                    <wsx-marked-heading
+                        level={headingToken.depth.toString()}
+                        text={renderInlineTokens(headingToken.tokens)}
+                    />
+                );
+            }
+
+            case "code": {
+                const codeToken = token as Tokens.Code;
+                return <wsx-marked-code code={codeToken.text} language={codeToken.lang || ""} />;
+            }
+
+            case "blockquote": {
+                const blockquoteToken = token as Tokens.Blockquote;
+                return (
+                    <wsx-marked-blockquote>
+                        {this.renderTokens(blockquoteToken.tokens)}
+                    </wsx-marked-blockquote>
+                );
+            }
+
+            case "paragraph": {
+                const paraToken = token as Tokens.Paragraph;
+                return <wsx-marked-paragraph content={renderInlineTokens(paraToken.tokens)} />;
+            }
+
+            case "list": {
+                const listToken = token as Tokens.List;
+                // List items can contain block-level tokens (nested lists, blockquotes, etc.)
+                // So we need to use renderTokens() instead of renderInlineTokens()
+                const items = listToken.items.map((item) => {
+                    // Render all tokens in the list item (both inline and block-level)
+                    const renderedElements = this.renderTokens(item.tokens);
+                    // Convert rendered elements to HTML string for the List component
+                    // Create a temporary container to collect the HTML
+                    const tempContainer = document.createElement("div");
+                    renderedElements.forEach((el) => {
+                        if (el) {
+                            tempContainer.appendChild(el);
+                        }
+                    });
+                    return tempContainer.innerHTML;
+                });
+                return (
+                    <wsx-marked-list
+                        ordered={listToken.ordered ? "true" : "false"}
+                        items={JSON.stringify(items)}
+                    />
+                );
+            }
+
+            case "html": {
+                const htmlToken = token as Tokens.HTML;
+                return <div>{htmlToken.text}</div>;
+            }
+
+            case "hr": {
+                return <hr />;
+            }
+
+            case "space": {
+                // Ignore space tokens
+                return null;
+            }
+
+            default: {
+                // For other types, use default marked renderer
+                const renderer = new marked.Renderer();
+                const renderMethod = (
+                    renderer as unknown as Record<string, (token: unknown) => string>
+                )[token.type];
+                const html = renderMethod?.(token) || "";
+                if (html) {
+                    return <div>{html}</div>;
+                }
+                return null;
+            }
+        }
+    }
+}

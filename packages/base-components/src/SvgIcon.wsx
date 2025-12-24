@@ -1,5 +1,6 @@
 /** @jsxImportSource @wsxjs/wsx-core */
-import { WebComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("SvgIcon");
 

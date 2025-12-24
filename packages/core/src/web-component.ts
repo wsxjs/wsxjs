@@ -11,7 +11,7 @@
 import { h, type JSXChildren } from "./jsx-factory";
 import { StyleManager } from "./styles/style-manager";
 import { BaseComponent, type BaseComponentConfig } from "./base-component";
-import { createLogger } from "./utils/logger";
+import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("WebComponent");
 

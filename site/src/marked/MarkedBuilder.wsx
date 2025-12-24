@@ -9,11 +9,8 @@
 import { LightComponent, autoRegister, createLogger, state } from "@wsxjs/wsx-core";
 import { i18n } from "@wsxjs/wsx-i18next";
 import styles from "./MarkedBuilder.css?inline";
-import "./WsxMarkedRendererPattern1.wsx";
-import "./WsxMarkedRendererPattern2.wsx";
-import "./WsxMarkedHeading.wsx";
-import "./WsxMarkedCode.wsx";
-import "./WsxMarkedBlockquote.wsx";
+// Import marked components from package (includes Markdown component)
+import "@wsxjs/wsx-marked-components";
 
 const logger = createLogger("MarkedBuilder");
 
@@ -21,7 +18,6 @@ const logger = createLogger("MarkedBuilder");
 @i18n("marked")
 export default class MarkedBuilder extends LightComponent {
     @state private markdownInput: string = "";
-    @state private pattern: "pattern1" | "pattern2" = "pattern1";
 
     constructor() {
         super({
@@ -73,46 +69,15 @@ export default class MarkedBuilder extends LightComponent {
 
                     {/* Rendered Output Section */}
                     <div class="output-section">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h2 class="section-title">{t("output.title")}</h2>
-                            <div class="pattern-switcher">
-                                <button
-                                    onClick={() => {
-                                        this.pattern = "pattern1";
-                                    }}
-                                    class={`btn ${this.pattern === "pattern1" ? "btn-active" : "btn-secondary"}`}
-                                >
-                                    {t("output.pattern1.label")}
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        this.pattern = "pattern2";
-                                    }}
-                                    class={`btn ${this.pattern === "pattern2" ? "btn-active" : "btn-secondary"}`}
-                                >
-                                    {t("output.pattern2.label")}
-                                </button>
-                            </div>
-                        </div>
+                        <h2 class="section-title">{t("output.title")}</h2>
                         <div class="pattern-info">
-                            {this.pattern === "pattern1" ? (
-                                <p class="pattern-description">
-                                    <strong>{t("output.pattern1.title")}</strong>{" "}
-                                    {t("output.pattern1.description")}
-                                </p>
-                            ) : (
-                                <p class="pattern-description">
-                                    <strong>{t("output.pattern2.title")}</strong>{" "}
-                                    {t("output.pattern2.description")}
-                                </p>
-                            )}
+                            <p class="pattern-description">
+                                <strong>{t("output.pattern2.title")}</strong>{" "}
+                                {t("output.pattern2.description")}
+                            </p>
                         </div>
                         <div class="renderer-output">
-                            {this.pattern === "pattern1" ? (
-                                <wsx-marked-renderer-pattern1 markdown={this.markdownInput} />
-                            ) : (
-                                <wsx-marked-renderer-pattern2 markdown={this.markdownInput} />
-                            )}
+                            <wsx-markdown markdown={this.markdownInput} />
                         </div>
                     </div>
                 </div>
@@ -122,22 +87,6 @@ export default class MarkedBuilder extends LightComponent {
                     <h2 class="section-title">{t("explanation.title")}</h2>
 
                     <div class="explanation-grid">
-                        <div class="explanation-card">
-                            <h3 class="card-title">{t("explanation.pattern1.title")}</h3>
-                            <p>{t("explanation.pattern1.description")}</p>
-                            <pre class="code-example">
-                                <code>{t("explanation.pattern1.code")}</code>
-                            </pre>
-                            <p>
-                                <strong>{t("explanation.pros")}</strong>{" "}
-                                {t("explanation.pattern1.pros")}
-                            </p>
-                            <p>
-                                <strong>{t("explanation.cons")}</strong>{" "}
-                                {t("explanation.pattern1.cons")}
-                            </p>
-                        </div>
-
                         <div class="explanation-card">
                             <h3 class="card-title">{t("explanation.pattern2.title")}</h3>
                             <p>{t("explanation.pattern2.description")}</p>

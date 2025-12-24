@@ -4,7 +4,7 @@
  * 基于浏览器原生 Proxy API 实现轻量级响应式状态，
  * 遵循 WSX 设计哲学：信任浏览器，零运行时开销
  */
-import { createLogger } from "./logger";
+import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("ReactiveSystem");
 

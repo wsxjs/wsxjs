@@ -10,26 +10,14 @@
     },
     "output": {
         "title": "렌더링된 출력",
-        "pattern1": {
-            "label": "패턴 1",
-            "title": "패턴 1:",
-            "description": "marked.use({ renderer }) 사용 - 렌더러는 WSX 사용자 정의 요소 태그가 있는 HTML 문자열을 반환합니다"
-        },
         "pattern2": {
             "label": "패턴 2",
             "title": "패턴 2:",
-            "description": "marked.lexer() + 수동 WSX JSX 렌더링 사용 - 실제 JSX 요소를 반환합니다"
+            "description": "WSX + marked를 사용하여 Markdown 렌더링"
         }
     },
     "explanation": {
         "title": "작동 방식",
-        "pattern1": {
-            "title": "패턴 1: marked.use({ renderer })",
-            "description": "WSX 사용자 정의 요소 태그를 포함하는 HTML 문자열을 반환하는 사용자 정의 렌더러 개체를 만듭니다. WSX 컴포넌트가 사용자 정의 요소로 등록되어 있으므로 HTML로 삽입될 때 작동합니다.",
-            "code": "const renderer = {\n  heading(token) {\n    return `<wsx-marked-heading level=\"${token.depth}\" text=\"...\"></wsx-marked-heading>`;\n  }\n};\n\nmarked.use({ renderer });\nconst html = marked.parse(markdown);\nelement.innerHTML = html; // 브라우저가 WSX 컴포넌트를 자동으로 인스턴스화",
-            "pros": "marked의 내장 시스템 사용, 간단함",
-            "cons": "HTML 문자열 반환, JSX 요소 아님"
-        },
         "pattern2": {
             "title": "패턴 2: marked.lexer() + WSX JSX",
             "description": "marked.lexer()를 사용하여 토큰을 가져온 다음 수동으로 WSX JSX 요소로 변환합니다. 이를 통해 HTML 문자열 대신 실제 JSX 요소를 반환할 수 있습니다.",
@@ -39,7 +27,7 @@
         },
         "components": {
             "title": "WSX 컴포넌트",
-            "description": "두 패턴 모두 동일한 WSX Web Components를 사용합니다. 컴포넌트가 사용자 정의 요소로 등록되어 있으므로 HTML 문자열(패턴 1)과 JSX(패턴 2) 모두에서 작동합니다.",
+            "description": "WSX Web Components는 사용자 정의 요소로 등록되어 JSX 렌더링과 원활하게 작동합니다.",
             "code": "@autoRegister({ tagName: 'wsx-marked-heading' })\nclass WsxMarkedHeading extends LightComponent {\n  render() {\n    return <h{this.level}>{this.text}</h{this.level}>;\n  }\n}"
         },
         "pros": "장점:",

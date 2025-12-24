@@ -9,7 +9,8 @@
  * - 完全通用，不依赖特定UI库
  */
 
-import { WebComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { createLogger } from "@wsxjs/wsx-logger";
 import {
     handleCSSVariables,
     setDefaultColorCache,

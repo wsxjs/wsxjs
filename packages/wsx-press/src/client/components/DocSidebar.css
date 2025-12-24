@@ -1,0 +1,97 @@
+wsx-doc-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 280px;
+    min-width: 280px;
+    height: 100%;
+    background: var(--wsx-press-sidebar-bg, #f9fafb);
+    border-right: 1px solid var(--wsx-press-border, #e5e7eb);
+    overflow-y: auto;
+    position: sticky;
+    top: 70px; /* Navigation height */
+    max-height: calc(100vh - 70px);
+}
+
+.doc-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.doc-sidebar-loading,
+.doc-sidebar-empty {
+    padding: 2rem;
+    text-align: center;
+    color: var(--wsx-press-text-secondary, #6b7280);
+}
+
+.doc-sidebar-nav {
+    padding: 1.5rem 0;
+}
+
+.doc-sidebar-category {
+    margin-bottom: 2rem;
+}
+
+.doc-sidebar-category:last-child {
+    margin-bottom: 0;
+}
+
+.doc-sidebar-category-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--wsx-press-text-secondary, #6b7280);
+    padding: 0.5rem 1.5rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.doc-sidebar-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.doc-sidebar-item {
+    margin: 0;
+}
+
+.doc-sidebar-link {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    color: var(--wsx-press-text-primary, #111827);
+    text-decoration: none;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+}
+
+.doc-sidebar-link:hover {
+    background: var(--wsx-press-sidebar-hover-bg, #f3f4f6);
+    color: var(--wsx-press-text-primary, #111827);
+}
+
+.doc-sidebar-link.active {
+    background: var(--wsx-press-sidebar-active-bg, #eff6ff);
+    color: var(--wsx-press-sidebar-active-color, #2563eb);
+    border-left-color: var(--wsx-press-sidebar-active-color, #2563eb);
+    font-weight: 500;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+    wsx-doc-sidebar {
+        width: 240px;
+        min-width: 240px;
+    }
+}
+
+@media (max-width: 768px) {
+    wsx-doc-sidebar {
+        display: none; /* 在移动设备上隐藏侧边栏 */
+    }
+}
+

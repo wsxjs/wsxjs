@@ -73,6 +73,12 @@ export const routeMeta: Record<string, RouteMeta> = {
         keywords: "WSXJS ecosystem, WSXJS packages, WSXJS tools",
         image: "/og-image.png",
     },
+    "/docs": {
+        title: "Documentation - WSXJS",
+        description: "Complete documentation for WSXJS framework, including guides, API reference, and examples.",
+        keywords: "WSXJS documentation, WSXJS guide, WSXJS API",
+        image: "/og-image.png",
+    },
     "/privacy": {
         title: "Privacy Policy - WSXJS",
         description: "WSXJS Privacy Policy - How we collect, use, and protect your data.",
@@ -96,7 +102,30 @@ export const routeMeta: Record<string, RouteMeta> = {
 
 /**
  * 获取路由的 meta 信息
+ * 优先检查精确匹配，然后检查参数化路由（如 /docs/:category/:page），最后是通配符 "*"，最后回退到首页
  */
 export function getRouteMeta(path: string): RouteMeta {
-    return routeMeta[path] || routeMeta["/"];
+    // 1. 优先返回精确匹配的路由 meta
+    if (routeMeta[path]) {
+        return routeMeta[path];
+    }
+    // 2. 检查参数化路由：/docs/:category/:page
+    if (path.startsWith("/docs/")) {
+        const docsPathMatch = path.match(/^\/docs\/([^/]+)\/([^/]+)$/);
+        if (docsPathMatch) {
+            // 使用文档路由的 meta，但可以根据需要动态生成标题
+            const baseMeta = routeMeta["/docs"] || routeMeta["/"];
+            return {
+                ...baseMeta,
+                title: `${docsPathMatch[2]} - Documentation | WSXJS`,
+                description: baseMeta.description || "WSXJS Documentation",
+            };
+        }
+    }
+    // 3. 如果没有精确匹配，检查通配符 "*"（用于 404 页面）
+    if (routeMeta["*"]) {
+        return routeMeta["*"];
+    }
+    // 4. 最后回退到首页 meta
+    return routeMeta["/"];
 }

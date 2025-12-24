@@ -77,6 +77,9 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0016](./completed/0016-component-library-build-guide.md) | 组件库构建指南 | Implemented | WSX Team |
 | [RFC-0017](./completed/0017-jsx-factory-auto-injection-bug-fix.md) | JSX Factory 自动注入 Bug 修复 | Implemented | WSX Team |
 | [RFC-0020](./completed/0020-jsx-import-source-pragma-auto-injection.md) | JSX Import Source Pragma 自动注入方案 | Implemented | WSX Team |
+| [RFC-0023](./completed/0023-seo-error-handling.md) | SEO 优化和错误处理（M1） | Completed | WSX Team |
+| [RFC-0029](./completed/0029-i18next-integration.md) | i18next 国际化支持（M6） | Completed | WSX Team |
+| [RFC-0030](./completed/0030-rerender-scheduling-refactor.md) | rerender() 调度机制重构 | Completed | WSX Team |
 | [RFC-0031](./completed/0031-jsx-factory-html-string-infinite-recursion-fix.md) | JSX Factory HTML 字符串解析无限递归修复 | Implemented | WSX Team |
 | [RFC-0032](./completed/0032-wsx-router-refactor.md) | WSX Router 和 WSX View 重构（稳定性修复和性能优化 - 阶段1） | Implemented | WSX Team |
 | [RFC-0033](./completed/0033-modern-router-features.md) | Modern Router Features - View Transitions, Scroll Restoration & Navigation Events | Implemented | WSX Team |
@@ -88,20 +91,17 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0019](./0019-zero-config-initialization.md) | 零配置初始化方案 | Proposed | WSX Team |
 | [RFC-0021](./0021-framework-website-enhancement.md) | 框架网站增强计划（根 RFC） | Proposed | WSX Team |
 | [RFC-0022](./0022-homepage-value-proposition.md) | 首页价值主张优化（M0） | Proposed | WSX Team |
-| [RFC-0023](./0023-seo-error-handling.md) | SEO 优化和错误处理（M1） | Proposed | WSX Team |
 | [RFC-0024](./0024-documentation-system.md) | 文档系统集成（M2） | Proposed | WSX Team |
 | [RFC-0025](./0025-code-playground.md) | 代码 Playground（M3） | Proposed | WSX Team |
 | [RFC-0026](./0026-performance-optimization.md) | 性能优化（M4） | Proposed | WSX Team |
 | [RFC-0027](./0027-community-features.md) | 社区功能（M5） | Proposed | WSX Team |
 | [RFC-0028](./0028-advanced-features.md) | 高级功能（M6） | Proposed | WSX Team |
-| [RFC-0029](./0029-i18next-integration.md) | i18next 国际化支持（包含 @wsxjs/wsx-i18next 包设计） | Proposed | WSX Team |
-| [RFC-0030](./0030-rerender-scheduling-refactor.md) | rerender() 调度机制重构 | Proposed | WSX Team |
 
 ### 被拒绝的RFCs
 
 | RFC | 标题 | 状态 | 提议人 | 拒绝原因 |
 |-----|------|------|--------|----------|
-| [RFC-0018](./0018-wsx-dts-package-exposure.md) | 统一在 wsx-core 中暴露 wsx.d.ts 类型定义 | Rejected | WSX Team | 技术限制：TypeScript 模块类型解析机制在 monorepo 中无法直接统一暴露 |
+| [RFC-0018](./completed/0018-wsx-dts-package-exposure.md) | 统一在 wsx-core 中暴露 wsx.d.ts 类型定义 | Rejected | WSX Team | 技术限制：TypeScript 模块类型解析机制在 monorepo 中无法直接统一暴露 |
 
 ### 草稿RFCs
 

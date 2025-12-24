@@ -10,26 +10,14 @@
     },
     "output": {
         "title": "渲染输出",
-        "pattern1": {
-            "label": "模式 1",
-            "title": "模式 1：",
-            "description": "使用 marked.use({ renderer }) - 渲染器返回带有 WSX 自定义元素标签的 HTML 字符串"
-        },
         "pattern2": {
             "label": "模式 2",
             "title": "模式 2：",
-            "description": "使用 marked.lexer() + 手动 WSX JSX 渲染 - 返回实际的 JSX 元素"
+            "description": "使用 WSX + marked 来渲染 Markdown"
         }
     },
     "explanation": {
         "title": "工作原理",
-        "pattern1": {
-            "title": "模式 1：marked.use({ renderer })",
-            "description": "创建一个返回包含 WSX 自定义元素标签的 HTML 字符串的自定义渲染器对象。由于 WSX 组件注册为自定义元素，它们在作为 HTML 插入时工作。",
-            "code": "const renderer = {\n  heading(token) {\n    return `<wsx-marked-heading level=\"${token.depth}\" text=\"...\"></wsx-marked-heading>`;\n  }\n};\n\nmarked.use({ renderer });\nconst html = marked.parse(markdown);\nelement.innerHTML = html; // 浏览器自动实例化 WSX 组件",
-            "pros": "使用 marked 的内置系统，简单",
-            "cons": "返回 HTML 字符串，不是 JSX 元素"
-        },
         "pattern2": {
             "title": "模式 2：marked.lexer() + WSX JSX",
             "description": "使用 marked.lexer() 获取标记，然后手动将它们转换为 WSX JSX 元素。这允许返回实际的 JSX 元素而不是 HTML 字符串。",
@@ -39,7 +27,7 @@
         },
         "components": {
             "title": "WSX 组件",
-            "description": "两种模式使用相同的 WSX Web Components。组件注册为自定义元素，因此它们在 HTML 字符串（模式 1）和 JSX（模式 2）中都能工作。",
+            "description": "WSX Web Components 注册为自定义元素，可与 JSX 渲染无缝协作。",
             "code": "@autoRegister({ tagName: 'wsx-marked-heading' })\nclass WsxMarkedHeading extends LightComponent {\n  render() {\n    return <h{this.level}>{this.text}</h{this.level}>;\n  }\n}"
         },
         "pros": "优点：",

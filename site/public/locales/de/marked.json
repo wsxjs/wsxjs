@@ -10,26 +10,14 @@
     },
     "output": {
         "title": "Gerendertes Ergebnis",
-        "pattern1": {
-            "label": "Muster 1",
-            "title": "Muster 1:",
-            "description": "Verwendung von marked.use({ renderer }) - Renderer gibt HTML-Strings mit WSX-Benutzerdefinierten Element-Tags zurück"
-        },
         "pattern2": {
             "label": "Muster 2",
             "title": "Muster 2:",
-            "description": "Verwendung von marked.lexer() + Manuelles WSX JSX-Rendering - Gibt tatsächliche JSX-Elemente zurück"
+            "description": "WSX + marked verwenden, um Markdown zu rendern"
         }
     },
     "explanation": {
         "title": "Wie es funktioniert",
-        "pattern1": {
-            "title": "Muster 1: marked.use({ renderer })",
-            "description": "Erstellen Sie ein benutzerdefiniertes Renderer-Objekt, das HTML-Strings mit WSX-Benutzerdefinierten Element-Tags zurückgibt. Da WSX-Komponenten als benutzerdefinierte Elemente registriert sind, funktionieren sie, wenn sie als HTML eingefügt werden.",
-            "code": "const renderer = {\n  heading(token) {\n    return `<wsx-marked-heading level=\"${token.depth}\" text=\"...\"></wsx-marked-heading>`;\n  }\n};\n\nmarked.use({ renderer });\nconst html = marked.parse(markdown);\nelement.innerHTML = html; // Browser instanziiert WSX-Komponenten automatisch",
-            "pros": "Verwendet das eingebaute System von marked, einfach",
-            "cons": "Gibt HTML-Strings zurück, keine JSX-Elemente"
-        },
         "pattern2": {
             "title": "Muster 2: marked.lexer() + WSX JSX",
             "description": "Verwenden Sie marked.lexer(), um Tokens zu erhalten, und konvertieren Sie sie dann manuell in WSX JSX-Elemente. Dies ermöglicht die Rückgabe tatsächlicher JSX-Elemente statt HTML-Strings.",
@@ -39,7 +27,7 @@
         },
         "components": {
             "title": "WSX-Komponenten",
-            "description": "Beide Muster verwenden dieselben WSX Web Components. Die Komponenten sind als benutzerdefinierte Elemente registriert, sodass sie sowohl in HTML-Strings (Muster 1) als auch in JSX (Muster 2) funktionieren.",
+            "description": "WSX Web Components sind als benutzerdefinierte Elemente registriert und funktionieren nahtlos mit JSX-Rendering.",
             "code": "@autoRegister({ tagName: 'wsx-marked-heading' })\nclass WsxMarkedHeading extends LightComponent {\n  render() {\n    return <h{this.level}>{this.text}</h{this.level}>;\n  }\n}"
         },
         "pros": "Vorteile:",

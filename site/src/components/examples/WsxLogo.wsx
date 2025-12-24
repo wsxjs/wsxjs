@@ -52,22 +52,40 @@ export default class WsxLogo extends WebComponent {
     }
 
     private renderIconLogo() {
-        const strokeWidth = this.size > 40 ? 2 : 1.5;
+        const strokeWidth = 2.5;
+        // If color is default red, use multi-tone (grey brackets). Otherwise monochrome.
+        const isDefaultColor = this.color === "#dc2626";
+        const bracketColor = isDefaultColor ? "#4B5563" : this.color;
+
         return (
             <svg
                 width={this.size}
                 height={this.size}
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke={this.color}
-                stroke-width={strokeWidth}
-                stroke-linecap="round"
-                stroke-linejoin="round"
                 style="display: inline-block; vertical-align: middle;"
             >
-                <path d="m2 2 4 10 4-10m4 0 4 10 4-10" />
-                <path d="m6 12 6 10 6-10" />
-                <circle cx="12" cy="12" r="1" fill={this.color} />
+                <path
+                    d="M6 8L3 12L6 16"
+                    stroke={bracketColor}
+                    stroke-width={strokeWidth}
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+                <path
+                    d="M18 8L21 12L18 16"
+                    stroke={bracketColor}
+                    stroke-width={strokeWidth}
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
+                <path
+                    d="M9 9L10.5 15L12 11.5L13.5 15L15 9"
+                    stroke={this.color}
+                    stroke-width={strokeWidth}
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                />
             </svg>
         );
     }
@@ -86,6 +104,10 @@ export default class WsxLogo extends WebComponent {
     private renderFullLogo() {
         const iconSize = this.size * 0.8;
         const fontSize = this.size * 0.5;
+        const strokeWidth = 2.5;
+        const isDefaultColor = this.color === "#dc2626";
+        const bracketColor = isDefaultColor ? "#4B5563" : this.color;
+
         return (
             <div style="display: inline-flex; align-items: center; gap: 8px;">
                 <svg
@@ -93,15 +115,29 @@ export default class WsxLogo extends WebComponent {
                     height={iconSize}
                     viewBox="0 0 24 24"
                     fill="none"
-                    stroke={this.color}
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
                     style="display: inline-block;"
                 >
-                    <path d="m2 2 4 10 4-10m4 0 4 10 4-10" />
-                    <path d="m6 12 6 10 6-10" />
-                    <circle cx="12" cy="12" r="1" fill={this.color} />
+                    <path
+                        d="M6 8L3 12L6 16"
+                        stroke={bracketColor}
+                        stroke-width={strokeWidth}
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                    <path
+                        d="M18 8L21 12L18 16"
+                        stroke={bracketColor}
+                        stroke-width={strokeWidth}
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
+                    <path
+                        d="M9 9L10.5 15L12 11.5L13.5 15L15 9"
+                        stroke={this.color}
+                        stroke-width={strokeWidth}
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    />
                 </svg>
                 <div
                     style={`font-size: ${fontSize}px; font-weight: 700; color: ${this.color}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;`}

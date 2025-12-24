@@ -1,0 +1,105 @@
+wsx-doc-toc {
+    display: flex;
+    flex-direction: column;
+    width: 240px;
+    min-width: 240px;
+    height: 100%;
+    overflow-y: auto;
+    position: sticky;
+    top: 70px; /* Navigation height */
+    max-height: calc(100vh - 70px);
+}
+
+.doc-toc {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 1.5rem 1rem;
+}
+
+.doc-toc-empty {
+    padding: 1rem;
+    text-align: center;
+    color: var(--wsx-press-text-secondary, #6b7280);
+    font-size: 0.875rem;
+}
+
+.doc-toc-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--wsx-press-text-secondary, #6b7280);
+    margin: 0 0 1rem 0;
+    padding: 0;
+}
+
+.doc-toc-nav {
+    width: 100%;
+}
+
+.doc-toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.doc-toc-sublist {
+    margin-top: 0.25rem;
+    padding-left: 1rem;
+}
+
+.doc-toc-item {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.doc-toc-item-level-1 {
+    margin-bottom: 0.5rem;
+}
+
+.doc-toc-item-level-2 {
+    margin-bottom: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.doc-toc-item-level-3 {
+    margin-bottom: 0.25rem;
+    font-size: 0.8125rem;
+}
+
+.doc-toc-item-level-4,
+.doc-toc-item-level-5,
+.doc-toc-item-level-6 {
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.doc-toc-link {
+    display: block;
+    color: var(--wsx-press-text-secondary, #6b7280);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    padding: 0.25rem 0;
+    border-left: 2px solid transparent;
+    padding-left: 0.5rem;
+    margin-left: -0.5rem;
+}
+
+.doc-toc-link:hover {
+    color: var(--wsx-press-text-primary, #111827);
+}
+
+.doc-toc-link.active {
+    color: var(--wsx-press-toc-active-color, #2563eb);
+    border-left-color: var(--wsx-press-toc-active-color, #2563eb);
+    font-weight: 500;
+}
+
+/* 响应式设计 */
+@media (max-width: 1280px) {
+    wsx-doc-toc {
+        display: none; /* 在较小屏幕上隐藏 TOC */
+    }
+}
+

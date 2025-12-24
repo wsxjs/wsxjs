@@ -1,0 +1,34 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * WSX Error Component
+ * Custom error component for markdown rendering
+ */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+
+@autoRegister({ tagName: "wsx-marked-error" })
+export default class Error extends LightComponent {
+    private message: string = "";
+
+    constructor() {
+        super({
+            styleName: "wsx-marked-error",
+        });
+    }
+
+    static get observedAttributes() {
+        return ["message"];
+    }
+
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        if (name === "message") {
+            this.message = newValue || "";
+            this.rerender();
+        }
+    }
+
+    render() {
+        return <div class="error">{this.message}</div>;
+    }
+}
+

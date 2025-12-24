@@ -1,0 +1,17 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+        "jsx": "react-jsx",
+        "jsxImportSource": "@wsxjs/wsx-core",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "useDefineForClassFields": false
+    },
+    "include": ["src/**/*", "src/types/**/*"],
+    "exclude": ["dist", "node_modules", "**/__tests__/**", "**/*.test.ts"]
+}
+

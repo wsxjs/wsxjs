@@ -1,0 +1,92 @@
+/**
+ * @jsxImportSource @wsxjs/wsx-core
+ * DocLayout Component
+ *
+ * Complete documentation layout with sidebar, main content, and TOC.
+ */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./DocLayout.css?inline";
+
+/**
+ * DocLayout Component
+ *
+ * Provides a complete documentation layout with:
+ * - Sidebar navigation (DocSidebar)
+ * - Main content area (DocPage)
+ * - Table of Contents (DocTOC)
+ */
+@autoRegister({ tagName: "wsx-doc-layout" })
+export default class DocLayout extends LightComponent {
+    private sidebarInstance: HTMLElement | null = null;
+    private docPageInstance: HTMLElement | null = null;
+    private tocInstance: HTMLElement | null = null;
+
+    constructor() {
+        super({
+            styles,
+            styleName: "wsx-doc-layout",
+        });
+    }
+
+    protected onConnected() {
+        // 在连接后创建子组件实例
+        requestAnimationFrame(() => {
+            if (this.connected) {
+                // 创建侧边栏
+                const sidebarContainer = this.querySelector(".doc-layout-sidebar");
+                if (sidebarContainer && !this.sidebarInstance) {
+                    this.sidebarInstance = document.createElement("wsx-doc-sidebar");
+                    sidebarContainer.appendChild(this.sidebarInstance);
+                }
+
+                // 创建主内容区
+                const mainContainer = this.querySelector(".doc-layout-main");
+                if (mainContainer && !this.docPageInstance) {
+                    this.docPageInstance = document.createElement("wsx-doc-page");
+                    mainContainer.appendChild(this.docPageInstance);
+                }
+
+                // 创建 TOC
+                const tocContainer = this.querySelector(".doc-layout-toc");
+                if (tocContainer && !this.tocInstance) {
+                    this.tocInstance = document.createElement("wsx-doc-toc");
+                    tocContainer.appendChild(this.tocInstance);
+                }
+            }
+        });
+    }
+
+    protected onDisconnected() {
+        // 清理所有子组件实例
+        if (this.sidebarInstance) {
+            this.sidebarInstance.remove();
+            this.sidebarInstance = null;
+        }
+        if (this.docPageInstance) {
+            this.docPageInstance.remove();
+            this.docPageInstance = null;
+        }
+        if (this.tocInstance) {
+            this.tocInstance.remove();
+            this.tocInstance = null;
+        }
+    }
+
+    render() {
+        return (
+            <div class="doc-layout">
+                <aside class="doc-layout-sidebar">
+                    {/* DocSidebar 实例将在这里动态创建 */}
+                </aside>
+                <main class="doc-layout-main">
+                    {/* DocPage 实例将在这里动态创建 */}
+                </main>
+                <aside class="doc-layout-toc">
+                    {/* DocTOC 实例将在这里动态创建 */}
+                </aside>
+            </div>
+        );
+    }
+}
+

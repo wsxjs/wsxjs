@@ -1,0 +1,57 @@
+.wsx-doc-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.doc-page {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.doc-loading,
+.doc-empty {
+    text-align: center;
+    padding: 3rem;
+    color: var(--wsx-press-text-secondary, #666);
+}
+
+.doc-error {
+    padding: 2rem;
+    background: var(--wsx-press-error-bg, #fee);
+    border: 1px solid var(--wsx-press-error-border, #fcc);
+    border-radius: 4px;
+    color: var(--wsx-press-error-text, #c33);
+}
+
+.doc-error h2 {
+    margin-top: 0;
+    color: var(--wsx-press-error-title, #a00);
+}
+
+.doc-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--wsx-press-border, #ddd);
+}
+
+.doc-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--wsx-press-text-primary, #333);
+}
+
+.doc-description {
+    margin: 0;
+    color: var(--wsx-press-text-secondary, #666);
+    font-size: 1.1rem;
+}
+
+.doc-content {
+    line-height: 1.6;
+}
+

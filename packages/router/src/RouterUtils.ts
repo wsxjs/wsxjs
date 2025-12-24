@@ -1,4 +1,4 @@
-import { createLogger } from "@wsxjs/wsx-core";
+import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("RouterUtils");
 
@@ -27,6 +27,20 @@ export interface RouteMatch {
  */
 export class RouterUtils {
     /**
+     * 当前路由信息（由 WsxRouter 维护）
+     * @internal
+     */
+    private static _currentRoute: RouteInfo | null = null;
+
+    /**
+     * 设置当前路由信息（由 WsxRouter 内部调用）
+     * @internal
+     */
+    static _setCurrentRoute(routeInfo: RouteInfo): void {
+        RouterUtils._currentRoute = routeInfo;
+    }
+
+    /**
      * 编程式导航
      */
     static navigate(path: string, replace = false): void {
@@ -43,12 +57,20 @@ export class RouterUtils {
 
     /**
      * 获取当前路由信息
+     * 如果路由已匹配（由 WsxRouter 维护），则返回包含参数的路由信息
+     * 否则返回基础路由信息（参数为空对象）
      */
     static getCurrentRoute(): RouteInfo {
+        // 如果 WsxRouter 已经维护了当前路由信息，直接返回
+        if (RouterUtils._currentRoute) {
+            return RouterUtils._currentRoute;
+        }
+
+        // 否则返回基础路由信息（向后兼容）
         const url = new URL(window.location.href);
         return {
             path: url.pathname,
-            params: {}, // 需要路由匹配后才能确定
+            params: {},
             query: Object.fromEntries(url.searchParams.entries()),
             hash: url.hash.slice(1), // 移除 # 号
         };

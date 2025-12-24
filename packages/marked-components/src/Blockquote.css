@@ -1,0 +1,12 @@
+/* WSX Marked Blockquote Component Styles */
+wsx-marked-blockquote {
+    display: block;
+    margin: 1rem 0;
+    padding: 1rem 1.5rem;
+    border-left: 4px solid var(--primary-red, #dc2626);
+    background: var(--bg-secondary, #f9f9f9);
+    border-radius: 4px;
+    font-style: italic;
+    color: var(--text-secondary, #666);
+}
+

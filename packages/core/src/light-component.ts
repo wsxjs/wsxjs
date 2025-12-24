@@ -9,7 +9,7 @@
 
 import { h, type JSXChildren } from "./jsx-factory";
 import { BaseComponent, type BaseComponentConfig } from "./base-component";
-import { createLogger } from "./utils/logger";
+import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("LightComponent");
 

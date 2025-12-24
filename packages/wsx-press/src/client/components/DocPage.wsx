@@ -1,0 +1,296 @@
+/**
+ * @jsxImportSource @wsxjs/wsx-core
+ * DocPage Component
+ *
+ * A component that dynamically loads and displays documentation pages.
+ * Supports loading states, error handling, race condition prevention, and metadata caching.
+ */
+
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import { createLogger } from "@wsxjs/wsx-logger";
+// Import Markdown component to register it as a custom element
+import "@wsxjs/wsx-marked-components";
+import { RouterUtils } from "@wsxjs/wsx-router";
+import type { DocMetadata, LoadingState } from "../../types";
+import { DocumentLoadError } from "../../types";
+import styles from "./DocPage.css?inline";
+
+const logger = createLogger("DocPage");
+
+/**
+ * 元数据缓存（全局共享）
+ * 导出以便测试时重置
+ */
+export const metadataCache: {
+    data: Record<string, DocMetadata> | null;
+    promise: Promise<Record<string, DocMetadata>> | null;
+} = {
+    data: null,
+    promise: null,
+};
+
+/**
+ * 加载元数据（带缓存）
+ */
+async function loadMetadata(): Promise<Record<string, DocMetadata>> {
+    // 如果已有缓存，直接返回
+    if (metadataCache.data) {
+        return metadataCache.data;
+    }
+
+    // 如果正在加载，等待现有请求
+    if (metadataCache.promise) {
+        return metadataCache.promise;
+    }
+
+    // 创建新的加载请求
+    metadataCache.promise = (async () => {
+        try {
+            const response = await fetch("/.wsx-press/docs-meta.json");
+            if (!response.ok) {
+                throw new Error(`Failed to load metadata: ${response.statusText}`);
+            }
+            const data = (await response.json()) as Record<string, DocMetadata>;
+            metadataCache.data = data;
+            metadataCache.promise = null;
+            return data;
+        } catch (error) {
+            metadataCache.promise = null;
+            throw error;
+        }
+    })();
+
+    return metadataCache.promise;
+}
+
+/**
+ * DocPage Component
+ *
+ * Displays a documentation page by dynamically loading markdown content.
+ */
+@autoRegister({ tagName: "wsx-doc-page" })
+export default class DocPage extends LightComponent {
+    @state private loadingState: LoadingState = "idle";
+    @state private markdown: string = "";
+    @state private metadata: DocMetadata | null = null;
+    @state private error: DocumentLoadError | null = null;
+
+    private currentLoadingPath: string | null = null;
+    private routeChangeUnsubscribe: (() => void) | null = null;
+
+    constructor() {
+        super({
+            styles,
+            styleName: "wsx-doc-page",
+        });
+        logger.info("DocPage initialized");
+    }
+
+    protected onConnected() {
+        // 监听路由变化（当路由参数更新时重新加载文档）
+        // 注意：使用 onRouteChange 确保在路由匹配完成后再加载文档
+        this.routeChangeUnsubscribe = RouterUtils.onRouteChange(() => {
+            this.loadDocument();
+        });
+
+        // 延迟加载，确保路由已经初始化
+        // 使用双重 requestAnimationFrame 确保路由匹配完成
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                // 从 RouterUtils 获取路由参数（由 wsx-router 包维护）
+                this.loadDocument();
+            });
+        });
+    }
+
+    protected onDisconnected() {
+        // 清理路由变化监听器
+        if (this.routeChangeUnsubscribe) {
+            this.routeChangeUnsubscribe();
+            this.routeChangeUnsubscribe = null;
+        }
+    }
+
+    protected onAttributeChanged(name: string, _oldValue: string, _newValue: string) {
+        // params 属性变化时也重新加载（向后兼容，但主要依赖 RouterUtils）
+        if (name === "params") {
+            this.loadDocument();
+        }
+    }
+
+    /**
+     * 从 RouterUtils 获取当前路由参数并加载文档
+     */
+    private async loadDocument(): Promise<void> {
+        try {
+            // 从 RouterUtils 获取当前路由信息（包含参数）
+            const routeInfo = RouterUtils.getCurrentRoute();
+            logger.debug("DocPage loadDocument - routeInfo:", routeInfo);
+            const params = routeInfo.params as { category?: string; page?: string };
+
+            // 验证参数
+            if (!params.category || !params.page) {
+                logger.warn("Missing route parameters:", { params, routeInfo });
+                // 如果参数为空，可能是路由还未初始化，保持 idle 状态
+                if (Object.keys(params).length === 0) {
+                    logger.info("Route params not yet initialized, keeping idle state");
+                    this.loadingState = "idle";
+                    return;
+                }
+                this.loadingState = "error";
+                this.error = new DocumentLoadError(
+                    "Missing route parameters: category and page are required",
+                    "INVALID_PARAMS"
+                );
+                return;
+            }
+
+            const docPath = `${params.category}/${params.page}`;
+
+            // 防止竞态条件：记录当前加载路径
+            this.currentLoadingPath = docPath;
+
+            // 重置状态
+            this.loadingState = "loading";
+            this.markdown = "";
+            this.error = null;
+            this.metadata = null;
+
+            // 加载元数据
+            const metadataMap = await loadMetadata();
+
+            // 检查是否已切换文档（防止竞态条件）
+            if (this.currentLoadingPath !== docPath) {
+                logger.info(`Document switched, ignoring result for ${docPath}`);
+                return;
+            }
+
+            // 查找文档元数据
+            const meta = metadataMap[docPath];
+            if (!meta) {
+                // 检查是否已切换文档
+                if (this.currentLoadingPath !== docPath) {
+                    return;
+                }
+                this.loadingState = "error";
+                this.error = new DocumentLoadError(`Document not found: ${docPath}`, "NOT_FOUND");
+                return;
+            }
+
+            this.metadata = meta;
+
+            // 加载 Markdown 内容
+            const markdownPath = `/docs/${docPath}.md`;
+            const response = await fetch(markdownPath);
+
+            // 再次检查是否已切换文档
+            if (this.currentLoadingPath !== docPath) {
+                logger.info(`Document switched during fetch, ignoring result for ${docPath}`);
+                return;
+            }
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    this.loadingState = "error";
+                    this.error = new DocumentLoadError(
+                        `Document file not found: ${markdownPath}`,
+                        "NOT_FOUND"
+                    );
+                } else {
+                    this.loadingState = "error";
+                    this.error = new DocumentLoadError(
+                        `Failed to load document: ${response.statusText}`,
+                        "NETWORK_ERROR",
+                        { status: response.status }
+                    );
+                }
+                return;
+            }
+
+            const markdownContent = await response.text();
+
+            // 最后一次检查是否已切换文档
+            if (this.currentLoadingPath !== docPath) {
+                logger.info(`Document switched after fetch, ignoring result for ${docPath}`);
+                return;
+            }
+
+            this.markdown = markdownContent;
+            this.loadingState = "success";
+        } catch (error) {
+            // 检查是否已切换文档（使用当前加载路径）
+            if (!this.currentLoadingPath) {
+                // 如果没有当前加载路径，说明参数获取失败
+                this.loadingState = "error";
+                this.error = new DocumentLoadError(
+                    `Failed to load document: ${error instanceof Error ? error.message : String(error)}`,
+                    "NETWORK_ERROR",
+                    error
+                );
+                logger.error("Failed to load document (no current path):", error);
+                return;
+            }
+
+            const docPath = this.currentLoadingPath;
+            if (this.currentLoadingPath !== docPath) {
+                return;
+            }
+
+            this.loadingState = "error";
+            this.error = new DocumentLoadError(
+                `Failed to load document: ${error instanceof Error ? error.message : String(error)}`,
+                "NETWORK_ERROR",
+                error
+            );
+            logger.error("Failed to load document", error);
+        }
+    }
+
+    render() {
+        if (this.loadingState === "loading") {
+            return (
+                <div class="doc-page">
+                    <div class="doc-loading">加载文档中...</div>
+                </div>
+            );
+        }
+
+        if (this.loadingState === "error") {
+            return (
+                <div class="doc-page">
+                    <div class="doc-error">
+                        <h2>加载失败</h2>
+                        <p>{this.error?.message || "未知错误"}</p>
+                        {this.error?.code === "NOT_FOUND" && (
+                            <p>文档不存在，请检查路径是否正确。</p>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        if (this.loadingState === "success" && this.markdown) {
+            return (
+                <div class="doc-page">
+                    {this.metadata && (
+                        <div class="doc-header">
+                            <h1 class="doc-title">{this.metadata.title}</h1>
+                            {this.metadata.description && (
+                                <p class="doc-description">{this.metadata.description}</p>
+                            )}
+                        </div>
+                    )}
+                    <div class="doc-content">
+                        <wsx-markdown markdown={this.markdown} />
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div class="doc-page">
+                <div class="doc-empty">请选择文档</div>
+            </div>
+        );
+    }
+}

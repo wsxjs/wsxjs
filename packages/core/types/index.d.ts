@@ -28,9 +28,9 @@ export type { AutoRegistrationOptions } from "../src/auto-register";
 // 导出 StyleManager
 export { StyleManager } from "../src/styles/style-manager";
 
-// 导出 Logger 相关类型和函数
-export { WSXLogger, logger, createLogger } from "../src/utils/logger.ts";
-export type { Logger, LogLevel } from "../src/utils/logger.ts";
+// 导出 Logger 相关类型和函数 (re-exported from @wsxjs/wsx-logger for backward compatibility)
+export type { Logger, LogLevel } from "@wsxjs/wsx-logger";
+export { WSXLogger, logger, createLogger, createLoggerWithConfig } from "@wsxjs/wsx-logger";
 
 // 导出 DOM 工具函数
 export { parseHTMLToNodes } from "../src/utils/dom-utils";

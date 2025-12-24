@@ -1,0 +1,113 @@
+.wsx-doc-search {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+}
+
+.search-input-wrapper {
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid var(--wsx-press-border, #ddd);
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: var(--wsx-press-primary, #007bff);
+    box-shadow: 0 0 0 3px var(--wsx-press-primary-alpha, rgba(0, 123, 255, 0.1));
+}
+
+.search-loading {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--wsx-press-text-secondary, #666);
+    font-size: 0.875rem;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.5rem;
+    background: var(--wsx-press-bg, #fff);
+    border: 1px solid var(--wsx-press-border, #ddd);
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.search-result {
+    padding: 1rem;
+    border-bottom: 1px solid var(--wsx-press-border-light, #f0f0f0);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-result:last-child {
+    border-bottom: none;
+}
+
+.search-result:hover,
+.search-result.selected {
+    background-color: var(--wsx-press-hover-bg, #f5f5f5);
+}
+
+.result-title {
+    font-weight: 600;
+    color: var(--wsx-press-text-primary, #333);
+    margin-bottom: 0.25rem;
+}
+
+.result-title mark {
+    background-color: var(--wsx-press-highlight-bg, #ffeb3b);
+    color: var(--wsx-press-highlight-text, #000);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.result-category {
+    font-size: 0.875rem;
+    color: var(--wsx-press-text-secondary, #666);
+    margin-bottom: 0.5rem;
+}
+
+.result-snippet {
+    font-size: 0.875rem;
+    color: var(--wsx-press-text-secondary, #666);
+    line-height: 1.4;
+}
+
+.result-snippet mark {
+    background-color: var(--wsx-press-highlight-bg, #ffeb3b);
+    color: var(--wsx-press-highlight-text, #000);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.search-no-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.5rem;
+    padding: 1rem;
+    background: var(--wsx-press-bg, #fff);
+    border: 1px solid var(--wsx-press-border, #ddd);
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    color: var(--wsx-press-text-secondary, #666);
+    z-index: 1000;
+}
+

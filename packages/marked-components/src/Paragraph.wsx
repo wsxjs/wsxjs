@@ -1,0 +1,36 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * WSX Paragraph Component
+ * Custom paragraph component for markdown rendering
+ */
+
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+
+@autoRegister({ tagName: "wsx-marked-paragraph" })
+export default class Paragraph extends LightComponent {
+    @state private content: string = "";
+
+    constructor() {
+        super({
+            styleName: "wsx-marked-paragraph",
+        });
+    }
+
+    static get observedAttributes() {
+        return ["content"];
+    }
+
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        if (name === "content") {
+            // HTML 属性值会被浏览器自动解码，所以这里得到的是原始的 HTML 字符串
+            this.content = newValue || "";
+        }
+    }
+
+    render() {
+        // content 是 HTML 字符串，需要解析为 DOM 节点
+        // JSX factory 会自动检测 HTML 字符串并转换
+        return <p class="marked-paragraph">{this.content}</p>;
+    }
+}
+

@@ -31,7 +31,8 @@
         "lint:fix": "eslint . --fix"
     },
     "dependencies": {
-        "@wsxjs/wsx-core": "workspace:*"
+        "@wsxjs/wsx-core": "workspace:*",
+        "@wsxjs/wsx-logger": "workspace:*"
     },
     "devDependencies": {
         "@wsxjs/eslint-plugin-wsx": "workspace:*",

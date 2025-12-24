@@ -18,8 +18,8 @@ import "@wsxjs/wsx-base-components";
 import "@wsxjs/wsx-router";
 import { RouterUtils } from "@wsxjs/wsx-router";
 // Import SEO utilities
-import { MetaManager } from "./utils/meta-manager";
-import { getRouteMeta } from "./config/route-meta";
+import { MetaManager, type RouteMeta } from "./utils/meta-manager";
+import { getRouteMeta, routeMeta } from "./config/route-meta";
 // Define ResponsiveNavConfig locally to avoid import issues
 interface NavItem {
     label: string;
@@ -55,6 +55,10 @@ import "./marked/MarkedBuilder.wsx";
 import "./components/LanguageSwitcher.wsx";
 // Import NotFound component
 import "./components/NotFoundSection.wsx";
+// Import DocSection component
+import "./components/DocSection.wsx";
+// Import WSX-Press components
+import "@wsxjs/wsx-press/client";
 
 export interface AppConfig {
     title?: string;
@@ -98,6 +102,8 @@ export default class App extends LightComponent {
                     <wsx-view route="/ecosystem" component="ecosystem-section"></wsx-view>
                     <wsx-view route="/privacy" component="privacy-policy"></wsx-view>
                     <wsx-view route="/terms" component="terms-of-service"></wsx-view>
+                    {/* Documentation routes - must be before 404 */}
+                    <wsx-view route="/docs/:category/:page" component="doc-section"></wsx-view>
                     {/* 404 页面 - 通配符路由，必须放在最后 */}
                     <wsx-view route="*" component="not-found-section"></wsx-view>
                 </wsx-router>
@@ -124,6 +130,7 @@ export default class App extends LightComponent {
                 { label: t("nav.features"), to: "/features" },
                 { label: t("nav.quickStart"), to: "/quick-start" },
                 { label: t("nav.examples"), to: "/examples" },
+                { label: t("nav.docs"), to: "/docs/guide/QUICK_START" },
                 { label: t("nav.useCases"), to: "/use-cases" },
                 { label: t("nav.ecosystem"), to: "/ecosystem" },
             ],
@@ -317,9 +324,7 @@ export default class App extends LightComponent {
     };
 
     private openDocs = (): void => {
-        // TODO: 当文档系统准备好后，更新此链接
-        // 目前暂时指向 GitHub README
-        window.open("https://github.com/wsxjs/wsxjs#readme", "_blank", "noopener,noreferrer");
+        RouterUtils.navigate("/docs/guide/QUICK_START");
     };
 
     private openDiscord = (): void => {
@@ -336,8 +341,8 @@ export default class App extends LightComponent {
 
     private openBlog = (): void => {
         // TODO: 当博客系统准备好后，使用路由导航
-        // 目前暂时显示提示
-        alert("博客功能即将推出！");
+        // 目前暂时导航到首页，避免使用阻塞性的 alert
+        RouterUtils.navigate("/");
     };
 
     private openLicense = (): void => {
@@ -397,6 +402,15 @@ export default class App extends LightComponent {
     };
 
     /**
+     * 处理路由变化，更新 meta 标签
+     * 使用绑定方法确保 addEventListener 和 removeEventListener 引用同一个函数
+     */
+    private handleRouteChange = (): void => {
+        const path = window.location.pathname;
+        this.updateRouteMeta(path);
+    };
+
+    /**
      * 设置路由 meta 标签监听器
      */
     private setupRouteMetaListener(): void {
@@ -415,22 +429,103 @@ export default class App extends LightComponent {
     }
 
     /**
-     * 处理路由变化，更新 meta 标签
-     */
-    private handleRouteChange = (): void => {
-        const path = window.location.pathname;
-        this.updateRouteMeta(path);
-    };
-
-    /**
      * 更新当前路由的 meta 标签和结构化数据
      */
     private updateRouteMeta(path: string): void {
+        // 如果是文档路由，异步加载文档元数据以获取实际标题
+        if (path.startsWith("/docs/")) {
+            const docsPathMatch = path.match(/^\/docs\/([^/]+)\/([^/]+)$/);
+            if (docsPathMatch) {
+                this.updateDocRouteMeta(path, docsPathMatch[1], docsPathMatch[2]);
+                return;
+            }
+        }
+
         const meta = getRouteMeta(path);
         MetaManager.update(meta);
 
-        // 添加结构化数据（JSON-LD）
-        MetaManager.setStructuredData({
+        // 根据路由类型添加不同的结构化数据
+        const structuredData = this.getStructuredDataForRoute(path, meta);
+        MetaManager.setStructuredData(structuredData);
+    }
+
+    /**
+     * 更新文档路由的 meta 标签（从文档元数据获取实际标题）
+     */
+    private async updateDocRouteMeta(path: string, category: string, page: string): Promise<void> {
+        try {
+            // 加载文档元数据
+            const response = await fetch("/.wsx-press/docs-meta.json");
+            if (response.ok) {
+                const metadataMap = (await response.json()) as Record<string, { title: string; description?: string }>;
+                const docPath = `${category}/${page}`;
+                const docMeta = metadataMap[docPath];
+
+                if (docMeta) {
+                    // 使用文档的实际标题和描述
+                    const meta = {
+                        title: `${docMeta.title} - Documentation | WSXJS`,
+                        description: docMeta.description || "WSXJS Documentation",
+                        keywords: "WSXJS documentation, WSXJS guide, WSXJS API",
+                        image: "/og-image.png",
+                    };
+                    MetaManager.update(meta);
+                    const structuredData = this.getStructuredDataForRoute(path, meta);
+                    MetaManager.setStructuredData(structuredData);
+                    return;
+                }
+            }
+        } catch (error) {
+            // 如果加载失败，使用默认的文档 meta
+            console.warn("Failed to load document metadata for route meta:", error);
+        }
+
+        // 回退到默认的文档 meta
+        const meta = getRouteMeta(path);
+        MetaManager.update(meta);
+        const structuredData = this.getStructuredDataForRoute(path, meta);
+        MetaManager.setStructuredData(structuredData);
+    }
+
+    /**
+     * 根据路由类型获取相应的结构化数据
+     */
+    private getStructuredDataForRoute(path: string, meta: RouteMeta): Record<string, unknown> {
+        // 404 页面（使用通配符 meta）使用 WebPage schema
+        const is404Page = path !== "/" && !routeMeta[path] && meta.title.includes("404");
+        if (is404Page) {
+            return {
+                "@context": "https://schema.org",
+                "@type": "WebPage",
+                name: meta.title,
+                description: meta.description,
+                url: meta.url || `https://wsxjs.dev${path}`,
+            };
+        }
+
+        // 文档相关路由使用 Article schema
+        if (path.startsWith("/docs") || path.startsWith("/guide")) {
+            return {
+                "@context": "https://schema.org",
+                "@type": "Article",
+                headline: meta.title,
+                description: meta.description,
+                url: meta.url || `https://wsxjs.dev${path}`,
+                author: {
+                    "@type": "Organization",
+                    name: "WSXJS Team",
+                },
+                publisher: {
+                    "@type": "Organization",
+                    name: "WSXJS Team",
+                },
+                datePublished: meta.publishedTime,
+                dateModified: meta.modifiedTime || meta.publishedTime,
+            };
+        }
+
+        // 首页和其他页面使用 SoftwareApplication schema
+        return {
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
             name: "WSXJS",
@@ -447,6 +542,6 @@ export default class App extends LightComponent {
                 "@type": "Organization",
                 name: "WSXJS Team",
             },
-        });
+        };
     }
 }

@@ -1,0 +1,173 @@
+/**
+ * @jsxImportSource @wsxjs/wsx-core
+ * DocSidebar Component
+ *
+ * Sidebar navigation for documentation pages.
+ * Displays organized documentation menu by category.
+ */
+
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import { createLogger } from "@wsxjs/wsx-logger";
+import { RouterUtils } from "@wsxjs/wsx-router";
+import type { DocMetadata } from "../../types";
+import { metadataCache } from "./DocPage.wsx";
+import styles from "./DocSidebar.css?inline";
+
+const logger = createLogger("DocSidebar");
+
+/**
+ * DocSidebar Component
+ *
+ * Displays a sidebar navigation menu organized by documentation categories.
+ */
+@autoRegister({ tagName: "wsx-doc-sidebar" })
+export default class DocSidebar extends LightComponent {
+    @state private metadata: Record<string, DocMetadata> = {};
+    @state private currentRoute: string = "";
+    @state private isLoading: boolean = true;
+
+    private routeChangeUnsubscribe: (() => void) | null = null;
+
+    constructor() {
+        super({
+            styles,
+            styleName: "wsx-doc-sidebar",
+        });
+    }
+
+    protected async onConnected() {
+        // 加载元数据
+        await this.loadMetadata();
+
+        // 监听路由变化
+        this.routeChangeUnsubscribe = RouterUtils.onRouteChange(() => {
+            this.updateCurrentRoute();
+        });
+
+        // 初始更新当前路由
+        this.updateCurrentRoute();
+    }
+
+    protected onDisconnected() {
+        if (this.routeChangeUnsubscribe) {
+            this.routeChangeUnsubscribe();
+            this.routeChangeUnsubscribe = null;
+        }
+    }
+
+    /**
+     * 加载文档元数据
+     */
+    private async loadMetadata(): Promise<void> {
+        try {
+            this.isLoading = true;
+            if (metadataCache.data) {
+                this.metadata = metadataCache.data;
+            } else {
+                const response = await fetch("/.wsx-press/docs-meta.json");
+                if (response.ok) {
+                    this.metadata = (await response.json()) as Record<string, DocMetadata>;
+                }
+            }
+        } catch (error) {
+            logger.error("Failed to load metadata", error);
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    /**
+     * 更新当前路由
+     */
+    private updateCurrentRoute(): void {
+        const routeInfo = RouterUtils.getCurrentRoute();
+        this.currentRoute = routeInfo.path;
+    }
+
+    /**
+     * 按分类组织文档
+     */
+    private organizeByCategory(): Record<string, DocMetadata[]> {
+        const organized: Record<string, DocMetadata[]> = {};
+
+        Object.values(this.metadata).forEach((doc) => {
+            const category = doc.category || "other";
+            if (!organized[category]) {
+                organized[category] = [];
+            }
+            organized[category].push(doc);
+        });
+
+        // 按分类名称排序
+        const sortedCategories = Object.keys(organized).sort();
+
+        // 对每个分类内的文档排序（按标题）
+        sortedCategories.forEach((category) => {
+            organized[category].sort((a, b) => a.title.localeCompare(b.title));
+        });
+
+        return organized;
+    }
+
+    /**
+     * 处理文档链接点击
+     */
+    private handleDocClick = (route: string, e: Event): void => {
+        e.preventDefault();
+        RouterUtils.navigate(route);
+    };
+
+    /**
+     * 检查文档是否为当前文档
+     */
+    private isCurrentDoc(route: string): boolean {
+        return this.currentRoute === route;
+    }
+
+    render() {
+        if (this.isLoading) {
+            return (
+                <aside class="doc-sidebar">
+                    <div class="doc-sidebar-loading">加载中...</div>
+                </aside>
+            );
+        }
+
+        const organized = this.organizeByCategory();
+        const categories = Object.keys(organized);
+
+        if (categories.length === 0) {
+            return (
+                <aside class="doc-sidebar">
+                    <div class="doc-sidebar-empty">暂无文档</div>
+                </aside>
+            );
+        }
+
+        return (
+            <aside class="doc-sidebar">
+                <nav class="doc-sidebar-nav">
+                    {categories.map((category) => (
+                        <div key={category} class="doc-sidebar-category">
+                            <h3 class="doc-sidebar-category-title">{category}</h3>
+                            <ul class="doc-sidebar-list">
+                                {organized[category].map((doc) => (
+                                    <li key={doc.route} class="doc-sidebar-item">
+                                        <a
+                                            href={doc.route}
+                                            class={`doc-sidebar-link ${this.isCurrentDoc(doc.route) ? "active" : ""}`}
+                                            onClick={(e) => this.handleDocClick(doc.route, e)}
+                                        >
+                                            {doc.title}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </nav>
+            </aside>
+        );
+    }
+}
+

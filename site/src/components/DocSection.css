@@ -1,0 +1,33 @@
+/* DocSection - Documentation Section */
+doc-section {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 6rem 2rem !important;
+    padding-top: calc(70px + 2rem) !important; /* Navigation height (70px) + top spacing to prevent header overlap */
+    min-height: 100vh !important;
+    width: 100% !important;
+    
+    /* Map wsx-press CSS variables to site theme variables */
+    --wsx-press-text-primary: var(--text-primary);
+    --wsx-press-text-secondary: var(--text-secondary);
+    --wsx-press-border: var(--border-color);
+    --wsx-press-error-bg: rgba(220, 38, 38, 0.1);
+    --wsx-press-error-border: rgba(220, 38, 38, 0.3);
+    --wsx-press-error-text: var(--primary-red);
+    --wsx-press-error-title: var(--secondary-red);
+}
+
+.doc-section-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    width: 100%;
+}
+
+.doc-section-container {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+

@@ -32,6 +32,7 @@
     },
     "dependencies": {
         "@wsxjs/wsx-core": "workspace:*",
+        "@wsxjs/wsx-logger": "workspace:*",
         "prismjs": "^1.30.0"
     },
     "devDependencies": {

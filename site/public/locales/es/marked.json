@@ -10,26 +10,14 @@
     },
     "output": {
         "title": "Salida renderizada",
-        "pattern1": {
-            "label": "Patrón 1",
-            "title": "Patrón 1:",
-            "description": "Usando marked.use({ renderer }) - El renderizador devuelve cadenas HTML con etiquetas de elementos personalizados WSX"
-        },
         "pattern2": {
             "label": "Patrón 2",
             "title": "Patrón 2:",
-            "description": "Usando marked.lexer() + Renderizado manual WSX JSX - Devuelve elementos JSX reales"
+            "description": "Usar WSX + marked para renderizar Markdown"
         }
     },
     "explanation": {
         "title": "Cómo funciona",
-        "pattern1": {
-            "title": "Patrón 1: marked.use({ renderer })",
-            "description": "Crea un objeto renderizador personalizado que devuelve cadenas HTML que contienen etiquetas de elementos personalizados WSX. Como los componentes WSX están registrados como elementos personalizados, funcionan cuando se insertan como HTML.",
-            "code": "const renderer = {\n  heading(token) {\n    return `<wsx-marked-heading level=\"${token.depth}\" text=\"...\"></wsx-marked-heading>`;\n  }\n};\n\nmarked.use({ renderer });\nconst html = marked.parse(markdown);\nelement.innerHTML = html; // El navegador instancia automáticamente los componentes WSX",
-            "pros": "Usa el sistema incorporado de marked, simple",
-            "cons": "Devuelve cadenas HTML, no elementos JSX"
-        },
         "pattern2": {
             "title": "Patrón 2: marked.lexer() + WSX JSX",
             "description": "Usa marked.lexer() para obtener tokens, luego conviértelos manualmente a elementos WSX JSX. Esto permite devolver elementos JSX reales en lugar de cadenas HTML.",
@@ -39,7 +27,7 @@
         },
         "components": {
             "title": "Componentes WSX",
-            "description": "Ambos patrones usan los mismos Web Components WSX. Los componentes están registrados como elementos personalizados, por lo que funcionan tanto en cadenas HTML (Patrón 1) como en JSX (Patrón 2).",
+            "description": "Los Web Components WSX están registrados como elementos personalizados y funcionan perfectamente con el renderizado JSX.",
             "code": "@autoRegister({ tagName: 'wsx-marked-heading' })\nclass WsxMarkedHeading extends LightComponent {\n  render() {\n    return <h{this.level}>{this.text}</h{this.level}>;\n  }\n}"
         },
         "pros": "Ventajas:",

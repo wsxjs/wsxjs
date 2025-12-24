@@ -1,0 +1,44 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * WSX Heading Component
+ * Custom heading component for markdown rendering
+ */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./Heading.css?inline";
+
+@autoRegister({ tagName: "wsx-marked-heading" })
+export default class Heading extends LightComponent {
+    private level: number = 1;
+    private text: string = "";
+
+    constructor() {
+        super({
+            styles,
+            styleName: "wsx-marked-heading",
+        });
+    }
+
+    static get observedAttributes() {
+        return ["level", "text"];
+    }
+
+    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+        if (name === "level") {
+            this.level = parseInt(newValue, 10) || 1;
+        } else if (name === "text") {
+            this.text = newValue;
+        }
+        this.rerender();
+    }
+
+    render() {
+        // 使用 WSX JSX 语法，根据 level 渲染对应的标题
+        if (this.level === 1) return <h1>{this.text}</h1>;
+        if (this.level === 2) return <h2>{this.text}</h2>;
+        if (this.level === 3) return <h3>{this.text}</h3>;
+        if (this.level === 4) return <h4>{this.text}</h4>;
+        if (this.level === 5) return <h5>{this.text}</h5>;
+        return <h6>{this.text}</h6>;
+    }
+}

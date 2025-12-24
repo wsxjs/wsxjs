@@ -1,0 +1,26 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * WSX Blockquote Component
+ * Custom blockquote component for markdown rendering
+ */
+
+import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./Blockquote.css?inline";
+
+@autoRegister({ tagName: "wsx-marked-blockquote" })
+export default class Blockquote extends LightComponent {
+    constructor() {
+        super({
+            styles,
+            styleName: "wsx-marked-blockquote",
+        });
+    }
+
+    render() {
+        return (
+            <blockquote>
+                <slot />
+            </blockquote>
+        );
+    }
+}

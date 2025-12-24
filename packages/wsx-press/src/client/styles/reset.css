@@ -1,0 +1,116 @@
+/**
+ * WSX-Press CSS Reset
+ * 轻量级重置，确保跨浏览器一致性
+ */
+
+/* ===== Box sizing ===== */
+.wsx-press-reset *,
+.wsx-press-reset *::before,
+.wsx-press-reset *::after {
+  box-sizing: border-box;
+}
+
+/* ===== 移除默认 margin ===== */
+.wsx-press-reset h1,
+.wsx-press-reset h2,
+.wsx-press-reset h3,
+.wsx-press-reset h4,
+.wsx-press-reset h5,
+.wsx-press-reset h6,
+.wsx-press-reset p,
+.wsx-press-reset ul,
+.wsx-press-reset ol,
+.wsx-press-reset dl,
+.wsx-press-reset dd,
+.wsx-press-reset blockquote,
+.wsx-press-reset figure,
+.wsx-press-reset pre {
+  margin: 0;
+}
+
+/* ===== 移除列表样式 ===== */
+.wsx-press-reset ul,
+.wsx-press-reset ol {
+  padding: 0;
+  list-style: none;
+}
+
+/* ===== 重置 blockquote ===== */
+.wsx-press-reset blockquote {
+  padding: 0;
+  quotes: none;
+}
+
+/* ===== 表格重置 ===== */
+.wsx-press-reset table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* ===== 按钮重置 ===== */
+.wsx-press-reset button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.wsx-press-reset button:disabled {
+  cursor: not-allowed;
+}
+
+/* ===== 输入框重置 ===== */
+.wsx-press-reset input,
+.wsx-press-reset textarea,
+.wsx-press-reset select {
+  font: inherit;
+  color: inherit;
+}
+
+/* ===== 链接重置 ===== */
+.wsx-press-reset a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/* ===== 图片重置 ===== */
+.wsx-press-reset img,
+.wsx-press-reset svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ===== Code 重置 ===== */
+.wsx-press-reset code,
+.wsx-press-reset kbd,
+.wsx-press-reset samp,
+.wsx-press-reset pre {
+  font-family: var(--wsx-press-font-mono, monospace);
+}
+
+/* ===== 滚动条样式（可选） ===== */
+.wsx-press-reset ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.wsx-press-reset ::-webkit-scrollbar-track {
+  background: var(--wsx-press-bg-secondary);
+}
+
+.wsx-press-reset ::-webkit-scrollbar-thumb {
+  background: var(--wsx-press-border-hover);
+  border-radius: var(--wsx-press-radius-sm);
+}
+
+.wsx-press-reset ::-webkit-scrollbar-thumb:hover {
+  background: var(--wsx-press-text-tertiary);
+}
+
+/* Firefox 滚动条 */
+.wsx-press-reset * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--wsx-press-border-hover) var(--wsx-press-bg-secondary);
+}
