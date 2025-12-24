@@ -127,8 +127,9 @@ export default class WsxRouter extends LightComponent {
                 logger.debug(`WsxRouter compiled regex for route: ${route}`);
             }
 
-            // 关键修复：不在这里隐藏视图，而是在 performNavigation 中一次性处理
-            // 这样可以避免页面加载时所有视图都被隐藏导致的页脚跳动
+            // 初始状态：隐藏所有视图，等待路由匹配后再显示
+            // 这样可以确保路由遵循实际 URL，不会默认显示 home
+            (view as HTMLElement).style.display = "none";
         });
     }
 
