@@ -1,9 +1,11 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
 import styles from "./EcosystemSection.css?inline";
 import "@wsxjs/wsx-router";
 
 @autoRegister({ tagName: "ecosystem-section" })
+@i18n("ecosystem")
 export default class EcosystemSection extends WebComponent {
     constructor() {
         super({
@@ -13,98 +15,98 @@ export default class EcosystemSection extends WebComponent {
     }
 
     render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
         return (
             <section id="ecosystem" class="ecosystem-section">
                 <div class="container">
                     <div class="section-header">
-                        <h2 class="section-title">Ecosystem</h2>
-                        <p class="section-description">
-                            A rich ecosystem of tools and libraries to enhance your development
-                            experience.
-                        </p>
+                        <h2 class="section-title">{t("title")}</h2>
+                        <p class="section-description">{t("description")}</p>
                     </div>
 
                     <div class="ecosystem-grid">
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon">🔧</div>
-                            <h3>Core Framework</h3>
-                            <p>The main WSXJS with JSX support and Web Components</p>
+                            <h3>{t("core.title")}</h3>
+                            <p>{t("core.description")}</p>
                             <div class="ecosystem-links">
                                 <a href="#" onClick={this.openDocs}>
-                                    Documentation
+                                    {t("core.links.documentation")}
                                 </a>
                                 <a href="#" onClick={this.openGitHub}>
-                                    GitHub
+                                    {t("core.links.github")}
                                 </a>
                             </div>
                         </div>
 
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon">🧭</div>
-                            <h3>Router</h3>
-                            <p>Native History API-based routing for single-page applications</p>
+                            <h3>{t("router.title")}</h3>
+                            <p>{t("router.description")}</p>
                             <div class="ecosystem-links">
                                 <a href="#" onClick={this.openDocs}>
-                                    Router Docs
+                                    {t("router.links.docs")}
                                 </a>
                                 <wsx-link to="/quick-start" class="ecosystem-demo">
-                                    See Demo
+                                    {t("router.links.demo")}
                                 </wsx-link>
                             </div>
                         </div>
 
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon">🎨</div>
-                            <h3>Base Components</h3>
-                            <p>Pre-built UI components for rapid development</p>
+                            <h3>{t("baseComponents.title")}</h3>
+                            <p>{t("baseComponents.description")}</p>
                             <div class="ecosystem-links">
                                 <a href="#" onClick={this.openDocs}>
-                                    Components
+                                    {t("baseComponents.links.components")}
                                 </a>
                                 <wsx-link to="/examples" class="ecosystem-demo">
-                                    Examples
+                                    {t("baseComponents.links.examples")}
                                 </wsx-link>
                             </div>
                         </div>
 
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon">⚡</div>
-                            <h3>Vite Plugin</h3>
-                            <p>Build tool integration for seamless development</p>
+                            <h3>{t("vitePlugin.title")}</h3>
+                            <p>{t("vitePlugin.description")}</p>
                             <div class="ecosystem-links">
                                 <a href="#" onClick={this.openDocs}>
-                                    Setup Guide
+                                    {t("vitePlugin.links.setupGuide")}
                                 </a>
                                 <a href="#" onClick={this.openGitHub}>
-                                    Plugin
+                                    {t("vitePlugin.links.plugin")}
                                 </a>
                             </div>
                         </div>
 
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon">🔍</div>
-                            <h3>ESLint Plugin</h3>
-                            <p>Code quality and best practices enforcement</p>
+                            <h3>{t("eslintPlugin.title")}</h3>
+                            <p>{t("eslintPlugin.description")}</p>
                             <div class="ecosystem-links">
                                 <a href="#" onClick={this.openDocs}>
-                                    Rules
+                                    {t("eslintPlugin.links.rules")}
                                 </a>
                                 <a href="#" onClick={this.openGitHub}>
-                                    Plugin
+                                    {t("eslintPlugin.links.plugin")}
                                 </a>
                             </div>
                         </div>
 
                         <div class="ecosystem-card">
                             <div class="ecosystem-icon">🧪</div>
-                            <h3>Testing</h3>
-                            <p>Comprehensive testing with Vitest for .wsx components</p>
+                            <h3>{t("testing.title")}</h3>
+                            <p>{t("testing.description")}</p>
                             <div class="ecosystem-links">
                                 <a href="#" onClick={this.openDocs}>
-                                    Testing Guide
+                                    {t("testing.links.guide")}
                                 </a>
                                 <a href="#" onClick={this.openGitHub}>
-                                    Examples
+                                    {t("testing.links.examples")}
                                 </a>
                             </div>
                         </div>

@@ -1,0 +1,125 @@
+{
+    "title": "EditorJS + WSXJS デモ",
+    "tryEditor": "エディターを試す",
+    "saveData": "データを保存",
+    "loadSampleData": "サンプルデータを読み込む",
+    "explanation": {
+        "title": "EditorJSプラグイン開発が難しい理由（そしてWSXがそれを解決する方法）",
+        "traditionalWay": "❌ 従来の方法は困難",
+        "problems": {
+            "domManipulation": {
+                "title": "1. 手動DOM操作",
+                "description": "document.createElement、appendChild、setAttributeなどの冗長なJavaScript APIを使用して、DOM要素を手動で作成、更新、管理する必要があります。これにより、数百行のボイラープレートコードが発生します。",
+                "code": "// 従来の方法 - 多くのボイラープレート\nconst wrapper = document.createElement('div');\nconst input = document.createElement('input');\ninput.setAttribute('type', 'text');\ninput.setAttribute('class', 'alert-input');\ninput.addEventListener('change', handleChange);\nwrapper.appendChild(input);\n// ... シンプルなコンポーネントに50行以上"
+            },
+            "typeSafety": {
+                "title": "2. 型安全性なし",
+                "description": "EditorJSツールは型チェックなしのプレーンJavaScriptで書かれています。開発中ではなく、実行時にバグを発見することになります。プロパティ名、データ構造、メソッドシグネチャはすべてエラーが発生しやすいです。"
+            },
+            "stateManagement": {
+                "title": "3. 複雑な状態管理",
+                "description": "コンポーネントの状態を手動で追跡し、EditorJSデータと同期させ、更新を処理し、一貫性を確保する必要があります。これには、コード全体に散在する慎重なイベント処理と状態同期ロジックが必要です。"
+            },
+            "styleIsolation": {
+                "title": "4. スタイル分離の問題",
+                "description": "スタイルがツール間で漏洩し、EditorJS独自のスタイルと競合します。競合を避けるために、複雑なCSSセレクター、BEM命名規則、またはCSS-in-JSソリューションを使用する必要があります。"
+            },
+            "maintainability": {
+                "title": "5. 保守が困難",
+                "description": "コードは命令的なDOM操作、イベントリスナー、状態管理の混乱になります。機能を追加したりバグを修正したりするには、コードベース全体を理解する必要があります。リファクタリングはリスクが高く時間がかかります。"
+            },
+            "reusability": {
+                "title": "6. コンポーネントの再利用性なし",
+                "description": "各ツールは、すべてが混在したモノリシックなクラスです。UIコンポーネントを簡単に再利用したり、ロジックを共有したり、より単純なものから複雑なツールを構成したりすることはできません。"
+            }
+        },
+        "solutions": {
+            "title": "✅ WSXがそれを解決する方法",
+            "jsxSyntax": {
+                "title": "1. 宣言的JSX構文",
+                "description": "Reactのように、JSXでUIを宣言的に記述します。手動のDOM操作は不要です - WSXがすべて処理します。",
+                "code": "// WSXの方法 - クリーンでシンプル\nrender() {\n    return (\n        <div>\n            <wsx-alert-component\n                type={this.data.type}\n                message={this.data.message}\n                onchange={this.handleChange}\n            />\n        </div>\n    );\n}"
+            },
+            "typescript": {
+                "title": "2. 完全なTypeScriptサポート",
+                "description": "コンパイル時の型チェック、オートコンプリート、リファクタリングサポートを取得します。本番環境に到達する前にエラーをキャッチします。型安全なprops、イベント、データ構造。"
+            },
+            "reactiveState": {
+                "title": "3. 組み込みのリアクティブ状態",
+                "description": "@stateデコレーターを使用して自動リアクティビティを実現します。状態の変更は自動的にUI更新をトリガーします。手動の同期は不要です。",
+                "code": "@state()\nprivate message = '';\n\n// 変更時に自動的にUIを更新\nthis.message = '新しい値';"
+            },
+            "styleIsolation": {
+                "title": "4. 自動スタイル分離",
+                "description": "Shadow DOMを使用したWeb Componentsは、自動スタイルスコープを提供します。スタイルはカプセル化され、EditorJSや他のツールと競合しません。"
+            },
+            "architecture": {
+                "title": "5. クリーンなコンポーネントアーキテクチャ",
+                "description": "関心の分離：UIコンポーネントはレンダリングを処理し、ツールはEditorJS統合を処理します。理解、テスト、保守が容易です。リファクタリングは安全で直接的なものです。"
+            },
+            "reusability": {
+                "title": "6. 再利用可能なWeb Components",
+                "description": "どこでも動作する再利用可能なコンポーネントを構築します - EditorJS、スタンドアロンページ、または他のフレームワークで。シンプルなコンポーネントから複雑なツールを構成します。"
+            }
+        }
+    },
+    "benefits": {
+        "title": "🚀 WSXの追加の利点",
+        "architecture": {
+            "label": "コンポーネントベースのアーキテクチャ：",
+            "description": "各ツールは自己完結型のWeb Componentです"
+        },
+        "typeSafety": {
+            "label": "型安全性：",
+            "description": "JSXを使用した完全なTypeScriptサポート"
+        },
+        "declarativeUI": {
+            "label": "宣言的UI：",
+            "description": "手動のDOM操作の代わりにJSXで複雑なUIを構築"
+        },
+        "shadowDOM": {
+            "label": "Shadow DOM分離：",
+            "description": "スタイルは自動的にスコープされます"
+        },
+        "stateManagement": {
+            "label": "組み込みの状態管理：",
+            "description": "外部ライブラリなしのリアクティブ更新"
+        },
+        "developerExperience": {
+            "label": "開発者体験：",
+            "description": "ホットリロード、デバッグツール、クリーンなコード構造"
+        }
+    },
+    "info": {
+        "customBlockTool": {
+            "title": "📦 カスタムブロックツール",
+            "description": "WsxAlertToolは、WSXで構築されたカスタムブロックツールを示しています。型選択、編集可能なコンテンツ、適切なデータ永続化機能を備えています。"
+        },
+        "inlineTool": {
+            "title": "✏️ インラインツール",
+            "description": "WsxHighlightToolは、WSXでインラインツールを作成する方法を示しています。テキストを選択してハイライトボタンをクリックするか、使用してください"
+        },
+        "viewSourceCode": "GitHubでソースコードを表示 →"
+    },
+    "editor": {
+        "placeholder": "入力を開始するか、+をクリックしてWSXコンポーネント（Alert、Code、Tableなど）を追加してください！",
+        "defaultData": {
+            "welcome": {
+                "text": "WSXを使用したEditorJSへようこそ！",
+                "description": "このエディターは、WSXJSがWeb ComponentsとJSXを使用してEditorJSプラグイン開発をどのように強化できるかを示しています。",
+                "alertMessage": "これはカスタムWSXアラートブロックです。タイプを変更したり、メッセージを編集してみてください！"
+            }
+        },
+        "sampleData": {
+            "header": {
+                "text": "WSXがEditorJSプラグイン開発を向上させます",
+                "description": "WSXを使用すると、最新のWeb ComponentsとJSX構文を使用してEditorJSプラグインを構築できます。これにより、より良い構造、型安全性、開発者体験が提供されます。",
+                "alertMessage": "サンプルデータが正常に読み込まれました！このアラートブロックはWSXで構築されています。"
+            },
+            "highlight": {
+                "description": "このテキストを選択して、ハイライトツール（Cmd+Shift+H）を使用して、WSXインラインツールの動作を確認してください！",
+                "alertMessage": "覚えておいてください：WSXコンポーネントは、超能力を持つネイティブWeb Componentsです！"
+            }
+        }
+    }
+}

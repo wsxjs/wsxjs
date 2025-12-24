@@ -1,0 +1,125 @@
+{
+    "title": "EditorJS + WSXJS 데모",
+    "tryEditor": "에디터 사용해보기",
+    "saveData": "데이터 저장",
+    "loadSampleData": "샘플 데이터 로드",
+    "explanation": {
+        "title": "EditorJS 플러그인 개발이 어려운 이유 (그리고 WSX가 해결하는 방법)",
+        "traditionalWay": "❌ 전통적인 방법은 어렵습니다",
+        "problems": {
+            "domManipulation": {
+                "title": "1. 수동 DOM 조작",
+                "description": "document.createElement, appendChild, setAttribute 등의 장황한 JavaScript API를 사용하여 DOM 요소를 수동으로 생성, 업데이트 및 관리해야 합니다. 이로 인해 수백 줄의 보일러플레이트 코드가 발생합니다.",
+                "code": "// 전통적인 방법 - 많은 보일러플레이트\nconst wrapper = document.createElement('div');\nconst input = document.createElement('input');\ninput.setAttribute('type', 'text');\ninput.setAttribute('class', 'alert-input');\ninput.addEventListener('change', handleChange);\nwrapper.appendChild(input);\n// ... 간단한 컴포넌트에 50줄 이상"
+            },
+            "typeSafety": {
+                "title": "2. 타입 안전성 없음",
+                "description": "EditorJS 도구는 타입 검사 없이 순수 JavaScript로 작성됩니다. 개발 중이 아닌 런타임에 버그를 발견하게 됩니다. 속성 이름, 데이터 구조 및 메서드 시그니처는 모두 오류가 발생하기 쉽습니다."
+            },
+            "stateManagement": {
+                "title": "3. 복잡한 상태 관리",
+                "description": "컴포넌트 상태를 수동으로 추적하고, EditorJS 데이터와 동기화하고, 업데이트를 처리하고, 일관성을 보장해야 합니다. 이는 코드 전체에 흩어진 신중한 이벤트 처리 및 상태 동기화 로직이 필요합니다."
+            },
+            "styleIsolation": {
+                "title": "4. 스타일 격리 문제",
+                "description": "스타일이 도구 간에 누출되고 EditorJS 자체 스타일과 충돌합니다. 충돌을 피하기 위해 복잡한 CSS 선택자, BEM 명명 규칙 또는 CSS-in-JS 솔루션을 사용해야 합니다."
+            },
+            "maintainability": {
+                "title": "5. 유지보수 어려움",
+                "description": "코드는 명령형 DOM 작업, 이벤트 리스너 및 상태 관리의 혼란으로 변합니다. 기능을 추가하거나 버그를 수정하려면 전체 코드베이스를 이해해야 합니다. 리팩토링은 위험하고 시간이 많이 걸립니다."
+            },
+            "reusability": {
+                "title": "6. 컴포넌트 재사용성 없음",
+                "description": "각 도구는 모든 것이 혼합된 단일 클래스입니다. UI 컴포넌트를 쉽게 재사용하거나, 로직을 공유하거나, 더 간단한 것에서 복잡한 도구를 구성할 수 없습니다."
+            }
+        },
+        "solutions": {
+            "title": "✅ WSX가 해결하는 방법",
+            "jsxSyntax": {
+                "title": "1. 선언적 JSX 구문",
+                "description": "React처럼 JSX로 UI를 선언적으로 작성하세요. 더 이상 수동 DOM 조작이 필요 없습니다 - WSX가 모든 것을 처리합니다.",
+                "code": "// WSX 방식 - 깔끔하고 간단함\nrender() {\n    return (\n        <div>\n            <wsx-alert-component\n                type={this.data.type}\n                message={this.data.message}\n                onchange={this.handleChange}\n            />\n        </div>\n    );\n}"
+            },
+            "typescript": {
+                "title": "2. 완전한 TypeScript 지원",
+                "description": "컴파일 타임 타입 검사, 자동 완성 및 리팩토링 지원을 받으세요. 프로덕션에 도달하기 전에 오류를 잡으세요. 타입 안전한 props, 이벤트 및 데이터 구조."
+            },
+            "reactiveState": {
+                "title": "3. 내장 반응형 상태",
+                "description": "자동 반응성을 위해 @state 데코레이터를 사용하세요. 상태 변경은 자동으로 UI 업데이트를 트리거합니다. 수동 동기화가 필요 없습니다.",
+                "code": "@state()\nprivate message = '';\n\n// 변경 시 자동으로 UI 업데이트\nthis.message = '새 값';"
+            },
+            "styleIsolation": {
+                "title": "4. 자동 스타일 격리",
+                "description": "Shadow DOM을 사용한 Web Components는 자동 스타일 범위 지정을 제공합니다. 스타일이 캡슐화되어 EditorJS나 다른 도구와 충돌하지 않습니다."
+            },
+            "architecture": {
+                "title": "5. 깔끔한 컴포넌트 아키텍처",
+                "description": "관심사 분리: UI 컴포넌트는 렌더링을 처리하고, 도구는 EditorJS 통합을 처리합니다. 이해, 테스트 및 유지보수가 쉽습니다. 리팩토링이 안전하고 간단합니다."
+            },
+            "reusability": {
+                "title": "6. 재사용 가능한 Web Components",
+                "description": "어디서나 작동하는 재사용 가능한 컴포넌트를 구축하세요 - EditorJS, 독립형 페이지 또는 다른 프레임워크에서. 간단한 컴포넌트에서 복잡한 도구를 구성하세요."
+            }
+        }
+    },
+    "benefits": {
+        "title": "🚀 WSX의 추가 이점",
+        "architecture": {
+            "label": "컴포넌트 기반 아키텍처:",
+            "description": "각 도구는 자체 포함된 Web Component입니다"
+        },
+        "typeSafety": {
+            "label": "타입 안전성:",
+            "description": "JSX를 사용한 완전한 TypeScript 지원"
+        },
+        "declarativeUI": {
+            "label": "선언적 UI:",
+            "description": "수동 DOM 조작 대신 JSX로 복잡한 UI 구축"
+        },
+        "shadowDOM": {
+            "label": "Shadow DOM 격리:",
+            "description": "스타일이 자동으로 범위 지정됩니다"
+        },
+        "stateManagement": {
+            "label": "내장 상태 관리:",
+            "description": "외부 라이브러리 없이 반응형 업데이트"
+        },
+        "developerExperience": {
+            "label": "개발자 경험:",
+            "description": "핫 리로드, 디버깅 도구 및 깔끔한 코드 구조"
+        }
+    },
+    "info": {
+        "customBlockTool": {
+            "title": "📦 사용자 정의 블록 도구",
+            "description": "WsxAlertTool은 WSX로 구축된 사용자 정의 블록 도구를 보여줍니다. 타입 선택, 편집 가능한 콘텐츠 및 적절한 데이터 지속성 기능을 제공합니다."
+        },
+        "inlineTool": {
+            "title": "✏️ 인라인 도구",
+            "description": "WsxHighlightTool은 WSX로 인라인 도구를 만드는 방법을 보여줍니다. 텍스트를 선택하고 강조 표시 버튼을 클릭하거나 사용하세요"
+        },
+        "viewSourceCode": "GitHub에서 소스 코드 보기 →"
+    },
+    "editor": {
+        "placeholder": "입력을 시작하거나 +를 클릭하여 WSX 컴포넌트(Alert, Code, Table 등)를 추가하세요!",
+        "defaultData": {
+            "welcome": {
+                "text": "WSX를 사용한 EditorJS에 오신 것을 환영합니다!",
+                "description": "이 에디터는 WSXJS가 Web Components와 JSX를 사용하여 EditorJS 플러그인 개발을 어떻게 향상시킬 수 있는지 보여줍니다.",
+                "alertMessage": "이것은 사용자 정의 WSX Alert 블록입니다. 타입을 변경하거나 메시지를 편집해 보세요!"
+            }
+        },
+        "sampleData": {
+            "header": {
+                "text": "WSX가 EditorJS 플러그인 개발을 더 좋게 만듭니다",
+                "description": "WSX를 사용하면 최신 Web Components와 JSX 구문을 사용하여 EditorJS 플러그인을 구축할 수 있습니다. 이는 더 나은 구조, 타입 안전성 및 개발자 경험을 제공합니다.",
+                "alertMessage": "샘플 데이터가 성공적으로 로드되었습니다! 이 Alert 블록은 WSX로 구축되었습니다."
+            },
+            "highlight": {
+                "description": "이 텍스트를 선택하고 강조 표시 도구(Cmd+Shift+H)를 사용하여 WSX 인라인 도구가 작동하는 것을 확인하세요!",
+                "alertMessage": "기억하세요: WSX 컴포넌트는 초능력을 가진 네이티브 Web Components일 뿐입니다!"
+            }
+        }
+    }
+}

@@ -32,7 +32,7 @@
             }
         },
         "vsPlain": {
-            "title": "vs 일반 Web Components",
+            "title": "vs Vanilla",
             "badge": "네이티브",
             "items": {
                 "jsx": "JSX 구문 (친숙함)",

@@ -16,6 +16,10 @@ import styles from "./App.css?inline";
 // Import base components and router
 import "@wsxjs/wsx-base-components";
 import "@wsxjs/wsx-router";
+import { RouterUtils } from "@wsxjs/wsx-router";
+// Import SEO utilities
+import { MetaManager } from "./utils/meta-manager";
+import { getRouteMeta } from "./config/route-meta";
 // Define ResponsiveNavConfig locally to avoid import issues
 interface NavItem {
     label: string;
@@ -49,6 +53,8 @@ import "./components/TermsOfService.wsx";
 import "./marked/MarkedBuilder.wsx";
 // Import LanguageSwitcher component
 import "./components/LanguageSwitcher.wsx";
+// Import NotFound component
+import "./components/NotFoundSection.wsx";
 
 export interface AppConfig {
     title?: string;
@@ -92,6 +98,8 @@ export default class App extends LightComponent {
                     <wsx-view route="/ecosystem" component="ecosystem-section"></wsx-view>
                     <wsx-view route="/privacy" component="privacy-policy"></wsx-view>
                     <wsx-view route="/terms" component="terms-of-service"></wsx-view>
+                    {/* 404 页面 - 通配符路由，必须放在最后 */}
+                    <wsx-view route="*" component="not-found-section"></wsx-view>
                 </wsx-router>
 
                 {/* Footer */}
@@ -165,12 +173,28 @@ export default class App extends LightComponent {
                             <h4>{t("footer.resources")}</h4>
                             <ul>
                                 <li>
-                                    <a href="#" onClick={this.openDocs}>
+                                    <a
+                                        href="https://github.com/wsxjs/wsxjs#readme"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            this.openDocs();
+                                        }}
+                                    >
                                         {t("footer.documentation")}
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={this.openGitHub}>
+                                    <a
+                                        href="https://github.com/wsxjs/wsxjs"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            this.openGitHub();
+                                        }}
+                                    >
                                         {t("footer.githubRepo")}
                                     </a>
                                 </li>
@@ -178,7 +202,13 @@ export default class App extends LightComponent {
                                     <wsx-link to="/examples">{t("footer.examples")}</wsx-link>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={this.openBlog}>
+                                    <a
+                                        href="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            this.openBlog();
+                                        }}
+                                    >
                                         {t("footer.blog")}
                                     </a>
                                 </li>
@@ -189,22 +219,52 @@ export default class App extends LightComponent {
                             <h4>{t("footer.community")}</h4>
                             <ul>
                                 <li>
-                                    <a href="#" onClick={this.openDiscord}>
+                                    <a
+                                        href="https://github.com/wsxjs/wsxjs/discussions"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            this.openDiscord();
+                                        }}
+                                    >
                                         {t("footer.discordServer")}
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={this.openTwitter}>
+                                    <a
+                                        href="https://github.com/wsxjs/wsxjs"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            this.openTwitter();
+                                        }}
+                                    >
                                         {t("footer.twitter")}
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={this.openGitHub}>
+                                    <a
+                                        href="https://github.com/wsxjs/wsxjs/discussions"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            this.openGitHubDiscussions();
+                                        }}
+                                    >
                                         {t("footer.githubDiscussions")}
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={this.openBlog}>
+                                    <a
+                                        href="#"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            this.openBlog();
+                                        }}
+                                    >
                                         {t("footer.communityBlog")}
                                     </a>
                                 </li>
@@ -215,19 +275,23 @@ export default class App extends LightComponent {
                             <h4>{t("footer.legal")}</h4>
                             <ul>
                                 <li>
-                                    <a href="#" onClick={this.openLicense}>
+                                    <a
+                                        href="https://github.com/wsxjs/wsxjs/blob/main/LICENSE"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            this.openLicense();
+                                        }}
+                                    >
                                         {t("footer.mitLicense")}
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={this.openPrivacy}>
-                                        {t("footer.privacyPolicy")}
-                                    </a>
+                                    <wsx-link to="/privacy">{t("footer.privacyPolicy")}</wsx-link>
                                 </li>
                                 <li>
-                                    <a href="#" onClick={this.openTerms}>
-                                        {t("footer.termsOfService")}
-                                    </a>
+                                    <wsx-link to="/terms">{t("footer.termsOfService")}</wsx-link>
                                 </li>
                             </ul>
                         </div>
@@ -242,37 +306,55 @@ export default class App extends LightComponent {
         );
     }
 
-    // Event handlers (保留用于其他用途，如果需要)
+    // Event handlers
 
     private openGitHub = (): void => {
-        window.open("https://github.com/wsxjs/wsxjs", "_blank");
+        window.open("https://github.com/wsxjs/wsxjs", "_blank", "noopener,noreferrer");
+    };
+
+    private openGitHubDiscussions = (): void => {
+        window.open("https://github.com/wsxjs/wsxjs/discussions", "_blank", "noopener,noreferrer");
     };
 
     private openDocs = (): void => {
-        window.open("https://wsxjs.dev/docs", "_blank");
+        // TODO: 当文档系统准备好后，更新此链接
+        // 目前暂时指向 GitHub README
+        window.open("https://github.com/wsxjs/wsxjs#readme", "_blank", "noopener,noreferrer");
     };
 
     private openDiscord = (): void => {
-        window.open("https://discord.gg/wsxjs", "_blank");
+        // TODO: 如果有真实的 Discord 服务器，更新此链接
+        // 目前暂时指向 GitHub Discussions
+        window.open("https://github.com/wsxjs/wsxjs/discussions", "_blank", "noopener,noreferrer");
     };
 
     private openTwitter = (): void => {
-        window.open("https://twitter.com/wsxjs", "_blank");
+        // TODO: 如果有真实的 Twitter/X 账号，更新此链接
+        // 目前暂时指向 GitHub
+        window.open("https://github.com/wsxjs/wsxjs", "_blank", "noopener,noreferrer");
     };
 
     private openBlog = (): void => {
-        window.open("/blog", "_blank");
+        // TODO: 当博客系统准备好后，使用路由导航
+        // 目前暂时显示提示
+        alert("博客功能即将推出！");
     };
 
     private openLicense = (): void => {
-        window.open("https://github.com/wsxjs/wsxjs/blob/main/LICENSE", "_blank");
+        window.open(
+            "https://github.com/wsxjs/wsxjs/blob/main/LICENSE",
+            "_blank",
+            "noopener,noreferrer"
+        );
     };
+
+    // Privacy 和 Terms 现在使用 wsx-link，这些函数保留用于向后兼容
     private openPrivacy = (): void => {
-        window.open("/privacy", "_blank");
+        RouterUtils.navigate("/privacy");
     };
 
     private openTerms = (): void => {
-        window.open("/terms", "_blank");
+        RouterUtils.navigate("/terms");
     };
 
     /**
@@ -281,6 +363,12 @@ export default class App extends LightComponent {
     protected onConnected(): void {
         // Add scroll listener for navigation effects
         window.addEventListener("scroll", this.handleScroll);
+
+        // 监听路由变化，更新 SEO meta 标签
+        this.setupRouteMetaListener();
+
+        // 初始化当前路由的 meta 标签
+        this.updateRouteMeta(window.location.pathname);
     }
 
     /**
@@ -288,6 +376,7 @@ export default class App extends LightComponent {
      */
     protected onDisconnected(): void {
         window.removeEventListener("scroll", this.handleScroll);
+        this.removeRouteMetaListener();
     }
 
     /**
@@ -306,4 +395,58 @@ export default class App extends LightComponent {
             }
         }
     };
+
+    /**
+     * 设置路由 meta 标签监听器
+     */
+    private setupRouteMetaListener(): void {
+        // 监听 wsx-router 触发的 route-changed 事件
+        document.addEventListener("route-changed", this.handleRouteChange);
+        // 也监听 popstate 事件（浏览器前进/后退）
+        window.addEventListener("popstate", this.handleRouteChange);
+    }
+
+    /**
+     * 移除路由 meta 标签监听器
+     */
+    private removeRouteMetaListener(): void {
+        document.removeEventListener("route-changed", this.handleRouteChange);
+        window.removeEventListener("popstate", this.handleRouteChange);
+    }
+
+    /**
+     * 处理路由变化，更新 meta 标签
+     */
+    private handleRouteChange = (): void => {
+        const path = window.location.pathname;
+        this.updateRouteMeta(path);
+    };
+
+    /**
+     * 更新当前路由的 meta 标签和结构化数据
+     */
+    private updateRouteMeta(path: string): void {
+        const meta = getRouteMeta(path);
+        MetaManager.update(meta);
+
+        // 添加结构化数据（JSON-LD）
+        MetaManager.setStructuredData({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "WSXJS",
+            applicationCategory: "Web Development Framework",
+            operatingSystem: "Web",
+            description: meta.description,
+            url: meta.url || `https://wsxjs.dev${path}`,
+            offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "USD",
+            },
+            author: {
+                "@type": "Organization",
+                name: "WSXJS Team",
+            },
+        });
+    }
 }

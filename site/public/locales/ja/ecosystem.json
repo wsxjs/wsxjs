@@ -1,0 +1,52 @@
+{
+    "title": "エコシステム",
+    "description": "開発体験を向上させる豊富なツールとライブラリのエコシステム。",
+    "core": {
+        "title": "コアフレームワーク",
+        "description": "JSXサポートとWeb Componentsを備えたメインのWSXJS",
+        "links": {
+            "documentation": "ドキュメント",
+            "github": "GitHub"
+        }
+    },
+    "router": {
+        "title": "ルーター",
+        "description": "シングルページアプリケーション用のネイティブHistory APIベースのルーティング",
+        "links": {
+            "docs": "ルータードキュメント",
+            "demo": "デモを見る"
+        }
+    },
+    "baseComponents": {
+        "title": "ベースコンポーネント",
+        "description": "迅速な開発のための事前構築されたUIコンポーネント",
+        "links": {
+            "components": "コンポーネント",
+            "examples": "例"
+        }
+    },
+    "vitePlugin": {
+        "title": "Viteプラグイン",
+        "description": "シームレスな開発のためのビルドツール統合",
+        "links": {
+            "setupGuide": "セットアップガイド",
+            "plugin": "プラグイン"
+        }
+    },
+    "eslintPlugin": {
+        "title": "ESLintプラグイン",
+        "description": "コード品質とベストプラクティスの実施",
+        "links": {
+            "rules": "ルール",
+            "plugin": "プラグイン"
+        }
+    },
+    "testing": {
+        "title": "テスト",
+        "description": ".wsxコンポーネントのVitestによる包括的なテスト",
+        "links": {
+            "guide": "テストガイド",
+            "examples": "例"
+        }
+    }
+}

@@ -1,0 +1,125 @@
+{
+    "title": "EditorJS + WSXJS Demo",
+    "tryEditor": "Editor ausprobieren",
+    "saveData": "Daten speichern",
+    "loadSampleData": "Beispieldaten laden",
+    "explanation": {
+        "title": "Warum die EditorJS-Plugin-Entwicklung schwierig ist (und wie WSX es löst)",
+        "traditionalWay": "❌ Der traditionelle Weg ist schwierig",
+        "problems": {
+            "domManipulation": {
+                "title": "1. Manuelle DOM-Manipulation",
+                "description": "Sie müssen DOM-Elemente manuell mit ausführlichen JavaScript-APIs wie document.createElement, appendChild, setAttribute usw. erstellen, aktualisieren und verwalten. Dies führt zu Hunderten von Zeilen Boilerplate-Code.",
+                "code": "// Traditioneller Weg - viel Boilerplate\nconst wrapper = document.createElement('div');\nconst input = document.createElement('input');\ninput.setAttribute('type', 'text');\ninput.setAttribute('class', 'alert-input');\ninput.addEventListener('change', handleChange);\nwrapper.appendChild(input);\n// ... 50+ weitere Zeilen für eine einfache Komponente"
+            },
+            "typeSafety": {
+                "title": "2. Keine Typsicherheit",
+                "description": "EditorJS-Tools sind in reinem JavaScript ohne Typprüfung geschrieben. Sie entdecken Fehler zur Laufzeit, nicht während der Entwicklung. Eigenschaftsnamen, Datenstrukturen und Methodensignaturen sind alle fehleranfällig."
+            },
+            "stateManagement": {
+                "title": "3. Komplexes State-Management",
+                "description": "Sie müssen den Komponentenzustand manuell verfolgen, ihn mit EditorJS-Daten synchronisieren, Updates verarbeiten und Konsistenz sicherstellen. Dies erfordert sorgfältige Ereignisbehandlung und State-Synchronisierungslogik, die über Ihren Code verstreut ist."
+            },
+            "styleIsolation": {
+                "title": "4. Style-Isolationsprobleme",
+                "description": "Styles lecken zwischen Tools und kollidieren mit EditorJS eigenen Styles. Sie müssen komplexe CSS-Selektoren, BEM-Namenskonventionen oder CSS-in-JS-Lösungen verwenden, um Konflikte zu vermeiden."
+            },
+            "maintainability": {
+                "title": "5. Schwer zu warten",
+                "description": "Code wird zu einem Durcheinander aus imperativen DOM-Operationen, Event-Listenern und State-Management. Das Hinzufügen von Funktionen oder das Beheben von Fehlern erfordert das Verständnis der gesamten Codebasis. Refactoring ist riskant und zeitaufwändig."
+            },
+            "reusability": {
+                "title": "6. Keine Komponenten-Wiederverwendbarkeit",
+                "description": "Jedes Tool ist eine monolithische Klasse, in der alles vermischt ist. Sie können UI-Komponenten nicht einfach wiederverwenden, Logik teilen oder komplexe Tools aus einfacheren zusammensetzen."
+            }
+        },
+        "solutions": {
+            "title": "✅ Wie WSX es löst",
+            "jsxSyntax": {
+                "title": "1. Deklarative JSX-Syntax",
+                "description": "Schreiben Sie Ihre UI deklarativ mit JSX, genau wie React. Keine manuelle DOM-Manipulation mehr - WSX erledigt alles für Sie.",
+                "code": "// WSX-Weg - sauber und einfach\nrender() {\n    return (\n        <div>\n            <wsx-alert-component\n                type={this.data.type}\n                message={this.data.message}\n                onchange={this.handleChange}\n            />\n        </div>\n    );\n}"
+            },
+            "typescript": {
+                "title": "2. Vollständige TypeScript-Unterstützung",
+                "description": "Erhalten Sie Typprüfung zur Compile-Zeit, Autovervollständigung und Refactoring-Unterstützung. Fangen Sie Fehler ab, bevor sie in die Produktion gelangen. Typsichere Props, Events und Datenstrukturen."
+            },
+            "reactiveState": {
+                "title": "3. Eingebauter reaktiver State",
+                "description": "Verwenden Sie den @state-Decorator für automatische Reaktivität. State-Änderungen lösen automatisch UI-Updates aus. Keine manuelle Synchronisation erforderlich.",
+                "code": "@state()\nprivate message = '';\n\n// Aktualisiert automatisch die UI bei Änderung\nthis.message = 'Neuer Wert';"
+            },
+            "styleIsolation": {
+                "title": "4. Automatische Style-Isolation",
+                "description": "Web Components mit Shadow DOM bieten automatische Style-Scoping. Ihre Styles sind gekapselt und kollidieren nicht mit EditorJS oder anderen Tools."
+            },
+            "architecture": {
+                "title": "5. Saubere Komponentenarchitektur",
+                "description": "Trennung der Anliegen: UI-Komponenten handhaben das Rendering, Tools handhaben die EditorJS-Integration. Einfach zu verstehen, zu testen und zu warten. Refactoring ist sicher und unkompliziert."
+            },
+            "reusability": {
+                "title": "6. Wiederverwendbare Web Components",
+                "description": "Erstellen Sie wiederverwendbare Komponenten, die überall funktionieren - in EditorJS, eigenständigen Seiten oder anderen Frameworks. Komponieren Sie komplexe Tools aus einfachen Komponenten."
+            }
+        }
+    },
+    "benefits": {
+        "title": "🚀 Zusätzliche Vorteile von WSX",
+        "architecture": {
+            "label": "Komponentenbasierte Architektur:",
+            "description": "Jedes Tool ist eine eigenständige Web Component"
+        },
+        "typeSafety": {
+            "label": "Typsicherheit:",
+            "description": "Vollständige TypeScript-Unterstützung mit JSX"
+        },
+        "declarativeUI": {
+            "label": "Deklarative UI:",
+            "description": "Erstellen Sie komplexe UIs mit JSX statt manueller DOM-Manipulation"
+        },
+        "shadowDOM": {
+            "label": "Shadow DOM-Isolation:",
+            "description": "Styles werden automatisch begrenzt"
+        },
+        "stateManagement": {
+            "label": "Eingebautes State-Management:",
+            "description": "Reaktive Updates ohne externe Bibliotheken"
+        },
+        "developerExperience": {
+            "label": "Entwicklererfahrung:",
+            "description": "Hot Reload, Debugging-Tools und saubere Codestruktur"
+        }
+    },
+    "info": {
+        "customBlockTool": {
+            "title": "📦 Benutzerdefiniertes Block-Tool",
+            "description": "Das WsxAlertTool demonstriert ein benutzerdefiniertes Block-Tool, das mit WSX erstellt wurde. Es bietet Typauswahl, bearbeitbaren Inhalt und ordnungsgemäße Datenpersistenz."
+        },
+        "inlineTool": {
+            "title": "✏️ Inline-Tool",
+            "description": "Das WsxHighlightTool zeigt, wie man Inline-Tools mit WSX erstellt. Versuchen Sie, Text auszuwählen und auf die Hervorhebungs-Schaltfläche zu klicken oder verwenden Sie"
+        },
+        "viewSourceCode": "Quellcode auf GitHub ansehen →"
+    },
+    "editor": {
+        "placeholder": "Beginnen Sie mit der Eingabe oder klicken Sie auf +, um WSX-Komponenten hinzuzufügen - Alert, Code, Table und mehr!",
+        "defaultData": {
+            "welcome": {
+                "text": "Willkommen bei EditorJS mit WSX!",
+                "description": "Dieser Editor demonstriert, wie WSXJS die EditorJS-Plugin-Entwicklung mit Web Components und JSX verbessern kann.",
+                "alertMessage": "Dies ist ein benutzerdefinierter WSX Alert-Block. Versuchen Sie, den Typ zu ändern oder die Nachricht zu bearbeiten!"
+            }
+        },
+        "sampleData": {
+            "header": {
+                "text": "WSX macht die EditorJS-Plugin-Entwicklung besser",
+                "description": "Mit WSX können Sie EditorJS-Plugins mit modernen Web Components und JSX-Syntax erstellen. Dies bietet bessere Struktur, Typsicherheit und Entwicklererfahrung.",
+                "alertMessage": "Beispieldaten erfolgreich geladen! Dieser Alert-Block wurde mit WSX erstellt."
+            },
+            "highlight": {
+                "description": "Versuchen Sie, diesen Text auszuwählen und das Hervorhebungs-Tool (Cmd+Shift+H) zu verwenden, um das WSX Inline-Tool in Aktion zu sehen!",
+                "alertMessage": "Denken Sie daran: WSX-Komponenten sind nur native Web Components mit Superkräften!"
+            }
+        }
+    }
+}

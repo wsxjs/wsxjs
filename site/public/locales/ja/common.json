@@ -44,5 +44,11 @@
         "termsOfService": "利用規約",
         "copyright": "© 2026 WSXJS。MIT ライセンスの下で公開されています。",
         "madeWith": "WSXJS チームが ❤️ で作成"
+    },
+    "notFound": {
+        "title": "ページが見つかりません",
+        "description": "お探しのページは存在しないか、移動された可能性があります。",
+        "goHome": "ホームに戻る",
+        "goBack": "戻る"
     }
 }

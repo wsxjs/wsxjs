@@ -46,7 +46,7 @@
 
 首页应该包含以下关键部分：
 1. **Hero Section** - 核心价值主张
-2. **对比说明** - vs React/Vue/Plain Web Components
+2. **对比说明** - vs React/Vue/Vanilla
 3. **性能指标** - 运行时大小、性能数据
 4. **快速开始** - 代码示例和 CTA
 5. **统计数据** - npm downloads, GitHub stars
@@ -340,7 +340,7 @@ export class StatsSection extends LightComponent {
 
 ### 步骤 0.3: 实现对比说明部分（1 天）
 - [x] 创建 `ComparisonSection.wsx` 组件
-- [x] 实现 vs React/Vue/Plain Web Components 对比
+- [x] 实现 vs React/Vue/Vanilla 对比
 - [x] 添加样式和动画
 - [x] **集成 i18next 国际化支持**
 

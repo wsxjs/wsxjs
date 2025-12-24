@@ -1,0 +1,52 @@
+{
+    "title": "Ecosystem",
+    "description": "A rich ecosystem of tools and libraries to enhance your development experience.",
+    "core": {
+        "title": "Core Framework",
+        "description": "The main WSXJS with JSX support and Web Components",
+        "links": {
+            "documentation": "Documentation",
+            "github": "GitHub"
+        }
+    },
+    "router": {
+        "title": "Router",
+        "description": "Native History API-based routing for single-page applications",
+        "links": {
+            "docs": "Router Docs",
+            "demo": "See Demo"
+        }
+    },
+    "baseComponents": {
+        "title": "Base Components",
+        "description": "Pre-built UI components for rapid development",
+        "links": {
+            "components": "Components",
+            "examples": "Examples"
+        }
+    },
+    "vitePlugin": {
+        "title": "Vite Plugin",
+        "description": "Build tool integration for seamless development",
+        "links": {
+            "setupGuide": "Setup Guide",
+            "plugin": "Plugin"
+        }
+    },
+    "eslintPlugin": {
+        "title": "ESLint Plugin",
+        "description": "Code quality and best practices enforcement",
+        "links": {
+            "rules": "Rules",
+            "plugin": "Plugin"
+        }
+    },
+    "testing": {
+        "title": "Testing",
+        "description": "Comprehensive testing with Vitest for .wsx components",
+        "links": {
+            "guide": "Testing Guide",
+            "examples": "Examples"
+        }
+    }
+}

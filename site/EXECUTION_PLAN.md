@@ -33,7 +33,7 @@
 - [ ] 创建 `ComparisonSection.wsx` 组件
 - [ ] 实现 vs React 对比
 - [ ] 实现 vs Vue 对比
-- [ ] 实现 vs Plain Web Components 对比
+- [x] 实现 vs Vanilla 对比
 - [ ] 添加样式和动画
 
 ### 步骤 0.4: 实现性能指标展示（1 天）

@@ -12,12 +12,17 @@ import "./main.css";
 import "@wsxjs/wsx-base-components";
 // Initialize i18next
 import "./i18n";
+// Initialize error handler
+import { ErrorHandler } from "./utils/error-handler";
 import "./App.wsx";
 
 const logger = createLogger("Main");
 
 // Initialize the application
 function initApp() {
+    // 初始化全局错误处理
+    ErrorHandler.init();
+
     const appContainer = document.getElementById("app");
 
     if (!appContainer) {

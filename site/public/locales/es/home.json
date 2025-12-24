@@ -32,7 +32,7 @@
             }
         },
         "vsPlain": {
-            "title": "vs Web Components Planos",
+            "title": "vs Vanilla",
             "badge": "Nativo",
             "items": {
                 "jsx": "Sintaxis JSX (familiar)",

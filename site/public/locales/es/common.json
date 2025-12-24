@@ -44,5 +44,11 @@
         "termsOfService": "Términos de Servicio",
         "copyright": "© 2026 WSXJS. Publicado bajo la Licencia MIT.",
         "madeWith": "Hecho con ❤️ por el equipo de WSXJS"
+    },
+    "notFound": {
+        "title": "Página No Encontrada",
+        "description": "La página que buscas no existe o ha sido movida.",
+        "goHome": "Ir al Inicio",
+        "goBack": "Volver"
     }
 }

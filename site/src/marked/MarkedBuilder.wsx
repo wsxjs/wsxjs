@@ -7,6 +7,7 @@
  */
 
 import { LightComponent, autoRegister, createLogger, state } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
 import styles from "./MarkedBuilder.css?inline";
 import "./WsxMarkedRendererPattern1.wsx";
 import "./WsxMarkedRendererPattern2.wsx";
@@ -16,49 +17,10 @@ import "./WsxMarkedBlockquote.wsx";
 
 const logger = createLogger("MarkedBuilder");
 
-// 示例 Markdown 内容
-const SAMPLE_MARKDOWN = `# Welcome to Marked + WSX
-
-This is a **demonstration** of how to use \`marked\` with custom WSX renderers.
-
-## Features
-
-- Custom heading rendering with WSX components
-- Enhanced code blocks with syntax highlighting
-- Custom blockquotes with styled components
-- Interactive lists with WSX components
-
-### Code Example
-
-\`\`\`javascript
-// This is a code block
-function greet(name) {
-    return \`Hello, \${name}!\`;
-}
-\`\`\`
-
-> This is a blockquote demonstrating custom rendering
-
-### Lists
-
-1. First item
-2. Second item
-3. Third item
-
-- Unordered item
-- Another item
-
-### Links and Images
-
-Check out [WSXJS](https://wsxjs.dev) for more information.
-
----
-
-**Bold text** and *italic text* are also supported.`;
-
 @autoRegister({ tagName: "marked-builder" })
+@i18n("marked")
 export default class MarkedBuilder extends LightComponent {
-    @state private markdownInput: string = SAMPLE_MARKDOWN;
+    @state private markdownInput: string = "";
     @state private pattern: "pattern1" | "pattern2" = "pattern1";
 
     constructor() {
@@ -70,19 +32,26 @@ export default class MarkedBuilder extends LightComponent {
         logger.info("MarkedBuilder initialized");
     }
 
+    protected onConnected() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+        // 初始化示例 Markdown 内容
+        this.markdownInput = t("sampleMarkdown");
+    }
+
     render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
         return (
             <div class="marked-builder-container">
-                <h1 class="demo-title">Marked + WSX Custom Renderer Demo</h1>
-                <p class="demo-description">
-                    This demo shows how to override marked's default renderer with WSX components to
-                    create custom, interactive Markdown rendering.
-                </p>
+                <h1 class="demo-title">{t("title")}</h1>
+                <p class="demo-description">{t("description")}</p>
 
                 <div class="demo-grid">
                     {/* Markdown Input Section */}
                     <div class="input-section">
-                        <h2 class="section-title">Markdown Input</h2>
+                        <h2 class="section-title">{t("input.title")}</h2>
                         <textarea
                             class="markdown-input"
                             value={this.markdownInput}
@@ -90,14 +59,14 @@ export default class MarkedBuilder extends LightComponent {
                                 const target = e.target as HTMLTextAreaElement;
                                 this.markdownInput = target.value;
                             }}
-                            placeholder="Enter your Markdown here..."
+                            placeholder={t("input.placeholder")}
                         />
                         <div class="input-actions">
                             <button onClick={this.loadSample} class="btn btn-secondary">
-                                Load Sample
+                                {t("input.loadSample")}
                             </button>
                             <button onClick={this.clearInput} class="btn btn-secondary">
-                                Clear
+                                {t("input.clear")}
                             </button>
                         </div>
                     </div>
@@ -105,7 +74,7 @@ export default class MarkedBuilder extends LightComponent {
                     {/* Rendered Output Section */}
                     <div class="output-section">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <h2 class="section-title">Rendered Output</h2>
+                            <h2 class="section-title">{t("output.title")}</h2>
                             <div class="pattern-switcher">
                                 <button
                                     onClick={() => {
@@ -113,7 +82,7 @@ export default class MarkedBuilder extends LightComponent {
                                     }}
                                     class={`btn ${this.pattern === "pattern1" ? "btn-active" : "btn-secondary"}`}
                                 >
-                                    Pattern 1
+                                    {t("output.pattern1.label")}
                                 </button>
                                 <button
                                     onClick={() => {
@@ -121,21 +90,20 @@ export default class MarkedBuilder extends LightComponent {
                                     }}
                                     class={`btn ${this.pattern === "pattern2" ? "btn-active" : "btn-secondary"}`}
                                 >
-                                    Pattern 2
+                                    {t("output.pattern2.label")}
                                 </button>
                             </div>
                         </div>
                         <div class="pattern-info">
                             {this.pattern === "pattern1" ? (
                                 <p class="pattern-description">
-                                    <strong>Pattern 1:</strong> Using{" "}
-                                    <code>marked.use({`{ renderer }`})</code> - Renderer returns
-                                    HTML strings with WSX custom element tags
+                                    <strong>{t("output.pattern1.title")}</strong>{" "}
+                                    {t("output.pattern1.description")}
                                 </p>
                             ) : (
                                 <p class="pattern-description">
-                                    <strong>Pattern 2:</strong> Using <code>marked.lexer()</code> +
-                                    Manual WSX JSX rendering - Returns actual JSX elements
+                                    <strong>{t("output.pattern2.title")}</strong>{" "}
+                                    {t("output.pattern2.description")}
                                 </p>
                             )}
                         </div>
@@ -151,80 +119,46 @@ export default class MarkedBuilder extends LightComponent {
 
                 {/* Explanation Section */}
                 <div class="explanation-section">
-                    <h2 class="section-title">How It Works</h2>
+                    <h2 class="section-title">{t("explanation.title")}</h2>
 
                     <div class="explanation-grid">
                         <div class="explanation-card">
-                            <h3 class="card-title">Pattern 1: marked.use({`{ renderer }`})</h3>
-                            <p>
-                                Create a custom renderer object that returns HTML strings containing
-                                WSX custom element tags. Since WSX components are registered as
-                                custom elements, they work when inserted as HTML.
-                            </p>
+                            <h3 class="card-title">{t("explanation.pattern1.title")}</h3>
+                            <p>{t("explanation.pattern1.description")}</p>
                             <pre class="code-example">
-                                <code>{`const renderer = {
-  heading(token) {
-    return \`<wsx-marked-heading level="\${token.depth}" text="..."></wsx-marked-heading>\`;
-  }
-};
-
-marked.use({ renderer });
-const html = marked.parse(markdown);
-element.innerHTML = html; // Browser auto-instantiates WSX components`}</code>
+                                <code>{t("explanation.pattern1.code")}</code>
                             </pre>
                             <p>
-                                <strong>Pros:</strong> Uses marked's built-in system, simple
+                                <strong>{t("explanation.pros")}</strong>{" "}
+                                {t("explanation.pattern1.pros")}
                             </p>
                             <p>
-                                <strong>Cons:</strong> Returns HTML strings, not JSX elements
+                                <strong>{t("explanation.cons")}</strong>{" "}
+                                {t("explanation.pattern1.cons")}
                             </p>
                         </div>
 
                         <div class="explanation-card">
-                            <h3 class="card-title">Pattern 2: marked.lexer() + WSX JSX</h3>
-                            <p>
-                                Use marked.lexer() to get tokens, then manually convert them to WSX
-                                JSX elements. This allows returning actual JSX elements instead of
-                                HTML strings.
-                            </p>
+                            <h3 class="card-title">{t("explanation.pattern2.title")}</h3>
+                            <p>{t("explanation.pattern2.description")}</p>
                             <pre class="code-example">
-                                <code>{`const tokens = marked.lexer(markdown);
-
-render() {
-  return (
-    <div>
-      {tokens.map(token => this.renderToken(token))}
-    </div>
-  );
-}
-
-renderToken(token) {
-  return <wsx-marked-heading level={token.depth} text={token.text} />;
-}`}</code>
+                                <code>{t("explanation.pattern2.code")}</code>
                             </pre>
                             <p>
-                                <strong>Pros:</strong> Returns actual JSX elements, fully type-safe
+                                <strong>{t("explanation.pros")}</strong>{" "}
+                                {t("explanation.pattern2.pros")}
                             </p>
                             <p>
-                                <strong>Cons:</strong> More manual work, need to handle all token
-                                types
+                                <strong>{t("explanation.cons")}</strong>{" "}
+                                {t("explanation.pattern2.cons")}
                             </p>
                         </div>
 
                         <div class="explanation-card">
-                            <h3 class="card-title">WSX Components</h3>
-                            <p>
-                                Both patterns use the same WSX Web Components. The components are
-                                registered as custom elements, so they work in both HTML strings
-                                (Pattern 1) and JSX (Pattern 2).
-                            </p>
+                            <h3 class="card-title">{t("explanation.components.title")}</h3>
+                            <p>{t("explanation.components.description")}</p>
                             <pre class="code-example">
-                                <code>{`@autoRegister({ tagName: 'wsx-marked-heading' })
-class WsxMarkedHeading extends LightComponent {
-  render() {
-    return <h{this.level}>{this.text}</h{this.level}>;
-  }
-}`}</code>
+                                <code>{t("explanation.components.code")}</code>
                             </pre>
                         </div>
                     </div>
@@ -232,27 +166,27 @@ class WsxMarkedHeading extends LightComponent {
 
                 {/* Benefits Section */}
                 <div class="benefits-section">
-                    <h2 class="benefits-title">Benefits of WSX Custom Renderers</h2>
+                    <h2 class="benefits-title">{t("benefits.title")}</h2>
                     <ul class="benefits-list">
                         <li>
-                            <strong>Type Safety:</strong> Full TypeScript support for renderer
-                            methods
+                            <strong>{t("benefits.typeSafety.label")}</strong>{" "}
+                            {t("benefits.typeSafety.description")}
                         </li>
                         <li>
-                            <strong>Component Reusability:</strong> Reuse WSX components across
-                            different renderer methods
+                            <strong>{t("benefits.reusability.label")}</strong>{" "}
+                            {t("benefits.reusability.description")}
                         </li>
                         <li>
-                            <strong>Interactivity:</strong> Add event handlers and reactive state to
-                            rendered elements
+                            <strong>{t("benefits.interactivity.label")}</strong>{" "}
+                            {t("benefits.interactivity.description")}
                         </li>
                         <li>
-                            <strong>Style Isolation:</strong> Web Components provide automatic style
-                            scoping
+                            <strong>{t("benefits.styleIsolation.label")}</strong>{" "}
+                            {t("benefits.styleIsolation.description")}
                         </li>
                         <li>
-                            <strong>Maintainability:</strong> Clean, declarative JSX syntax instead
-                            of string concatenation
+                            <strong>{t("benefits.maintainability.label")}</strong>{" "}
+                            {t("benefits.maintainability.description")}
                         </li>
                     </ul>
                 </div>
@@ -261,10 +195,13 @@ class WsxMarkedHeading extends LightComponent {
     }
 
     private loadSample = () => {
-        this.markdownInput = SAMPLE_MARKDOWN;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+        const sampleMarkdown = t("sampleMarkdown");
+        this.markdownInput = sampleMarkdown;
         const textarea = this.querySelector(".markdown-input") as HTMLTextAreaElement;
         if (textarea) {
-            textarea.value = SAMPLE_MARKDOWN;
+            textarea.value = sampleMarkdown;
         }
     };
 

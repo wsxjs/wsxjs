@@ -183,7 +183,7 @@ export class HomeSection extends WebComponent {
                             </ul>
                         </div>
                         <div class="comparison-item">
-                            <h3>vs Plain Web Components</h3>
+                            <h3>vs Vanilla</h3>
                             <ul>
                                 <li>✅ JSX syntax (familiar)</li>
                                 <li>✅ TypeScript support</li>

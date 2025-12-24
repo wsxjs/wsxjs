@@ -1,5 +1,6 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 import { LightComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
 import EditorJS from "@editorjs/editorjs";
 import Header from "@editorjs/header";
 import Paragraph from "@editorjs/paragraph";
@@ -12,6 +13,7 @@ import styles from "./EditorJSDemo.css?inline";
 const logger = createLogger("EditorJSDemo");
 
 @autoRegister({ tagName: "editorjs-demo" })
+@i18n("editorjs")
 export default class EditorJSDemo extends LightComponent {
     private editor?: EditorJS;
     private editorContainer?: HTMLElement;
@@ -26,12 +28,15 @@ export default class EditorJSDemo extends LightComponent {
     }
 
     render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
         return (
             <div class="editor-demo-container">
-                <h1 class="demo-title">EditorJS + WSXJS Demo</h1>
+                <h1 class="demo-title">{t("title")}</h1>
 
                 <div class="editor-container">
-                    <h2 class="editor-title">Try the Editor</h2>
+                    <h2 class="editor-title">{t("tryEditor")}</h2>
                     <div
                         ref={(el: HTMLElement) => {
                             this.editorContainer = el;
@@ -42,153 +47,93 @@ export default class EditorJSDemo extends LightComponent {
 
                     <div class="editor-actions">
                         <button onClick={this.saveData} class="btn">
-                            Save Data
+                            {t("saveData")}
                         </button>
 
                         <button onClick={this.loadSampleData} class="btn btn-success">
-                            Load Sample Data
+                            {t("loadSampleData")}
                         </button>
                     </div>
                 </div>
                 <div class="explanation-section">
-                    <h2 class="section-title">
-                        Why EditorJS Plugin Development is Hard (and How WSX Solves It)
-                    </h2>
+                    <h2 class="section-title">{t("explanation.title")}</h2>
 
                     <div class="problem-solution-grid">
                         <div class="problem-card">
-                            <h3 class="card-title">❌ The Traditional Way is Hard</h3>
+                            <h3 class="card-title">{t("explanation.traditionalWay")}</h3>
                             <div class="problem-list">
                                 <div class="problem-item">
-                                    <h4>1. Manual DOM Manipulation</h4>
-                                    <p>
-                                        You have to manually create, update, and manage DOM elements
-                                        using verbose JavaScript APIs like{" "}
-                                        <code>document.createElement</code>,{" "}
-                                        <code>appendChild</code>, <code>setAttribute</code>, etc.
-                                        This leads to hundreds of lines of boilerplate code.
-                                    </p>
+                                    <h4>{t("explanation.problems.domManipulation.title")}</h4>
+                                    <p>{t("explanation.problems.domManipulation.description")}</p>
                                     <pre class="code-example">
-                                        {
-                                            "// Traditional way - lots of boilerplate\nconst wrapper = document.createElement('div');\nconst input = document.createElement('input');\ninput.setAttribute('type', 'text');\ninput.setAttribute('class', 'alert-input');\ninput.addEventListener('change', handleChange);\nwrapper.appendChild(input);\n// ... 50+ more lines for a simple component"
-                                        }
+                                        {t("explanation.problems.domManipulation.code")}
                                     </pre>
                                 </div>
 
                                 <div class="problem-item">
-                                    <h4>2. No Type Safety</h4>
-                                    <p>
-                                        EditorJS tools are written in plain JavaScript with no type
-                                        checking. You'll discover bugs at runtime, not during
-                                        development. Property names, data structures, and method
-                                        signatures are all error-prone.
-                                    </p>
+                                    <h4>{t("explanation.problems.typeSafety.title")}</h4>
+                                    <p>{t("explanation.problems.typeSafety.description")}</p>
                                 </div>
 
                                 <div class="problem-item">
-                                    <h4>3. Complex State Management</h4>
-                                    <p>
-                                        You must manually track component state, sync it with
-                                        EditorJS data, handle updates, and ensure consistency. This
-                                        requires careful event handling and state synchronization
-                                        logic scattered throughout your code.
-                                    </p>
+                                    <h4>{t("explanation.problems.stateManagement.title")}</h4>
+                                    <p>{t("explanation.problems.stateManagement.description")}</p>
                                 </div>
 
                                 <div class="problem-item">
-                                    <h4>4. Style Isolation Issues</h4>
-                                    <p>
-                                        Styles leak between tools and conflict with EditorJS's own
-                                        styles. You need to use complex CSS selectors, BEM naming
-                                        conventions, or CSS-in-JS solutions to avoid conflicts.
-                                    </p>
+                                    <h4>{t("explanation.problems.styleIsolation.title")}</h4>
+                                    <p>{t("explanation.problems.styleIsolation.description")}</p>
                                 </div>
 
                                 <div class="problem-item">
-                                    <h4>5. Difficult to Maintain</h4>
-                                    <p>
-                                        Code becomes a mess of imperative DOM operations, event
-                                        listeners, and state management. Adding features or fixing
-                                        bugs requires understanding the entire codebase. Refactoring
-                                        is risky and time-consuming.
-                                    </p>
+                                    <h4>{t("explanation.problems.maintainability.title")}</h4>
+                                    <p>{t("explanation.problems.maintainability.description")}</p>
                                 </div>
 
                                 <div class="problem-item">
-                                    <h4>6. No Component Reusability</h4>
-                                    <p>
-                                        Each tool is a monolithic class with everything mixed
-                                        together. You can't easily reuse UI components, share logic,
-                                        or compose complex tools from simpler ones.
-                                    </p>
+                                    <h4>{t("explanation.problems.reusability.title")}</h4>
+                                    <p>{t("explanation.problems.reusability.description")}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="solution-card">
-                            <h3 class="card-title">✅ How WSX Solves It</h3>
+                            <h3 class="card-title">{t("explanation.solutions.title")}</h3>
                             <div class="solution-list">
                                 <div class="solution-item">
-                                    <h4>1. Declarative JSX Syntax</h4>
-                                    <p>
-                                        Write your UI declaratively with JSX, just like React. No
-                                        more manual DOM manipulation - WSX handles it all for you.
-                                    </p>
+                                    <h4>{t("explanation.solutions.jsxSyntax.title")}</h4>
+                                    <p>{t("explanation.solutions.jsxSyntax.description")}</p>
                                     <pre class="code-example">
-                                        {
-                                            "// WSX way - clean and simple\nrender() {\n    return (\n        <div>\n            <wsx-alert-component\n                type={this.data.type}\n                message={this.data.message}\n                onchange={this.handleChange}\n            />\n        </div>\n    );\n}"
-                                        }
+                                        {t("explanation.solutions.jsxSyntax.code")}
                                     </pre>
                                 </div>
 
                                 <div class="solution-item">
-                                    <h4>2. Full TypeScript Support</h4>
-                                    <p>
-                                        Get compile-time type checking, autocomplete, and
-                                        refactoring support. Catch errors before they reach
-                                        production. Type-safe props, events, and data structures.
-                                    </p>
+                                    <h4>{t("explanation.solutions.typescript.title")}</h4>
+                                    <p>{t("explanation.solutions.typescript.description")}</p>
                                 </div>
 
                                 <div class="solution-item">
-                                    <h4>3. Built-in Reactive State</h4>
-                                    <p>
-                                        Use <code>@state</code> decorator for automatic reactivity.
-                                        State changes automatically trigger UI updates. No manual
-                                        synchronization needed.
-                                    </p>
+                                    <h4>{t("explanation.solutions.reactiveState.title")}</h4>
+                                    <p>{t("explanation.solutions.reactiveState.description")}</p>
                                     <pre class="code-example">
-                                        {
-                                            "@state()\nprivate message = '';\n\n// Automatically updates UI when changed\nthis.message = 'New value';"
-                                        }
+                                        {t("explanation.solutions.reactiveState.code")}
                                     </pre>
                                 </div>
 
                                 <div class="solution-item">
-                                    <h4>4. Automatic Style Isolation</h4>
-                                    <p>
-                                        Web Components with Shadow DOM provide automatic style
-                                        scoping. Your styles are encapsulated and won't conflict
-                                        with EditorJS or other tools.
-                                    </p>
+                                    <h4>{t("explanation.solutions.styleIsolation.title")}</h4>
+                                    <p>{t("explanation.solutions.styleIsolation.description")}</p>
                                 </div>
 
                                 <div class="solution-item">
-                                    <h4>5. Clean Component Architecture</h4>
-                                    <p>
-                                        Separate concerns: UI components handle rendering, tools
-                                        handle EditorJS integration. Easy to understand, test, and
-                                        maintain. Refactoring is safe and straightforward.
-                                    </p>
+                                    <h4>{t("explanation.solutions.architecture.title")}</h4>
+                                    <p>{t("explanation.solutions.architecture.description")}</p>
                                 </div>
 
                                 <div class="solution-item">
-                                    <h4>6. Reusable Web Components</h4>
-                                    <p>
-                                        Build reusable components that work anywhere - in EditorJS,
-                                        standalone pages, or other frameworks. Compose complex tools
-                                        from simple components.
-                                    </p>
+                                    <h4>{t("explanation.solutions.reusability.title")}</h4>
+                                    <p>{t("explanation.solutions.reusability.description")}</p>
                                 </div>
                             </div>
                         </div>
@@ -196,41 +141,39 @@ export default class EditorJSDemo extends LightComponent {
                 </div>
 
                 <div class="benefits-section">
-                    <h2 class="benefits-title">🚀 Additional Benefits of WSX</h2>
+                    <h2 class="benefits-title">{t("benefits.title")}</h2>
                     <ul class="benefits-list">
                         <li>
-                            <strong>Component-based Architecture:</strong> Each tool is a
-                            self-contained Web Component
+                            <strong>{t("benefits.architecture.label")}</strong>{" "}
+                            {t("benefits.architecture.description")}
                         </li>
                         <li>
-                            <strong>Type Safety:</strong> Full TypeScript support with JSX
+                            <strong>{t("benefits.typeSafety.label")}</strong>{" "}
+                            {t("benefits.typeSafety.description")}
                         </li>
                         <li>
-                            <strong>Declarative UI:</strong> Build complex UIs with JSX instead of
-                            manual DOM manipulation
+                            <strong>{t("benefits.declarativeUI.label")}</strong>{" "}
+                            {t("benefits.declarativeUI.description")}
                         </li>
                         <li>
-                            <strong>Shadow DOM Isolation:</strong> Styles are automatically scoped
+                            <strong>{t("benefits.shadowDOM.label")}</strong>{" "}
+                            {t("benefits.shadowDOM.description")}
                         </li>
                         <li>
-                            <strong>Built-in State Management:</strong> Reactive updates without
-                            external libraries
+                            <strong>{t("benefits.stateManagement.label")}</strong>{" "}
+                            {t("benefits.stateManagement.description")}
                         </li>
                         <li>
-                            <strong>Developer Experience:</strong> Hot reload, debugging tools, and
-                            clean code structure
+                            <strong>{t("benefits.developerExperience.label")}</strong>{" "}
+                            {t("benefits.developerExperience.description")}
                         </li>
                     </ul>
                 </div>
 
                 <div class="info-grid">
                     <div class="info-card">
-                        <h3>📦 Custom Block Tool</h3>
-                        <p>
-                            The <code>WsxAlertTool</code> demonstrates a custom block tool built
-                            with WSX. It features type selection, editable content, and proper data
-                            persistence.
-                        </p>
+                        <h3>{t("info.customBlockTool.title")}</h3>
+                        <p>{t("info.customBlockTool.description")}</p>
                         <div class="info-card-link">
                             <a
                                 href="https://github.com/wsxjs/wsxjs/tree/main/site/src/editorjs"
@@ -238,17 +181,15 @@ export default class EditorJSDemo extends LightComponent {
                                 rel="noopener noreferrer"
                                 class="github-link"
                             >
-                                View Source Code on GitHub →
+                                {t("info.viewSourceCode")}
                             </a>
                         </div>
                     </div>
 
                     <div class="info-card">
-                        <h3>✏️ Inline Tool</h3>
+                        <h3>{t("info.inlineTool.title")}</h3>
                         <p>
-                            The <code>WsxHighlightTool</code> shows how to create inline tools with
-                            WSX. Try selecting text and clicking the highlight button or use{" "}
-                            <kbd>Cmd+Shift+H</kbd>.
+                            {t("info.inlineTool.description")} <kbd>Cmd+Shift+H</kbd>.
                         </p>
                         <div class="info-card-link">
                             <a
@@ -257,7 +198,7 @@ export default class EditorJSDemo extends LightComponent {
                                 rel="noopener noreferrer"
                                 class="github-link"
                             >
-                                View Source Code on GitHub →
+                                {t("info.viewSourceCode")}
                             </a>
                         </div>
                     </div>
@@ -287,6 +228,9 @@ export default class EditorJSDemo extends LightComponent {
     private initializeEditor() {
         if (!this.editorContainer) return;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
         this.editor = new EditorJS({
             holder: this.editorContainer,
             tools: {
@@ -313,29 +257,27 @@ export default class EditorJSDemo extends LightComponent {
                 },
                 highlight: WsxHighlightTool,
             },
-            placeholder:
-                "Start typing or click + to add WSX components - Alert, Code, Table, and more!",
+            placeholder: t("editor.placeholder"),
             data: {
                 blocks: [
                     {
                         type: "header",
                         data: {
-                            text: "Welcome to EditorJS with WSX!",
+                            text: t("editor.defaultData.welcome.text"),
                             level: 2,
                         },
                     },
                     {
                         type: "paragraph",
                         data: {
-                            text: "This editor demonstrates how WSXJS can enhance EditorJS plugin development with Web Components and JSX.",
+                            text: t("editor.defaultData.welcome.description"),
                         },
                     },
                     {
                         type: "alert",
                         data: {
                             type: "info",
-                            message:
-                                "This is a custom WSX Alert block. Try changing the type or editing the message!",
+                            message: t("editor.defaultData.welcome.alertMessage"),
                         },
                     },
                 ],
@@ -368,41 +310,42 @@ export default class EditorJSDemo extends LightComponent {
     private loadSampleData = () => {
         if (!this.editor) return;
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
         const sampleData = {
             blocks: [
                 {
                     type: "header",
                     data: {
-                        text: "WSX Makes EditorJS Plugin Development Better",
+                        text: t("editor.sampleData.header.text"),
                         level: 2,
                     },
                 },
                 {
                     type: "paragraph",
                     data: {
-                        text: "With WSX, you can build EditorJS plugins using modern Web Components and JSX syntax. This provides better structure, type safety, and developer experience.",
+                        text: t("editor.sampleData.header.description"),
                     },
                 },
                 {
                     type: "alert",
                     data: {
                         type: "success",
-                        message:
-                            "Successfully loaded sample data! This alert block is built with WSX.",
+                        message: t("editor.sampleData.header.alertMessage"),
                     },
                 },
                 {
                     type: "paragraph",
                     data: {
-                        text: "Try selecting this text and using the highlight tool (Cmd+Shift+H) to see the WSX inline tool in action!",
+                        text: t("editor.sampleData.highlight.description"),
                     },
                 },
                 {
                     type: "alert",
                     data: {
                         type: "warning",
-                        message:
-                            "Remember: WSX components are just native Web Components with superpowers!",
+                        message: t("editor.sampleData.highlight.alertMessage"),
                     },
                 },
             ],

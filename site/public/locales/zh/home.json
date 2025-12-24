@@ -32,7 +32,7 @@
             }
         },
         "vsPlain": {
-            "title": "对比原生 Web Components",
+            "title": "对比 Vanilla",
             "badge": "原生",
             "items": {
                 "jsx": "JSX 语法（熟悉）",

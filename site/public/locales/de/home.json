@@ -32,7 +32,7 @@
             }
         },
         "vsPlain": {
-            "title": "vs Plain Web Components",
+            "title": "vs Vanilla",
             "badge": "Nativ",
             "items": {
                 "jsx": "JSX-Syntax (vertraut)",

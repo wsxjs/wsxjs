@@ -1,0 +1,52 @@
+{
+    "title": "生态系统",
+    "description": "丰富的工具和库生态系统，增强您的开发体验。",
+    "core": {
+        "title": "核心框架",
+        "description": "支持 JSX 和 Web Components 的主要 WSXJS",
+        "links": {
+            "documentation": "文档",
+            "github": "GitHub"
+        }
+    },
+    "router": {
+        "title": "路由器",
+        "description": "基于原生 History API 的单页应用路由",
+        "links": {
+            "docs": "路由器文档",
+            "demo": "查看演示"
+        }
+    },
+    "baseComponents": {
+        "title": "基础组件",
+        "description": "预构建的 UI 组件，用于快速开发",
+        "links": {
+            "components": "组件",
+            "examples": "示例"
+        }
+    },
+    "vitePlugin": {
+        "title": "Vite 插件",
+        "description": "构建工具集成，实现无缝开发",
+        "links": {
+            "setupGuide": "设置指南",
+            "plugin": "插件"
+        }
+    },
+    "eslintPlugin": {
+        "title": "ESLint 插件",
+        "description": "代码质量和最佳实践执行",
+        "links": {
+            "rules": "规则",
+            "plugin": "插件"
+        }
+    },
+    "testing": {
+        "title": "测试",
+        "description": "使用 Vitest 对 .wsx 组件进行全面测试",
+        "links": {
+            "guide": "测试指南",
+            "examples": "示例"
+        }
+    }
+}

@@ -1,0 +1,125 @@
+{
+    "title": "EditorJS + WSXJS Demo",
+    "tryEditor": "Try the Editor",
+    "saveData": "Save Data",
+    "loadSampleData": "Load Sample Data",
+    "explanation": {
+        "title": "Why EditorJS Plugin Development is Hard (and How WSX Solves It)",
+        "traditionalWay": "❌ The Traditional Way is Hard",
+        "problems": {
+            "domManipulation": {
+                "title": "1. Manual DOM Manipulation",
+                "description": "You have to manually create, update, and manage DOM elements using verbose JavaScript APIs like document.createElement, appendChild, setAttribute, etc. This leads to hundreds of lines of boilerplate code.",
+                "code": "// Traditional way - lots of boilerplate\nconst wrapper = document.createElement('div');\nconst input = document.createElement('input');\ninput.setAttribute('type', 'text');\ninput.setAttribute('class', 'alert-input');\ninput.addEventListener('change', handleChange);\nwrapper.appendChild(input);\n// ... 50+ more lines for a simple component"
+            },
+            "typeSafety": {
+                "title": "2. No Type Safety",
+                "description": "EditorJS tools are written in plain JavaScript with no type checking. You'll discover bugs at runtime, not during development. Property names, data structures, and method signatures are all error-prone."
+            },
+            "stateManagement": {
+                "title": "3. Complex State Management",
+                "description": "You must manually track component state, sync it with EditorJS data, handle updates, and ensure consistency. This requires careful event handling and state synchronization logic scattered throughout your code."
+            },
+            "styleIsolation": {
+                "title": "4. Style Isolation Issues",
+                "description": "Styles leak between tools and conflict with EditorJS's own styles. You need to use complex CSS selectors, BEM naming conventions, or CSS-in-JS solutions to avoid conflicts."
+            },
+            "maintainability": {
+                "title": "5. Difficult to Maintain",
+                "description": "Code becomes a mess of imperative DOM operations, event listeners, and state management. Adding features or fixing bugs requires understanding the entire codebase. Refactoring is risky and time-consuming."
+            },
+            "reusability": {
+                "title": "6. No Component Reusability",
+                "description": "Each tool is a monolithic class with everything mixed together. You can't easily reuse UI components, share logic, or compose complex tools from simpler ones."
+            }
+        },
+        "solutions": {
+            "title": "✅ How WSX Solves It",
+            "jsxSyntax": {
+                "title": "1. Declarative JSX Syntax",
+                "description": "Write your UI declaratively with JSX, just like React. No more manual DOM manipulation - WSX handles it all for you.",
+                "code": "// WSX way - clean and simple\nrender() {\n    return (\n        <div>\n            <wsx-alert-component\n                type={this.data.type}\n                message={this.data.message}\n                onchange={this.handleChange}\n            />\n        </div>\n    );\n}"
+            },
+            "typescript": {
+                "title": "2. Full TypeScript Support",
+                "description": "Get compile-time type checking, autocomplete, and refactoring support. Catch errors before they reach production. Type-safe props, events, and data structures."
+            },
+            "reactiveState": {
+                "title": "3. Built-in Reactive State",
+                "description": "Use @state decorator for automatic reactivity. State changes automatically trigger UI updates. No manual synchronization needed.",
+                "code": "@state()\nprivate message = '';\n\n// Automatically updates UI when changed\nthis.message = 'New value';"
+            },
+            "styleIsolation": {
+                "title": "4. Automatic Style Isolation",
+                "description": "Web Components with Shadow DOM provide automatic style scoping. Your styles are encapsulated and won't conflict with EditorJS or other tools."
+            },
+            "architecture": {
+                "title": "5. Clean Component Architecture",
+                "description": "Separate concerns: UI components handle rendering, tools handle EditorJS integration. Easy to understand, test, and maintain. Refactoring is safe and straightforward."
+            },
+            "reusability": {
+                "title": "6. Reusable Web Components",
+                "description": "Build reusable components that work anywhere - in EditorJS, standalone pages, or other frameworks. Compose complex tools from simple components."
+            }
+        }
+    },
+    "benefits": {
+        "title": "🚀 Additional Benefits of WSX",
+        "architecture": {
+            "label": "Component-based Architecture:",
+            "description": "Each tool is a self-contained Web Component"
+        },
+        "typeSafety": {
+            "label": "Type Safety:",
+            "description": "Full TypeScript support with JSX"
+        },
+        "declarativeUI": {
+            "label": "Declarative UI:",
+            "description": "Build complex UIs with JSX instead of manual DOM manipulation"
+        },
+        "shadowDOM": {
+            "label": "Shadow DOM Isolation:",
+            "description": "Styles are automatically scoped"
+        },
+        "stateManagement": {
+            "label": "Built-in State Management:",
+            "description": "Reactive updates without external libraries"
+        },
+        "developerExperience": {
+            "label": "Developer Experience:",
+            "description": "Hot reload, debugging tools, and clean code structure"
+        }
+    },
+    "info": {
+        "customBlockTool": {
+            "title": "📦 Custom Block Tool",
+            "description": "The WsxAlertTool demonstrates a custom block tool built with WSX. It features type selection, editable content, and proper data persistence."
+        },
+        "inlineTool": {
+            "title": "✏️ Inline Tool",
+            "description": "The WsxHighlightTool shows how to create inline tools with WSX. Try selecting text and clicking the highlight button or use"
+        },
+        "viewSourceCode": "View Source Code on GitHub →"
+    },
+    "editor": {
+        "placeholder": "Start typing or click + to add WSX components - Alert, Code, Table, and more!",
+        "defaultData": {
+            "welcome": {
+                "text": "Welcome to EditorJS with WSX!",
+                "description": "This editor demonstrates how WSXJS can enhance EditorJS plugin development with Web Components and JSX.",
+                "alertMessage": "This is a custom WSX Alert block. Try changing the type or editing the message!"
+            }
+        },
+        "sampleData": {
+            "header": {
+                "text": "WSX Makes EditorJS Plugin Development Better",
+                "description": "With WSX, you can build EditorJS plugins using modern Web Components and JSX syntax. This provides better structure, type safety, and developer experience.",
+                "alertMessage": "Successfully loaded sample data! This alert block is built with WSX."
+            },
+            "highlight": {
+                "description": "Try selecting this text and using the highlight tool (Cmd+Shift+H) to see the WSX inline tool in action!",
+                "alertMessage": "Remember: WSX components are just native Web Components with superpowers!"
+            }
+        }
+    }
+}

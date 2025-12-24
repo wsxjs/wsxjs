@@ -1,0 +1,52 @@
+{
+    "title": "Ecosistema",
+    "description": "Un ecosistema rico de herramientas y bibliotecas para mejorar tu experiencia de desarrollo.",
+    "core": {
+        "title": "Framework Principal",
+        "description": "El WSXJS principal con soporte JSX y Web Components",
+        "links": {
+            "documentation": "Documentación",
+            "github": "GitHub"
+        }
+    },
+    "router": {
+        "title": "Router",
+        "description": "Enrutamiento basado en History API nativo para aplicaciones de una sola página",
+        "links": {
+            "docs": "Documentación del Router",
+            "demo": "Ver Demo"
+        }
+    },
+    "baseComponents": {
+        "title": "Componentes Base",
+        "description": "Componentes UI preconstruidos para desarrollo rápido",
+        "links": {
+            "components": "Componentes",
+            "examples": "Ejemplos"
+        }
+    },
+    "vitePlugin": {
+        "title": "Plugin de Vite",
+        "description": "Integración de herramientas de construcción para desarrollo sin problemas",
+        "links": {
+            "setupGuide": "Guía de Configuración",
+            "plugin": "Plugin"
+        }
+    },
+    "eslintPlugin": {
+        "title": "Plugin de ESLint",
+        "description": "Calidad de código y aplicación de mejores prácticas",
+        "links": {
+            "rules": "Reglas",
+            "plugin": "Plugin"
+        }
+    },
+    "testing": {
+        "title": "Pruebas",
+        "description": "Pruebas completas con Vitest para componentes .wsx",
+        "links": {
+            "guide": "Guía de Pruebas",
+            "examples": "Ejemplos"
+        }
+    }
+}

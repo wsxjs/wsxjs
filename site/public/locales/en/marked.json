@@ -1,0 +1,71 @@
+{
+    "title": "Marked + WSX Custom Renderer Demo",
+    "description": "This demo shows how to override marked's default renderer with WSX components to create custom, interactive Markdown rendering.",
+    "sampleMarkdown": "# Welcome to Marked + WSX\n\nThis is a **demonstration** of how to use `marked` with custom WSX renderers.\n\n## Features\n\n- Custom heading rendering with WSX components\n- Enhanced code blocks with syntax highlighting\n- Custom blockquotes with styled components\n- Interactive lists with WSX components\n\n### Code Example\n\n```javascript\n// This is a code block\nfunction greet(name) {\n    return `Hello, ${name}!`;\n}\n```\n\n> This is a blockquote demonstrating custom rendering\n\n### Lists\n\n1. First item\n2. Second item\n3. Third item\n\n- Unordered item\n- Another item\n\n### Links and Images\n\nCheck out [WSXJS](https://wsxjs.dev) for more information.\n\n---\n\n**Bold text** and *italic text* are also supported.",
+    "input": {
+        "title": "Markdown Input",
+        "placeholder": "Enter your Markdown here...",
+        "loadSample": "Load Sample",
+        "clear": "Clear"
+    },
+    "output": {
+        "title": "Rendered Output",
+        "pattern1": {
+            "label": "Pattern 1",
+            "title": "Pattern 1:",
+            "description": "Using marked.use({ renderer }) - Renderer returns HTML strings with WSX custom element tags"
+        },
+        "pattern2": {
+            "label": "Pattern 2",
+            "title": "Pattern 2:",
+            "description": "Using marked.lexer() + Manual WSX JSX rendering - Returns actual JSX elements"
+        }
+    },
+    "explanation": {
+        "title": "How It Works",
+        "pattern1": {
+            "title": "Pattern 1: marked.use({ renderer })",
+            "description": "Create a custom renderer object that returns HTML strings containing WSX custom element tags. Since WSX components are registered as custom elements, they work when inserted as HTML.",
+            "code": "const renderer = {\n  heading(token) {\n    return `<wsx-marked-heading level=\"${token.depth}\" text=\"...\"></wsx-marked-heading>`;\n  }\n};\n\nmarked.use({ renderer });\nconst html = marked.parse(markdown);\nelement.innerHTML = html; // Browser auto-instantiates WSX components",
+            "pros": "Uses marked's built-in system, simple",
+            "cons": "Returns HTML strings, not JSX elements"
+        },
+        "pattern2": {
+            "title": "Pattern 2: marked.lexer() + WSX JSX",
+            "description": "Use marked.lexer() to get tokens, then manually convert them to WSX JSX elements. This allows returning actual JSX elements instead of HTML strings.",
+            "code": "const tokens = marked.lexer(markdown);\n\nrender() {\n  return (\n    <div>\n      {tokens.map(token => this.renderToken(token))}\n    </div>\n  );\n}\n\nrenderToken(token) {\n  return <wsx-marked-heading level={token.depth} text={token.text} />;\n}",
+            "pros": "Returns actual JSX elements, fully type-safe",
+            "cons": "More manual work, need to handle all token types"
+        },
+        "components": {
+            "title": "WSX Components",
+            "description": "Both patterns use the same WSX Web Components. The components are registered as custom elements, so they work in both HTML strings (Pattern 1) and JSX (Pattern 2).",
+            "code": "@autoRegister({ tagName: 'wsx-marked-heading' })\nclass WsxMarkedHeading extends LightComponent {\n  render() {\n    return <h{this.level}>{this.text}</h{this.level}>;\n  }\n}"
+        },
+        "pros": "Pros:",
+        "cons": "Cons:"
+    },
+    "benefits": {
+        "title": "Benefits of WSX Custom Renderers",
+        "typeSafety": {
+            "label": "Type Safety:",
+            "description": "Full TypeScript support for renderer methods"
+        },
+        "reusability": {
+            "label": "Component Reusability:",
+            "description": "Reuse WSX components across different renderer methods"
+        },
+        "interactivity": {
+            "label": "Interactivity:",
+            "description": "Add event handlers and reactive state to rendered elements"
+        },
+        "styleIsolation": {
+            "label": "Style Isolation:",
+            "description": "Web Components provide automatic style scoping"
+        },
+        "maintainability": {
+            "label": "Maintainability:",
+            "description": "Clean, declarative JSX syntax instead of string concatenation"
+        }
+    }
+}

@@ -1,0 +1,71 @@
+{
+    "title": "Marked + WSX Benutzerdefinierter Renderer Demo",
+    "description": "Diese Demo zeigt, wie man den Standard-Renderer von marked mit WSX-Komponenten überschreibt, um benutzerdefiniertes, interaktives Markdown-Rendering zu erstellen.",
+    "sampleMarkdown": "# Willkommen bei Marked + WSX\n\nDies ist eine **Demonstration** der Verwendung von `marked` mit benutzerdefinierten WSX-Renderern.\n\n## Funktionen\n\n- Benutzerdefiniertes Überschriften-Rendering mit WSX-Komponenten\n- Verbesserte Codeblöcke mit Syntax-Hervorhebung\n- Benutzerdefinierte Blockzitate mit gestylten Komponenten\n- Interaktive Listen mit WSX-Komponenten\n\n### Code-Beispiel\n\n```javascript\n// Dies ist ein Codeblock\nfunction greet(name) {\n    return `Hello, ${name}!`;\n}\n```\n\n> Dies ist ein Blockzitat, das benutzerdefiniertes Rendering demonstriert\n\n### Listen\n\n1. Erster Punkt\n2. Zweiter Punkt\n3. Dritter Punkt\n\n- Unsortierter Punkt\n- Noch ein Punkt\n\n### Links und Bilder\n\nSchauen Sie sich [WSXJS](https://wsxjs.dev) für weitere Informationen an.\n\n---\n\n**Fetter Text** und *kursiver Text* werden ebenfalls unterstützt.",
+    "input": {
+        "title": "Markdown-Eingabe",
+        "placeholder": "Geben Sie hier Ihr Markdown ein...",
+        "loadSample": "Beispiel laden",
+        "clear": "Löschen"
+    },
+    "output": {
+        "title": "Gerendertes Ergebnis",
+        "pattern1": {
+            "label": "Muster 1",
+            "title": "Muster 1:",
+            "description": "Verwendung von marked.use({ renderer }) - Renderer gibt HTML-Strings mit WSX-Benutzerdefinierten Element-Tags zurück"
+        },
+        "pattern2": {
+            "label": "Muster 2",
+            "title": "Muster 2:",
+            "description": "Verwendung von marked.lexer() + Manuelles WSX JSX-Rendering - Gibt tatsächliche JSX-Elemente zurück"
+        }
+    },
+    "explanation": {
+        "title": "Wie es funktioniert",
+        "pattern1": {
+            "title": "Muster 1: marked.use({ renderer })",
+            "description": "Erstellen Sie ein benutzerdefiniertes Renderer-Objekt, das HTML-Strings mit WSX-Benutzerdefinierten Element-Tags zurückgibt. Da WSX-Komponenten als benutzerdefinierte Elemente registriert sind, funktionieren sie, wenn sie als HTML eingefügt werden.",
+            "code": "const renderer = {\n  heading(token) {\n    return `<wsx-marked-heading level=\"${token.depth}\" text=\"...\"></wsx-marked-heading>`;\n  }\n};\n\nmarked.use({ renderer });\nconst html = marked.parse(markdown);\nelement.innerHTML = html; // Browser instanziiert WSX-Komponenten automatisch",
+            "pros": "Verwendet das eingebaute System von marked, einfach",
+            "cons": "Gibt HTML-Strings zurück, keine JSX-Elemente"
+        },
+        "pattern2": {
+            "title": "Muster 2: marked.lexer() + WSX JSX",
+            "description": "Verwenden Sie marked.lexer(), um Tokens zu erhalten, und konvertieren Sie sie dann manuell in WSX JSX-Elemente. Dies ermöglicht die Rückgabe tatsächlicher JSX-Elemente statt HTML-Strings.",
+            "code": "const tokens = marked.lexer(markdown);\n\nrender() {\n  return (\n    <div>\n      {tokens.map(token => this.renderToken(token))}\n    </div>\n  );\n}\n\nrenderToken(token) {\n  return <wsx-marked-heading level={token.depth} text={token.text} />;\n}",
+            "pros": "Gibt tatsächliche JSX-Elemente zurück, vollständig typsicher",
+            "cons": "Mehr manuelle Arbeit, müssen alle Token-Typen behandeln"
+        },
+        "components": {
+            "title": "WSX-Komponenten",
+            "description": "Beide Muster verwenden dieselben WSX Web Components. Die Komponenten sind als benutzerdefinierte Elemente registriert, sodass sie sowohl in HTML-Strings (Muster 1) als auch in JSX (Muster 2) funktionieren.",
+            "code": "@autoRegister({ tagName: 'wsx-marked-heading' })\nclass WsxMarkedHeading extends LightComponent {\n  render() {\n    return <h{this.level}>{this.text}</h{this.level}>;\n  }\n}"
+        },
+        "pros": "Vorteile:",
+        "cons": "Nachteile:"
+    },
+    "benefits": {
+        "title": "Vorteile von WSX-Benutzerdefinierten Renderern",
+        "typeSafety": {
+            "label": "Typsicherheit:",
+            "description": "Vollständige TypeScript-Unterstützung für Renderer-Methoden"
+        },
+        "reusability": {
+            "label": "Komponenten-Wiederverwendbarkeit:",
+            "description": "WSX-Komponenten über verschiedene Renderer-Methoden hinweg wiederverwenden"
+        },
+        "interactivity": {
+            "label": "Interaktivität:",
+            "description": "Ereignishandler und reaktiven State zu gerenderten Elementen hinzufügen"
+        },
+        "styleIsolation": {
+            "label": "Style-Isolation:",
+            "description": "Web Components bieten automatisches Style-Scoping"
+        },
+        "maintainability": {
+            "label": "Wartbarkeit:",
+            "description": "Saubere, deklarative JSX-Syntax statt String-Verkettung"
+        }
+    }
+}

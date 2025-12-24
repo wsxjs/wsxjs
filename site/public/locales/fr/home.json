@@ -32,7 +32,7 @@
             }
         },
         "vsPlain": {
-            "title": "vs Web Components Bruts",
+            "title": "vs Vanilla",
             "badge": "Natif",
             "items": {
                 "jsx": "Syntaxe JSX (familière)",

@@ -1,0 +1,71 @@
+{
+    "title": "Marked + WSX Rendu personnalisé Demo",
+    "description": "Cette démo montre comment remplacer le rendu par défaut de marked avec des composants WSX pour créer un rendu Markdown personnalisé et interactif.",
+    "sampleMarkdown": "# Bienvenue dans Marked + WSX\n\nCeci est une **démonstration** de l'utilisation de `marked` avec des rendus WSX personnalisés.\n\n## Fonctionnalités\n\n- Rendu de titre personnalisé avec des composants WSX\n- Blocs de code améliorés avec coloration syntaxique\n- Citations en bloc personnalisées avec des composants stylisés\n- Listes interactives avec des composants WSX\n\n### Exemple de code\n\n```javascript\n// Ceci est un bloc de code\nfunction greet(name) {\n    return `Hello, ${name}!`;\n}\n```\n\n> Ceci est une citation en bloc démontrant le rendu personnalisé\n\n### Listes\n\n1. Premier élément\n2. Deuxième élément\n3. Troisième élément\n\n- Élément non ordonné\n- Un autre élément\n\n### Liens et images\n\nConsultez [WSXJS](https://wsxjs.dev) pour plus d'informations.\n\n---\n\n**Texte en gras** et *texte en italique* sont également pris en charge.",
+    "input": {
+        "title": "Entrée Markdown",
+        "placeholder": "Entrez votre Markdown ici...",
+        "loadSample": "Charger l'exemple",
+        "clear": "Effacer"
+    },
+    "output": {
+        "title": "Sortie rendue",
+        "pattern1": {
+            "label": "Modèle 1",
+            "title": "Modèle 1 :",
+            "description": "Utilisation de marked.use({ renderer }) - Le rendu renvoie des chaînes HTML avec des balises d'éléments personnalisés WSX"
+        },
+        "pattern2": {
+            "label": "Modèle 2",
+            "title": "Modèle 2 :",
+            "description": "Utilisation de marked.lexer() + Rendu WSX JSX manuel - Renvoie des éléments JSX réels"
+        }
+    },
+    "explanation": {
+        "title": "Comment ça fonctionne",
+        "pattern1": {
+            "title": "Modèle 1 : marked.use({ renderer })",
+            "description": "Créez un objet de rendu personnalisé qui renvoie des chaînes HTML contenant des balises d'éléments personnalisés WSX. Comme les composants WSX sont enregistrés comme éléments personnalisés, ils fonctionnent lorsqu'ils sont insérés comme HTML.",
+            "code": "const renderer = {\n  heading(token) {\n    return `<wsx-marked-heading level=\"${token.depth}\" text=\"...\"></wsx-marked-heading>`;\n  }\n};\n\nmarked.use({ renderer });\nconst html = marked.parse(markdown);\nelement.innerHTML = html; // Le navigateur instancie automatiquement les composants WSX",
+            "pros": "Utilise le système intégré de marked, simple",
+            "cons": "Renvoie des chaînes HTML, pas des éléments JSX"
+        },
+        "pattern2": {
+            "title": "Modèle 2 : marked.lexer() + WSX JSX",
+            "description": "Utilisez marked.lexer() pour obtenir des tokens, puis convertissez-les manuellement en éléments WSX JSX. Cela permet de renvoyer des éléments JSX réels au lieu de chaînes HTML.",
+            "code": "const tokens = marked.lexer(markdown);\n\nrender() {\n  return (\n    <div>\n      {tokens.map(token => this.renderToken(token))}\n    </div>\n  );\n}\n\nrenderToken(token) {\n  return <wsx-marked-heading level={token.depth} text={token.text} />;\n}",
+            "pros": "Renvoie des éléments JSX réels, entièrement sûrs en type",
+            "cons": "Plus de travail manuel, besoin de gérer tous les types de tokens"
+        },
+        "components": {
+            "title": "Composants WSX",
+            "description": "Les deux modèles utilisent les mêmes Web Components WSX. Les composants sont enregistrés comme éléments personnalisés, donc ils fonctionnent à la fois dans les chaînes HTML (Modèle 1) et en JSX (Modèle 2).",
+            "code": "@autoRegister({ tagName: 'wsx-marked-heading' })\nclass WsxMarkedHeading extends LightComponent {\n  render() {\n    return <h{this.level}>{this.text}</h{this.level}>;\n  }\n}"
+        },
+        "pros": "Avantages :",
+        "cons": "Inconvénients :"
+    },
+    "benefits": {
+        "title": "Avantages des rendus personnalisés WSX",
+        "typeSafety": {
+            "label": "Sécurité de type :",
+            "description": "Support TypeScript complet pour les méthodes de rendu"
+        },
+        "reusability": {
+            "label": "Réutilisabilité des composants :",
+            "description": "Réutilisez les composants WSX dans différentes méthodes de rendu"
+        },
+        "interactivity": {
+            "label": "Interactivité :",
+            "description": "Ajoutez des gestionnaires d'événements et un état réactif aux éléments rendus"
+        },
+        "styleIsolation": {
+            "label": "Isolation des styles :",
+            "description": "Les Web Components fournissent une portée de style automatique"
+        },
+        "maintainability": {
+            "label": "Maintenabilité :",
+            "description": "Syntaxe JSX propre et déclarative au lieu de concaténation de chaînes"
+        }
+    }
+}

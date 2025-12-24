@@ -44,5 +44,11 @@
         "termsOfService": "服务条款",
         "copyright": "© 2026 WSXJS。基于 MIT 许可证发布。",
         "madeWith": "由 WSXJS 团队用 ❤️ 制作"
+    },
+    "notFound": {
+        "title": "页面未找到",
+        "description": "您访问的页面不存在或已被移动。",
+        "goHome": "返回首页",
+        "goBack": "返回上一页"
     }
 }

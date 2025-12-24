@@ -1,0 +1,125 @@
+{
+    "title": "EditorJS + WSXJS 演示",
+    "tryEditor": "试试编辑器",
+    "saveData": "保存数据",
+    "loadSampleData": "加载示例数据",
+    "explanation": {
+        "title": "为什么 EditorJS 插件开发很困难（以及 WSX 如何解决它）",
+        "traditionalWay": "❌ 传统方式很困难",
+        "problems": {
+            "domManipulation": {
+                "title": "1. 手动 DOM 操作",
+                "description": "您必须使用冗长的 JavaScript API（如 document.createElement、appendChild、setAttribute 等）手动创建、更新和管理 DOM 元素。这导致数百行样板代码。",
+                "code": "// 传统方式 - 大量样板代码\nconst wrapper = document.createElement('div');\nconst input = document.createElement('input');\ninput.setAttribute('type', 'text');\ninput.setAttribute('class', 'alert-input');\ninput.addEventListener('change', handleChange);\nwrapper.appendChild(input);\n// ... 一个简单组件还需要 50+ 行代码"
+            },
+            "typeSafety": {
+                "title": "2. 没有类型安全",
+                "description": "EditorJS 工具是用纯 JavaScript 编写的，没有类型检查。您会在运行时发现错误，而不是在开发期间。属性名称、数据结构和方法签名都容易出错。"
+            },
+            "stateManagement": {
+                "title": "3. 复杂的状态管理",
+                "description": "您必须手动跟踪组件状态，与 EditorJS 数据同步，处理更新并确保一致性。这需要在代码中分散仔细的事件处理和状态同步逻辑。"
+            },
+            "styleIsolation": {
+                "title": "4. 样式隔离问题",
+                "description": "样式在工具之间泄漏并与 EditorJS 自己的样式冲突。您需要使用复杂的 CSS 选择器、BEM 命名约定或 CSS-in-JS 解决方案来避免冲突。"
+            },
+            "maintainability": {
+                "title": "5. 难以维护",
+                "description": "代码变成了一堆命令式 DOM 操作、事件监听器和状态管理。添加功能或修复错误需要理解整个代码库。重构既危险又耗时。"
+            },
+            "reusability": {
+                "title": "6. 没有组件可重用性",
+                "description": "每个工具都是一个整体类，所有内容都混在一起。您无法轻松重用 UI 组件、共享逻辑或从更简单的组件组合复杂的工具。"
+            }
+        },
+        "solutions": {
+            "title": "✅ WSX 如何解决它",
+            "jsxSyntax": {
+                "title": "1. 声明式 JSX 语法",
+                "description": "使用 JSX 声明式编写 UI，就像 React 一样。不再需要手动 DOM 操作 - WSX 为您处理所有这一切。",
+                "code": "// WSX 方式 - 简洁明了\nrender() {\n    return (\n        <div>\n            <wsx-alert-component\n                type={this.data.type}\n                message={this.data.message}\n                onchange={this.handleChange}\n            />\n        </div>\n    );\n}"
+            },
+            "typescript": {
+                "title": "2. 完整的 TypeScript 支持",
+                "description": "获得编译时类型检查、自动完成和重构支持。在生产之前捕获错误。类型安全的 props、事件和数据结构。"
+            },
+            "reactiveState": {
+                "title": "3. 内置响应式状态",
+                "description": "使用 @state 装饰器实现自动响应式。状态更改会自动触发 UI 更新。无需手动同步。",
+                "code": "@state()\nprivate message = '';\n\n// 更改时自动更新 UI\nthis.message = 'New value';"
+            },
+            "styleIsolation": {
+                "title": "4. 自动样式隔离",
+                "description": "带有 Shadow DOM 的 Web Components 提供自动样式作用域。您的样式被封装，不会与 EditorJS 或其他工具冲突。"
+            },
+            "architecture": {
+                "title": "5. 清晰的组件架构",
+                "description": "分离关注点：UI 组件处理渲染，工具处理 EditorJS 集成。易于理解、测试和维护。重构安全且直接。"
+            },
+            "reusability": {
+                "title": "6. 可重用的 Web Components",
+                "description": "构建可在任何地方工作的可重用组件 - 在 EditorJS、独立页面或其他框架中。从简单组件组合复杂工具。"
+            }
+        }
+    },
+    "benefits": {
+        "title": "🚀 WSX 的额外优势",
+        "architecture": {
+            "label": "基于组件的架构：",
+            "description": "每个工具都是一个独立的 Web Component"
+        },
+        "typeSafety": {
+            "label": "类型安全：",
+            "description": "完整的 TypeScript 支持和 JSX"
+        },
+        "declarativeUI": {
+            "label": "声明式 UI：",
+            "description": "使用 JSX 构建复杂的 UI，而不是手动 DOM 操作"
+        },
+        "shadowDOM": {
+            "label": "Shadow DOM 隔离：",
+            "description": "样式自动作用域化"
+        },
+        "stateManagement": {
+            "label": "内置状态管理：",
+            "description": "无需外部库的响应式更新"
+        },
+        "developerExperience": {
+            "label": "开发体验：",
+            "description": "热重载、调试工具和清晰的代码结构"
+        }
+    },
+    "info": {
+        "customBlockTool": {
+            "title": "📦 自定义块工具",
+            "description": "WsxAlertTool 演示了使用 WSX 构建的自定义块工具。它具有类型选择、可编辑内容和正确的数据持久化功能。"
+        },
+        "inlineTool": {
+            "title": "✏️ 内联工具",
+            "description": "WsxHighlightTool 展示了如何使用 WSX 创建内联工具。尝试选择文本并单击高亮按钮或使用"
+        },
+        "viewSourceCode": "在 GitHub 上查看源代码 →"
+    },
+    "editor": {
+        "placeholder": "开始输入或点击 + 添加 WSX 组件 - Alert、Code、Table 等！",
+        "defaultData": {
+            "welcome": {
+                "text": "欢迎使用 EditorJS + WSX！",
+                "description": "此编辑器演示了 WSXJS 如何通过 Web Components 和 JSX 增强 EditorJS 插件开发。",
+                "alertMessage": "这是一个自定义 WSX Alert 块。尝试更改类型或编辑消息！"
+            }
+        },
+        "sampleData": {
+            "header": {
+                "text": "WSX 让 EditorJS 插件开发更出色",
+                "description": "使用 WSX，您可以使用现代 Web Components 和 JSX 语法构建 EditorJS 插件。这提供了更好的结构、类型安全和开发体验。",
+                "alertMessage": "成功加载示例数据！此 alert 块是使用 WSX 构建的。"
+            },
+            "highlight": {
+                "description": "尝试选择此文本并使用高亮工具（Cmd+Shift+H）查看 WSX 内联工具的实际效果！",
+                "alertMessage": "记住：WSX 组件只是具有超能力的原生 Web Components！"
+            }
+        }
+    }
+}

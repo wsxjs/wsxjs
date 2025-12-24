@@ -1,0 +1,52 @@
+{
+    "title": "생태계",
+    "description": "개발 경험을 향상시키는 풍부한 도구 및 라이브러리 생태계.",
+    "core": {
+        "title": "핵심 프레임워크",
+        "description": "JSX 지원 및 Web Components를 갖춘 메인 WSXJS",
+        "links": {
+            "documentation": "문서",
+            "github": "GitHub"
+        }
+    },
+    "router": {
+        "title": "라우터",
+        "description": "단일 페이지 애플리케이션을 위한 네이티브 History API 기반 라우팅",
+        "links": {
+            "docs": "라우터 문서",
+            "demo": "데모 보기"
+        }
+    },
+    "baseComponents": {
+        "title": "기본 컴포넌트",
+        "description": "빠른 개발을 위한 사전 구축된 UI 컴포넌트",
+        "links": {
+            "components": "컴포넌트",
+            "examples": "예제"
+        }
+    },
+    "vitePlugin": {
+        "title": "Vite 플러그인",
+        "description": "원활한 개발을 위한 빌드 도구 통합",
+        "links": {
+            "setupGuide": "설정 가이드",
+            "plugin": "플러그인"
+        }
+    },
+    "eslintPlugin": {
+        "title": "ESLint 플러그인",
+        "description": "코드 품질 및 모범 사례 적용",
+        "links": {
+            "rules": "규칙",
+            "plugin": "플러그인"
+        }
+    },
+    "testing": {
+        "title": "테스트",
+        "description": ".wsx 컴포넌트에 대한 Vitest를 사용한 포괄적인 테스트",
+        "links": {
+            "guide": "테스트 가이드",
+            "examples": "예제"
+        }
+    }
+}

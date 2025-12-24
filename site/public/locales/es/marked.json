@@ -1,0 +1,71 @@
+{
+    "title": "Marked + WSX Renderizador personalizado Demo",
+    "description": "Esta demo muestra cómo sobrescribir el renderizador predeterminado de marked con componentes WSX para crear renderizado de Markdown personalizado e interactivo.",
+    "sampleMarkdown": "# Bienvenido a Marked + WSX\n\nEsta es una **demostración** de cómo usar `marked` con renderizadores WSX personalizados.\n\n## Características\n\n- Renderizado de encabezados personalizado con componentes WSX\n- Bloques de código mejorados con resaltado de sintaxis\n- Citas en bloque personalizadas con componentes con estilo\n- Listas interactivas con componentes WSX\n\n### Ejemplo de código\n\n```javascript\n// Este es un bloque de código\nfunction greet(name) {\n    return `Hello, ${name}!`;\n}\n```\n\n> Esta es una cita en bloque que demuestra renderizado personalizado\n\n### Listas\n\n1. Primer elemento\n2. Segundo elemento\n3. Tercer elemento\n\n- Elemento sin ordenar\n- Otro elemento\n\n### Enlaces e imágenes\n\nConsulta [WSXJS](https://wsxjs.dev) para más información.\n\n---\n\n**Texto en negrita** y *texto en cursiva* también son compatibles.",
+    "input": {
+        "title": "Entrada Markdown",
+        "placeholder": "Ingresa tu Markdown aquí...",
+        "loadSample": "Cargar ejemplo",
+        "clear": "Limpiar"
+    },
+    "output": {
+        "title": "Salida renderizada",
+        "pattern1": {
+            "label": "Patrón 1",
+            "title": "Patrón 1:",
+            "description": "Usando marked.use({ renderer }) - El renderizador devuelve cadenas HTML con etiquetas de elementos personalizados WSX"
+        },
+        "pattern2": {
+            "label": "Patrón 2",
+            "title": "Patrón 2:",
+            "description": "Usando marked.lexer() + Renderizado manual WSX JSX - Devuelve elementos JSX reales"
+        }
+    },
+    "explanation": {
+        "title": "Cómo funciona",
+        "pattern1": {
+            "title": "Patrón 1: marked.use({ renderer })",
+            "description": "Crea un objeto renderizador personalizado que devuelve cadenas HTML que contienen etiquetas de elementos personalizados WSX. Como los componentes WSX están registrados como elementos personalizados, funcionan cuando se insertan como HTML.",
+            "code": "const renderer = {\n  heading(token) {\n    return `<wsx-marked-heading level=\"${token.depth}\" text=\"...\"></wsx-marked-heading>`;\n  }\n};\n\nmarked.use({ renderer });\nconst html = marked.parse(markdown);\nelement.innerHTML = html; // El navegador instancia automáticamente los componentes WSX",
+            "pros": "Usa el sistema incorporado de marked, simple",
+            "cons": "Devuelve cadenas HTML, no elementos JSX"
+        },
+        "pattern2": {
+            "title": "Patrón 2: marked.lexer() + WSX JSX",
+            "description": "Usa marked.lexer() para obtener tokens, luego conviértelos manualmente a elementos WSX JSX. Esto permite devolver elementos JSX reales en lugar de cadenas HTML.",
+            "code": "const tokens = marked.lexer(markdown);\n\nrender() {\n  return (\n    <div>\n      {tokens.map(token => this.renderToken(token))}\n    </div>\n  );\n}\n\nrenderToken(token) {\n  return <wsx-marked-heading level={token.depth} text={token.text} />;\n}",
+            "pros": "Devuelve elementos JSX reales, completamente seguros en tipos",
+            "cons": "Más trabajo manual, necesitas manejar todos los tipos de tokens"
+        },
+        "components": {
+            "title": "Componentes WSX",
+            "description": "Ambos patrones usan los mismos Web Components WSX. Los componentes están registrados como elementos personalizados, por lo que funcionan tanto en cadenas HTML (Patrón 1) como en JSX (Patrón 2).",
+            "code": "@autoRegister({ tagName: 'wsx-marked-heading' })\nclass WsxMarkedHeading extends LightComponent {\n  render() {\n    return <h{this.level}>{this.text}</h{this.level}>;\n  }\n}"
+        },
+        "pros": "Ventajas:",
+        "cons": "Desventajas:"
+    },
+    "benefits": {
+        "title": "Beneficios de los renderizadores personalizados WSX",
+        "typeSafety": {
+            "label": "Seguridad de tipos:",
+            "description": "Soporte completo de TypeScript para métodos de renderizador"
+        },
+        "reusability": {
+            "label": "Reutilización de componentes:",
+            "description": "Reutiliza componentes WSX en diferentes métodos de renderizador"
+        },
+        "interactivity": {
+            "label": "Interactividad:",
+            "description": "Agrega manejadores de eventos y estado reactivo a elementos renderizados"
+        },
+        "styleIsolation": {
+            "label": "Aislamiento de estilos:",
+            "description": "Los Web Components proporcionan alcance automático de estilos"
+        },
+        "maintainability": {
+            "label": "Mantenibilidad:",
+            "description": "Sintaxis JSX limpia y declarativa en lugar de concatenación de cadenas"
+        }
+    }
+}
