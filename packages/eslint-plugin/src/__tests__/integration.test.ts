@@ -55,6 +55,7 @@ describe("WSX ESLint Plugin Integration", () => {
                 "state-requires-initial-value",
                 "require-jsx-import-source",
                 "no-null-render",
+                "no-inner-html",
             ];
 
             expect(Object.keys(wsxPlugin.rules)).toEqual(expectedRules);
