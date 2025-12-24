@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-logger",
-    "version": "0.0.17",
+    "version": "0.0.18",
     "description": "WSXJS Logger - Pino-based logging utility for WSXJS",
     "type": "module",
     "main": "./dist/index.cjs",
