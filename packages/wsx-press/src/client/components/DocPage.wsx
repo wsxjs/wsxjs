@@ -31,26 +31,64 @@ export const metadataCache: {
 
 /**
  * 创建带超时的 fetch 请求（工具函数）
+ * 支持合并传入的 signal 和超时 signal，确保两者都能正确取消请求
  */
 async function fetchWithTimeout(
     url: string,
     options: RequestInit = {},
     timeout: number = 10000
 ): Promise<Response> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    // 创建超时 AbortController
+    const timeoutController = new AbortController();
+    const timeoutId = setTimeout(() => timeoutController.abort(), timeout);
+
+    // 如果传入了 signal，需要合并两个 signal
+    let finalSignal: AbortSignal;
+    if (options.signal) {
+        // 创建一个新的 AbortController 来合并两个 signal
+        const mergedController = new AbortController();
+
+        // 监听传入的 signal，如果被取消则取消合并的 controller
+        if (options.signal.aborted) {
+            mergedController.abort();
+        } else {
+            options.signal.addEventListener("abort", () => {
+                mergedController.abort();
+            });
+        }
+
+        // 监听超时 signal，如果被取消则取消合并的 controller
+        timeoutController.signal.addEventListener("abort", () => {
+            mergedController.abort();
+        });
+
+        finalSignal = mergedController.signal;
+    } else {
+        // 如果没有传入 signal，直接使用超时 signal
+        finalSignal = timeoutController.signal;
+    }
 
     try {
         const response = await fetch(url, {
             ...options,
-            signal: controller.signal,
+            signal: finalSignal,
         });
         clearTimeout(timeoutId);
         return response;
     } catch (error) {
         clearTimeout(timeoutId);
         if (error instanceof Error && error.name === "AbortError") {
-            throw new Error(`Request timeout after ${timeout}ms`);
+            // 检查是哪个 signal 触发的取消
+            const isTimeout = timeoutController.signal.aborted;
+            const isUserCancel = options.signal?.aborted;
+
+            if (isUserCancel) {
+                throw new Error("Request was cancelled");
+            } else if (isTimeout) {
+                throw new Error(`Request timeout after ${timeout}ms`);
+            } else {
+                throw new Error("Request was aborted");
+            }
         }
         throw error;
     }
@@ -113,7 +151,7 @@ export default class DocPage extends LightComponent {
             styles,
             styleName: "wsx-doc-page",
         });
-        logger.info("DocPage initialized");
+        logger.debug("DocPage initialized");
     }
 
     protected onConnected() {
@@ -133,7 +171,7 @@ export default class DocPage extends LightComponent {
             } else {
                 // 标签页重新可见时，如果当前是 loading 状态，重新加载
                 if (this.loadingState === "loading" && this.currentLoadingPath) {
-                    logger.info("Tab became visible, reloading document");
+                    logger.debug("Tab became visible, reloading document");
                     this.loadDocument();
                 }
             }
@@ -214,7 +252,6 @@ export default class DocPage extends LightComponent {
 
             // 从 RouterUtils 获取当前路由信息（包含参数）
             const routeInfo = RouterUtils.getCurrentRoute();
-            logger.debug("DocPage loadDocument - routeInfo:", routeInfo);
             const params = routeInfo.params as { category?: string; page?: string };
 
             // 验证参数
@@ -222,7 +259,7 @@ export default class DocPage extends LightComponent {
                 logger.warn("Missing route parameters:", { params, routeInfo });
                 // 如果参数为空，可能是路由还未初始化，保持 idle 状态
                 if (Object.keys(params).length === 0) {
-                    logger.info("Route params not yet initialized, keeping idle state");
+                    logger.debug("Route params not yet initialized, keeping idle state");
                     this.loadingState = "idle";
                     return;
                 }
@@ -251,7 +288,7 @@ export default class DocPage extends LightComponent {
 
             // 检查是否已切换文档（防止竞态条件）
             if (this.currentLoadingPath !== docPath || this.loadingAbortController.signal.aborted) {
-                logger.info(`Document switched, ignoring result for ${docPath}`);
+                logger.debug(`Document switched after metadata, ignoring result for ${docPath}`);
                 this.isLoading = false;
                 this.loadingState = "idle";
                 return;
@@ -287,7 +324,7 @@ export default class DocPage extends LightComponent {
 
             // 再次检查是否已切换文档
             if (this.currentLoadingPath !== docPath || this.loadingAbortController.signal.aborted) {
-                logger.info(`Document switched during fetch, ignoring result for ${docPath}`);
+                logger.debug(`Document switched during fetch, ignoring result for ${docPath}`);
                 this.isLoading = false;
                 this.loadingState = "idle";
                 return;
@@ -316,7 +353,7 @@ export default class DocPage extends LightComponent {
 
             // 最后一次检查是否已切换文档
             if (this.currentLoadingPath !== docPath || this.loadingAbortController.signal.aborted) {
-                logger.info(`Document switched after fetch, ignoring result for ${docPath}`);
+                logger.debug(`Document switched after fetch, ignoring result for ${docPath}`);
                 this.isLoading = false;
                 this.loadingState = "idle";
                 return;
@@ -325,12 +362,25 @@ export default class DocPage extends LightComponent {
             this.markdown = markdownContent;
             this.loadingState = "success";
             this.isLoading = false;
+
+            // 关键修复：确保状态变化触发重新渲染
+            // 问题：当 loadingState = "loading" 时，scheduleRerender() 设置 _isRendering = true
+            // _rerender() 使用嵌套的 requestAnimationFrame，_isRendering 在第二个 RAF 后才清除
+            // 如果 loadingState = "success" 在第一个渲染完成前设置，scheduleRerender() 会被跳过
+            // 解决方案：使用双重 requestAnimationFrame 确保在 _isRendering 清除后调用
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (this.connected) {
+                        this.scheduleRerender();
+                    }
+                });
+            });
         } catch (error) {
             this.isLoading = false;
 
             // 如果是取消请求，重置为 idle 状态，不显示错误
             if (error instanceof Error && error.name === "AbortError") {
-                logger.info("Document loading was cancelled");
+                logger.debug("Document loading was cancelled");
                 // 如果当前路径还存在，说明是用户切换了路由，保持 idle 状态
                 // 如果当前路径已被清除，说明组件已卸载，不需要更新状态
                 if (this.currentLoadingPath) {
@@ -368,6 +418,15 @@ export default class DocPage extends LightComponent {
                 error
             );
             logger.error("Failed to load document", error);
+
+            // 确保错误状态触发重新渲染（使用双重 RAF 确保在 _isRendering 清除后调用）
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (this.connected) {
+                        this.scheduleRerender();
+                    }
+                });
+            });
         }
     }
 

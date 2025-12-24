@@ -97,34 +97,46 @@ export default defineConfig({
     // This allows hot reload without needing to build dependencies first
     // In production, Vite will use package.json exports (dist files)
     resolve: {
-        alias:
-            process.env.NODE_ENV === "development"
-                ? {
-                      // In development, use source files directly for better HMR
-                      "@wsxjs/wsx-core": path.resolve(__dirname, "../packages/core/src/index.ts"),
-                      "@wsxjs/wsx-base-components": path.resolve(
-                          __dirname,
-                          "../packages/base-components/src/index.ts"
-                      ),
-                      "@wsxjs/wsx-marked-components": path.resolve(
-                          __dirname,
-                          "../packages/marked-components/src/index.ts"
-                      ),
-                      // Use built files for i18next to avoid module resolution issues
-                      "@wsxjs/wsx-i18next": path.resolve(
-                          __dirname,
-                          "../packages/i18next/dist/index.mjs"
-                      ),
-                      "@wsxjs/wsx-router": path.resolve(
-                          __dirname,
-                          "../packages/router/src/index.ts"
-                      ),
-                      "@wsxjs/wsx-press/client": path.resolve(
-                          __dirname,
-                          "../packages/wsx-press/src/client/index.ts"
-                      ),
-                  }
-                : undefined,
+        alias: [
+            // 子路径导出必须放在主包之前，确保精确匹配
+            {
+                find: "@wsxjs/wsx-press/client",
+                replacement: path.resolve(__dirname, "../packages/wsx-press/src/client/index.ts"),
+            },
+            {
+                find: "@wsxjs/wsx-press/node",
+                replacement: path.resolve(__dirname, "../packages/wsx-press/src/node/index.ts"),
+            },
+            // 主包和其他包的别名
+            {
+                find: "@wsxjs/wsx-core",
+                replacement: path.resolve(__dirname, "../packages/core/src/index.ts"),
+            },
+            {
+                find: "@wsxjs/wsx-base-components",
+                replacement: path.resolve(__dirname, "../packages/base-components/src/index.ts"),
+            },
+            {
+                find: "@wsxjs/wsx-logger",
+                replacement: path.resolve(__dirname, "../packages/logger/src/index.ts"),
+            },
+            {
+                find: "@wsxjs/wsx-press",
+                replacement: path.resolve(__dirname, "../packages/wsx-press/src/index.ts"),
+            },
+            {
+                find: "@wsxjs/wsx-marked-components",
+                replacement: path.resolve(__dirname, "../packages/marked-components/src/index.ts"),
+            },
+            {
+                find: "@wsxjs/wsx-i18next",
+                replacement: path.resolve(__dirname, "../packages/i18next/dist/index.mjs"),
+            },
+            {
+                find: "@wsxjs/wsx-router",
+                replacement: path.resolve(__dirname, "../packages/router/src/index.ts"),
+            },
+        ],
     },
     // 开发环境代理配置，解决 CORS 问题
     server: {

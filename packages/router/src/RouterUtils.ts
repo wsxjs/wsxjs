@@ -263,6 +263,14 @@ export class RouterUtils {
 
     /**
      * 监听路由变化
+     *
+     * 只监听 route-changed 事件，该事件在 RouterUtils._setCurrentRoute() 之后触发。
+     * 不监听 popstate 事件，因为：
+     * 1. WsxRouter 已经监听 popstate 并会触发 route-changed
+     * 2. 同时监听两个事件会导致回调被调用两次，产生竞态条件
+     * 3. popstate 触发时 RouterUtils._currentRoute 可能还未更新
+     *
+     * @see RFC-0035: 路由导航竞态条件修复
      */
     static onRouteChange(callback: (route: RouteInfo) => void): () => void {
         const handler = () => {
@@ -270,12 +278,12 @@ export class RouterUtils {
             callback(route);
         };
 
-        window.addEventListener("popstate", handler);
+        // 只监听 route-changed 事件
+        // 该事件由 WsxRouter 在更新 RouterUtils._currentRoute 之后触发
         document.addEventListener("route-changed", handler);
 
         // 返回清理函数
         return () => {
-            window.removeEventListener("popstate", handler);
             document.removeEventListener("route-changed", handler);
         };
     }

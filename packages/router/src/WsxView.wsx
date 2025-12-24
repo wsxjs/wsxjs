@@ -74,11 +74,14 @@ export default class WsxView extends LightComponent {
             // 更新组件参数
             try {
                 this.params = JSON.parse(newValue);
-                logger.warn(`WsxView: params attribute changed, setting on component:`, this.params);
+                logger.debug(
+                    `WsxView: params attribute changed, setting on component:`,
+                    this.params
+                );
                 Object.entries(this.params).forEach(([key, value]) => {
                     this.componentInstance!.setAttribute(key, value);
                 });
-                logger.warn(`WsxView: params set on component ${this.componentInstance.tagName}`);
+                logger.debug(`WsxView: params set on component ${this.componentInstance.tagName}`);
             } catch (e) {
                 logger.warn("Failed to parse params:", e);
             }
@@ -88,13 +91,13 @@ export default class WsxView extends LightComponent {
     private async loadComponent(componentName: string) {
         // 防止重复加载
         if (!this.connected || this.isLoading || this.componentInstance) {
-            logger.warn(
+            logger.debug(
                 `Skipping loadComponent for ${componentName}: connected=${this.connected}, isLoading=${this.isLoading}, hasInstance=${!!this.componentInstance}`
             );
             return;
         }
 
-        logger.warn(`WsxView: Loading component ${componentName}`);
+        logger.debug(`WsxView: Loading component ${componentName}`);
         this.isLoading = true; // 设置标志
 
         try {
@@ -130,19 +133,25 @@ export default class WsxView extends LightComponent {
                 logger.warn(`WsxView: Appending ${componentName} to container`);
                 // 在追加之前，确保组件已注册
                 if (!customElements.get(componentName)) {
-                    logger.error(`WsxView: Component ${componentName} is not registered in customElements registry!`);
+                    logger.error(
+                        `WsxView: Component ${componentName} is not registered in customElements registry!`
+                    );
                     this.isLoading = false;
                     this.componentInstance = null;
                     return;
                 }
                 container.appendChild(this.componentInstance); // 这会触发新组件的 connectedCallback
-                logger.warn(`WsxView: Component ${componentName} appended successfully, waiting for connectedCallback...`);
+                logger.warn(
+                    `WsxView: Component ${componentName} appended successfully, waiting for connectedCallback...`
+                );
                 // 使用 setTimeout 验证组件是否真的连接了
                 setTimeout(() => {
                     if (this.componentInstance && this.componentInstance.isConnected) {
                         logger.warn(`WsxView: Component ${componentName} is now connected to DOM`);
                     } else {
-                        logger.error(`WsxView: Component ${componentName} was not connected to DOM!`);
+                        logger.error(
+                            `WsxView: Component ${componentName} was not connected to DOM!`
+                        );
                     }
                 }, 0);
             } else {
@@ -154,7 +163,9 @@ export default class WsxView extends LightComponent {
             this.componentInstance = null; // 清除实例
         } finally {
             this.isLoading = false; // 重置标志
-            logger.warn(`WsxView: loadComponent for ${componentName} completed, isLoading=${this.isLoading}`);
+            logger.warn(
+                `WsxView: loadComponent for ${componentName} completed, isLoading=${this.isLoading}`
+            );
         }
     }
 

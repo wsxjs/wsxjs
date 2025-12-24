@@ -70,7 +70,7 @@ export default class WsxRouter extends LightComponent {
     }
 
     protected onConnected() {
-        logger.warn("WsxRouter connected to DOM");
+        logger.debug("WsxRouter connected to DOM");
 
         // RFC 0033: 设置浏览器滚动恢复模式
         if ("scrollRestoration" in history) {
@@ -90,13 +90,13 @@ export default class WsxRouter extends LightComponent {
             // 收集视图（如果还没有收集）
             if (this.views.size === 0) {
                 this.collectViews();
-                logger.warn(`WsxRouter collected views in onConnected: ${this.views.size}`);
+                logger.debug(`WsxRouter collected views in onConnected: ${this.views.size}`);
             }
 
             // 处理初始路由（页面刷新时）
             // 使用双重 requestAnimationFrame 确保所有子元素都已连接
             requestAnimationFrame(() => {
-                logger.warn(`WsxRouter handling initial route: ${window.location.pathname}`);
+                logger.debug(`WsxRouter handling initial route: ${window.location.pathname}`);
                 this.handleRouteChange();
             });
         });
@@ -111,7 +111,7 @@ export default class WsxRouter extends LightComponent {
         const views = Array.from(this.children).filter(
             (el) => el.tagName.toLowerCase() === "wsx-view"
         );
-        logger.warn(`WsxRouter found ${views.length} views`);
+        logger.debug(`WsxRouter found ${views.length} views`);
 
         // RFC 0032: 清除旧的缓存
         this.views.clear();
@@ -121,14 +121,14 @@ export default class WsxRouter extends LightComponent {
         views.forEach((view) => {
             const route = view.getAttribute("route") || "/";
             this.views.set(route, view as HTMLElement);
-            logger.warn(`WsxRouter registered route: ${route}`);
+            logger.debug(`WsxRouter registered route: ${route}`);
 
             // RFC 0032: 预编译参数路由的正则表达式
             if (route.includes(":")) {
                 const pattern = route.replace(/:[^/]+/g, "([^/]+)");
                 const regex = new RegExp(`^${pattern}$`);
                 this.compiledRoutes.set(route, regex);
-                logger.warn(`WsxRouter compiled regex for route: ${route} -> ${regex}`);
+                logger.debug(`WsxRouter compiled regex for route: ${route} -> ${regex}`);
             }
 
             // 初始状态：隐藏所有视图，等待路由匹配后再显示
@@ -140,21 +140,21 @@ export default class WsxRouter extends LightComponent {
     private handleRouteChange = () => {
         // 防止递归调用
         if (this.isHandlingRoute) {
-            logger.warn("Route change already in progress, skipping");
+            logger.debug("Route change already in progress, skipping");
             return;
         }
 
         // 如果视图为空，重新收集（可能子元素还未渲染）
         if (this.views.size === 0) {
             this.collectViews();
-            logger.warn(`WsxRouter re-collected views: ${this.views.size}`);
+            logger.debug(`WsxRouter re-collected views: ${this.views.size}`);
         }
 
         this.isHandlingRoute = true;
 
         try {
             const nextPath = window.location.pathname;
-            logger.warn(`WsxRouter: Route changed to: ${nextPath}`);
+            logger.debug(`WsxRouter: Route changed to: ${nextPath}`);
 
             // RFC 0033: 1. 触发 before-navigate 事件（可取消）
             const beforeEvent = new CustomEvent("before-navigate", {
@@ -197,7 +197,7 @@ export default class WsxRouter extends LightComponent {
                 view.style.display = "block";
                 view.style.visibility = "visible";
                 const viewRoute = view.getAttribute("route") || "/";
-                logger.warn(`Showing view for route: ${viewRoute}`);
+                logger.debug(`Showing view for route: ${viewRoute}`);
 
                 // Step 2: 隐藏所有其他视图（包括旧的 currentView）
                 for (const [_route, otherView] of this.views) {
@@ -212,19 +212,23 @@ export default class WsxRouter extends LightComponent {
 
                 // 传递路由参数（延迟设置，避免触发 attributeChangedCallback 导致递归）
                 const params = this.extractParams(viewRoute, nextPath);
-                logger.warn(
+                logger.debug(
                     `Extracted params for route ${viewRoute} and path ${nextPath}:`,
                     params
                 );
                 if (params) {
                     requestAnimationFrame(() => {
                         view.setAttribute("params", JSON.stringify(params));
-                        logger.warn(`Set params attribute on view: ${JSON.stringify(params)}`);
+                        logger.debug(`Set params attribute on view: ${JSON.stringify(params)}`);
                     });
                 }
 
-                // 更新 RouterUtils 中的全局路由信息（包含参数）
-                const url = new URL(window.location.href);
+                // RFC-0035: 立即更新 RouterUtils，确保 getCurrentRoute() 返回最新信息
+                // 在显示视图之后、触发事件之前更新，确保时序正确
+                const href =
+                    window.location.href ||
+                    `${window.location.pathname}${window.location.search}${window.location.hash}`;
+                const url = new URL(href, window.location.origin || "http://localhost");
                 const routeInfo: RouteInfo = {
                     path: nextPath,
                     params: params || {},
@@ -232,7 +236,15 @@ export default class WsxRouter extends LightComponent {
                     hash: url.hash.slice(1),
                 };
                 RouterUtils._setCurrentRoute(routeInfo);
-                logger.warn(`Updated RouterUtils._currentRoute:`, routeInfo);
+                logger.debug(`Updated RouterUtils._currentRoute:`, routeInfo);
+
+                // RFC-0035: 触发 route-changed 事件，通知 RouterUtils.onRouteChange() 监听器
+                // 在 document 上触发，确保所有监听器都能收到
+                const routeChangedEvent = new CustomEvent("route-changed", {
+                    detail: routeInfo,
+                    bubbles: true,
+                });
+                document.dispatchEvent(routeChangedEvent);
             } else {
                 // 如果没有找到视图，隐藏所有视图
                 for (const [_route, otherView] of this.views) {
@@ -242,7 +254,10 @@ export default class WsxRouter extends LightComponent {
                 logger.warn(`No view found for path: ${nextPath}`);
 
                 // 更新 RouterUtils 中的全局路由信息（无参数）
-                const url = new URL(window.location.href);
+                const href =
+                    window.location.href ||
+                    `${window.location.pathname}${window.location.search}${window.location.hash}`;
+                const url = new URL(href, window.location.origin || "http://localhost");
                 const routeInfo: RouteInfo = {
                     path: nextPath,
                     params: {},
@@ -250,6 +265,13 @@ export default class WsxRouter extends LightComponent {
                     hash: url.hash.slice(1),
                 };
                 RouterUtils._setCurrentRoute(routeInfo);
+
+                // RFC-0035: 同样需要触发 route-changed 事件
+                const routeChangedEvent = new CustomEvent("route-changed", {
+                    detail: routeInfo,
+                    bubbles: true,
+                });
+                document.dispatchEvent(routeChangedEvent);
             }
 
             // RFC 0033: 滚动管理
@@ -266,14 +288,10 @@ export default class WsxRouter extends LightComponent {
                 })
             );
 
-            // 保留旧的 route-changed 事件以保持向后兼容
-            this.dispatchEvent(
-                new CustomEvent("route-changed", {
-                    detail: { path: nextPath, view },
-                    bubbles: true,
-                    composed: true,
-                })
-            );
+            // RFC-0035: 移除旧的 route-changed 事件触发
+            // 原因：已在 document 上触发 route-changed 事件（第244行）
+            // 如果在 WsxRouter 元素上再次触发，会因为 bubbles: true 导致
+            // document 上的监听器收到两次事件，产生竞态条件
 
             // 更新当前路径
             this.currentPath = nextPath;

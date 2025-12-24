@@ -97,26 +97,33 @@ describe("WsxRouter", () => {
         expect(view2.getAttribute("component")).toBe("about-page");
     });
 
-    it("should dispatch route-changed event", () => {
-        const eventSpy = vi.spyOn(router, "dispatchEvent");
+    it("should dispatch route-changed event", async () => {
+        // RFC-0035: route-changed 事件现在在 document 上触发，不再在 router 元素上触发
+        const eventPromise = new Promise<CustomEvent>((resolve) => {
+            const eventListener = (e: Event) => {
+                document.removeEventListener("route-changed", eventListener);
+                resolve(e as CustomEvent);
+            };
+            document.addEventListener("route-changed", eventListener);
+        });
 
         // Mock current location
         Object.defineProperty(window, "location", {
-            value: { pathname: "/test" },
+            value: { pathname: "/test", search: "", hash: "" },
             writable: true,
         });
 
         // Trigger route change
         router.navigate("/test");
 
-        expect(eventSpy).toHaveBeenCalledWith(
-            expect.objectContaining({
-                type: "route-changed",
-                detail: expect.objectContaining({
-                    path: "/test",
-                }),
-            })
-        );
+        // Wait for event to be dispatched
+        const event = await eventPromise;
+        expect(event.detail).toMatchObject({
+            path: "/test",
+            params: {},
+            query: {},
+            hash: "",
+        });
     });
 
     it("should handle popstate events", () => {
