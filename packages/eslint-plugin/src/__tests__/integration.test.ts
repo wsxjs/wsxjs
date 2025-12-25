@@ -56,6 +56,7 @@ describe("WSX ESLint Plugin Integration", () => {
                 "require-jsx-import-source",
                 "no-null-render",
                 "no-inner-html",
+                "i18n-after-autoregister",
             ];
 
             expect(Object.keys(wsxPlugin.rules)).toEqual(expectedRules);

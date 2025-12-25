@@ -12,6 +12,7 @@ import { stateRequiresInitialValue } from "./rules/state-requires-initial-value"
 import { requireJsxImportSource } from "./rules/require-jsx-import-source";
 import { noNullRender } from "./rules/no-null-render";
 import { noInnerHTML } from "./rules/no-inner-html";
+import { i18nAfterAutoRegister } from "./rules/i18n-after-autoregister";
 import { recommendedConfig } from "./configs/recommended";
 import { createFlatConfig } from "./configs/flat";
 import { WSXPlugin } from "./types";
@@ -32,6 +33,7 @@ const plugin: WSXPlugin = {
         "require-jsx-import-source": requireJsxImportSource,
         "no-null-render": noNullRender,
         "no-inner-html": noInnerHTML,
+        "i18n-after-autoregister": i18nAfterAutoRegister,
     },
 
     // 配置预设

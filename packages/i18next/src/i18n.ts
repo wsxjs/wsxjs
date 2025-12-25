@@ -2,7 +2,7 @@
  * i18next 配置和初始化
  */
 
-import i18n from "i18next";
+import i18next from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import Backend from "i18next-http-backend";
 import type { I18nConfig } from "./types";
@@ -12,8 +12,9 @@ import type { I18nConfig } from "./types";
  * @param config 配置选项
  * @returns i18n 实例
  */
-export function initI18n(config: I18nConfig = {}): typeof i18n {
-    i18n.use(Backend)
+export function initI18n(config: I18nConfig = {}): typeof i18next {
+    i18next
+        .use(Backend)
         .use(LanguageDetector)
         .init({
             fallbackLng: "en",
@@ -29,7 +30,8 @@ export function initI18n(config: I18nConfig = {}): typeof i18n {
             ...config,
         });
 
-    return i18n;
+    return i18next;
 }
 
-export { i18n };
+// 导出 i18n 实例（使用命名导出）
+export { i18next as i18n };

@@ -28,6 +28,7 @@ export const recommendedConfig: WSXConfig = {
         "wsx/require-jsx-import-source": "error",
         "wsx/no-null-render": "error",
         "wsx/no-inner-html": "error",
+        "wsx/i18n-after-autoregister": "error",
 
         // TypeScript 规则（推荐）
         "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],

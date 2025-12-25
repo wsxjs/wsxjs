@@ -49,13 +49,12 @@ export default [
                 },
             ],
             "@typescript-eslint/no-unsafe-declaration-merging": "off", // Disable incompatible rule
-            // WSX plugin rules
-            "wsx/render-method-required": "error",
-            "wsx/no-react-imports": "error",
-            "wsx/web-component-naming": "warn",
-            "wsx/state-requires-initial-value": "error",
-            "wsx/require-jsx-import-source": "error",
-            "wsx/no-inner-html": "error",
+            // Use WSX plugin recommended rules (only WSX-specific rules)
+            ...Object.fromEntries(
+                Object.entries(wsxPlugin.configs.recommended.rules).filter(([key]) =>
+                    key.startsWith("wsx/")
+                )
+            ),
             "no-undef": "off", // TypeScript handles this
         },
     },
