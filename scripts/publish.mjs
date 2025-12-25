@@ -567,6 +567,13 @@ async function main() {
                 task: () => exec("pnpm install --frozen-lockfile", { silent: true }),
             },
             {
+                title: "构建 ESLint 插件（lint 依赖）",
+                task: () => {
+                    // eslint-plugin-wsx 需要先构建，因为其他包的 lint 会依赖它
+                    exec("pnpm --filter @wsxjs/eslint-plugin-wsx build", { silent: true });
+                },
+            },
+            {
                 title: "代码质量检查 (ESLint)",
                 task: () => exec("pnpm lint", { silent: true }),
             },
