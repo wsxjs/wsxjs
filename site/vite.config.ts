@@ -130,7 +130,7 @@ export default defineConfig({
             },
             {
                 find: "@wsxjs/wsx-i18next",
-                replacement: path.resolve(__dirname, "../packages/i18next/dist/index.mjs"),
+                replacement: path.resolve(__dirname, "../packages/i18next/src/index.ts"),
             },
             {
                 find: "@wsxjs/wsx-router",

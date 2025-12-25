@@ -8,7 +8,8 @@
         "declarationMap": true,
         "noEmit": false,
         "skipLibCheck": true,
-        "allowImportingTsExtensions": false
+        "allowImportingTsExtensions": false,
+        "downlevelIteration": true
     },
     "include": ["src/**/*.ts", "src/**/*.d.ts"],
     "exclude": ["dist", "node_modules", "**/__tests__", "**/*.test.ts"]

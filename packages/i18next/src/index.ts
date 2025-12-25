@@ -5,9 +5,8 @@
  */
 
 // 导出 i18n 实例和初始化函数
-import { initI18n } from "./i18n";
-import i18next from "i18next";
-export { i18next as i18nInstance, initI18n };
+import { i18n as i18nInstance, initI18n } from "./i18n";
+export { i18nInstance, initI18n };
 
 // 导出装饰器（使用 i18n 作为装饰器名称，方便使用）
 import { i18nDecorator } from "./decorator";
