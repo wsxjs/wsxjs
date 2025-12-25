@@ -1,72 +1,72 @@
 {
-    "name": "@wsxjs/wsx-core",
-    "version": "0.0.18",
-    "description": "Core WSXJS - Web Components with JSX syntax",
-    "main": "./dist/index.js",
-    "module": "./dist/index.mjs",
-    "types": "./types/index.d.ts",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/wsxjs/wsxjs.git",
-        "directory": "packages/core"
+  "name": "@wsxjs/wsx-core",
+  "version": "0.0.19",
+  "description": "Core WSXJS - Web Components with JSX syntax",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./types/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wsxjs/wsxjs.git",
+    "directory": "packages/core"
+  },
+  "author": "Albert Li <albert.li@wsxjs.com>",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     },
-    "author": "Albert Li <albert.li@wsxjs.com>",
-    "license": "MIT",
-    "exports": {
-        ".": {
-            "types": "./types/index.d.ts",
-            "import": "./dist/index.mjs",
-            "require": "./dist/index.js"
-        },
-        "./jsx-runtime": {
-            "types": "./types/jsx-runtime.d.ts",
-            "import": "./dist/jsx-runtime.mjs",
-            "require": "./dist/jsx-runtime.js"
-        },
-        "./*.wsx": {
-            "types": "./types/wsx-types.d.ts"
-        }
+    "./jsx-runtime": {
+      "types": "./types/jsx-runtime.d.ts",
+      "import": "./dist/jsx-runtime.mjs",
+      "require": "./dist/jsx-runtime.js"
     },
-    "typesVersions": {
-        "*": {
-            "*.wsx": [
-                "./types/wsx-types.d.ts"
-            ]
-        }
-    },
-    "files": [
-        "dist",
-        "src",
-        "types",
-        "!**/__tests__",
-        "!**/test"
-    ],
-    "scripts": {
-        "build": "tsup src/index.ts src/jsx.ts src/jsx-runtime.ts --format cjs,esm",
-        "build:dev": "NODE_ENV=development tsup src/index.ts src/jsx.ts src/jsx-runtime.ts --format cjs,esm --sourcemap",
-        "dev": "NODE_ENV=development tsup src/index.ts src/jsx.ts src/jsx-runtime.ts --format cjs,esm --watch --sourcemap",
-        "test": "jest",
-        "typecheck": "tsc --noEmit",
-        "clean": "rm -rf dist"
-    },
-    "keywords": [
-        "web-components",
-        "jsx",
-        "typescript",
-        "custom-elements"
-    ],
-    "dependencies": {
-        "@wsxjs/wsx-logger": "workspace:*"
-    },
-    "devDependencies": {
-        "tsup": "^8.0.0",
-        "typescript": "^5.0.0",
-        "@types/node": "^20.0.0"
-    },
-    "peerDependencies": {
-        "typescript": ">=4.7.0"
-    },
-    "publishConfig": {
-        "access": "public"
+    "./*.wsx": {
+      "types": "./types/wsx-types.d.ts"
     }
+  },
+  "typesVersions": {
+    "*": {
+      "*.wsx": [
+        "./types/wsx-types.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "types",
+    "!**/__tests__",
+    "!**/test"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/jsx.ts src/jsx-runtime.ts --format cjs,esm",
+    "build:dev": "NODE_ENV=development tsup src/index.ts src/jsx.ts src/jsx-runtime.ts --format cjs,esm --sourcemap",
+    "dev": "NODE_ENV=development tsup src/index.ts src/jsx.ts src/jsx-runtime.ts --format cjs,esm --watch --sourcemap",
+    "test": "jest",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "web-components",
+    "jsx",
+    "typescript",
+    "custom-elements"
+  ],
+  "dependencies": {
+    "@wsxjs/wsx-logger": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.7.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
