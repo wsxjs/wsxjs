@@ -336,18 +336,18 @@ async function main() {
     // 阶段 1: 询问是否要 bump version
     console.log(chalk.yellow("\n📦 阶段 1: 版本管理"));
     let shouldBumpVersion = false;
-    const { bumpVersion } = await inquirer.prompt([
+    const { shouldBump: shouldBumpVersionInput } = await inquirer.prompt([
         {
             type: "confirm",
-            name: "bumpVersion",
+            name: "shouldBump",
             message: "是否要更新版本号?",
             default: true,
         },
     ]);
 
-    shouldBumpVersion = bumpVersion;
+    shouldBumpVersion = shouldBumpVersionInput;
 
-    if (bumpVersion) {
+    if (shouldBumpVersion) {
         // 询问使用哪种版本更新方式
         const { versionUpdateMethod } = await inquirer.prompt([
             {
