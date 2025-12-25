@@ -33,5 +33,5 @@ export function initI18n(config: I18nConfig = {}): typeof i18next {
     return i18next;
 }
 
-// 导出 i18n 实例（使用命名导出）
-export { i18next as i18n };
+// 导出 i18n 实例（直接导出常量）
+export const i18n: typeof i18next = i18next;

@@ -26,7 +26,7 @@
         "!**/test"
     ],
     "scripts": {
-        "build": "tsup src/index.ts --format cjs,esm --dts --tsconfig tsconfig.json",
+        "build": "tsup src/index.ts --format cjs,esm --dts --tsconfig tsconfig.json --skipLibCheck",
         "dev": "tsup src/index.ts --format cjs,esm --dts --watch --tsconfig tsconfig.json",
         "test": "jest",
         "test:watch": "jest --watch",
