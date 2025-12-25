@@ -600,8 +600,10 @@ async function main() {
                         ["@wsxjs/wsx-core", "packages/core/dist"],
                         ["@wsxjs/wsx-vite-plugin", "packages/vite-plugin/dist"],
                         ["@wsxjs/eslint-plugin-wsx", "packages/eslint-plugin/dist"],
-                        ["@wsxjs/wsx-router", "packages/wsx-router/dist"],
+                        ["@wsxjs/wsx-router", "packages/router/dist"],
                         ["@wsxjs/wsx-base-components", "packages/base-components/dist"],
+                        ["@wsxjs/wsx-press", "packages/wsx-press/dist"],
+                        ["@wsxjs/wsx-marked-components", "packages/marked-components/dist"],
                     ];
 
                     for (const [pkg, path] of builds) {
