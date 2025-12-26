@@ -9,6 +9,7 @@
 
 import { h, type JSXChildren } from "./jsx-factory";
 import { BaseComponent, type BaseComponentConfig } from "./base-component";
+import { RenderContext } from "./render-context";
 import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("LightComponent");
@@ -95,7 +96,7 @@ export abstract class LightComponent extends BaseComponent {
                 childrenToRemove.forEach((child) => child.remove());
 
                 // 渲染JSX内容到Light DOM
-                const content = this.render();
+                const content = RenderContext.runInContext(this, () => this.render());
                 this.appendChild(content);
 
                 // 确保样式元素在第一个位置（如果存在）
@@ -178,7 +179,7 @@ export abstract class LightComponent extends BaseComponent {
 
         try {
             // 3. 重新渲染JSX内容
-            const content = this.render();
+            const content = RenderContext.runInContext(this, () => this.render());
 
             // 4. 在添加到 DOM 之前恢复值，避免浏览器渲染状态值
             if (focusState && focusState.key && focusState.value !== undefined) {

@@ -9,6 +9,7 @@
  */
 
 import { reactive as createReactive, createState, reactiveWithDebug } from "./utils/reactive";
+import { DOMCacheManager } from "./dom-cache-manager";
 
 /**
  * Type for reactive state storage
@@ -59,6 +60,12 @@ export abstract class BaseComponent extends HTMLElement {
      * @internal - Managed by babel-plugin-wsx-style
      */
     protected _autoStyles?: string;
+
+    /**
+     * DOM Cache Manager for fine-grained updates (RFC 0037)
+     * @internal
+     */
+    protected _domCache = new DOMCacheManager();
 
     /**
      * 当前捕获的焦点状态（用于在 render 时使用捕获的值）
@@ -137,6 +144,14 @@ export abstract class BaseComponent extends HTMLElement {
      * 在 DOM 更新完成后调用，适合执行需要访问 DOM 的操作（如语法高亮、初始化第三方库等）
      */
     protected onRendered?(): void;
+
+    /**
+     * Gets the DOMCacheManager instance.
+     * @internal
+     */
+    public getDomCache(): DOMCacheManager {
+        return this._domCache;
+    }
 
     /**
      * 处理 blur 事件，在用户停止输入时执行待处理的重渲染

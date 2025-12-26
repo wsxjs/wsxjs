@@ -11,6 +11,7 @@
 import { h, type JSXChildren } from "./jsx-factory";
 import { StyleManager } from "./styles/style-manager";
 import { BaseComponent, type BaseComponentConfig } from "./base-component";
+import { RenderContext } from "./render-context";
 import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("WebComponent");
@@ -183,7 +184,7 @@ export abstract class WebComponent extends BaseComponent {
             }
 
             // 4. 重新渲染JSX
-            const content = this.render();
+            const content = RenderContext.runInContext(this, () => this.render());
 
             // 5. 在添加到 DOM 之前恢复值
             if (focusState && focusState.key && focusState.value !== undefined) {

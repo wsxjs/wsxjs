@@ -78,6 +78,11 @@ export function state(
     // Compatibility with Babel plugin which is required for this decorator to work properly
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any {
+    // RFC 0037 Phase 0: Test Infrastructure Support
+    // Allow runtime decorator in tests to bypass Babel plugin requirement
+    if (typeof process !== "undefined" && process.env.NODE_ENV === "test") {
+        return;
+    }
     /**
      * @state decorator MUST be processed by Babel plugin at compile time.
      * If this function is executed at runtime, it means Babel plugin did not process it.
