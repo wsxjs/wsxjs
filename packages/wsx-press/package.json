@@ -1,90 +1,90 @@
 {
-    "name": "@wsxjs/wsx-press",
-    "version": "0.0.19",
-    "description": "A VitePress-like documentation system built with WSXJS",
-    "type": "module",
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.js",
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.cjs"
-        },
-        "./client": {
-            "import": "./dist/client.js",
-            "require": "./dist/client.cjs"
-        },
-        "./node": {
-            "import": "./dist/node.js",
-            "require": "./dist/node.cjs"
-        }
+  "name": "@wsxjs/wsx-press",
+  "version": "0.0.20",
+  "description": "A VitePress-like documentation system built with WSXJS",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
-    "files": [
-        "dist",
-        "src",
-        "!**/__tests__",
-        "!**/test"
-    ],
-    "scripts": {
-        "build": "vite build",
-        "build:dev": "NODE_ENV=development vite build",
-        "dev": "NODE_ENV=development vite build --watch",
-        "clean": "rm -rf dist",
-        "typecheck": "tsc --noEmit",
-        "lint": "eslint .",
-        "lint:fix": "eslint . --fix",
-        "test": "vitest --run",
-        "test:watch": "vitest",
-        "test:coverage": "vitest --run --coverage"
+    "./client": {
+      "import": "./dist/client.js",
+      "require": "./dist/client.cjs"
     },
-    "dependencies": {
-        "@wsxjs/wsx-core": "workspace:*",
-        "@wsxjs/wsx-logger": "workspace:*",
-        "@wsxjs/wsx-marked-components": "workspace:*",
-        "@wsxjs/wsx-router": "workspace:*",
-        "fuse.js": "^7.0.0",
-        "marked": "^12.0.0"
-    },
-    "devDependencies": {
-        "@types/fs-extra": "^11.0.4",
-        "@types/node": "^20.0.0",
-        "@typescript-eslint/eslint-plugin": "^8.37.0",
-        "@typescript-eslint/parser": "^8.37.0",
-        "@vitest/coverage-v8": "^2.0.0",
-        "@wsxjs/eslint-plugin-wsx": "workspace:*",
-        "@wsxjs/wsx-vite-plugin": "workspace:*",
-        "eslint": "^9.31.0",
-        "fs-extra": "^11.2.0",
-        "glob": "^11.0.0",
-        "memfs": "^4.0.0",
-        "typedoc": "^0.26.0",
-        "typedoc-plugin-markdown": "^4.0.0",
-        "typescript": "^5.0.0",
-        "vite": "^5.4.19",
-        "vitest": "^2.0.0"
-    },
-    "peerDependencies": {
-        "typedoc": "^0.26.0",
-        "typedoc-plugin-markdown": "^4.0.0"
-    },
-    "keywords": [
-        "wsx",
-        "web-components",
-        "documentation",
-        "docs",
-        "markdown",
-        "typedoc",
-        "typescript",
-        "vite"
-    ],
-    "author": "WSXJS Team",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/wsxjs/wsxjs.git",
-        "directory": "packages/wsx-press"
-    },
-    "publishConfig": {
-        "access": "public"
+    "./node": {
+      "import": "./dist/node.js",
+      "require": "./dist/node.cjs"
     }
+  },
+  "files": [
+    "dist",
+    "src",
+    "!**/__tests__",
+    "!**/test"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "build:dev": "NODE_ENV=development vite build",
+    "dev": "NODE_ENV=development vite build --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest --run --coverage"
+  },
+  "dependencies": {
+    "@wsxjs/wsx-core": "workspace:*",
+    "@wsxjs/wsx-logger": "workspace:*",
+    "@wsxjs/wsx-marked-components": "workspace:*",
+    "@wsxjs/wsx-router": "workspace:*",
+    "fuse.js": "^7.0.0",
+    "marked": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "@typescript-eslint/parser": "^8.37.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "@wsxjs/eslint-plugin-wsx": "workspace:*",
+    "@wsxjs/wsx-vite-plugin": "workspace:*",
+    "eslint": "^9.31.0",
+    "fs-extra": "^11.2.0",
+    "glob": "^11.0.0",
+    "memfs": "^4.0.0",
+    "typedoc": "^0.26.0",
+    "typedoc-plugin-markdown": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.4.19",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "typedoc": "^0.26.0",
+    "typedoc-plugin-markdown": "^4.0.0"
+  },
+  "keywords": [
+    "wsx",
+    "web-components",
+    "documentation",
+    "docs",
+    "markdown",
+    "typedoc",
+    "typescript",
+    "vite"
+  ],
+  "author": "WSXJS Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wsxjs/wsxjs.git",
+    "directory": "packages/wsx-press"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

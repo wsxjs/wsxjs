@@ -1,68 +1,68 @@
 {
-    "name": "@wsxjs/wsx-router",
-    "version": "0.0.19",
-    "description": "WSX Router - Native History API-based routing for WSXJS",
-    "type": "module",
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.js",
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.cjs"
-        }
-    },
-    "files": [
-        "dist",
-        "src",
-        "!**/__tests__",
-        "!**/test"
-    ],
-    "scripts": {
-        "build": "vite build",
-        "build:dev": "NODE_ENV=development vite build",
-        "dev": "NODE_ENV=development vite build --watch",
-        "clean": "rm -rf dist",
-        "test": "vitest --run",
-        "test:watch": "vitest",
-        "test:ui": "vitest --ui",
-        "test:coverage": "vitest --coverage",
-        "typecheck": "tsc --noEmit",
-        "lint": "eslint .",
-        "lint:fix": "eslint . --fix"
-    },
-    "dependencies": {
-        "@wsxjs/wsx-core": "workspace:*",
-        "@wsxjs/wsx-logger": "workspace:*"
-    },
-    "devDependencies": {
-        "@wsxjs/eslint-plugin-wsx": "workspace:*",
-        "@wsxjs/wsx-vite-plugin": "workspace:*",
-        "@typescript-eslint/eslint-plugin": "^8.37.0",
-        "@typescript-eslint/parser": "^8.37.0",
-        "@vitest/ui": "^2.1.8",
-        "@vitest/coverage-v8": "^2.1.8",
-        "eslint": "^9.31.0",
-        "jsdom": "^26.0.0",
-        "typescript": "^5.0.0",
-        "vite": "^5.4.19",
-        "vitest": "^2.1.8"
-    },
-    "keywords": [
-        "wsx",
-        "router",
-        "web-components",
-        "history-api",
-        "navigation",
-        "spa"
-    ],
-    "author": "WSXJS Team",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/wsxjs/wsxjs.git",
-        "directory": "packages/wsx-router"
-    },
-    "publishConfig": {
-        "access": "public"
+  "name": "@wsxjs/wsx-router",
+  "version": "0.0.20",
+  "description": "WSX Router - Native History API-based routing for WSXJS",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
+  },
+  "files": [
+    "dist",
+    "src",
+    "!**/__tests__",
+    "!**/test"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "build:dev": "NODE_ENV=development vite build",
+    "dev": "NODE_ENV=development vite build --watch",
+    "clean": "rm -rf dist",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@wsxjs/wsx-core": "workspace:*",
+    "@wsxjs/wsx-logger": "workspace:*"
+  },
+  "devDependencies": {
+    "@wsxjs/eslint-plugin-wsx": "workspace:*",
+    "@wsxjs/wsx-vite-plugin": "workspace:*",
+    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "@typescript-eslint/parser": "^8.37.0",
+    "@vitest/ui": "^2.1.8",
+    "@vitest/coverage-v8": "^2.1.8",
+    "eslint": "^9.31.0",
+    "jsdom": "^26.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.4.19",
+    "vitest": "^2.1.8"
+  },
+  "keywords": [
+    "wsx",
+    "router",
+    "web-components",
+    "history-api",
+    "navigation",
+    "spa"
+  ],
+  "author": "WSXJS Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wsxjs/wsxjs.git",
+    "directory": "packages/wsx-router"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

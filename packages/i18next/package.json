@@ -1,66 +1,66 @@
 {
-    "name": "@wsxjs/wsx-i18next",
-    "version": "0.0.19",
-    "description": "i18next integration for WSXJS components",
-    "type": "module",
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "require": "./dist/index.cjs"
-        }
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/wsxjs/wsxjs.git",
-        "directory": "packages/wsx-i18next"
-    },
-    "author": "Albert Li <albert.li@wsxjs.com>",
-    "license": "MIT",
-    "files": [
-        "dist",
-        "src",
-        "!**/__tests__",
-        "!**/test"
-    ],
-    "scripts": {
-        "build": "vite build && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist src/index.ts --moduleResolution node --esModuleInterop --downlevelIteration",
-        "dev": "vite build --watch",
-        "test": "jest",
-        "test:watch": "jest --watch",
-        "test:coverage": "jest --coverage",
-        "typecheck": "tsc --noEmit",
-        "clean": "rm -rf dist coverage"
-    },
-    "keywords": [
-        "wsx",
-        "i18next",
-        "i18n",
-        "internationalization",
-        "web-components",
-        "typescript"
-    ],
-    "dependencies": {
-        "@wsxjs/wsx-core": "workspace:*",
-        "i18next": "^23.0.0",
-        "i18next-browser-languagedetector": "^7.0.0",
-        "i18next-http-backend": "^2.0.0"
-    },
-    "devDependencies": {
-        "@types/jest": "^29.0.0",
-        "@types/node": "^20.0.0",
-        "jest": "^29.0.0",
-        "ts-jest": "^29.0.0",
-        "typescript": "^5.0.0",
-        "vite": "^5.0.0"
-    },
-    "peerDependencies": {
-        "i18next": "^23.0.0"
-    },
-    "publishConfig": {
-        "access": "public"
+  "name": "@wsxjs/wsx-i18next",
+  "version": "0.0.20",
+  "description": "i18next integration for WSXJS components",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wsxjs/wsxjs.git",
+    "directory": "packages/wsx-i18next"
+  },
+  "author": "Albert Li <albert.li@wsxjs.com>",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "src",
+    "!**/__tests__",
+    "!**/test"
+  ],
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist src/index.ts --moduleResolution node --esModuleInterop --downlevelIteration",
+    "dev": "vite build --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist coverage"
+  },
+  "keywords": [
+    "wsx",
+    "i18next",
+    "i18n",
+    "internationalization",
+    "web-components",
+    "typescript"
+  ],
+  "dependencies": {
+    "@wsxjs/wsx-core": "workspace:*",
+    "i18next": "^23.0.0",
+    "i18next-browser-languagedetector": "^7.0.0",
+    "i18next-http-backend": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  },
+  "peerDependencies": {
+    "i18next": "^23.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
