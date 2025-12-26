@@ -60,7 +60,9 @@ export class MyComponent extends WebComponent {
         }
 
         // 确保 code-block 元素在 Shadow DOM 中可用
-        const codeBlock = this.shadowRoot?.querySelector("code-block") as CodeBlockElement | null;
+        const codeBlock = this.shadowRoot?.querySelector(
+            "wsx-code-block"
+        ) as CodeBlockElement | null;
         if (codeBlock && codeBlock.updateConfig) {
             this.configUpdated = true; // 标记已更新
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -85,12 +87,12 @@ export class MyComponent extends WebComponent {
                 <div class="container">
                     <h2 class="section-title">{t("codeExample.title")}</h2>
                     <p class="section-description">{t("codeExample.description")}</p>
-                    <code-block
+                    <wsx-code-block
                         title={t("codeExample.titleInstallation")}
                         show-copy="true"
                         show-try-online="true"
                         try-online-url="/playground"
-                    ></code-block>
+                    ></wsx-code-block>
                 </div>
             </section>
         );

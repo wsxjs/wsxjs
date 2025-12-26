@@ -32,7 +32,7 @@ import "prismjs/components/prism-cpp"; // 依赖 c
 // 依赖其他语言的语言（必须在依赖之后）
 import "prismjs/components/prism-tsx"; // 依赖 typescript 和 jsx
 
-@autoRegister({ tagName: "code-block" })
+@autoRegister({ tagName: "wsx-code-block" })
 export default class CodeBlock extends LightComponent {
     static get observedAttributes(): string[] {
         return ["code", "title", "language", "show-copy", "show-try-online", "try-online-url"];

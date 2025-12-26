@@ -67,116 +67,11 @@
 ### 项目架构
 
 #### Monorepo 结构
-quizerjs 采用 pnpm workspaces 管理的 monorepo 架构，包含以下包：
+wsjs 采用 pnpm workspaces 管理的 monorepo 架构，包含以下包：
 
-```
-quizerjs/
-├── packages/
-│   ├── core/              # 核心 wsx 组件库
-│   │   ├── src/
-│   │   │   ├── components/    # wsx 组件
-│   │   │   │   ├── quiz-option.wsx          # 选项组件
-│   │   │   │   ├── quiz-option-list.wsx     # 选项列表组件
-│   │   │   │   ├── quiz-question-header.wsx # 问题标题组件
-│   │   │   │   └── quiz-question-description.wsx # 问题描述组件
-│   │   │   ├── types.ts                 # 类型定义
-│   │   │   ├── utils/                   # 工具函数
-│   │   │   │   └── quizCalculator.ts    # 测验计算逻辑
-│   │   │   ├── transformer.ts          # DSL 与 Editor.js 转换器
-│   │   │   └── index.ts                # 导出入口
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   └── vite.config.ts
-│   ├── dsl/               # Quiz DSL 定义和验证库
-│   │   ├── src/
-│   │   │   ├── types.ts                 # DSL 类型定义
-│   │   │   ├── validator.ts             # 验证器实现
-│   │   │   ├── parser.ts                # 解析器实现
-│   │   │   ├── serializer.ts            # 序列化器实现
-│   │   │   ├── messages.ts              # 错误消息定义
-│   │   │   └── index.ts                 # 导出入口
-│   │   ├── schema.json                  # JSON Schema 定义
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   └── vite.config.ts
-│   ├── editorjs-tool/     # Editor.js 工具插件
-│   │   ├── src/
-│   │   │   ├── tools/                   # 工具实现
-│   │   │   │   ├── SingleChoiceTool.wsx      # 单选题工具
-│   │   │   │   ├── MultipleChoiceTool.wsx   # 多选题工具
-│   │   │   │   ├── TextInputTool.wsx        # 文本输入题工具
-│   │   │   │   ├── TrueFalseTool.wsx        # 判断题工具
-│   │   │   │   ├── editor-api.ts            # 编辑器 API
-│   │   │   │   └── types.ts                 # 类型定义
-│   │   │   └── index.ts
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   └── vite.config.ts
-│   ├── vue/               # Vue 集成包
-│   │   ├── src/
-│   │   │   ├── QuizBlock.vue            # Vue 测验块组件
-│   │   │   ├── QuizComponent.vue        # Vue 测验组件
-│   │   │   ├── composables/             # Vue Composables
-│   │   │   │   ├── useQuiz.ts           # 测验逻辑
-│   │   │   │   └── useQuizValidation.ts # 验证逻辑
-│   │   │   └── index.ts
-│   │   ├── package.json
-│   │   ├── tsconfig.json
-│   │   └── vite.config.ts
-│   └── quizerjs/          # 高级 API 包
-│       ├── src/
-│       │   ├── editor/                  # 编辑器相关
-│       │   │   └── QuizEditor.ts       # 测验编辑器
-│       │   ├── player/                  # 播放器相关
-│       │   └── index.ts
-│       ├── package.json
-│       ├── tsconfig.json
-│       └── vite.config.ts
-├── examples/              # 示例项目
-│   └── basic/            # 基础示例
-├── docs/                  # 项目文档
-│   ├── rfc/              # RFC 文档
-│   └── PUBLISHING.md     # 发布指南
-├── package.json          # 根 package.json
-├── pnpm-workspace.yaml   # pnpm 工作空间配置
-├── tsconfig.json         # 根 TypeScript 配置
-└── README.md
-```
-
-#### 数据流架构
-```
-Editor.js 编辑器
-  ↓
-SingleChoiceTool / MultipleChoiceTool / TextInputTool / TrueFalseTool (Editor.js Tools)
-  ↓
-quiz-option / quiz-option-list / quiz-question-header / quiz-question-description (wsx 组件)
-  ↓
-用户交互 → 答案计算 → 结果展示
-```
-
-#### DSL 验证流程
-```
-Quiz DSL JSON
-  ↓
-parseQuizDSL (解析器)
-  ↓
-validateQuizDSL (验证器，基于 JSON Schema)
-  ↓
-类型安全的 QuizData 对象
-  ↓
-serializeQuizDSL (序列化器)
-  ↓
-JSON 输出
-```
 
 ### 核心理念
 专业至上，选择正确的方式而不是简单的方式。遵循 Web Components 和 Editor.js 的最佳实践，确保代码质量、可维护性和可扩展性。构建可复用的组件库，支持多种集成方式。
-
-### 重要说明
-- quizerjs 是一个库项目，不是应用项目
-- 核心组件基于 wsxjs 框架，使用 Web Components 标准
-- DSL 设计遵循 JSON Schema 规范，确保类型安全和验证
-- Editor.js 工具插件提供编辑器集成能力
 
 ---
 
@@ -277,6 +172,7 @@ JSON 输出
    - 生产代码：严禁使用 `any`，必须使用 `unknown`、`Record<string, unknown>` 或具体类型
    - 测试代码：同样严禁使用 `any`，测试代码也必须类型安全
    - 检查命令：`npx eslint <目标目录> --ext .ts`
+   - 必能随意使用@ts-expect-error，除非用于测试并有详尽的注释说明原因
 
 2. **100% 代码覆盖率**
    - 语句覆盖率 (Stmts): 100%
@@ -326,14 +222,3 @@ JSON 输出
 3. **版本管理** - 保持包版本号同步，使用语义化版本
 4. **类型共享** - 通过 TypeScript 项目引用共享类型定义
 5. **测试隔离** - 每个包应有独立的测试套件
-
-# 九、DSL 设计规则
-
-## Quiz DSL 规范
-
-1. **遵循 JSON Schema** - DSL 定义必须符合 JSON Schema 规范
-2. **类型安全** - 所有 DSL 类型必须有完整的 TypeScript 类型定义
-3. **验证优先** - 所有输入数据必须经过验证器验证
-4. **错误消息清晰** - 验证错误应提供清晰的错误消息和错误代码
-5. **向后兼容** - DSL 变更必须考虑向后兼容性
-6. **文档完整** - DSL 规范应在 RFC 文档中完整记录
