@@ -1,62 +1,62 @@
 {
-  "name": "@wsxjs/wsx-marked-components",
-  "version": "0.0.20",
-  "description": "Markdown rendering components built with WSXJS for marked library",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+    "name": "@wsxjs/wsx-marked-components",
+    "version": "0.0.20",
+    "description": "Markdown rendering components built with WSXJS for marked library",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "dist",
+        "src",
+        "!**/__tests__",
+        "!**/test"
+    ],
+    "scripts": {
+        "build": "vite build",
+        "build:dev": "NODE_ENV=development vite build",
+        "dev": "NODE_ENV=development vite build --watch",
+        "clean": "rm -rf dist",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix"
+    },
+    "dependencies": {
+        "@wsxjs/wsx-core": "workspace:*",
+        "@wsxjs/wsx-logger": "workspace:*",
+        "marked": "^12.0.0"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^8.37.0",
+        "@typescript-eslint/parser": "^8.37.0",
+        "@wsxjs/eslint-plugin-wsx": "workspace:*",
+        "@wsxjs/wsx-vite-plugin": "workspace:*",
+        "eslint": "^9.31.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0",
+        "vite": "^5.4.19"
+    },
+    "keywords": [
+        "wsx",
+        "web-components",
+        "markdown",
+        "marked",
+        "typescript",
+        "jsx"
+    ],
+    "author": "WSXJS Team",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wsxjs/wsxjs.git",
+        "directory": "packages/marked-components"
+    },
+    "publishConfig": {
+        "access": "public"
     }
-  },
-  "files": [
-    "dist",
-    "src",
-    "!**/__tests__",
-    "!**/test"
-  ],
-  "scripts": {
-    "build": "vite build",
-    "build:dev": "NODE_ENV=development vite build",
-    "dev": "NODE_ENV=development vite build --watch",
-    "clean": "rm -rf dist",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
-  },
-  "dependencies": {
-    "@wsxjs/wsx-core": "workspace:*",
-    "@wsxjs/wsx-logger": "workspace:*",
-    "marked": "^12.0.0"
-  },
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.37.0",
-    "@typescript-eslint/parser": "^8.37.0",
-    "@wsxjs/eslint-plugin-wsx": "workspace:*",
-    "@wsxjs/wsx-vite-plugin": "workspace:*",
-    "eslint": "^9.31.0",
-    "tsup": "^8.0.0",
-    "typescript": "^5.0.0",
-    "vite": "^5.4.19"
-  },
-  "keywords": [
-    "wsx",
-    "web-components",
-    "markdown",
-    "marked",
-    "typescript",
-    "jsx"
-  ],
-  "author": "WSXJS Team",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wsxjs/wsxjs.git",
-    "directory": "packages/marked-components"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
 }

@@ -1,28 +1,28 @@
 {
-  "name": "@wsxjs/wsx-tsconfig",
-  "version": "0.0.20",
-  "description": "Shared TypeScript configuration for WSXJS projects",
-  "type": "module",
-  "main": "./tsconfig.json",
-  "files": [
-    "tsconfig.json",
-    "tsconfig.base.json",
-    "README.md"
-  ],
-  "keywords": [
-    "wsx",
-    "typescript",
-    "tsconfig",
-    "web-components"
-  ],
-  "author": "WSXJS",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wsxjs/wsxjs.git",
-    "directory": "packages/wsx-tsconfig"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+    "name": "@wsxjs/wsx-tsconfig",
+    "version": "0.0.20",
+    "description": "Shared TypeScript configuration for WSXJS projects",
+    "type": "module",
+    "main": "./tsconfig.json",
+    "files": [
+        "tsconfig.json",
+        "tsconfig.base.json",
+        "README.md"
+    ],
+    "keywords": [
+        "wsx",
+        "typescript",
+        "tsconfig",
+        "web-components"
+    ],
+    "author": "WSXJS",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wsxjs/wsxjs.git",
+        "directory": "packages/wsx-tsconfig"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
 }

@@ -436,8 +436,8 @@ async function main() {
         const versionTasks = new Listr(
             [
                 {
-                    title: "重新构建（版本更新后）",
-                    task: () => exec("turbo build", { silent: true }),
+                    title: "格式化代码（版本更新后）",
+                    task: () => exec("pnpm format", { silent: true }),
                 },
                 {
                     title: "提交版本更新到 Git",
@@ -470,48 +470,6 @@ async function main() {
                     title: "创建 Git 标签",
                     task: (ctx) => {
                         ctx.version = newVersion;
-                        const tagExists = execSilent(`git rev-parse v${ctx.version} 2>/dev/null`);
-                        if (!tagExists) {
-                            // 使用 -f 强制覆盖已存在的标签，避免询问
-                            exec(`git tag -f -a v${ctx.version} -m "Release v${ctx.version}"`, {
-                                silent: true,
-                            });
-                        }
-                    },
-                },
-                {
-                    title: "重新构建（版本更新后）",
-                    task: () => exec("turbo build", { silent: true }),
-                },
-                {
-                    title: "提交版本更新到 Git",
-                    task: (ctx) => {
-                        try {
-                            exec(
-                                "git add package.json packages/*/package.json CHANGELOG.md .changeset/",
-                                {
-                                    silent: true,
-                                }
-                            );
-                        } catch {
-                            // 可能没有需要添加的文件
-                        }
-
-                        const hasChanges = execSilent("git status --porcelain");
-                        if (hasChanges) {
-                            // 使用 --no-verify 跳过 hooks，避免交互式询问
-                            exec(
-                                `git commit --no-verify -m "chore: release v${ctx.version}\n\n[skip ci]"`,
-                                {
-                                    silent: true,
-                                }
-                            );
-                        }
-                    },
-                },
-                {
-                    title: "创建 Git 标签",
-                    task: (ctx) => {
                         const tagExists = execSilent(`git rev-parse v${ctx.version} 2>/dev/null`);
                         if (!tagExists) {
                             // 使用 -f 强制覆盖已存在的标签，避免询问
