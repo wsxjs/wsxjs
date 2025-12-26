@@ -19,9 +19,9 @@ export default class WsxLogo extends WebComponent {
 
     protected onConnected() {
         // Initialize attributes
-        this.size = parseInt(this.getAttribute("size") || "32");
-        this.color = this.getAttribute("color") || "#dc2626";
-        this.variant = (this.getAttribute("variant") as "icon" | "text" | "full") || "icon";
+        this.size = this.size || 32;
+        this.color = this.color || "#dc2626";
+        this.variant = this.variant || "icon";
     }
 
     protected onAttributeChanged(name: string, _oldValue: string, newValue: string) {

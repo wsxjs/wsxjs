@@ -1,19 +1,19 @@
 /** @jsxImportSource @wsxjs/wsx-core */
-import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { WebComponent, state, autoRegister } from "@wsxjs/wsx-core";
 import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("SvgIcon");
 
 @autoRegister({ tagName: "svg-icon" })
 export default class SvgIcon extends WebComponent {
-    constructor() {
-        super();
-    }
+    @state private size: number = 24;
+    @state private color: string = "currentColor";
+    @state private name: string = "star";
 
     render() {
-        const size = this.getAttribute("size") || "24";
-        const color = this.getAttribute("color") || "currentColor";
-        const name = this.getAttribute("name") || "star";
+        const size = this.size || "24";
+        const color = this.color || "currentColor";
+        const name = this.name || "star";
 
         // Different icon paths based on name
         const iconPaths = {
@@ -51,13 +51,13 @@ export default class SvgIcon extends WebComponent {
     }
 
     private handleClick = (event: Event) => {
-        logger.debug("SVG icon clicked", { name: this.getAttribute("name") });
+        logger.debug("SVG icon clicked", { name: this.name });
 
         // Dispatch custom event
         this.dispatchEvent(
             new CustomEvent("icon-click", {
                 detail: {
-                    name: this.getAttribute("name"),
+                    name: this.name,
                     originalEvent: event,
                 },
                 bubbles: true,

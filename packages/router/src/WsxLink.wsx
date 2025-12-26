@@ -25,9 +25,15 @@ export default class WsxLink extends WebComponent {
     static observedAttributes = ["to", "replace", "active-class", "exact"];
 
     @state private to: string = "";
-    @state private replace: boolean = false;
+    get replace(): boolean {
+        return this.hasAttribute("replace");
+    }
+
+    get exact(): boolean {
+        return this.hasAttribute("exact");
+    }
+
     @state private activeClass: string = "active";
-    @state private exact: boolean = false;
 
     render() {
         return (
@@ -39,10 +45,8 @@ export default class WsxLink extends WebComponent {
 
     protected onConnected() {
         // Initialize attributes from HTML when connected
-        this.to = this.getAttribute("to") || "";
-        this.replace = this.hasAttribute("replace");
-        this.activeClass = this.getAttribute("active-class") || "active";
-        this.exact = this.hasAttribute("exact");
+        this.to = this.to || "";
+        this.activeClass = this.activeClass || "active";
 
         // Update the href of the rendered link
         const link = this.shadowRoot.querySelector(".wsx-link") as HTMLAnchorElement;

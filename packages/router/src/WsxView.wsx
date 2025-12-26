@@ -1,7 +1,6 @@
 /** @jsxImportSource @wsxjs/wsx-core */
-import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
+import { LightComponent, state, autoRegister } from "@wsxjs/wsx-core";
 import { createLogger } from "@wsxjs/wsx-logger";
-import styles from "./WsxView.css?inline";
 
 const logger = createLogger("WsxView");
 
@@ -20,19 +19,25 @@ const logger = createLogger("WsxView");
  */
 @autoRegister({ tagName: "wsx-view" })
 export default class WsxView extends LightComponent {
-    static observedAttributes = ["route", "component", "params"];
+    get component(): string | null {
+        return this._component;
+    }
+    set component(value: string | null) {
+        this._component = value || "";
+        // 延迟加载，避免在 attributeChangedCallback 中同步执行
+        if (this._component) {
+            requestAnimationFrame(() => {
+                if (this.connected && !this.componentInstance && !this.isLoading) {
+                    this.loadComponent(this._component || "");
+                }
+            });
+        }
+    }
+    private _component: string | null = "";
 
-    private component: string | null = null;
-    private params: Record<string, string> = {};
+    @state private params: Record<string, string> = {};
     private componentInstance: HTMLElement | null = null;
     private isLoading: boolean = false; // 防止重复加载的标志
-
-    constructor() {
-        super({
-            styles,
-            styleName: "wsx-view",
-        });
-    }
 
     render() {
         return (
@@ -50,54 +55,17 @@ export default class WsxView extends LightComponent {
                 return;
             }
 
-            const componentName = this.getAttribute("component");
-            if (componentName) {
-                this.loadComponent(componentName);
+            if (this.component) {
+                this.loadComponent(this.component);
             }
         });
-    }
-
-    protected onAttributeChanged(name: string, _oldValue: string, newValue: string) {
-        // 只在组件已连接时处理属性变化
-        if (!this.connected) {
-            return;
-        }
-
-        if (name === "component" && newValue && !this.componentInstance && !this.isLoading) {
-            // 延迟加载，避免在 attributeChangedCallback 中同步执行
-            requestAnimationFrame(() => {
-                if (this.connected && !this.componentInstance && !this.isLoading) {
-                    this.loadComponent(newValue);
-                }
-            });
-        } else if (name === "params" && this.componentInstance) {
-            // 更新组件参数
-            try {
-                this.params = JSON.parse(newValue);
-                logger.debug(
-                    `WsxView: params attribute changed, setting on component:`,
-                    this.params
-                );
-                Object.entries(this.params).forEach(([key, value]) => {
-                    this.componentInstance!.setAttribute(key, value);
-                });
-                logger.debug(`WsxView: params set on component ${this.componentInstance.tagName}`);
-            } catch (e) {
-                logger.warn("Failed to parse params:", e);
-            }
-        }
     }
 
     private async loadComponent(componentName: string) {
         // 防止重复加载
         if (!this.connected || this.isLoading || this.componentInstance) {
-            logger.debug(
-                `Skipping loadComponent for ${componentName}: connected=${this.connected}, isLoading=${this.isLoading}, hasInstance=${!!this.componentInstance}`
-            );
             return;
         }
-
-        logger.debug(`WsxView: Loading component ${componentName}`);
         this.isLoading = true; // 设置标志
 
         try {

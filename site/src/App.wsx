@@ -140,7 +140,7 @@ export default class App extends LightComponent {
         };
 
         return (
-            <wsx-responsive-nav config={JSON.stringify(navConfig)}>
+            <wsx-responsive-nav navigation={navConfig}>
                 <wsx-logo slot="brand-icon" variant="icon" size="28" color="#dc2626"></wsx-logo>
             </wsx-responsive-nav>
         );

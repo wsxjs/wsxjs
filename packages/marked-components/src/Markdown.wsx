@@ -15,7 +15,7 @@ import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
 import { createLogger } from "@wsxjs/wsx-logger";
 import { marked } from "marked";
 import type { Tokens } from "marked";
-import styles from "./Markdown.css?inline";
+
 import { renderInlineTokens } from "./marked-utils";
 // Import WSX components so they're registered as custom elements
 import "./Heading.wsx";
@@ -53,26 +53,6 @@ export interface CustomRenderers {
 export default class Markdown extends LightComponent {
     @state private markdown: string = "";
     private customRenderers: CustomRenderers = {};
-
-    constructor() {
-        super({
-            styles,
-            styleName: "wsx-markdown",
-            lightDOM: true,
-        });
-        logger.info("Markdown initialized");
-    }
-
-    static get observedAttributes() {
-        return ["markdown"];
-    }
-
-    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        if (name === "markdown") {
-            this.markdown = newValue || "";
-            this.rerender();
-        }
-    }
 
     /**
      * Set custom renderers for specific token types
@@ -115,14 +95,6 @@ export default class Markdown extends LightComponent {
                     <wsx-marked-error message={`Error: ${error}`} />
                 </div>
             );
-        }
-    }
-
-    protected onConnected() {
-        // Get initial value from attribute
-        const markdownAttr = this.getAttribute("markdown");
-        if (markdownAttr) {
-            this.markdown = markdownAttr;
         }
     }
 
@@ -223,10 +195,7 @@ export default class Markdown extends LightComponent {
                     return html;
                 });
                 return (
-                    <wsx-marked-list
-                        ordered={listToken.ordered ? "true" : "false"}
-                        items={JSON.stringify(items)}
-                    />
+                    <wsx-marked-list ordered={listToken.ordered ? "true" : "false"} items={items} />
                 );
             }
 

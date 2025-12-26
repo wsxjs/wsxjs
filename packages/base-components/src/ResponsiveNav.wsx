@@ -16,7 +16,7 @@ export type { NavItem, ResponsiveNavConfig };
 
 @autoRegister({ tagName: "wsx-responsive-nav" })
 export default class ResponsiveNav extends WebComponent {
-    private navConfig: ResponsiveNavConfig = { items: [] };
+    @state private navigation: ResponsiveNavConfig = { items: [] };
     /** 移动端菜单是否打开 */
     @state private isMobileMenuOpen: boolean = false;
     /** 可见的导航项索引 */
@@ -41,7 +41,7 @@ export default class ResponsiveNav extends WebComponent {
         });
         // 如果通过构造函数传递配置，使用它；否则在 onConnected 时从属性读取
         if (config) {
-            this.navConfig = {
+            this.navigation = {
                 mobileBreakpoint: 768,
                 autoOverflow: true,
                 ...config,
@@ -52,11 +52,11 @@ export default class ResponsiveNav extends WebComponent {
 
     render(): HTMLElement {
         // 确保配置已初始化
-        if (!this.navConfig.items || this.navConfig.items.length === 0) {
+        if (!this.navigation?.items || this.navigation?.items.length === 0) {
             return <nav class="responsive-nav"></nav>;
         }
 
-        const hiddenItems = this.hiddenItemIndices.map((index) => this.navConfig.items[index]);
+        const hiddenItems = this.hiddenItemIndices.map((index) => this.navigation.items[index]);
 
         return (
             <nav class="responsive-nav">
@@ -64,13 +64,13 @@ export default class ResponsiveNav extends WebComponent {
                     {/* 品牌 */}
                     <div class="nav-brand">
                         <slot name="brand-icon">
-                            {this.navConfig.brandIcon &&
-                                typeof this.navConfig.brandIcon === "string" && (
-                                    <span class="nav-brand-icon">{this.navConfig.brandIcon}</span>
+                            {this.navigation.brandIcon &&
+                                typeof this.navigation.brandIcon === "string" && (
+                                    <span class="nav-brand-icon">{this.navigation.brandIcon}</span>
                                 )}
                         </slot>
-                        {this.navConfig.brand && (
-                            <span class="nav-brand-text">{this.navConfig.brand}</span>
+                        {this.navigation.brand && (
+                            <span class="nav-brand-text">{this.navigation.brand}</span>
                         )}
                     </div>
 
@@ -78,7 +78,7 @@ export default class ResponsiveNav extends WebComponent {
                     {!this.isMobile && (
                         <div ref={(el) => (this.navMenuElement = el)} class="nav-menu">
                             {/* 渲染所有项，但隐藏不在 visibleItemIndices 中的项 */}
-                            {this.navConfig.items.map((item, index) => {
+                            {this.navigation.items.map((item, index) => {
                                 const isVisible = this.visibleItemIndices.includes(index);
                                 return (
                                     <wsx-link
@@ -104,7 +104,7 @@ export default class ResponsiveNav extends WebComponent {
                             })}
 
                             {/* Overflow 菜单 */}
-                            {this.navConfig.autoOverflow &&
+                            {this.navigation.autoOverflow &&
                                 hiddenItems.length > 0 &&
                                 !this.isMobile && (
                                     <div class="nav-overflow">
@@ -140,9 +140,9 @@ export default class ResponsiveNav extends WebComponent {
                     )}
 
                     {/* 右侧操作项（始终显示，包括移动端） */}
-                    {this.navConfig.actionTags && (
+                    {this.navigation.actionTags && (
                         <div class="nav-actions">
-                            {this.navConfig.actionTags.map((tag, index) => {
+                            {this.navigation.actionTags.map((tag, index) => {
                                 // 使用动态标签名创建元素
                                 const TagName = tag as keyof HTMLElementTagNameMap;
                                 return (
@@ -173,7 +173,7 @@ export default class ResponsiveNav extends WebComponent {
                 {/* 移动端菜单 */}
                 {this.isMobile && (
                     <div class={`nav-mobile-menu ${this.isMobileMenuOpen ? "open" : ""}`}>
-                        {this.navConfig.items
+                        {this.navigation.items
                             .filter((item) => !item.hideOnMobile)
                             .map((item, index) => (
                                 <wsx-link
@@ -258,10 +258,10 @@ export default class ResponsiveNav extends WebComponent {
      * 使用 OverflowDetector 来最大化可见项数量
      */
     private updateVisibleItems = (): void => {
-        if (!this.navConfig.autoOverflow || this.isMobile || !this.navMenuElement) {
+        if (!this.navigation.autoOverflow || this.isMobile || !this.navMenuElement) {
             // 如果不是移动端且 autoOverflow 关闭，显示所有项
             if (!this.isMobile) {
-                const allIndices = this.navConfig.items.map((_, index) => index);
+                const allIndices = this.navigation.items.map((_, index) => index);
                 if (
                     JSON.stringify(allIndices.sort()) !==
                     JSON.stringify(this.visibleItemIndices.sort())
@@ -277,7 +277,7 @@ export default class ResponsiveNav extends WebComponent {
         // 确保所有导航项元素都已获取
         // 先渲染所有项（隐藏的项也需要渲染以获取宽度）
         const allItems: HTMLElement[] = [];
-        for (let i = 0; i < this.navConfig.items.length; i++) {
+        for (let i = 0; i < this.navigation.items.length; i++) {
             // 尝试从已渲染的元素中获取
             let itemElement = this.navItemsElements[i];
             if (!itemElement) {
@@ -296,7 +296,7 @@ export default class ResponsiveNav extends WebComponent {
                 // 如果元素还不存在，创建一个临时元素来测量宽度
                 // 这通常发生在首次渲染时
                 const tempElement = document.createElement("wsx-link");
-                tempElement.textContent = this.navConfig.items[i].label;
+                tempElement.textContent = this.navigation.items[i].label;
                 tempElement.style.visibility = "hidden";
                 tempElement.style.position = "absolute";
                 document.body.appendChild(tempElement);
@@ -363,7 +363,7 @@ export default class ResponsiveNav extends WebComponent {
      * 检查是否为移动端
      */
     private checkMobile = (): void => {
-        const isMobile = window.innerWidth <= (this.navConfig.mobileBreakpoint || 768);
+        const isMobile = window.innerWidth <= (this.navigation?.mobileBreakpoint || 768);
         if (isMobile !== this.isMobile) {
             this.isMobile = isMobile;
             this.rerender();
@@ -375,21 +375,12 @@ export default class ResponsiveNav extends WebComponent {
      */
     protected onConnected(): void {
         // 如果配置未初始化，从属性读取
-        if (!this.navConfig.items || this.navConfig.items.length === 0) {
-            const configAttr = this.getAttribute("config");
-            if (configAttr) {
-                try {
-                    const parsedConfig = JSON.parse(configAttr) as ResponsiveNavConfig;
-                    this.navConfig = {
-                        mobileBreakpoint: 768,
-                        autoOverflow: true,
-                        ...parsedConfig,
-                    };
-                    this.visibleItemIndices = parsedConfig.items.map((_, index) => index);
-                    this.rerender();
-                } catch (error) {
-                    console.error("Failed to parse ResponsiveNav config:", error);
-                }
+        if (!this.navigation?.items || this.navigation?.items.length === 0) {
+            try {
+                this.visibleItemIndices = this.navigation.items.map((_, index) => index);
+                this.rerender();
+            } catch (error) {
+                console.error("Failed to parse ResponsiveNav config:", error);
             }
         }
 
@@ -401,7 +392,7 @@ export default class ResponsiveNav extends WebComponent {
             if (attempts > 10) return; // 最多尝试10次
             setTimeout(() => {
                 if (this.navMenuElement) {
-                    const hasAllElements = this.navConfig.items.every(
+                    const hasAllElements = this.navigation.items.every(
                         (_, index) => this.navItemsElements[index]
                     );
                     if (hasAllElements || attempts > 5) {

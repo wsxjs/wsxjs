@@ -9,31 +9,8 @@ import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
 @autoRegister({ tagName: "wsx-marked-list" })
 export default class List extends LightComponent {
     @state private ordered: boolean = false;
+    // internal list items
     @state private items: string[] = [];
-
-    constructor() {
-        super({
-            styleName: "wsx-marked-list",
-        });
-    }
-
-    static get observedAttributes() {
-        return ["ordered", "items"];
-    }
-
-    attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-        if (name === "ordered") {
-            this.ordered = newValue === "true";
-        } else if (name === "items") {
-            try {
-                // HTML 属性值会被浏览器自动解码，所以这里得到的是原始的 JSON 字符串
-                // JSON.parse 会解析出包含 HTML 字符串的数组
-                this.items = JSON.parse(newValue || "[]");
-            } catch {
-                this.items = [];
-            }
-        }
-    }
 
     render() {
         if (this.ordered) {
