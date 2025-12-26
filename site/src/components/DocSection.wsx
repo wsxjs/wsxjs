@@ -26,33 +26,11 @@ export default class DocSection extends LightComponent {
         });
     }
 
-    protected onConnected() {
-        // 在连接后创建 DocLayout 实例（包含侧边栏、主内容、TOC）
-        requestAnimationFrame(() => {
-            if (this.connected && !this.docPageInstance) {
-                const container = this.querySelector(".doc-section-container");
-                if (container) {
-                    // 创建 DocLayout 实例（包含完整的文档布局）
-                    this.docPageInstance = document.createElement("wsx-doc-layout");
-                    container.appendChild(this.docPageInstance);
-                }
-            }
-        });
-    }
-
-    protected onDisconnected() {
-        // 清理 DocLayout 实例
-        if (this.docPageInstance) {
-            this.docPageInstance.remove();
-            this.docPageInstance = null;
-        }
-    }
-
     render() {
         return (
             <div class="doc-section-content">
                 <div class="doc-section-container">
-                    {/* DocLayout 实例将在这里动态创建（包含侧边栏、主内容、TOC） */}
+                    <wsx-doc-layout></wsx-doc-layout>
                 </div>
             </div>
         );

@@ -12,13 +12,20 @@ WSXJS 致力于成为构建原生 Web Components 的最佳开发体验，在保�
 
 ## 开发时间线
 
-### ✅ 已完成 (v1.0)
-- 核心框架与 JSX 支持
-- TypeScript 集成
-- Vite 插件自动注入 JSX
-- ESLint 插件 100% 测试覆盖率
-- 基础组件库 (Button, ColorPicker)
-- 完整的测试配置
+### ✅ 已完成 (v0.0.x)
+- **核心框架** - WebComponent 和 LightComponent 基类
+- **JSX 语法支持** - 完整的 JSX 编译和运行时支持
+- **TypeScript 集成** - 完整的类型定义和类型安全
+- **Vite 插件** - 自动注入 JSX 和样式处理
+- **ESLint 插件** - 100% 测试覆盖率，包含 15+ 规则
+- **响应式系统** - `@state` 装饰器、`reactive()` 和 `useState()` API
+- **路由系统** - `@wsxjs/wsx-router` 基于 History API 的路由
+- **国际化支持** - `@wsxjs/wsx-i18next` 集成 i18next
+- **日志系统** - `@wsxjs/wsx-logger` 基于 loglevel 的浏览器优化日志工具
+- **文档生成器** - `@wsxjs/wsx-press` 静态文档站点生成
+- **Markdown 组件** - `@wsxjs/wsx-marked-components` Markdown 渲染组件
+- **基础组件库** - Button, ColorPicker, Dropdown, Combobox, CodeBlock, ThemeSwitcher, ResponsiveNav, SvgIcon, ButtonGroup, LanguageSwitcher
+- **完整的测试配置** - Jest/Vitest 配置和测试工具链
 
 ### 🚀 短期目标 (1-3个月)
 
@@ -48,10 +55,10 @@ WSXJS 致力于成为构建原生 Web Components 的最佳开发体验，在保�
 - TypeScript 类型支持
 
 #### 2. 框架核心增强
-- **高级生命周期钩子** - 扩展 WebComponent 基类功能
-- **响应式属性装饰器** - `@reactive`, `@computed` 等
+- **高级生命周期钩子** - 扩展 WebComponent 基类功能（基础生命周期已实现）
+- **计算属性装饰器** - `@computed` 装饰器（`@state` 已实现）
 - **组件组合模式** - mixins 和 composition API
-- **性能优化工具** - 渲染优化和批量更新
+- **性能优化工具** - 渲染优化和批量更新（基础批量更新已实现）
 
 #### 3. CLI 工具 (`create-wsx-app`)
 - 项目脚手架模板（包含示例组件）
@@ -83,10 +90,10 @@ WSXJS 致力于成为构建原生 Web Components 的最佳开发体验，在保�
 - 异步组件测试
 - 快照测试支持
 
-#### 4. 文档生成器
-- JSDoc 转组件文档
+#### 4. 文档生成器增强
+- JSDoc 转组件文档（基础文档生成已实现：`@wsxjs/wsx-press`）
 - 实时 playground 生成
-- API 文档自动化
+- API 文档自动化增强
 - Storybook Web Components 集成
 - 交互式示例
 
@@ -111,7 +118,7 @@ WSXJS 致力于成为构建原生 Web Components 的最佳开发体验，在保�
 
 #### 2. 高级功能示例
 - **微前端示例** - 展示组件联邦和动态加载
-- **国际化示例** - 多语言支持模式
+- **国际化示例增强** - 多语言支持模式（基础 i18next 集成已实现）
 - **无障碍示例** - ARIA 和键盘导航最佳实践
 - **安全示例** - CSP 和沙箱隔离
 - **实时协作示例** - WebSocket 集成
@@ -156,20 +163,22 @@ WSXJS 致力于成为构建原生 Web Components 的最佳开发体验，在保�
 
 ## 版本规划
 
-### v1.1 (2025年Q1)
-- 表单组件
+### v0.1.0 (2025年Q1)
+- 表单组件示例
 - 增强错误处理
 - 性能改进
+- CLI 工具 (`create-wsx-app`)
 
-### v1.2 (2025年Q2)
+### v0.2.0 (2025年Q2)
 - UI 组件库扩展
-- CLI 工具发布
-- 测试工具
+- 测试工具 (`@wsxjs/wsx-testing`)
+- 开发者工具增强
 
-### v2.0 (2025年Q3)
-- 声明式 Shadow DOM
+### v1.0.0 (2025年Q3-Q4)
+- 声明式 Shadow DOM 支持
 - SSR 支持
 - 组件市场 beta 版
+- 稳定 API 和完整文档
 
 ## 成功指标
 - npm 下载量增长
@@ -180,6 +189,6 @@ WSXJS 致力于成为构建原生 Web Components 的最佳开发体验，在保�
 
 ---
 
-最后更新: 2025年7月
+最后更新: 2024年12月
 
 这是一份持续更新的文档。欢迎在 [GitHub Discussions](https://github.com/wsxjs/wsxjs/discussions) 参与讨论，共同塑造 WSX 的未来！

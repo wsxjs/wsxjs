@@ -13,11 +13,10 @@ export default defineConfig({
             fileName: (format) => `index.${format === "es" ? "js" : "cjs"}`,
         },
         rollupOptions: {
-            external: ["pino", "pino-pretty"],
+            external: ["loglevel"],
             output: {
                 globals: {
-                    pino: "pino",
-                    "pino-pretty": "pinoPretty",
+                    loglevel: "log",
                 },
                 // 禁用压缩，保持代码可读性，便于调试和 tree-shaking
                 minifyInternalExports: false,

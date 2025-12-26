@@ -1,7 +1,7 @@
 // Global test setup
 import "@testing-library/jest-dom";
 
-// Polyfill setImmediate for JSDOM environment (required by pino's thread-stream)
+// Polyfill setImmediate for JSDOM environment
 if (typeof setImmediate === "undefined") {
     (global as typeof globalThis).setImmediate = (
         callback: (...args: unknown[]) => void,

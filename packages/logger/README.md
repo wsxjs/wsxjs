@@ -1,6 +1,6 @@
 # @wsxjs/wsx-logger
 
-Pino-based logging utility for WSXJS.
+Browser-optimized logging utility for WSXJS, powered by [loglevel](https://github.com/pimterry/loglevel).
 
 ## Installation
 
@@ -39,28 +39,29 @@ import { createLoggerWithConfig } from "@wsxjs/wsx-logger";
 const logger = createLoggerWithConfig({
     name: "MyApp",
     level: "debug",
-    pretty: true, // Enable pretty printing in development
 });
 ```
 
-### Advanced Usage with Pino
+### Advanced Usage with Loglevel
 
 ```typescript
-import { createLogger, type PinoLogger } from "@wsxjs/wsx-logger";
+import { createLogger, type LoglevelLogger } from "@wsxjs/wsx-logger";
 
 const wsxLogger = createLogger("MyComponent");
-const pinoLogger = wsxLogger.getPinoLogger(); // Access underlying pino logger
+const loglevelLogger = wsxLogger.getLoglevelLogger(); // Access underlying loglevel logger
 
-// Use pino's advanced features
-pinoLogger.child({ component: "MyComponent" }).info("Child logger");
+// Use loglevel's advanced features
+loglevelLogger.setLevel("warn");
+const currentLevel = wsxLogger.getLevel();
+wsxLogger.setLevel("debug");
 ```
 
 ## Configuration
 
 ### Environment Variables
 
-- `NODE_ENV=production`: Automatically sets log level to `info` and disables pretty printing
-- `NODE_ENV=development`: Automatically sets log level to `debug` and enables pretty printing
+- `NODE_ENV=production` or `MODE=production`: Automatically sets log level to `info`
+- `NODE_ENV=development` or `MODE=development`: Automatically sets log level to `debug`
 
 ### Log Levels
 
@@ -69,18 +70,27 @@ pinoLogger.child({ component: "MyComponent" }).info("Child logger");
 - `info` - General information (default in production)
 - `warn` - Warnings
 - `error` - Errors
-- `fatal` - Fatal errors
+- `silent` - Disable all logging
 
 ## Features
 
-- ✅ Pino-based high-performance logging
-- ✅ Pretty printing in development
+- ✅ Browser-optimized with loglevel (~1KB)
+- ✅ Zero dependencies (loglevel is the only dependency)
 - ✅ Compatible with WSXJS core logger interface
 - ✅ TypeScript support
 - ✅ Environment-aware configuration
 - ✅ Component-specific loggers
+- ✅ Dynamic log level control
+- ✅ Production-ready (automatically reduces verbosity in production)
+
+## Why Loglevel?
+
+- **Lightweight**: Only ~1KB minified
+- **Browser-first**: Designed specifically for browser environments
+- **No Node.js dependencies**: Pure browser implementation
+- **Performance**: Minimal overhead, uses native console methods
+- **Flexible**: Easy to configure and extend
 
 ## License
 
 MIT
-

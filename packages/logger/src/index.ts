@@ -1,12 +1,11 @@
 /**
  * @wsxjs/wsx-logger
- * Pino-based logging utility for WSXJS
+ * Browser-optimized logging utility for WSXJS
  */
 
-import pino, { type LoggerOptions } from "pino";
-import type { Logger as PinoLoggerType } from "pino";
+import log from "loglevel";
 
-export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal" | "trace";
+export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "silent";
 
 /**
  * Logger interface compatible with WSXJS core logger
@@ -28,37 +27,59 @@ export interface LoggerConfig {
     name?: string;
     /** Minimum log level */
     level?: LogLevel;
-    /** Enable pretty printing (for development) */
+    /** Enable pretty printing (for development) - kept for API compatibility */
     pretty?: boolean;
-    /** Additional pino options */
-    pinoOptions?: LoggerOptions;
 }
+
+/**
+ * Map WSXJS log levels to loglevel string levels
+ */
+const LOG_LEVEL_MAP: Record<LogLevel, log.LogLevelDesc> = {
+    trace: "trace",
+    debug: "debug",
+    info: "info",
+    warn: "warn",
+    error: "error",
+    silent: "silent",
+};
+
+/**
+ * Map loglevel numeric levels to WSXJS log levels
+ */
+const NUMERIC_TO_LEVEL: Record<number, LogLevel> = {
+    0: "trace",
+    1: "debug",
+    2: "info",
+    3: "warn",
+    4: "error",
+    5: "silent",
+};
 
 /**
  * Check if we're in production environment
  */
 function isProduction(): boolean {
-    return typeof process !== "undefined" && process.env.NODE_ENV === "production";
-}
-
-/**
- * Check if we're in a Node.js environment
- */
-function isNodeEnvironment(): boolean {
-    return typeof process !== "undefined" && process.versions?.node !== undefined;
-}
-
-/**
- * Check if we're in a browser environment
- */
-function isBrowserEnvironment(): boolean {
-    return typeof window !== "undefined" && typeof document !== "undefined";
+    if (typeof process !== "undefined") {
+        return process.env.NODE_ENV === "production" || process.env.MODE === "production";
+    }
+    // Check Vite's import.meta.env in browser (if available)
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const meta = globalThis as any;
+        if (meta.import?.meta?.env) {
+            const viteEnv = meta.import.meta.env;
+            return viteEnv.MODE === "production" || viteEnv.PROD === true;
+        }
+    } catch {
+        // Ignore errors
+    }
+    return false;
 }
 
 /**
  * Default logger configuration
- * - Production: info level, no pretty printing
- * - Development: debug level, pretty printing enabled
+ * - Production: info level
+ * - Development: debug level
  */
 const DEFAULT_CONFIG: LoggerConfig = {
     name: "WSX",
@@ -67,137 +88,144 @@ const DEFAULT_CONFIG: LoggerConfig = {
 };
 
 /**
- * Create a pino logger instance
+ * Create a loglevel logger instance with prefix support
  */
-function createPinoLogger(config: LoggerConfig = {}): PinoLoggerType {
-    const { name, level, pretty, pinoOptions } = { ...DEFAULT_CONFIG, ...config };
+function createLoglevelLogger(config: LoggerConfig = {}): log.Logger {
+    const { name, level } = { ...DEFAULT_CONFIG, ...config };
 
-    const options: LoggerOptions = {
-        name: name || DEFAULT_CONFIG.name,
-        level: level || DEFAULT_CONFIG.level,
-        ...pinoOptions,
-    };
+    // Create a new logger instance for this component
+    const loggerName = name || DEFAULT_CONFIG.name || "WSX";
+    const loggerInstance = log.getLogger(loggerName);
 
-    // Configure browser-specific options if in browser environment
-    if (isBrowserEnvironment()) {
-        // In browser, pino automatically uses console methods
-        // We can optionally configure browser-specific behavior
-        options.browser = {
-            asObject: false, // Use console methods directly (default behavior)
-            write: undefined, // Use default console write
-            ...(pinoOptions?.browser || {}), // Allow override via pinoOptions
-        };
-    }
+    // Set the log level
+    const targetLevel = level || DEFAULT_CONFIG.level || "info";
+    loggerInstance.setLevel(LOG_LEVEL_MAP[targetLevel]);
 
-    // In development and Node.js environment, use pino-pretty for better readability
-    if (pretty && isNodeEnvironment() && !isProduction()) {
-        try {
-            return pino(
-                options,
-                pino.transport({
-                    target: "pino-pretty",
-                    options: {
-                        colorize: true,
-                        translateTime: "HH:MM:ss.l",
-                        ignore: "pid,hostname",
-                        singleLine: false,
-                    },
-                })
-            );
-        } catch {
-            // Fallback to regular pino if pino-pretty is not available
-            console.warn("[wsx-logger] pino-pretty not available, using default formatter");
-            return pino(options);
-        }
-    }
+    return loggerInstance;
+}
 
-    return pino(options);
+/**
+ * Format log message with prefix
+ */
+function formatMessage(name: string, message: string): string {
+    return name ? `[${name}] ${message}` : message;
 }
 
 /**
  * WSX Logger wrapper that implements the Logger interface
- * and uses pino under the hood
+ * and uses loglevel under the hood
  */
 export class WSXLogger implements Logger {
-    private pinoLogger: PinoLoggerType;
+    private logInstance: log.Logger;
+    private name: string;
     private isProd: boolean;
+    private currentLevel: LogLevel;
 
     constructor(config: LoggerConfig = {}) {
         this.isProd = isProduction();
-        this.pinoLogger = createPinoLogger(config);
+        this.name = config.name || DEFAULT_CONFIG.name || "WSX";
+        this.currentLevel =
+            config.level || DEFAULT_CONFIG.level || (this.isProd ? "info" : "debug");
+        this.logInstance = createLoglevelLogger(config);
     }
 
     debug(message: string, ...args: unknown[]): void {
         // Always show debug logs in non-production environments
-        if (!this.isProd) {
+        if (!this.isProd || this.shouldLog("debug")) {
+            const formattedMessage = formatMessage(this.name, message);
             if (args.length > 0) {
-                this.pinoLogger.debug({ args }, message);
+                this.logInstance.debug(formattedMessage, ...args);
             } else {
-                this.pinoLogger.debug(message);
+                this.logInstance.debug(formattedMessage);
             }
         }
     }
 
     info(message: string, ...args: unknown[]): void {
-        // Always show info logs in non-production environments
-        if (!this.isProd) {
+        if (this.shouldLog("info")) {
+            const formattedMessage = formatMessage(this.name, message);
             if (args.length > 0) {
-                this.pinoLogger.info({ args }, message);
+                this.logInstance.info(formattedMessage, ...args);
             } else {
-                this.pinoLogger.info(message);
-            }
-        } else {
-            // In production, respect pino's level configuration
-            if (args.length > 0) {
-                this.pinoLogger.info({ args }, message);
-            } else {
-                this.pinoLogger.info(message);
+                this.logInstance.info(formattedMessage);
             }
         }
     }
 
     warn(message: string, ...args: unknown[]): void {
         // Always show warnings (in both production and development)
+        const formattedMessage = formatMessage(this.name, message);
         if (args.length > 0) {
-            this.pinoLogger.warn({ args }, message);
+            this.logInstance.warn(formattedMessage, ...args);
         } else {
-            this.pinoLogger.warn(message);
+            this.logInstance.warn(formattedMessage);
         }
     }
 
     error(message: string, ...args: unknown[]): void {
         // Always show errors (in both production and development)
+        const formattedMessage = formatMessage(this.name, message);
         if (args.length > 0) {
-            this.pinoLogger.error({ args }, message);
+            this.logInstance.error(formattedMessage, ...args);
         } else {
-            this.pinoLogger.error(message);
+            this.logInstance.error(formattedMessage);
         }
     }
 
     fatal(message: string, ...args: unknown[]): void {
+        // Fatal is treated as error in loglevel
+        const formattedMessage = formatMessage(this.name, message);
         if (args.length > 0) {
-            this.pinoLogger.fatal({ args }, message);
+            this.logInstance.error(`[FATAL] ${formattedMessage}`, ...args);
         } else {
-            this.pinoLogger.fatal(message);
+            this.logInstance.error(`[FATAL] ${formattedMessage}`);
         }
     }
 
     trace(message: string, ...args: unknown[]): void {
         // Always show trace logs in non-production environments
-        if (!this.isProd) {
+        if (!this.isProd || this.shouldLog("trace")) {
+            const formattedMessage = formatMessage(this.name, message);
             if (args.length > 0) {
-                this.pinoLogger.trace({ args }, message);
+                this.logInstance.trace(formattedMessage, ...args);
             } else {
-                this.pinoLogger.trace(message);
+                this.logInstance.trace(formattedMessage);
             }
         }
     }
 
     /**
-     * Get the underlying pino logger instance
+     * Check if a log level should be logged based on current level
      */
-    getPinoLogger(): PinoLoggerType {
-        return this.pinoLogger;
+    private shouldLog(level: LogLevel): boolean {
+        const levels: LogLevel[] = ["trace", "debug", "info", "warn", "error", "silent"];
+        const currentLevelIndex = levels.indexOf(this.currentLevel);
+        const messageLevelIndex = levels.indexOf(level);
+
+        return messageLevelIndex >= currentLevelIndex;
+    }
+
+    /**
+     * Get the underlying loglevel logger instance
+     */
+    getLoglevelLogger(): log.Logger {
+        return this.logInstance;
+    }
+
+    /**
+     * Set the log level dynamically
+     */
+    setLevel(level: LogLevel): void {
+        this.currentLevel = level;
+        this.logInstance.setLevel(LOG_LEVEL_MAP[level] as log.LogLevelDesc);
+    }
+
+    /**
+     * Get the current log level
+     */
+    getLevel(): LogLevel {
+        const numericLevel = this.logInstance.getLevel();
+        return NUMERIC_TO_LEVEL[numericLevel] || this.currentLevel;
     }
 }
 
@@ -230,6 +258,6 @@ export function createLoggerWithConfig(config: LoggerConfig): Logger {
     return new WSXLogger(config);
 }
 
-// Export pino types for advanced usage
-export type { Logger as PinoLogger, LoggerOptions } from "pino";
-export { pino } from "pino";
+// Export loglevel types for advanced usage
+export type { Logger as LoglevelLogger } from "loglevel";
+export { log as loglevel } from "loglevel";

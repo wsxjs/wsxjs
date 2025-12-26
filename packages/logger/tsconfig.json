@@ -8,7 +8,7 @@
         "sourceMap": true,
         "composite": true,
         "skipLibCheck": true,
-        "types": []
+        "types": ["node"]
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "dist", "**/__tests__", "**/test"]
