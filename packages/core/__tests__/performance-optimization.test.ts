@@ -95,9 +95,8 @@ describe("Performance Optimization (RFC 0037)", () => {
             const items = Array.from({ length: 1000 }, (_, i) => `Item ${i}`);
 
             // 初始渲染
-            let render1: HTMLElement;
             RenderContext.runInContext(component, () => {
-                render1 = component.render() as HTMLElement;
+                component.render() as HTMLElement;
             });
 
             // 设置初始状态
