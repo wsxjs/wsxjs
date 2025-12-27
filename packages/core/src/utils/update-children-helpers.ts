@@ -122,23 +122,11 @@ export function updateOrCreateTextNode(
             oldNode.textContent = newText;
         }
     } else {
-        // 如果 oldNode 是 null，先检查 parent 中是否已有文本节点
-        // 如果已有文本节点且内容匹配，不需要更新
-        // 如果已有文本节点但内容不匹配，更新它而不是创建新的
-        if (!oldNode) {
-            for (let i = 0; i < parent.childNodes.length; i++) {
-                const node = parent.childNodes[i];
-                if (node.nodeType === Node.TEXT_NODE) {
-                    // 只有当文本内容不同时才更新
-                    // 这样可以避免错误地更新其他位置的文本节点
-                    if (node.textContent !== newText) {
-                        node.textContent = newText;
-                    }
-                    return;
-                }
-            }
-        }
-        // 如果没有找到文本节点，创建新的
+        // Bug 2 修复：如果 oldNode 为 null，说明 findTextNode 没有找到对应的文本节点
+        // 此时不应该盲目更新第一个找到的文本节点，而应该创建新节点
+        // 因为：
+        // 1. 如果文本内容相同，调用方已经跳过了更新（在 element-update.ts 中）
+        // 2. 如果文本内容不同，应该创建新节点，而不是更新错误的节点
         const newTextNode = document.createTextNode(newText);
         if (oldNode && !shouldPreserveElement(oldNode)) {
             parent.replaceChild(newTextNode, oldNode);

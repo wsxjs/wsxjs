@@ -109,54 +109,88 @@ describe("Performance Comparison (RFC 0037)", () => {
         test("应该减少 DOM 创建次数（优化后）", () => {
             const component = new PerformanceTestComponent();
             document.body.appendChild(component);
-            (component as any)._domCache.clear();
 
             const items = Array.from({ length: 50 }, (_, i) => `Item ${i}`);
             component.setItems(items);
 
+            // 等待初始渲染完成
             return new Promise<void>((resolve) => {
-                setTimeout(() => {
-                    // 第一次更新：应该创建所有元素
-                    let creationCount1 = 0;
-                    const originalCreateElement = document.createElement.bind(document);
-                    document.createElement = function (tagName: string) {
-                        creationCount1++;
-                        return originalCreateElement(tagName);
-                    };
-
-                    const newItems1 = [...items];
-                    newItems1[25] = "Updated Item 25";
-                    component.setItems(newItems1);
-
-                    setTimeout(() => {
-                        document.createElement = originalCreateElement;
-
-                        // 第二次更新：应该复用大部分元素（优化后）
-                        let creationCount2 = 0;
-                        document.createElement = function (tagName: string) {
-                            creationCount2++;
-                            return originalCreateElement(tagName);
-                        };
-
-                        const newItems2 = [...newItems1];
-                        newItems2[26] = "Updated Item 26";
-                        component.setItems(newItems2);
-
-                        setTimeout(() => {
-                            document.createElement = originalCreateElement;
-
-                            // 验证：第二次更新应该创建更少的元素（因为缓存复用）
-                            console.log(`First update: ${creationCount1} creations`);
-                            console.log(`Second update: ${creationCount2} creations`);
-                            // 由于缓存机制，第二次更新应该创建更少的元素
-                            expect(creationCount2).toBeLessThanOrEqual(creationCount1);
-
-                            component.remove();
+                // 使用多个 requestAnimationFrame 确保所有异步操作完成
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            // 清除缓存，确保第一次更新会创建元素
                             (component as any)._domCache.clear();
-                            resolve();
-                        }, 150);
-                    }, 150);
-                }, 150);
+
+                            // 第一次更新：应该创建所有元素
+                            let creationCount1 = 0;
+                            const originalCreateElement = document.createElement.bind(document);
+                            document.createElement = function (tagName: string) {
+                                creationCount1++;
+                                return originalCreateElement(tagName);
+                            };
+
+                            const newItems1 = [...items];
+                            newItems1[25] = "Updated Item 25";
+                            component.setItems(newItems1);
+
+                            // 等待第一次更新完成
+                            requestAnimationFrame(() => {
+                                requestAnimationFrame(() => {
+                                    requestAnimationFrame(() => {
+                                        document.createElement = originalCreateElement;
+
+                                        // 第二次更新：应该复用大部分元素（优化后）
+                                        let creationCount2 = 0;
+                                        document.createElement = function (tagName: string) {
+                                            creationCount2++;
+                                            return originalCreateElement(tagName);
+                                        };
+
+                                        const newItems2 = [...newItems1];
+                                        newItems2[26] = "Updated Item 26";
+                                        component.setItems(newItems2);
+
+                                        // 等待第二次更新完成
+                                        requestAnimationFrame(() => {
+                                            requestAnimationFrame(() => {
+                                                requestAnimationFrame(() => {
+                                                    document.createElement = originalCreateElement;
+
+                                                    // 验证：第二次更新应该创建更少的元素（因为缓存复用）
+                                                    console.log(
+                                                        `First update: ${creationCount1} creations`
+                                                    );
+                                                    console.log(
+                                                        `Second update: ${creationCount2} creations`
+                                                    );
+                                                    // 由于缓存机制，第二次更新应该创建更少的元素
+                                                    // 如果第一次更新创建了 0 个元素（因为复用了初始渲染的元素），
+                                                    // 那么第二次更新也应该创建 0 个或更少的元素
+                                                    if (creationCount1 > 0) {
+                                                        expect(creationCount2).toBeLessThanOrEqual(
+                                                            creationCount1
+                                                        );
+                                                    } else {
+                                                        // 如果第一次更新创建了 0 个，说明元素被复用了
+                                                        // 第二次更新也应该复用，所以应该 <= 0
+                                                        expect(creationCount2).toBeLessThanOrEqual(
+                                                            0
+                                                        );
+                                                    }
+
+                                                    component.remove();
+                                                    (component as any)._domCache.clear();
+                                                    resolve();
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
             });
         }, 20000);
     });
