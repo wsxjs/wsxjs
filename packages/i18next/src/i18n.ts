@@ -13,22 +13,34 @@ import type { I18nConfig } from "./types";
  * @returns i18n 实例
  */
 export function initI18n(config: I18nConfig = {}): typeof i18next {
-    i18next
-        .use(Backend)
-        .use(LanguageDetector)
-        .init({
-            fallbackLng: "en",
-            debug: false,
-            interpolation: {
-                escapeValue: false,
-            },
-            backend: {
-                loadPath: "/locales/{{lng}}/{{ns}}.json",
-            },
-            ns: ["common", "home", "docs", "examples"],
-            defaultNS: "common",
-            ...config,
-        });
+    // 手动从 localStorage 读取语言，优先级高于浏览器检测
+    const savedLanguage =
+        typeof window !== "undefined" ? localStorage.getItem("wsx-language") : null;
+
+    // 合并配置，如果有 savedLanguage 则使用它作为初始语言
+    const finalConfig = {
+        fallbackLng: "en",
+        debug: false,
+        interpolation: {
+            escapeValue: false,
+        },
+        backend: {
+            loadPath: "/locales/{{lng}}/{{ns}}.json",
+        },
+        ns: ["common", "home", "docs", "examples"],
+        defaultNS: "common",
+        // 如果有保存的语言，直接设置为初始语言
+        lng: savedLanguage || undefined,
+        // 配置 LanguageDetector 的检测顺序
+        detection: {
+            order: ["localStorage", "navigator"],
+            caches: ["localStorage"],
+            lookupLocalStorage: "wsx-language",
+        },
+        ...config,
+    };
+
+    i18next.use(Backend).use(LanguageDetector).init(finalConfig);
 
     return i18next;
 }

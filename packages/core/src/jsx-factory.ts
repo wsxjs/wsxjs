@@ -56,7 +56,44 @@ export function h(
     }
 
     // 无上下文：使用旧逻辑（向后兼容）
-    return createElementWithPropsAndChildren(tag, props, children);
+    // 关键修复：即使没有上下文，也要标记元素，以便框架能够正确管理它
+    // 否则，未标记的元素会被 shouldPreserveElement() 保留，导致重复元素
+    // 调试日志：记录上下文丢失的情况，帮助定位问题（仅在开发环境输出）
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const nodeEnv = (typeof (globalThis as any).process !== "undefined" &&
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (globalThis as any).process.env?.NODE_ENV) as string | undefined;
+        if (nodeEnv === "development") {
+            if (!context) {
+                logger.debug(
+                    `h() called without render context. Tag: "${tag}", ComponentId: "${getComponentId()}"`,
+                    {
+                        tag,
+                        props: props ? Object.keys(props) : [],
+                        hasCacheManager: !!cacheManager,
+                    }
+                );
+            } else if (!cacheManager) {
+                logger.debug(
+                    `h() called with context but no cache manager. Tag: "${tag}", Component: "${context.constructor.name}"`,
+                    {
+                        tag,
+                        component: context.constructor.name,
+                    }
+                );
+            }
+        }
+    } catch {
+        // 忽略环境变量检查错误
+    }
+
+    const element = createElementWithPropsAndChildren(tag, props, children);
+    // 生成一个简单的 cache key（即使没有上下文）
+    const componentId = getComponentId();
+    const cacheKey = generateCacheKey(tag, props, componentId, context || undefined);
+    markElement(element, cacheKey);
+    return element;
 }
 
 /**
@@ -120,7 +157,13 @@ function handleCacheError(
     } catch {
         // 忽略环境变量检查错误
     }
-    return createElementWithPropsAndChildren(tag, props, children);
+    // 关键修复：即使缓存失败，也要标记元素，以便框架能够正确管理它
+    const element = createElementWithPropsAndChildren(tag, props, children);
+    const context = RenderContext.getCurrentComponent();
+    const componentId = getComponentId();
+    const cacheKey = generateCacheKey(tag, props, componentId, context || undefined);
+    markElement(element, cacheKey);
+    return element;
 }
 
 /**

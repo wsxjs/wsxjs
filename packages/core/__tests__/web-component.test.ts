@@ -9,6 +9,7 @@
 
 import { WebComponent } from "../src/web-component";
 import { h } from "../src/jsx-factory";
+import { getElementCacheKey } from "../src/utils/element-marking";
 
 // 创建一个测试用的 WebComponent 子类
 class TestWebComponent extends WebComponent {
@@ -80,6 +81,50 @@ describe("WebComponent", () => {
 
             // 如果内容存在，会跳过渲染（避免重复元素）
             expect(component.renderCallCount).toBe(1); // 只渲染了一次（跳过重复渲染）
+        });
+
+        test("首次渲染时元素应该有 __wsxCacheKey 标记（RFC 0038 修复）", () => {
+            document.body.appendChild(component);
+
+            // 获取首次渲染的元素
+            const contentDiv = component.querySelector(".test-content") as HTMLElement;
+            const paragraph = component.querySelector("#test-paragraph") as HTMLElement;
+
+            // 验证元素有 __wsxCacheKey 标记
+            expect(contentDiv).toBeTruthy();
+            expect(paragraph).toBeTruthy();
+
+            const contentCacheKey = getElementCacheKey(contentDiv);
+            const paragraphCacheKey = getElementCacheKey(paragraph);
+
+            // 首次渲染时，元素应该有 cache key（修复后）
+            expect(contentCacheKey).toBeTruthy();
+            expect(paragraphCacheKey).toBeTruthy();
+            expect(typeof contentCacheKey).toBe("string");
+            expect(typeof paragraphCacheKey).toBe("string");
+        });
+
+        test("首次渲染和重渲染时元素标记应该一致（RFC 0038 修复）", async () => {
+            // 首次渲染
+            document.body.appendChild(component);
+
+            const firstContentDiv = component.querySelector(".test-content") as HTMLElement;
+            const firstCacheKey = getElementCacheKey(firstContentDiv);
+            expect(firstCacheKey).toBeTruthy();
+
+            // 触发重渲染（使用 scheduleRerender）
+            (component as any).scheduleRerender();
+            // 等待重渲染完成
+            await new Promise<void>((resolve) => setTimeout(resolve, 50));
+
+            const secondContentDiv = component.querySelector(".test-content") as HTMLElement;
+            const secondCacheKey = getElementCacheKey(secondContentDiv);
+            expect(secondCacheKey).toBeTruthy();
+
+            // 元素应该被复用（相同的 cache key）
+            // 注意：如果元素被复用，应该是同一个元素引用
+            // 或者至少 cache key 应该相同（如果元素被更新而不是替换）
+            expect(firstCacheKey).toBe(secondCacheKey);
         });
     });
 

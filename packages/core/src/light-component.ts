@@ -10,6 +10,7 @@
 import { h, type JSXChildren } from "./jsx-factory";
 import { BaseComponent, type BaseComponentConfig } from "./base-component";
 import { RenderContext } from "./render-context";
+import { shouldPreserveElement } from "./utils/element-marking";
 import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("LightComponent");
@@ -222,7 +223,8 @@ export abstract class LightComponent extends BaseComponent {
                 // 先添加新内容
                 this.appendChild(content);
 
-                // 移除旧内容（保留 JSX children 和样式元素）
+                // 移除旧内容（保留 JSX children、样式元素和未标记元素）
+                // 关键修复：使用 shouldPreserveElement() 来保护手动创建的元素（如第三方库注入的元素）
                 const oldChildren = Array.from(this.children).filter((child) => {
                     // 保留新添加的内容
                     if (child === content) {
@@ -236,8 +238,13 @@ export abstract class LightComponent extends BaseComponent {
                     ) {
                         return false;
                     }
-                    // 保留 JSX children（关键修复）
+                    // 保留 JSX children（通过 JSX factory 直接添加的 children）
                     if (child instanceof HTMLElement && jsxChildren.includes(child)) {
+                        return false;
+                    }
+                    // 保留未标记的元素（手动创建的元素、第三方库注入的元素）
+                    // 这是 RFC 0037 Phase 5 的核心：保护未标记元素
+                    if (shouldPreserveElement(child)) {
                         return false;
                     }
                     return true;

@@ -12,6 +12,7 @@ import { h, type JSXChildren } from "./jsx-factory";
 import { StyleManager } from "./styles/style-manager";
 import { BaseComponent, type BaseComponentConfig } from "./base-component";
 import { RenderContext } from "./render-context";
+import { shouldPreserveElement } from "./utils/element-marking";
 import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("WebComponent");
@@ -100,7 +101,9 @@ export abstract class WebComponent extends BaseComponent {
                 // 渲染JSX内容到Shadow DOM
                 // render() 应该返回包含 slot 元素的内容（如果需要）
                 // 浏览器会自动将 Light DOM 中的内容分配到 slot
-                const content = this.render();
+                // 关键修复：使用 RenderContext.runInContext() 确保 h() 能够获取上下文
+                // 否则，首次渲染时创建的元素不会被标记 __wsxCacheKey，导致重复元素问题
+                const content = RenderContext.runInContext(this, () => this.render());
                 this.shadowRoot.appendChild(content);
             }
 
@@ -212,10 +215,24 @@ export abstract class WebComponent extends BaseComponent {
                 // 添加新内容
                 this.shadowRoot.appendChild(content);
 
-                // 移除旧内容
-                const oldChildren = Array.from(this.shadowRoot.children).filter(
-                    (child) => child !== content
-                );
+                // 移除旧内容（保留样式元素和未标记元素）
+                // 关键修复：使用 shouldPreserveElement() 来保护第三方库注入的元素
+                const oldChildren = Array.from(this.shadowRoot.children).filter((child) => {
+                    // 保留新添加的内容
+                    if (child === content) {
+                        return false;
+                    }
+                    // 保留样式元素
+                    if (child instanceof HTMLStyleElement) {
+                        return false;
+                    }
+                    // 保留未标记的元素（第三方库注入的元素、自定义元素）
+                    // 这是 RFC 0037 Phase 5 的核心：保护未标记元素
+                    if (shouldPreserveElement(child)) {
+                        return false;
+                    }
+                    return true;
+                });
                 oldChildren.forEach((child) => child.remove());
 
                 // 恢复焦点状态

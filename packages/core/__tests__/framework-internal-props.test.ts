@@ -7,6 +7,7 @@
 
 import { h } from "../src/jsx-factory";
 import { WebComponent } from "../src/web-component";
+import { LightComponent } from "../src/light-component";
 import { isFrameworkInternalProp } from "../src/utils/props-utils";
 
 class InternalPropsTestComponent extends WebComponent {
@@ -22,7 +23,21 @@ class InternalPropsTestComponent extends WebComponent {
     }
 }
 
+class InternalPropsLightTestComponent extends LightComponent {
+    render() {
+        return h("div", {
+            key: "test-key",
+            __wsxPositionId: "pos-123",
+            __wsxIndex: 0,
+            __testId: "test-element",
+            id: "actual-id",
+            className: "test-class",
+        });
+    }
+}
+
 customElements.define("internal-props-test-component", InternalPropsTestComponent);
+customElements.define("internal-props-light-test-component", InternalPropsLightTestComponent);
 
 describe("Framework Internal Props Filtering", () => {
     test("isFrameworkInternalProp 应该正确识别框架内部属性", () => {
@@ -122,6 +137,74 @@ describe("Framework Internal Props Filtering", () => {
         await new Promise<void>((resolve) => setTimeout(resolve, 100));
 
         const updatedDiv = component.shadowRoot!.querySelector("div");
+
+        // 重新渲染后，框架内部属性仍然不应该存在
+        expect(updatedDiv).not.toBeNull();
+        if (updatedDiv) {
+            expect(updatedDiv.hasAttribute("key")).toBe(false);
+            expect(updatedDiv.hasAttribute("__wsxPositionId")).toBe(false);
+            expect(updatedDiv.hasAttribute("__wsxIndex")).toBe(false);
+            expect(updatedDiv.hasAttribute("__testId")).toBe(false);
+        }
+
+        component.remove();
+    });
+
+    test("LightComponent: 框架内部属性不应该被渲染到 DOM 元素", async () => {
+        const component = new InternalPropsLightTestComponent();
+        document.body.appendChild(component);
+
+        // 等待渲染完成
+        await new Promise<void>((resolve) => setTimeout(resolve, 100));
+
+        const div = component.querySelector("div");
+
+        // 验证框架内部属性不存在于 DOM
+        expect(div).not.toBeNull();
+        if (div) {
+            expect(div.hasAttribute("key")).toBe(false);
+            expect(div.hasAttribute("__wsxPositionId")).toBe(false);
+            expect(div.hasAttribute("__wsxIndex")).toBe(false);
+            expect(div.hasAttribute("__testId")).toBe(false);
+
+            // 验证普通属性正确渲染
+            expect(div.getAttribute("id")).toBe("actual-id");
+            expect(div.classList.contains("test-class")).toBe(true);
+        }
+
+        // 验证属性对象中也不存在这些属性
+        const attributes = Array.from(div!.attributes).map((attr) => attr.name);
+        expect(attributes).not.toContain("key");
+        expect(attributes).not.toContain("__wsxPositionId");
+        expect(attributes).not.toContain("__wsxIndex");
+        expect(attributes).not.toContain("__testId");
+        expect(attributes).toContain("id");
+        expect(attributes).toContain("class");
+
+        component.remove();
+    });
+
+    test("LightComponent: 更新 props 时，框架内部属性不应该被添加或移除", async () => {
+        const component = new InternalPropsLightTestComponent();
+        document.body.appendChild(component);
+
+        await new Promise<void>((resolve) => setTimeout(resolve, 100));
+
+        const div = component.querySelector("div");
+
+        // 初始状态：框架内部属性不应该存在
+        expect(div).not.toBeNull();
+        if (div) {
+            expect(div.hasAttribute("key")).toBe(false);
+            expect(div.hasAttribute("__wsxPositionId")).toBe(false);
+        }
+
+        // 触发重新渲染（改变其他属性）
+        (component as any).rerender();
+
+        await new Promise<void>((resolve) => setTimeout(resolve, 100));
+
+        const updatedDiv = component.querySelector("div");
 
         // 重新渲染后，框架内部属性仍然不应该存在
         expect(updatedDiv).not.toBeNull();
