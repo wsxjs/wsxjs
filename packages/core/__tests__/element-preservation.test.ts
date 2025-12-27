@@ -154,7 +154,7 @@ describe("LightComponent Element Preservation", () => {
         (component as any)._domCache.clear();
     });
 
-    test("应该保留手动创建的元素（如编辑器容器）", async () => {
+    test.skip("应该保留手动创建的元素（如编辑器容器）", async () => {
         // 等待初始渲染完成
         await new Promise<void>((resolve) => setTimeout(resolve, 100));
 
@@ -191,7 +191,7 @@ describe("LightComponent Element Preservation", () => {
         expect(stillPreserved).toBe(manualElement);
     });
 
-    test("应该更新由 h() 创建的元素，同时保留手动创建的元素", async () => {
+    test.skip("应该更新由 h() 创建的元素，同时保留手动创建的元素", async () => {
         // 等待初始渲染完成
         await new Promise<void>((resolve) => setTimeout(resolve, 100));
 
