@@ -210,10 +210,12 @@ export default class EditorJSDemo extends LightComponent {
     }
 
     protected onConnected() {
+        super.onConnected?.();
         this.initializeEditor();
     }
 
     protected onDisconnected() {
+        super.onDisconnected?.();
         if (this.editor && typeof this.editor.destroy === "function") {
             try {
                 this.editor.destroy();

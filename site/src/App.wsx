@@ -366,6 +366,7 @@ export default class App extends LightComponent {
      * Component lifecycle - connected to DOM
      */
     protected onConnected(): void {
+        super.onConnected?.();
         // Add scroll listener for navigation effects
         window.addEventListener("scroll", this.handleScroll);
 
@@ -380,6 +381,7 @@ export default class App extends LightComponent {
      * Component lifecycle - disconnected from DOM
      */
     protected onDisconnected(): void {
+        super.onDisconnected?.();
         window.removeEventListener("scroll", this.handleScroll);
         this.removeRouteMetaListener();
     }

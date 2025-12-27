@@ -264,6 +264,7 @@ export function updateChildren(
             // 如果 oldChild 不在 DOM 中，oldNode 保持为 null
         } else if (typeof oldChild === "string" || typeof oldChild === "number") {
             // 文本节点：按顺序找到对应的文本节点（跳过所有元素节点）
+            // 关键：跳过应该保留的元素节点（手动创建的元素、第三方库注入的元素）
             while (domIndex < element.childNodes.length) {
                 const node = element.childNodes[domIndex];
                 if (node.nodeType === Node.TEXT_NODE) {
@@ -273,6 +274,7 @@ export function updateChildren(
                 } else if (node.nodeType === Node.ELEMENT_NODE) {
                     // 跳过所有元素节点（不管是保留的还是框架管理的）
                     // 因为元素节点会在自己的迭代中处理
+                    // 注意：手动创建的元素会被 shouldPreserveElement 保护，不会被移除
                     domIndex++;
                 } else {
                     // 跳过其他类型的节点
@@ -284,12 +286,28 @@ export function updateChildren(
         // 如果是文本节点，更新文本内容
         if (typeof oldChild === "string" || typeof oldChild === "number") {
             if (typeof newChild === "string" || typeof newChild === "number") {
+                const oldText = String(oldChild);
+                const newText = String(newChild);
+
+                // 关键修复：始终检查 DOM 中的实际文本内容，而不仅仅依赖 oldChild
+                // 这样可以确保即使元数据不同步，也能正确更新
+                const needsUpdate =
+                    oldText !== newText ||
+                    (oldNode &&
+                        oldNode.nodeType === Node.TEXT_NODE &&
+                        oldNode.textContent !== newText);
+
+                if (!needsUpdate) {
+                    // 文本内容确实相同，跳过更新
+                    continue;
+                }
+
                 if (oldNode && oldNode.nodeType === Node.TEXT_NODE) {
                     // 更新现有文本节点
-                    oldNode.textContent = String(newChild);
+                    oldNode.textContent = newText;
                 } else {
                     // 创建新的文本节点
-                    const newTextNode = document.createTextNode(String(newChild));
+                    const newTextNode = document.createTextNode(newText);
                     if (oldNode && !shouldPreserveElement(oldNode)) {
                         element.replaceChild(newTextNode, oldNode);
                     } else {
@@ -567,15 +585,17 @@ export function updateElement(
     const oldProps = (oldMetadata?.props as Record<string, unknown>) || null;
     const oldChildren = (oldMetadata?.children as JSXChildren[]) || [];
 
+    // 关键修复：在更新 DOM 之前先保存新的元数据
+    // 这样可以防止竞态条件：如果在更新过程中触发了另一个渲染，
+    // 新渲染会读取到正确的元数据，而不是过时的数据
+    cacheManager.setMetadata(element, {
+        props: newProps || {},
+        children: newChildren,
+    });
+
     // 更新 props
     updateProps(element, oldProps, newProps, tag);
 
     // 更新 children
     updateChildren(element, oldChildren, newChildren);
-
-    // 保存新的元数据
-    cacheManager.setMetadata(element, {
-        props: newProps || {},
-        children: newChildren,
-    });
 }

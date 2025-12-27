@@ -215,6 +215,7 @@ export default class ReactiveCounter extends WebComponent {
     };
 
     protected onConnected(): void {
+        super.onConnected?.();
         logger.info("ReactiveCounter connected to DOM");
 
         // 组件挂载时显示欢迎消息
@@ -224,6 +225,7 @@ export default class ReactiveCounter extends WebComponent {
     }
 
     protected onDisconnected(): void {
+        super.onDisconnected?.();
         logger.info("ReactiveCounter disconnected from DOM");
         // 清理定时器等资源
         this.state.isRunning = false;

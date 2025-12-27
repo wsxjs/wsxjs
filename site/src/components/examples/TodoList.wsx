@@ -255,10 +255,12 @@ export default class TodoList extends WebComponent {
     }
 
     protected onConnected(): void {
+        super.onConnected?.();
         logger.info("TodoList connected to DOM");
     }
 
     protected onDisconnected(): void {
+        super.onDisconnected?.();
         logger.info("TodoList disconnected from DOM");
     }
 }

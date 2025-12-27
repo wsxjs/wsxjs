@@ -54,6 +54,7 @@ export class MyComponent extends WebComponent {
     }
 
     protected onRendered() {
+        super.onRendered?.();
         // 防止重复更新配置（避免循环重渲染）
         if (this.configUpdated) {
             return;

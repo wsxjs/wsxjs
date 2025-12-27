@@ -17,6 +17,7 @@ export class StatsSection extends LightComponent {
     }
 
     protected onConnected(): void {
+        super.onConnected?.();
         this.loadStats();
     }
 

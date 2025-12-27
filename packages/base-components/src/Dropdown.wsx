@@ -216,6 +216,7 @@ export default class Dropdown extends WebComponent {
      * 组件断开连接时清理
      */
     protected onDisconnected(): void {
+        super.onDisconnected?.();
         this.detachOutsideClickHandler();
     }
 }

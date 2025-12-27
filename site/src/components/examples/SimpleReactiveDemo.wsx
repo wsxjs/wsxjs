@@ -25,6 +25,7 @@ export default class SimpleReactiveDemo extends WebComponent {
     }
 
     protected onConnected() {
+        super.onConnected?.();
         // 初始化消息 - 在 onConnected 中确保 state 已经初始化
         // 使用 setTimeout 确保 @state 装饰器已经完全初始化
         setTimeout(() => {

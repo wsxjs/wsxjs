@@ -60,6 +60,7 @@ export default class ButtonGroup extends WebComponent {
      * 组件连接到DOM后的初始化
      */
     protected onConnected(): void {
+        super.onConnected?.();
         // 初始化时设置子按钮的disabled状态
         this.updateChildrenDisabledState();
     }

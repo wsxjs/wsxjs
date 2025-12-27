@@ -52,6 +52,7 @@ export default class CodeBlock extends LightComponent {
     private isHighlighting: boolean = false; // 防止重复高亮
 
     protected onRendered() {
+        super.onRendered?.();
         // 在渲染完成后应用语法高亮（防止重复高亮）
         if (!this.isHighlighting) {
             this.highlightCode();

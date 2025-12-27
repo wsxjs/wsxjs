@@ -347,6 +347,7 @@ export default class ColorPicker extends WebComponent {
      * 组件连接到DOM后的初始化
      */
     protected onConnected(): void {
+        super.onConnected?.();
         // 绑定全局点击事件以关闭面板
         document.addEventListener("click", this.handleDocumentClick);
 
@@ -357,6 +358,7 @@ export default class ColorPicker extends WebComponent {
      * 组件从DOM断开时的清理
      */
     protected onDisconnected(): void {
+        super.onDisconnected?.();
         document.removeEventListener("click", this.handleDocumentClick);
 
         logger.info("ColorPicker disconnected from DOM");

@@ -29,6 +29,7 @@ export default class MarkedBuilder extends LightComponent {
     }
 
     protected onConnected() {
+        super.onConnected?.();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
         // 初始化示例 Markdown 内容

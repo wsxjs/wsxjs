@@ -117,9 +117,12 @@ function tryUseCacheOrCreate(
             // 不需要再检查标签名（可能导致错误复用）
             const element = cachedElement as HTMLElement | SVGElement;
 
-            // 关键修复：检测自定义元素（Web Components）并重新触发生命周期
+            updateElement(element, props, children, tag, cacheManager);
+
+            // 关键修复（RFC-0039）：检测自定义元素（Web Components）并重新触发生命周期
             // 自定义元素有 connectedCallback 和 disconnectedCallback 方法
             // 当它们被缓存复用时，需要模拟断开/重连以触发初始化逻辑
+            // 这确保了即使组件缺少 super.onConnected() 调用，框架层面也能保证正确的生命周期
             const isCustomElement = tag.includes("-") && customElements.get(tag);
             if (isCustomElement && element.isConnected) {
                 // 临时从 DOM 断开以触发 disconnectedCallback
@@ -127,12 +130,14 @@ function tryUseCacheOrCreate(
                 if (parent) {
                     parent.removeChild(element);
                     // disconnectedCallback 会在 removeChild 时自动调用
-                    // 然后在 parent.appendChild(element) 时 connectedCallback 会被调用
-                    // 但这会在 updateElement 之后由框架处理
+
+                    // 立即重新添加以触发 connectedCallback
+                    // 这确保生命周期在返回元素之前就已经完成
+                    parent.appendChild(element);
+                    // connectedCallback 会在 appendChild 时自动调用
                 }
             }
 
-            updateElement(element, props, children, tag, cacheManager);
             return element;
         }
 

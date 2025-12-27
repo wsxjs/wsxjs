@@ -231,10 +231,12 @@ export default class SvgDemo extends WebComponent {
     };
 
     protected onConnected(): void {
+        super.onConnected?.();
         logger.info("SvgDemo connected to DOM");
     }
 
     protected onDisconnected(): void {
+        super.onDisconnected?.();
         logger.info("SvgDemo disconnected from DOM");
         this.stopAnimation();
     }

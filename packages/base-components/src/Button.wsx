@@ -215,6 +215,7 @@ export default class Button extends WebComponent {
      * 组件连接到DOM后的初始化
      */
     protected onConnected(): void {
+        super.onConnected?.();
         this.addEventListener("click", this.handleClick);
     }
 
@@ -222,6 +223,7 @@ export default class Button extends WebComponent {
      * 组件从DOM断开时的清理
      */
     protected onDisconnected(): void {
+        super.onDisconnected?.();
         this.removeEventListener("click", this.handleClick);
     }
 

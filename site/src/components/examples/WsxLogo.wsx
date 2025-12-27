@@ -18,6 +18,7 @@ export default class WsxLogo extends WebComponent {
     }
 
     protected onConnected() {
+        super.onConnected?.();
         // Initialize attributes
         this.size = this.size || 32;
         this.color = this.color || "#dc2626";
