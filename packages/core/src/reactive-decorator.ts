@@ -81,8 +81,9 @@ export function state(
     // RFC 0037 Phase 0: Test Infrastructure Support
     // Allow runtime decorator in tests to bypass Babel plugin requirement
     // Use globalThis to safely access process in all environments
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const globalProcess = typeof globalThis !== "undefined" ? (globalThis as any).process : undefined;
+
+    const globalProcess =
+        typeof globalThis !== "undefined" ? (globalThis as any).process : undefined;
     if (globalProcess?.env?.NODE_ENV === "test") {
         return;
     }
