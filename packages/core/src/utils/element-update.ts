@@ -314,10 +314,9 @@ export function updateChildren(
                         oldNode.textContent !== newText)
                 ) {
                     updateOrCreateTextNode(element, oldNode, newText);
-                } else if (!oldNode) {
-                    // 如果 oldNode 是 null，需要创建文本节点
-                    updateOrCreateTextNode(element, null, newText);
                 }
+                // 如果文本内容相同且 oldNode 为 null，不需要做任何操作
+                // 因为文本节点可能已经存在于 DOM 中且内容正确，或者不需要创建
             } else {
                 // 类型变化：文本 -> 元素/Fragment
                 removeNodeIfNotPreserved(element, oldNode);

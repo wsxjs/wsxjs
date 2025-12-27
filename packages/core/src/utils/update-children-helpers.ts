@@ -117,15 +117,23 @@ export function updateOrCreateTextNode(
     newText: string
 ): void {
     if (oldNode && oldNode.nodeType === Node.TEXT_NODE) {
-        oldNode.textContent = newText;
+        // 只有当文本内容不同时才更新
+        if (oldNode.textContent !== newText) {
+            oldNode.textContent = newText;
+        }
     } else {
         // 如果 oldNode 是 null，先检查 parent 中是否已有文本节点
-        // 如果已有文本节点，更新它而不是创建新的
+        // 如果已有文本节点且内容匹配，不需要更新
+        // 如果已有文本节点但内容不匹配，更新它而不是创建新的
         if (!oldNode) {
             for (let i = 0; i < parent.childNodes.length; i++) {
                 const node = parent.childNodes[i];
                 if (node.nodeType === Node.TEXT_NODE) {
-                    node.textContent = newText;
+                    // 只有当文本内容不同时才更新
+                    // 这样可以避免错误地更新其他位置的文本节点
+                    if (node.textContent !== newText) {
+                        node.textContent = newText;
+                    }
                     return;
                 }
             }

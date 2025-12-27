@@ -194,6 +194,46 @@ describe("updateOrCreateTextNode", () => {
         expect(parent.firstChild!.textContent).toBe("New");
         expect(parent.lastChild).toBe(preserved);
     });
+
+    test("当 oldNode 存在且内容相同时不应该更新", () => {
+        const parent = document.createElement("div");
+        const textNode = document.createTextNode("Same");
+        parent.appendChild(textNode);
+
+        updateOrCreateTextNode(parent, textNode, "Same");
+        expect(textNode.textContent).toBe("Same");
+        expect(parent.childNodes.length).toBe(1);
+    });
+
+    test("当 oldNode 为 null 且存在多个文本节点时，应该检查内容再更新", () => {
+        const parent = document.createElement("div");
+        const textNode1 = document.createTextNode("First");
+        const textNode2 = document.createTextNode("Second");
+        const textNode3 = document.createTextNode("Third");
+        parent.appendChild(textNode1);
+        parent.appendChild(textNode2);
+        parent.appendChild(textNode3);
+
+        // 当 oldNode 为 null 且新文本与第一个文本节点内容不同时，应该更新第一个
+        updateOrCreateTextNode(parent, null, "Updated");
+        expect(textNode1.textContent).toBe("Updated");
+        expect(textNode2.textContent).toBe("Second");
+        expect(textNode3.textContent).toBe("Third");
+    });
+
+    test("当 oldNode 为 null 且找到的文本节点内容已匹配时，不应该更新", () => {
+        const parent = document.createElement("div");
+        const textNode1 = document.createTextNode("Target");
+        const textNode2 = document.createTextNode("Other");
+        parent.appendChild(textNode1);
+        parent.appendChild(textNode2);
+
+        // 当 oldNode 为 null 且第一个文本节点内容已匹配时，不应该更新
+        updateOrCreateTextNode(parent, null, "Target");
+        expect(textNode1.textContent).toBe("Target");
+        expect(textNode2.textContent).toBe("Other");
+        expect(parent.childNodes.length).toBe(2);
+    });
 });
 
 describe("removeNodeIfNotPreserved", () => {
