@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-marked-components",
-    "version": "0.0.20",
+    "version": "0.0.21",
     "description": "Markdown rendering components built with WSXJS for marked library",
     "type": "module",
     "main": "./dist/index.cjs",
