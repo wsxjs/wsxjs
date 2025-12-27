@@ -6,10 +6,25 @@
  */
 
 import { shouldUseSVGNamespace, getSVGAttributeName } from "./svg-utils";
-import { flattenChildren, type JSXChildren } from "./dom-utils";
+import { type JSXChildren } from "./dom-utils";
 import { setSmartProperty, isFrameworkInternalProp } from "./props-utils";
-import { shouldPreserveElement, getElementCacheKey } from "./element-marking";
+import { shouldPreserveElement } from "./element-marking";
 import type { DOMCacheManager } from "../dom-cache-manager";
+import {
+    collectPreservedElements,
+    findElementNode,
+    findTextNode,
+    updateOrCreateTextNode,
+    removeNodeIfNotPreserved,
+    replaceOrInsertElement,
+    appendNewChild,
+    buildNewChildrenMaps,
+    deduplicateCacheKeys,
+    collectNodesToRemove,
+    removeNodes,
+    reinsertPreservedElements,
+    flattenChildrenSafe,
+} from "./update-children-helpers";
 
 /**
  * Removes a property from an element.
@@ -236,205 +251,115 @@ export function updateProps(
 export function updateChildren(
     element: HTMLElement | SVGElement,
     oldChildren: JSXChildren[],
-    newChildren: JSXChildren[]
+    newChildren: JSXChildren[],
+    _cacheManager?: DOMCacheManager
 ): void {
-    const flatOld = flattenChildren(oldChildren);
-    const flatNew = flattenChildren(newChildren);
+    const flatOld = flattenChildrenSafe(oldChildren);
+    const flatNew = flattenChildrenSafe(newChildren);
 
-    // 阶段 4 简化版：只处理相同数量的子节点
-    const minLength = Math.min(flatOld.length, flatNew.length);
+    // 收集需要保留的元素（第三方库注入的元素）
+    const preservedElements = collectPreservedElements(element);
 
     // 更新现有子节点
-    // 关键：直接使用 oldChild 作为 oldNode（如果它是元素），因为它已经在 DOM 中
-    // 对于文本节点，按顺序匹配（跳过应该保留的元素节点）
-    let domIndex = 0; // DOM 中的实际索引，用于匹配文本节点
+    const minLength = Math.min(flatOld.length, flatNew.length);
+    const domIndex = { value: 0 }; // 使用对象包装，使其可在函数间传递
+
     for (let i = 0; i < minLength; i++) {
         const oldChild = flatOld[i];
         const newChild = flatNew[i];
 
-        // 找到与 oldChild 对应的实际 DOM 节点
-        // 关键：oldChild 是上次渲染的元素引用，如果它在 DOM 中，直接使用它
+        // 查找对应的 DOM 节点
         let oldNode: Node | null = null;
         if (oldChild instanceof HTMLElement || oldChild instanceof SVGElement) {
-            // 元素节点：检查 oldChild 是否在 DOM 中
-            // 如果 oldChild 的 parentNode 是当前 element，说明它在 DOM 中
-            if (oldChild.parentNode === element) {
-                // 关键修复：确保 oldChild 不是应该保留的元素（手动创建的元素、第三方库注入的元素）
-                // 如果 oldChild 是应该保留的元素，不应该在"更新现有子节点"循环中处理它
-                if (!shouldPreserveElement(oldChild)) {
-                    oldNode = oldChild;
-                }
-            } else {
-                // oldChild 不在 DOM 中，尝试通过 cache key 找到对应的 DOM 节点
-                // 这可以处理元素被替换但 cache key 相同的情况
-                const oldCacheKey = getElementCacheKey(oldChild);
-                if (oldCacheKey) {
-                    // 遍历 DOM 中的子节点，找到具有相同 cache key 的节点
-                    for (let j = 0; j < element.childNodes.length; j++) {
-                        const domChild = element.childNodes[j];
-                        if (domChild instanceof HTMLElement || domChild instanceof SVGElement) {
-                            // 跳过应该保留的元素（手动创建的元素、第三方库注入的元素）
-                            if (shouldPreserveElement(domChild)) {
-                                continue;
-                            }
-                            const domCacheKey = getElementCacheKey(domChild);
-                            if (domCacheKey === oldCacheKey) {
-                                oldNode = domChild;
-                                break;
-                            }
-                        }
-                    }
+            oldNode = findElementNode(oldChild, element);
+            // 关键修复：当处理元素节点时，需要更新 domIndex 以跳过该元素
+            // 这样，下一个文本节点的查找位置才是正确的
+            if (oldNode && oldNode.parentNode === element) {
+                // 找到 oldNode 在 DOM 中的位置
+                const nodeIndex = Array.from(element.childNodes).indexOf(oldNode as ChildNode);
+                if (nodeIndex !== -1 && nodeIndex >= domIndex.value) {
+                    // 更新 domIndex 到 oldNode 之后的位置
+                    domIndex.value = nodeIndex + 1;
                 }
             }
-            // 如果 oldChild 不在 DOM 中且找不到对应的节点，oldNode 保持为 null
         } else if (typeof oldChild === "string" || typeof oldChild === "number") {
-            // 文本节点：按顺序找到对应的文本节点（跳过所有元素节点）
-            // 关键：跳过应该保留的元素节点（手动创建的元素、第三方库注入的元素）
-            while (domIndex < element.childNodes.length) {
-                const node = element.childNodes[domIndex];
-                if (node.nodeType === Node.TEXT_NODE) {
-                    oldNode = node;
-                    domIndex++;
-                    break;
-                } else if (node.nodeType === Node.ELEMENT_NODE) {
-                    // 跳过所有元素节点（不管是保留的还是框架管理的）
-                    // 因为元素节点会在自己的迭代中处理
-                    // 注意：手动创建的元素会被 shouldPreserveElement 保护，不会被移除
-                    domIndex++;
-                } else {
-                    // 跳过其他类型的节点
-                    domIndex++;
+            oldNode = findTextNode(element, domIndex);
+            // 关键修复：如果 findTextNode 返回 null，尝试直接查找元素内的第一个文本节点
+            // 这可以处理文本节点存在但 domIndex 不正确的情况
+            if (!oldNode && element.childNodes.length > 0) {
+                for (let j = 0; j < element.childNodes.length; j++) {
+                    const node = element.childNodes[j];
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        oldNode = node;
+                        // 更新 domIndex 到找到的文本节点之后
+                        domIndex.value = j + 1;
+                        break;
+                    }
                 }
             }
         }
 
-        // 如果是文本节点，更新文本内容
+        // 处理文本节点（oldChild 是字符串/数字）
         if (typeof oldChild === "string" || typeof oldChild === "number") {
             if (typeof newChild === "string" || typeof newChild === "number") {
                 const oldText = String(oldChild);
                 const newText = String(newChild);
 
-                // 关键修复：始终检查 DOM 中的实际文本内容，而不仅仅依赖 oldChild
-                // 这样可以确保即使元数据不同步，也能正确更新
-                const needsUpdate =
+                // 关键修复：如果文本内容不同，总是需要更新
+                // 即使 oldNode 是 null，也应该创建文本节点
+                if (
                     oldText !== newText ||
                     (oldNode &&
                         oldNode.nodeType === Node.TEXT_NODE &&
-                        oldNode.textContent !== newText);
-
-                if (!needsUpdate) {
-                    // 文本内容确实相同，跳过更新
-                    continue;
-                }
-
-                if (oldNode && oldNode.nodeType === Node.TEXT_NODE) {
-                    // 更新现有文本节点
-                    oldNode.textContent = newText;
-                } else {
-                    // 创建新的文本节点
-                    const newTextNode = document.createTextNode(newText);
-                    if (oldNode && !shouldPreserveElement(oldNode)) {
-                        element.replaceChild(newTextNode, oldNode);
-                    } else {
-                        element.insertBefore(newTextNode, oldNode || null);
-                    }
+                        oldNode.textContent !== newText)
+                ) {
+                    updateOrCreateTextNode(element, oldNode, newText);
+                } else if (!oldNode) {
+                    // 如果 oldNode 是 null，需要创建文本节点
+                    updateOrCreateTextNode(element, null, newText);
                 }
             } else {
-                // 类型变化：文本 -> 元素
-                if (oldNode && !shouldPreserveElement(oldNode)) {
-                    element.removeChild(oldNode);
-                }
+                // 类型变化：文本 -> 元素/Fragment
+                removeNodeIfNotPreserved(element, oldNode);
                 if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
-                    if (newChild.parentNode !== element) {
-                        element.insertBefore(newChild, oldNode || null);
-                    }
+                    replaceOrInsertElement(element, newChild, oldNode);
                 } else if (newChild instanceof DocumentFragment) {
                     element.insertBefore(newChild, oldNode || null);
                 }
             }
-        } else if (oldChild instanceof HTMLElement || oldChild instanceof SVGElement) {
-            // 关键修复：如果 oldNode 是应该保留的元素（手动创建的元素、第三方库注入的元素），跳过处理
-            // 这些元素不在 oldChildren 或 newChildren 中，应该在第二步被保留
+        }
+        // 处理元素节点（oldChild 是元素）
+        else if (oldChild instanceof HTMLElement || oldChild instanceof SVGElement) {
             if (oldNode && shouldPreserveElement(oldNode)) {
-                // 跳过应该保留的元素，继续处理下一个
-                continue;
+                continue; // 跳过保留的元素
             }
 
-            // 如果是元素节点，检查是否是同一个元素
-            if (newChild === oldChild) {
-                // 同一个元素，不需要更新（元素内容会在 updateElement 中更新）
-                continue;
-            } else if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
-                // 不同的元素引用，需要替换
-                // 检查 cache key：如果 cache key 相同，说明是同一个逻辑位置，应该替换
-                const oldCacheKey =
-                    oldNode && (oldNode instanceof HTMLElement || oldNode instanceof SVGElement)
-                        ? getElementCacheKey(oldNode)
-                        : null;
-                const newCacheKey = getElementCacheKey(newChild);
-                const hasSameCacheKey = oldCacheKey && newCacheKey && oldCacheKey === newCacheKey;
+            // 关键修复：即使 newChild === oldChild，如果它是元素，h() 应该已经调用了 updateElement 来更新其子元素
+            // 但是，为了确保子元素确实被更新了，我们不应该跳过，而是让后续代码确保元素在正确位置
+            // 如果 h() 已经正确更新了子元素，那么这里只需要确保元素在正确位置即可
+            if (
+                newChild === oldChild &&
+                (newChild instanceof HTMLElement || newChild instanceof SVGElement)
+            ) {
+                // 同一个元素引用，h() 应该已经通过 updateElement 更新了其子元素
+                // 只需要确保元素在正确位置
+                if (oldNode === newChild && newChild.parentNode === element) {
+                    // 元素已经在正确位置，且 h() 应该已经更新了其子元素
+                    // 不需要额外处理
+                    continue;
+                }
+                // 如果位置不对，需要调整
+            }
 
-                if (oldNode) {
-                    // oldNode 存在（oldChild 在 DOM 中）
-                    if (!shouldPreserveElement(oldNode)) {
-                        // 可以替换
-                        if (oldNode !== newChild) {
-                            // 如果 newChild 已经在 DOM 中，需要先移除它（避免重复）
-                            if (newChild.parentNode === element) {
-                                // newChild 已经在当前 element 中
-                                // 如果 cache key 相同，说明是同一个逻辑位置，应该替换 oldNode
-                                if (hasSameCacheKey) {
-                                    // 如果 newChild 就是 oldNode，不需要替换
-                                    if (newChild !== oldNode) {
-                                        // 替换旧元素（replaceChild 会自动从 newChild 的旧位置移除它）
-                                        // 但是，如果 newChild 在 oldNode 之后，replaceChild 会先移除 newChild，然后替换 oldNode
-                                        // 这会导致 newChild 移动到 oldNode 的位置，这是正确的
-                                        // 如果 newChild 在 oldNode 之前，replaceChild 也会将 newChild 移动到 oldNode 的位置
-                                        // 所以，无论 newChild 在哪里，replaceChild 都会将其移动到 oldNode 的位置
-                                        element.replaceChild(newChild, oldNode);
-                                    }
-                                } else {
-                                    // cache key 不同，说明 newChild 在错误的位置
-                                    // 先移除 newChild（它可能在错误的位置）
-                                    element.removeChild(newChild);
-                                    // 然后替换 oldNode
-                                    element.replaceChild(newChild, oldNode);
-                                }
-                            } else if (newChild.parentNode) {
-                                // newChild 在其他父元素中，先移除
-                                newChild.parentNode.removeChild(newChild);
-                                // 然后替换 oldNode
-                                element.replaceChild(newChild, oldNode);
-                            } else {
-                                // newChild 不在 DOM 中，直接替换
-                                element.replaceChild(newChild, oldNode);
-                            }
-                        }
-                    } else {
-                        // 应该保留旧节点，只添加新节点（不替换）
-                        if (newChild.parentNode !== element) {
-                            // 如果 newChild 在其他父元素中，先移除
-                            if (newChild.parentNode) {
-                                newChild.parentNode.removeChild(newChild);
-                            }
-                            element.insertBefore(newChild, oldNode.nextSibling);
-                        }
-                    }
-                } else {
-                    // oldNode 不存在（oldChild 不在 DOM 中），直接添加新元素
-                    if (newChild.parentNode !== element) {
-                        // 如果 newChild 在其他父元素中，先移除
-                        if (newChild.parentNode) {
-                            newChild.parentNode.removeChild(newChild);
-                        }
-                        element.appendChild(newChild);
-                    }
+            if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
+                // 如果 newChild 已经在 DOM 中且位置正确，不需要替换
+                if (newChild.parentNode === element && oldNode === newChild) {
+                    continue; // 元素已经在正确位置，不需要更新
                 }
+                replaceOrInsertElement(element, newChild, oldNode);
             } else {
-                // 类型变化：元素 -> 文本
-                if (oldNode && !shouldPreserveElement(oldNode)) {
-                    element.removeChild(oldNode);
-                }
+                // 类型变化：元素 -> 文本/Fragment
+                removeNodeIfNotPreserved(element, oldNode);
                 if (typeof newChild === "string" || typeof newChild === "number") {
                     const newTextNode = document.createTextNode(String(newChild));
                     element.insertBefore(newTextNode, oldNode?.nextSibling || null);
@@ -447,158 +372,25 @@ export function updateChildren(
 
     // 添加新子节点
     for (let i = minLength; i < flatNew.length; i++) {
-        const newChild = flatNew[i];
-        if (newChild === null || newChild === undefined || newChild === false) {
-            continue;
-        }
-
-        if (typeof newChild === "string" || typeof newChild === "number") {
-            element.appendChild(document.createTextNode(String(newChild)));
-        } else if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
-            // 确保子元素正确添加到当前父容器
-            // 如果 newChild 已经在 DOM 中，需要检查它是否在正确的位置
-            if (newChild.parentNode === element) {
-                // newChild 已经在当前 element 中
-                // 检查它是否在正确的位置（应该在最后，因为这是"添加新子节点"部分）
-                const currentIndex = Array.from(element.childNodes).indexOf(newChild);
-                const expectedIndex = element.childNodes.length - 1;
-                if (currentIndex !== expectedIndex) {
-                    // 位置不对，移动到正确位置（末尾）
-                    element.removeChild(newChild);
-                    element.appendChild(newChild);
-                }
-                // 如果位置正确，跳过（避免重复添加）
-                // 注意：元素内容会在 updateElement 中更新，所以这里只需要确保位置正确
-                continue;
-            } else if (newChild.parentNode) {
-                // newChild 在其他父元素中，先移除
-                newChild.parentNode.removeChild(newChild);
-            }
-            // 添加 newChild 到当前 element 的末尾
-            element.appendChild(newChild);
-        } else if (newChild instanceof DocumentFragment) {
-            element.appendChild(newChild);
-        }
+        appendNewChild(element, flatNew[i]);
     }
 
-    // 移除多余子节点（阶段 5：正确处理元素保留）
-    // 关键：需要跳过"应该保留"的元素（第三方库注入的元素）
-    // 以及已经在 newChildren 中的元素（通过元素引用或 cache key 匹配）
-    const nodesToRemove: Node[] = [];
-    const newChildSet = new Set<HTMLElement | SVGElement | DocumentFragment>();
-    const newChildCacheKeyMap = new Map<string, HTMLElement | SVGElement>();
-    // 只将元素节点添加到 Set 中（文本节点不能直接比较）
-    for (const child of flatNew) {
-        if (
-            child instanceof HTMLElement ||
-            child instanceof SVGElement ||
-            child instanceof DocumentFragment
-        ) {
-            newChildSet.add(child);
-            // 同时收集 cache key 到 Map，用于匹配（即使元素引用不同，cache key 相同也认为是同一个元素）
-            // 注意：DocumentFragment 没有 cache key，只能通过引用匹配
-            if (child instanceof HTMLElement || child instanceof SVGElement) {
-                const cacheKey = getElementCacheKey(child);
-                if (cacheKey) {
-                    // 如果 cache key 已存在，保留最新的元素（newChild）
-                    newChildCacheKeyMap.set(cacheKey, child);
-                }
-            }
-        }
-    }
+    // 移除多余子节点（使用纯函数简化逻辑）
+    // 步骤 1: 构建新子元素的引用集合和 cache key 映射
+    const { elementSet, cacheKeyMap } = buildNewChildrenMaps(flatNew);
 
-    // 第一步：处理重复的 cache key（如果 DOM 中有多个元素具有相同的 cache key，只保留 newChild）
-    // 注意：需要从后往前遍历，避免在循环中修改 DOM 导致索引问题
-    // 关键：这个步骤在"更新现有子节点"循环之后执行，所以需要处理那些在"更新现有子节点"循环中没有处理的重复元素
-    const processedCacheKeys = new Set<string>();
-    // 构建 newChild 到其在 flatNew 中索引的映射，用于确定正确位置
-    const newChildToIndexMap = new Map<HTMLElement | SVGElement, number>();
-    for (let i = 0; i < flatNew.length; i++) {
-        const child = flatNew[i];
-        if (child instanceof HTMLElement || child instanceof SVGElement) {
-            newChildToIndexMap.set(child, i);
-        }
-    }
+    // 步骤 2: 处理重复的 cache key（确保每个 cache key 在 DOM 中只出现一次）
+    deduplicateCacheKeys(element, cacheKeyMap);
 
-    for (let i = element.childNodes.length - 1; i >= 0; i--) {
-        const child = element.childNodes[i];
-        if (child instanceof HTMLElement || child instanceof SVGElement) {
-            // 关键修复：跳过应该保留的元素（第三方库注入的元素）
-            if (shouldPreserveElement(child)) {
-                continue;
-            }
-            const cacheKey = getElementCacheKey(child);
-            if (
-                cacheKey &&
-                newChildCacheKeyMap.has(cacheKey) &&
-                !processedCacheKeys.has(cacheKey)
-            ) {
-                processedCacheKeys.add(cacheKey);
-                const newChild = newChildCacheKeyMap.get(cacheKey)!;
-                // 如果 child 不是 newChild，说明是旧元素，应该被移除或替换
-                if (child !== newChild) {
-                    // 如果 newChild 已经在 DOM 中，移除旧元素
-                    if (newChild.parentNode === element) {
-                        // newChild 已经在 DOM 中，移除旧元素
-                        // 注意：newChild 已经在 DOM 中，所以不需要再次添加
-                        // 但需要确保 newChild 在正确的位置（通过 replaceChild 移动到旧元素的位置）
-                        // 这样可以确保 newChild 在正确的位置，而不是在错误的位置
-                        // 但是，如果 newChild 在 child 之后，replaceChild 会先移除 newChild，然后替换 child
-                        // 这会导致 newChild 移动到 child 的位置，这是正确的
-                        // 如果 newChild 在 child 之前，replaceChild 也会将 newChild 移动到 child 的位置
-                        // 所以，无论 newChild 在哪里，replaceChild 都会将其移动到 child 的位置
-                        element.replaceChild(newChild, child);
-                    } else {
-                        // newChild 不在 DOM 中，替换旧元素
-                        element.replaceChild(newChild, child);
-                    }
-                } else {
-                    // child === newChild，说明是同一个元素，不需要处理
-                    // 但需要确保它在正确的位置（这应该在"更新现有子节点"循环中处理）
-                }
-            }
-        }
-    }
+    // 步骤 3: 收集需要移除的节点（跳过保留元素和新子元素）
+    const nodesToRemove = collectNodesToRemove(element, elementSet, cacheKeyMap);
 
-    // 第二步：移除不在 newChildren 中的元素
-    for (let i = 0; i < element.childNodes.length; i++) {
-        const child = element.childNodes[i];
+    // 步骤 4: 批量移除节点（从后往前，避免索引变化）
+    removeNodes(element, nodesToRemove);
 
-        // 跳过应该保留的元素（第三方库注入的元素）
-        if (shouldPreserveElement(child)) {
-            continue;
-        }
-
-        // 跳过已经在 newChildren 中的元素（通过元素引用或 cache key 匹配）
-        if (child instanceof HTMLElement || child instanceof SVGElement) {
-            // 方法 1: 直接元素引用匹配
-            if (newChildSet.has(child)) {
-                continue;
-            }
-            // 方法 2: cache key 匹配（用于处理语言切换等场景，元素引用可能不同但 cache key 相同）
-            const cacheKey = getElementCacheKey(child);
-            if (cacheKey && newChildCacheKeyMap.has(cacheKey)) {
-                // 已经在第一步处理过了，跳过
-                continue;
-            }
-        } else if (child instanceof DocumentFragment) {
-            // DocumentFragment 只能通过引用匹配
-            if (newChildSet.has(child)) {
-                continue;
-            }
-        }
-
-        // 只有不应该保留且不在 newChildren 中的节点才添加到移除列表
-        nodesToRemove.push(child);
-    }
-
-    // 统一移除（从后往前移除，避免索引变化）
-    for (let i = nodesToRemove.length - 1; i >= 0; i--) {
-        const node = nodesToRemove[i];
-        if (node.parentNode === element) {
-            element.removeChild(node);
-        }
-    }
+    // 步骤 5: 重新插入所有保留的元素到 DOM 末尾
+    // 这确保了第三方库注入的元素不会丢失
+    reinsertPreservedElements(element, preservedElements);
 }
 
 /**
@@ -629,5 +421,5 @@ export function updateElement(
     updateProps(element, oldProps, newProps, tag);
 
     // 更新 children
-    updateChildren(element, oldChildren, newChildren);
+    updateChildren(element, oldChildren, newChildren, cacheManager);
 }

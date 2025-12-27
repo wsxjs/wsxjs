@@ -57,7 +57,8 @@
             "Bash(pnpm --filter @wsxjs/wsx-router build:*)",
             "Bash(pnpm --filter @wsxjs/wsx-press build:*)",
             "Bash(git restore:*)",
-            "Bash(pnpm --filter @wsxjs/wsx-base-components lint:*)"
+            "Bash(pnpm --filter @wsxjs/wsx-base-components lint:*)",
+            "Bash(pnpm --filter @wsxjs/wsx-core typecheck:*)"
         ],
         "deny": []
     }
