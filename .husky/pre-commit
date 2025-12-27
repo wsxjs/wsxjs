@@ -8,3 +8,5 @@ pnpm precommit
 pnpm lint
 
 pnpm typecheck
+
+pnpm format:check
