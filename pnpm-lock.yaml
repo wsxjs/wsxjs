@@ -570,6 +570,12 @@ importers:
         specifier: ^17.0.1
         version: 17.0.1
     devDependencies:
+      '@babel/core':
+        specifier: ^7.28.0
+        version: 7.28.0
+      '@babel/plugin-syntax-jsx':
+        specifier: ^7.27.1
+        version: 7.27.1(@babel/core@7.28.0)
       '@testing-library/dom':
         specifier: ^10.4.0
         version: 10.4.0

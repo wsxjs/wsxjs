@@ -6,6 +6,7 @@
  */
 
 import { RenderContext } from "../render-context";
+import type { BaseComponent } from "../base-component";
 
 /**
  * Internal symbol for position ID (used by Babel plugin in future)
@@ -19,57 +20,95 @@ const POSITION_ID_KEY = "__wsxPositionId";
 const INDEX_KEY = "__wsxIndex";
 
 /**
+ * Component-level element counters (using WeakMap to avoid memory leaks)
+ * Each component instance maintains its own counter to ensure unique cache keys
+ * when position ID is not available.
+ */
+const componentElementCounters = new WeakMap<BaseComponent, number>();
+
+/**
+ * Component ID cache (using WeakMap to avoid memory leaks)
+ * Caches component IDs to avoid recomputing them on every render.
+ */
+const componentIdCache = new WeakMap<BaseComponent, string>();
+
+/**
  * Generates a cache key for a DOM element.
  *
- * Cache key format: `${componentId}:${tag}:${positionId}:${keyOrIndex}`
+ * Cache key format: `${componentId}:${tag}:${identifier}`
  *
  * Priority:
- * 1. User-provided key (if exists)
- * 2. Index (if in list)
- * 3. Position ID (if provided)
- * 4. Fallback to 'no-id'
+ * 1. User-provided key (if exists) - most reliable
+ * 2. Index (if in list scenario)
+ * 3. Position ID (if provided and valid)
+ * 4. Component-level counter (runtime fallback, ensures uniqueness)
+ * 5. Timestamp fallback (last resort, ensures uniqueness)
  *
  * @param tag - HTML tag name
  * @param props - Element props (may contain position ID, index, or key)
  * @param componentId - Component instance ID (from RenderContext)
+ * @param component - Optional component instance (for counter-based fallback)
  * @returns Cache key string
  */
 export function generateCacheKey(
     tag: string,
     props: Record<string, unknown> | null | undefined,
-    componentId: string
+    componentId: string,
+    component?: BaseComponent
 ): string {
-    const positionId = props?.[POSITION_ID_KEY] ?? "no-id";
+    const positionId = props?.[POSITION_ID_KEY];
     const userKey = props?.key;
     const index = props?.[INDEX_KEY];
 
-    // 优先级 1: 用户提供了 key → 使用 key
+    // 优先级 1: 用户 key（最可靠）
     if (userKey !== undefined && userKey !== null) {
         return `${componentId}:${tag}:key-${String(userKey)}`;
     }
 
-    // 优先级 2: 列表场景 → 使用索引
+    // 优先级 2: 索引（列表场景）
     if (index !== undefined && index !== null) {
         return `${componentId}:${tag}:idx-${String(index)}`;
     }
 
-    // 优先级 3: 普通元素 → 使用位置 ID
-    return `${componentId}:${tag}:${String(positionId)}`;
+    // 优先级 3: 位置 ID（编译时注入，如果有效）
+    if (positionId !== undefined && positionId !== null && positionId !== "no-id") {
+        return `${componentId}:${tag}:${String(positionId)}`;
+    }
+
+    // 优先级 4: 组件级别计数器（运行时回退，确保唯一性）
+    if (component) {
+        let counter = componentElementCounters.get(component) || 0;
+        counter++;
+        componentElementCounters.set(component, counter);
+        return `${componentId}:${tag}:auto-${counter}`;
+    }
+
+    // 最后回退：时间戳（不推荐，但确保唯一性）
+    return `${componentId}:${tag}:fallback-${Date.now()}-${Math.random()}`;
 }
 
 /**
  * Gets the component ID from the current render context.
  * Falls back to 'unknown' if no context is available.
+ * Uses caching to avoid recomputing the ID on every call.
  *
  * @returns Component ID string
  */
 export function getComponentId(): string {
     const component = RenderContext.getCurrentComponent();
     if (component) {
-        // Use constructor name + instance ID if available
+        // Check cache first
+        let cachedId = componentIdCache.get(component);
+        if (cachedId) {
+            return cachedId;
+        }
+
+        // Compute and cache
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const instanceId = (component as any)._instanceId || "default";
-        return `${component.constructor.name}:${instanceId}`;
+        cachedId = `${component.constructor.name}:${instanceId}`;
+        componentIdCache.set(component, cachedId);
+        return cachedId;
     }
     return "unknown";
 }

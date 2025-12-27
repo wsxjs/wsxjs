@@ -42,20 +42,30 @@ describe("Cache Key Generation", () => {
             expect(cacheKey).toBe("TestComponent:123:div:pos-1");
         });
 
-        test("应该回退到 'no-id'（当没有任何标识符时）", () => {
+        test("应该使用组件计数器（当没有任何标识符时，且提供了 component）", () => {
+            const component = new MockComponent();
+            const props = {};
+            const cacheKey1 = generateCacheKey("span", props, componentId, component);
+            const cacheKey2 = generateCacheKey("div", props, componentId, component);
+            expect(cacheKey1).toMatch(/^TestComponent:123:span:auto-\d+$/);
+            expect(cacheKey2).toMatch(/^TestComponent:123:div:auto-\d+$/);
+            expect(cacheKey1).not.toBe(cacheKey2); // 应该不同
+        });
+
+        test("应该使用时间戳回退（当没有任何标识符且没有 component 时）", () => {
             const props = {};
             const cacheKey = generateCacheKey("span", props, componentId);
-            expect(cacheKey).toBe("TestComponent:123:span:no-id");
+            expect(cacheKey).toMatch(/^TestComponent:123:span:fallback-\d+-\d+\.\d+$/);
         });
 
-        test("应该处理 null props", () => {
+        test("应该处理 null props（使用时间戳回退）", () => {
             const cacheKey = generateCacheKey("div", null, componentId);
-            expect(cacheKey).toBe("TestComponent:123:div:no-id");
+            expect(cacheKey).toMatch(/^TestComponent:123:div:fallback-\d+-\d+\.\d+$/);
         });
 
-        test("应该处理 undefined props", () => {
+        test("应该处理 undefined props（使用时间戳回退）", () => {
             const cacheKey = generateCacheKey("div", undefined, componentId);
-            expect(cacheKey).toBe("TestComponent:123:div:no-id");
+            expect(cacheKey).toMatch(/^TestComponent:123:div:fallback-\d+-\d+\.\d+$/);
         });
 
         test("key 优先级高于 index", () => {

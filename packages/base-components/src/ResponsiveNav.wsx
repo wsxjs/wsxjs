@@ -82,7 +82,7 @@ export default class ResponsiveNav extends WebComponent {
                                 const isVisible = this.visibleItemIndices.includes(index);
                                 return (
                                     <wsx-link
-                                        key={index}
+                                        key={`nav-${index}`}
                                         ref={(el) => {
                                             if (el) {
                                                 this.navItemsElements[index] = el;
@@ -121,7 +121,7 @@ export default class ResponsiveNav extends WebComponent {
                                                         this.hiddenItemIndices[idx];
                                                     return (
                                                         <wsx-link
-                                                            key={originalIndex}
+                                                            key={`overflow-${originalIndex}`}
                                                             to={item.to}
                                                             class="nav-overflow-link"
                                                             active-class="nav-link-active"

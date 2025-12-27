@@ -11,10 +11,16 @@
 
 // JSX 类型声明已移至 types/wsx-types.d.ts
 
-import { createElement, shouldUseSVGNamespace, getSVGAttributeName } from "./utils/svg-utils";
 import { flattenChildren, type JSXChildren } from "./utils/dom-utils";
-import { setSmartProperty } from "./utils/props-utils";
-
+import { generateCacheKey, getComponentId } from "./utils/cache-key";
+import { markElement } from "./utils/element-marking";
+import { RenderContext } from "./render-context";
+import { createElementWithPropsAndChildren } from "./utils/element-creation";
+import { updateElement } from "./utils/element-update";
+import type { BaseComponent } from "./base-component";
+import type { DOMCacheManager } from "./dom-cache-manager";
+import { createLogger } from "./utils/logger";
+const logger = createLogger("JSX Factory");
 // JSX子元素类型（从 dom-utils 重新导出以保持向后兼容）
 export type { JSXChildren } from "./utils/dom-utils";
 
@@ -36,91 +42,85 @@ export function h(
     props: Record<string, unknown> | null = {},
     ...children: JSXChildren[]
 ): HTMLElement | SVGElement {
-    // 处理组件函数
+    // 处理组件函数（不受缓存影响）
     if (typeof tag === "function") {
         return tag(props, children);
     }
 
-    // 创建DOM元素 - 自动检测SVG命名空间
-    const element = createElement(tag);
+    // 检查上下文（阶段 3.2：启用缓存机制）
+    const context = RenderContext.getCurrentComponent();
+    const cacheManager = context ? RenderContext.getDOMCache() : null;
 
-    // 处理属性
-    if (props) {
-        const isSVG = shouldUseSVGNamespace(tag);
-
-        Object.entries(props).forEach(([key, value]) => {
-            if (value === null || value === undefined || value === false) {
-                return;
-            }
-
-            // 处理ref回调
-            if (key === "ref" && typeof value === "function") {
-                value(element);
-            }
-            // 处理className和class
-            else if (key === "className" || key === "class") {
-                if (isSVG) {
-                    // SVG元素使用class属性
-                    element.setAttribute("class", value as string);
-                } else {
-                    // HTML元素可以使用className
-                    (element as HTMLElement).className = value as string;
-                }
-            }
-            // 处理style
-            else if (key === "style" && typeof value === "string") {
-                element.setAttribute("style", value);
-            }
-            // 处理事件监听器
-            else if (key.startsWith("on") && typeof value === "function") {
-                const eventName = key.slice(2).toLowerCase();
-                element.addEventListener(eventName, value as EventListener);
-            }
-            // 处理布尔属性
-            else if (typeof value === "boolean") {
-                if (value) {
-                    element.setAttribute(key, "");
-                }
-            }
-            // 特殊处理 input/textarea/select 的 value 属性
-            // 使用 .value 而不是 setAttribute，因为 .value 是当前值，setAttribute 是初始值
-            else if (key === "value") {
-                if (
-                    element instanceof HTMLInputElement ||
-                    element instanceof HTMLTextAreaElement ||
-                    element instanceof HTMLSelectElement
-                ) {
-                    element.value = String(value);
-                } else {
-                    // 对于其他元素，使用 setAttribute
-                    const attributeName = isSVG ? getSVGAttributeName(key) : key;
-                    element.setAttribute(attributeName, String(value));
-                }
-            }
-            // 处理其他属性 - 使用智能属性设置函数
-            else {
-                setSmartProperty(element, key, value, tag);
-            }
-        });
+    if (context && cacheManager) {
+        return tryUseCacheOrCreate(tag, props, children, context, cacheManager);
     }
 
-    // 处理子元素
-    const flatChildren = flattenChildren(children);
-    flatChildren.forEach((child) => {
-        if (child === null || child === undefined || child === false) {
-            return;
+    // 无上下文：使用旧逻辑（向后兼容）
+    return createElementWithPropsAndChildren(tag, props, children);
+}
+
+/**
+ * Tries to use cached element or creates a new one.
+ */
+function tryUseCacheOrCreate(
+    tag: string,
+    props: Record<string, unknown> | null,
+    children: JSXChildren[],
+    context: BaseComponent,
+    cacheManager: DOMCacheManager
+): HTMLElement | SVGElement {
+    try {
+        const componentId = getComponentId();
+        const cacheKey = generateCacheKey(tag, props, componentId, context);
+        const cachedElement = cacheManager.get(cacheKey);
+
+        if (cachedElement) {
+            // ✅ 缓存命中：复用元素并更新内容（阶段 4：细粒度更新）
+            // 缓存键已经确保了唯一性（componentId + tag + position/key/index）
+            // 不需要再检查标签名（可能导致错误复用）
+            const element = cachedElement as HTMLElement | SVGElement;
+            updateElement(element, props, children, tag, cacheManager);
+            return element;
         }
 
-        if (typeof child === "string" || typeof child === "number") {
-            element.appendChild(document.createTextNode(String(child)));
-        } else if (child instanceof HTMLElement || child instanceof SVGElement) {
-            element.appendChild(child);
-        } else if (child instanceof DocumentFragment) {
-            element.appendChild(child);
-        }
-    });
+        // ❌ 缓存未命中：创建新元素
+        const element = createElementWithPropsAndChildren(tag, props, children);
+        cacheManager.set(cacheKey, element);
+        markElement(element, cacheKey);
+        // 保存初始元数据（用于下次更新）
+        cacheManager.setMetadata(element, {
+            props: props || {},
+            children: children,
+        });
+        return element;
+    } catch (error) {
+        // 缓存失败：降级到创建新元素
+        return handleCacheError(error, tag, props, children);
+    }
+}
 
-    return element;
+/**
+ * Handles cache errors by logging and falling back to creating a new element.
+ */
+function handleCacheError(
+    error: unknown,
+    tag: string,
+    props: Record<string, unknown> | null,
+    children: JSXChildren[]
+): HTMLElement | SVGElement {
+    // 在开发环境输出警告，帮助调试
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const nodeEnv = (typeof (globalThis as any).process !== "undefined" &&
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (globalThis as any).process.env?.NODE_ENV) as string | undefined;
+        if (nodeEnv === "development") {
+            logger.warn("[WSX DOM Cache] Cache error, falling back to create new element:", error);
+        }
+    } catch {
+        // 忽略环境变量检查错误
+    }
+    return createElementWithPropsAndChildren(tag, props, children);
 }
 
 /**
