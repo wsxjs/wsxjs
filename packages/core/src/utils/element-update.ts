@@ -473,6 +473,10 @@ export function updateChildren(
     for (let i = element.childNodes.length - 1; i >= 0; i--) {
         const child = element.childNodes[i];
         if (child instanceof HTMLElement || child instanceof SVGElement) {
+            // 关键修复：跳过应该保留的元素（第三方库注入的元素）
+            if (shouldPreserveElement(child)) {
+                continue;
+            }
             const cacheKey = getElementCacheKey(child);
             if (
                 cacheKey &&

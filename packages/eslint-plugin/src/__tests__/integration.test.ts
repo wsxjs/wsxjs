@@ -58,6 +58,7 @@ describe("WSX ESLint Plugin Integration", () => {
                 "no-inner-html",
                 "i18n-after-autoregister",
                 "no-duplicate-keys",
+                "lifecycle-must-call-super",
             ];
 
             expect(Object.keys(wsxPlugin.rules)).toEqual(expectedRules);

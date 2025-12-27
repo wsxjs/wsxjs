@@ -122,10 +122,16 @@ describe("LightComponent", () => {
             const secondCacheKey = getElementCacheKey(secondContentDiv);
             expect(secondCacheKey).toBeTruthy();
 
-            // 元素应该被复用（相同的 cache key）
+            // 元素应该被复用（相同的元素引用或相同的 cache key）
             // 注意：如果元素被复用，应该是同一个元素引用
-            // 或者至少 cache key 应该相同（如果元素被更新而不是替换）
-            expect(firstCacheKey).toBe(secondCacheKey);
+            // 如果元素被更新而不是替换，cache key 应该相同
+            // 如果元素被替换，cache key 可能不同，但元素引用应该不同
+            // 这里我们检查元素引用是否相同（更可靠的测试）
+            expect(firstContentDiv).toBe(secondContentDiv);
+            // 如果元素引用相同，cache key 也应该相同
+            if (firstContentDiv === secondContentDiv) {
+                expect(firstCacheKey).toBe(secondCacheKey);
+            }
         });
     });
 
