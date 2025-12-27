@@ -3,8 +3,12 @@ import { BaseComponent } from "../src/base-component";
 
 // Mock component for testing
 class MockComponent extends BaseComponent {
-    render() {
-        return null;
+    render(): HTMLElement {
+        return document.createElement("div");
+    }
+
+    protected _rerender(): void {
+        // Mock implementation
     }
 }
 
@@ -53,7 +57,7 @@ describe("RenderContext", () => {
             RenderContext.runInContext(component, () => {
                 throw new Error("Test error");
             });
-        } catch (e) {
+        } catch {
             // ignore
         }
 

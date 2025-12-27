@@ -9,11 +9,11 @@ import { RenderContext } from "../src/render-context";
 import { BaseComponent } from "../src/base-component";
 
 class MockComponent extends BaseComponent {
-    render() {
+    render(): HTMLElement {
         return document.createElement("div");
     }
 
-    _rerender() {
+    protected _rerender(): void {
         // Mock implementation
     }
 }
@@ -137,7 +137,7 @@ describe("Cache Key Generation", () => {
 
         test("应该从 RenderContext 获取组件 ID", () => {
             const component = new MockComponent();
-            // @ts-ignore - 测试需要设置内部属性
+            // @ts-expect-error - 测试需要设置内部属性
             component._instanceId = "abc123";
 
             RenderContext.runInContext(component, () => {
@@ -158,9 +158,9 @@ describe("Cache Key Generation", () => {
         test("应该处理嵌套上下文", () => {
             const component1 = new MockComponent();
             const component2 = new MockComponent();
-            // @ts-ignore - 测试需要设置内部属性
+            // @ts-expect-error - 测试需要设置内部属性
             component1._instanceId = "comp1";
-            // @ts-ignore - 测试需要设置内部属性
+            // @ts-expect-error - 测试需要设置内部属性
             component2._instanceId = "comp2";
 
             RenderContext.runInContext(component1, () => {

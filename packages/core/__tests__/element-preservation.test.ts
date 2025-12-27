@@ -6,7 +6,8 @@
  */
 
 import { h } from "../src/jsx-factory";
-import { WebComponent, state } from "../src/web-component";
+import { WebComponent } from "../src/web-component";
+import { state } from "../src/reactive-decorator";
 import { RenderContext } from "../src/render-context";
 import { shouldPreserveElement, isCreatedByH } from "../src/utils/element-marking";
 
@@ -35,12 +36,12 @@ describe("Element Preservation (Phase 5)", () => {
         document.body.innerHTML = "";
         component = new PreservationTestComponent();
         document.body.appendChild(component);
-        component._domCache.clear();
+        (component as any)._domCache.clear();
     });
 
     afterEach(() => {
         component.remove();
-        component._domCache.clear();
+        (component as any)._domCache.clear();
     });
 
     test("应该保留未标记的元素（第三方库注入）", () => {

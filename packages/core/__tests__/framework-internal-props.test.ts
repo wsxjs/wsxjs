@@ -50,14 +50,17 @@ describe("Framework Internal Props Filtering", () => {
         const div = component.shadowRoot!.querySelector("div");
 
         // 验证框架内部属性不存在于 DOM
-        expect(div).not.toHaveAttribute("key");
-        expect(div).not.toHaveAttribute("__wsxPositionId");
-        expect(div).not.toHaveAttribute("__wsxIndex");
-        expect(div).not.toHaveAttribute("__testId");
+        expect(div).not.toBeNull();
+        if (div) {
+            expect(div.hasAttribute("key")).toBe(false);
+            expect(div.hasAttribute("__wsxPositionId")).toBe(false);
+            expect(div.hasAttribute("__wsxIndex")).toBe(false);
+            expect(div.hasAttribute("__testId")).toBe(false);
 
-        // 验证普通属性正确渲染
-        expect(div).toHaveAttribute("id", "actual-id");
-        expect(div).toHaveClass("test-class");
+            // 验证普通属性正确渲染
+            expect(div.getAttribute("id")).toBe("actual-id");
+            expect(div.classList.contains("test-class")).toBe(true);
+        }
 
         // 验证属性对象中也不存在这些属性
         const attributes = Array.from(div!.attributes).map((attr) => attr.name);
@@ -81,13 +84,13 @@ describe("Framework Internal Props Filtering", () => {
         });
 
         // 验证框架内部属性不存在于 DOM
-        expect(element).not.toHaveAttribute("key");
-        expect(element).not.toHaveAttribute("__wsxPositionId");
-        expect(element).not.toHaveAttribute("__wsxIndex");
-        expect(element).not.toHaveAttribute("__testId");
+        expect(element.hasAttribute("key")).toBe(false);
+        expect(element.hasAttribute("__wsxPositionId")).toBe(false);
+        expect(element.hasAttribute("__wsxIndex")).toBe(false);
+        expect(element.hasAttribute("__testId")).toBe(false);
 
         // 验证普通属性正确渲染
-        expect(element).toHaveAttribute("id", "direct-id");
+        expect(element.getAttribute("id")).toBe("direct-id");
 
         // 验证属性对象中也不存在这些属性
         const attributes = Array.from(element.attributes).map((attr) => attr.name);
@@ -107,21 +110,27 @@ describe("Framework Internal Props Filtering", () => {
         const div = component.shadowRoot!.querySelector("div");
 
         // 初始状态：框架内部属性不应该存在
-        expect(div).not.toHaveAttribute("key");
-        expect(div).not.toHaveAttribute("__wsxPositionId");
+        expect(div).not.toBeNull();
+        if (div) {
+            expect(div.hasAttribute("key")).toBe(false);
+            expect(div.hasAttribute("__wsxPositionId")).toBe(false);
+        }
 
         // 触发重新渲染（改变其他属性）
-        component.rerender();
+        (component as any).rerender();
 
         await new Promise<void>((resolve) => setTimeout(resolve, 100));
 
         const updatedDiv = component.shadowRoot!.querySelector("div");
 
         // 重新渲染后，框架内部属性仍然不应该存在
-        expect(updatedDiv).not.toHaveAttribute("key");
-        expect(updatedDiv).not.toHaveAttribute("__wsxPositionId");
-        expect(updatedDiv).not.toHaveAttribute("__wsxIndex");
-        expect(updatedDiv).not.toHaveAttribute("__testId");
+        expect(updatedDiv).not.toBeNull();
+        if (updatedDiv) {
+            expect(updatedDiv.hasAttribute("key")).toBe(false);
+            expect(updatedDiv.hasAttribute("__wsxPositionId")).toBe(false);
+            expect(updatedDiv.hasAttribute("__wsxIndex")).toBe(false);
+            expect(updatedDiv.hasAttribute("__testId")).toBe(false);
+        }
 
         component.remove();
     });

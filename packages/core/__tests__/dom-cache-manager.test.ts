@@ -3,8 +3,12 @@ import { BaseComponent } from "../src/base-component";
 import { RenderContext } from "../src/render-context";
 
 class MockComponentWithCache extends BaseComponent {
-    render() {
-        return null;
+    render(): HTMLElement {
+        return document.createElement("div");
+    }
+
+    protected _rerender(): void {
+        // Mock implementation
     }
 }
 

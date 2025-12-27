@@ -60,7 +60,6 @@ describe("RFC 0037 Performance Baseline", () => {
         document.body.appendChild(component);
         await waitForRender();
 
-        const initialCount = creationCount;
         // Reset for update measurement
         creationCount = 0;
 
@@ -82,7 +81,6 @@ describe("RFC 0037 Performance Baseline", () => {
         document.body.appendChild(component);
         await waitForRender();
 
-        const initialCount = creationCount;
         creationCount = 0;
 
         // Update list 5 times

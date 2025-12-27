@@ -13,7 +13,8 @@
  */
 
 import { h } from "../src/jsx-factory";
-import { WebComponent, state } from "../src/web-component";
+import { WebComponent } from "../src/web-component";
+import { state } from "../src/reactive-decorator";
 import { RenderContext } from "../src/render-context";
 
 /**
@@ -254,6 +255,7 @@ describe("Performance Optimization (RFC 0037)", () => {
             document.body.appendChild(component);
 
             // 多次调用 getComponentId，应该使用缓存
+            // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
             const { getComponentId } = require("../src/utils/cache-key");
 
             RenderContext.runInContext(component, () => {

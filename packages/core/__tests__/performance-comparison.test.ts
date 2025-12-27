@@ -8,7 +8,8 @@
  */
 
 import { h } from "../src/jsx-factory";
-import { WebComponent, state } from "../src/web-component";
+import { WebComponent } from "../src/web-component";
+import { state } from "../src/reactive-decorator";
 import { RenderContext } from "../src/render-context";
 
 /**
@@ -69,8 +70,11 @@ customElements.define("monaco-editor-component", MonacoEditorComponent);
 
 /**
  * Measures DOM creation count by tracking createElement calls
+ * @unused - Reserved for future use
  */
-function measureDOMCreations(fn: () => void): number {
+// @ts-expect-error - Reserved for future use
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _measureDOMCreations(fn: () => void): number {
     let creationCount = 0;
     const originalCreateElement = document.createElement.bind(document);
 
@@ -212,10 +216,11 @@ describe("Performance Comparison (RFC 0037)", () => {
                         monacoContainer.appendChild(monacoElement);
 
                         // 验证元素未标记（应该被保留）
+                        // eslint-disable-next-line @typescript-eslint/no-require-imports
                         const {
                             isCreatedByH,
                             shouldPreserveElement,
-                        } = require("../src/utils/element-marking");
+                        } = typeof require !== "undefined" ? require("../src/utils/element-marking") : { isCreatedByH: () => false, shouldPreserveElement: () => false };
                         expect(isCreatedByH(monacoElement)).toBe(false);
                         expect(shouldPreserveElement(monacoElement)).toBe(true);
 
@@ -224,7 +229,8 @@ describe("Performance Comparison (RFC 0037)", () => {
 
                         setTimeout(() => {
                             // 验证 Monaco 元素仍然存在（被保留）
-                            const stillExists = monacoContainer.contains(monacoElement);
+                            // Verify Monaco element still exists (preserved)
+                            expect(monacoContainer.contains(monacoElement)).toBe(true);
                             // 注意：在实际场景中，元素应该被保留
                             // 但由于测试环境限制，这里主要验证逻辑正确性
                             expect(shouldPreserveElement(monacoElement)).toBe(true);

@@ -10,7 +10,8 @@
  */
 
 import { h } from "../src/jsx-factory";
-import { WebComponent, state } from "../src/web-component";
+import { WebComponent } from "../src/web-component";
+import { state } from "../src/reactive-decorator";
 import { RenderContext } from "../src/render-context";
 
 // Mock i18n instance
@@ -38,7 +39,8 @@ const mockI18n = {
 };
 
 class I18nTestComponent extends WebComponent {
-    @state private lang: string = "en";
+    // @ts-expect-error - _lang is used to trigger re-render via @state decorator
+    @state private _lang: string = "en";
 
     render() {
         // Simulate i18n.t() call
@@ -52,9 +54,9 @@ class I18nTestComponent extends WebComponent {
     }
 
     changeLanguage(lang: string) {
-        this.lang = lang;
+        this._lang = lang;
         mockI18n.language = lang;
-        this.rerender();
+        (this as any).rerender();
     }
 }
 
@@ -72,7 +74,7 @@ describe("i18n Language Change with DOM Caching", () => {
 
     afterEach(() => {
         component.remove();
-        component._domCache.clear();
+        (component as any)._domCache.clear();
     });
 
     // ✅ Phase 4: Fine-grained updates implemented

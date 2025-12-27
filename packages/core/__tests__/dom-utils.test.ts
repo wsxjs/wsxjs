@@ -125,11 +125,11 @@ describe("DOM Utilities", () => {
         test("应该防止无限递归（深度限制）", () => {
             const consoleSpy = jest.spyOn(console, "warn").mockImplementation();
             // 创建深度嵌套的数组（超过 10 层）
-            let deepArray = "final";
+            let deepArray: unknown = "final";
             for (let i = 0; i < 15; i++) {
                 deepArray = [deepArray];
             }
-            const result = flattenChildren(deepArray);
+            const result = flattenChildren(deepArray as any);
             // 应该触发警告
             expect(consoleSpy).toHaveBeenCalledWith(
                 expect.stringContaining("Maximum depth exceeded")

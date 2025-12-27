@@ -2,7 +2,7 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "outDir": "./dist",
-        "types": ["jest", "@types/jest"],
+        "types": ["jest", "@types/jest", "node"],
         "composite": false,
         "declaration": true,
         "declarationMap": true,
