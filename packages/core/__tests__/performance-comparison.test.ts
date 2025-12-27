@@ -73,7 +73,7 @@ customElements.define("monaco-editor-component", MonacoEditorComponent);
  * @unused - Reserved for future use
  */
 // @ts-expect-error - Reserved for future use
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 function _measureDOMCreations(fn: () => void): number {
     let creationCount = 0;
     const originalCreateElement = document.createElement.bind(document);
@@ -216,11 +216,11 @@ describe("Performance Comparison (RFC 0037)", () => {
                         monacoContainer.appendChild(monacoElement);
 
                         // 验证元素未标记（应该被保留）
-                        // eslint-disable-next-line @typescript-eslint/no-require-imports
-                        const {
-                            isCreatedByH,
-                            shouldPreserveElement,
-                        } = typeof require !== "undefined" ? require("../src/utils/element-marking") : { isCreatedByH: () => false, shouldPreserveElement: () => false };
+
+                        const { isCreatedByH, shouldPreserveElement } =
+                            typeof require !== "undefined"
+                                ? require("../src/utils/element-marking")
+                                : { isCreatedByH: () => false, shouldPreserveElement: () => false };
                         expect(isCreatedByH(monacoElement)).toBe(false);
                         expect(shouldPreserveElement(monacoElement)).toBe(true);
 
