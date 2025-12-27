@@ -205,34 +205,29 @@ describe("updateOrCreateTextNode", () => {
         expect(parent.childNodes.length).toBe(1);
     });
 
-    test("当 oldNode 为 null 且存在多个文本节点时，应该检查内容再更新", () => {
+    test("当 oldNode 为 null 时，应该创建新的文本节点", () => {
         const parent = document.createElement("div");
         const textNode1 = document.createTextNode("First");
         const textNode2 = document.createTextNode("Second");
-        const textNode3 = document.createTextNode("Third");
         parent.appendChild(textNode1);
         parent.appendChild(textNode2);
-        parent.appendChild(textNode3);
 
-        // 当 oldNode 为 null 且新文本与第一个文本节点内容不同时，应该更新第一个
-        updateOrCreateTextNode(parent, null, "Updated");
-        expect(textNode1.textContent).toBe("Updated");
-        expect(textNode2.textContent).toBe("Second");
-        expect(textNode3.textContent).toBe("Third");
+        // 当 oldNode 为 null 时，应该创建新节点而不是更新现有节点
+        // 因为不知道应该更新哪个文本节点
+        updateOrCreateTextNode(parent, null, "New");
+        expect(parent.childNodes.length).toBe(3);
+        expect(parent.firstChild).toBe(textNode1);
+        expect(textNode1.textContent).toBe("First"); // 未改变
+        expect(textNode2.textContent).toBe("Second"); // 未改变
+        expect(parent.lastChild?.textContent).toBe("New"); // 新节点
     });
 
-    test("当 oldNode 为 null 且找到的文本节点内容已匹配时，不应该更新", () => {
+    test("当 oldNode 为 null 且没有现有文本节点时，应该创建新节点", () => {
         const parent = document.createElement("div");
-        const textNode1 = document.createTextNode("Target");
-        const textNode2 = document.createTextNode("Other");
-        parent.appendChild(textNode1);
-        parent.appendChild(textNode2);
 
-        // 当 oldNode 为 null 且第一个文本节点内容已匹配时，不应该更新
-        updateOrCreateTextNode(parent, null, "Target");
-        expect(textNode1.textContent).toBe("Target");
-        expect(textNode2.textContent).toBe("Other");
-        expect(parent.childNodes.length).toBe(2);
+        updateOrCreateTextNode(parent, null, "New");
+        expect(parent.childNodes.length).toBe(1);
+        expect(parent.firstChild?.textContent).toBe("New");
     });
 });
 

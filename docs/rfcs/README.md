@@ -85,6 +85,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0033](./completed/0033-modern-router-features.md) | Modern Router Features - View Transitions, Scroll Restoration & Navigation Events | Implemented | WSX Team |
 | [RFC-0036](./0036-smart-property-assignment.md) | Smart Property Assignment Strategy for Large Data | Completed | WSX Team |
 | [RFC-0039](./0039-enforce-super-lifecycle-calls.md) | 强制生命周期方法调用 super 的 ESLint 规则 | Implemented | WSX Team |
+| [RFC-0040](./0040-text-node-update-bug-fixes.md) | 文本节点更新逻辑 Bug 修复 | Implemented | WSX Team |
 
 ### 提议中的RFCs
 

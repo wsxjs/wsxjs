@@ -284,10 +284,11 @@ export function updateChildren(
             }
         } else if (typeof oldChild === "string" || typeof oldChild === "number") {
             oldNode = findTextNode(element, domIndex);
-            // 关键修复：如果 findTextNode 返回 null，尝试直接查找元素内的第一个文本节点
+            // 关键修复：如果 findTextNode 返回 null，尝试从当前 domIndex 位置开始查找文本节点
             // 这可以处理文本节点存在但 domIndex 不正确的情况
+            // Bug 1 修复：从 domIndex.value 开始搜索，而不是从 0 开始，避免重新处理已处理的节点
             if (!oldNode && element.childNodes.length > 0) {
-                for (let j = 0; j < element.childNodes.length; j++) {
+                for (let j = domIndex.value; j < element.childNodes.length; j++) {
                     const node = element.childNodes[j];
                     if (node.nodeType === Node.TEXT_NODE) {
                         oldNode = node;
@@ -305,14 +306,16 @@ export function updateChildren(
                 const oldText = String(oldChild);
                 const newText = String(newChild);
 
-                // 关键修复：如果文本内容不同，总是需要更新
-                // 即使 oldNode 是 null，也应该创建文本节点
-                if (
+                // Bug 2 修复：只有当文本内容确实需要更新时才调用 updateOrCreateTextNode
+                // 如果 oldText === newText 且 oldNode 为 null，说明文本节点可能已经存在且内容正确
+                // 或者不需要创建，因此不应该调用 updateOrCreateTextNode
+                const needsUpdate =
                     oldText !== newText ||
                     (oldNode &&
                         oldNode.nodeType === Node.TEXT_NODE &&
-                        oldNode.textContent !== newText)
-                ) {
+                        oldNode.textContent !== newText);
+
+                if (needsUpdate) {
                     updateOrCreateTextNode(element, oldNode, newText);
                 }
                 // 如果文本内容相同且 oldNode 为 null，不需要做任何操作
