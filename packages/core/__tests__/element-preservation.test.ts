@@ -63,9 +63,8 @@ describe("Element Preservation (Phase 5)", () => {
         // 3. 更新组件（触发重新渲染）
         component.increment();
 
-        let render2: HTMLElement;
         RenderContext.runInContext(component, () => {
-            render2 = component.render() as HTMLElement;
+            component.render() as HTMLElement;
         });
 
         // 4. 验证第三方元素仍然存在（被保留）
@@ -115,4 +114,3 @@ describe("Element Preservation (Phase 5)", () => {
         expect(shouldPreserveElement(element)).toBe(true);
     });
 });
-

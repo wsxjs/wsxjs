@@ -86,10 +86,8 @@ function measureAverageTime(fn: () => void, runs: number = 10): number {
 
 describe("Performance Optimization (RFC 0037)", () => {
     describe("Large List Scenarios", () => {
-        test(
-            "应该在大列表渲染时提升性能",
-            () => {
-                const component = new LargeListComponent();
+        test("应该在大列表渲染时提升性能", () => {
+            const component = new LargeListComponent();
             document.body.appendChild(component);
             (component as any)._domCache.clear();
 
@@ -126,47 +124,39 @@ describe("Performance Optimization (RFC 0037)", () => {
                     resolve();
                 }, 100);
             });
-        },
-            10000
-        ); // 10秒超时
+        }, 10000); // 10秒超时
 
-        test(
-            "应该在列表项数量变化时保持性能",
-            () => {
-                const component = new LargeListComponent();
-                document.body.appendChild(component);
-                (component as any)._domCache.clear();
+        test("应该在列表项数量变化时保持性能", () => {
+            const component = new LargeListComponent();
+            document.body.appendChild(component);
+            (component as any)._domCache.clear();
 
-                // 初始列表（500 个元素）
-                const initialItems = Array.from({ length: 500 }, (_, i) => `Item ${i}`);
-                component.setItems(initialItems);
+            // 初始列表（500 个元素）
+            const initialItems = Array.from({ length: 500 }, (_, i) => `Item ${i}`);
+            component.setItems(initialItems);
 
-                return new Promise<void>((resolve) => {
-                    setTimeout(() => {
-                        // 增加到 1000 个元素
-                        const expandedItems = Array.from({ length: 1000 }, (_, i) => `Item ${i}`);
+            return new Promise<void>((resolve) => {
+                setTimeout(() => {
+                    // 增加到 1000 个元素
+                    const expandedItems = Array.from({ length: 1000 }, (_, i) => `Item ${i}`);
 
-                        const expandTime = measureAverageTime(() => {
-                            component.setItems(expandedItems);
-                        }, 5);
+                    const expandTime = measureAverageTime(() => {
+                        component.setItems(expandedItems);
+                    }, 5);
 
-                        // 验证性能：扩展应该合理（新元素需要创建，但已存在的元素应该被缓存）
-                        expect(expandTime).toBeLessThan(100);
+                    // 验证性能：扩展应该合理（新元素需要创建，但已存在的元素应该被缓存）
+                    expect(expandTime).toBeLessThan(100);
 
-                        component.remove();
-                        (component as any)._domCache.clear();
-                        resolve();
-                    }, 100);
-                });
-            },
-            10000
-        ); // 10秒超时
+                    component.remove();
+                    (component as any)._domCache.clear();
+                    resolve();
+                }, 100);
+            });
+        }, 10000); // 10秒超时
     });
 
     describe("Small Component Scenarios", () => {
-        test(
-            "应该在小组件更新时无性能退化",
-            () => {
+        test("应该在小组件更新时无性能退化", () => {
             const component = new SmallComponent();
             document.body.appendChild(component);
             (component as any)._domCache.clear();
@@ -191,13 +181,9 @@ describe("Performance Optimization (RFC 0037)", () => {
                     resolve();
                 }, 100);
             });
-        },
-            10000
-        ); // 10秒超时
+        }, 10000); // 10秒超时
 
-        test(
-            "应该在频繁更新时保持性能",
-            () => {
+        test("应该在频繁更新时保持性能", () => {
             const component = new SmallComponent();
             document.body.appendChild(component);
             (component as any)._domCache.clear();
@@ -224,49 +210,43 @@ describe("Performance Optimization (RFC 0037)", () => {
                     resolve();
                 }, 100);
             });
-        },
-            10000
-        ); // 10秒超时
+        }, 10000); // 10秒超时
     });
 
     describe("Cache Efficiency", () => {
-        test(
-            "应该有效利用缓存（减少元素重新创建）",
-            () => {
-                const component = new LargeListComponent();
-                document.body.appendChild(component);
-                (component as any)._domCache.clear();
+        test("应该有效利用缓存（减少元素重新创建）", () => {
+            const component = new LargeListComponent();
+            document.body.appendChild(component);
+            (component as any)._domCache.clear();
 
-                const items = Array.from({ length: 100 }, (_, i) => `Item ${i}`);
-                component.setItems(items);
+            const items = Array.from({ length: 100 }, (_, i) => `Item ${i}`);
+            component.setItems(items);
 
-                return new Promise<void>((resolve) => {
+            return new Promise<void>((resolve) => {
+                setTimeout(() => {
+                    // 获取初始缓存大小（通过 getDomCache 方法）
+                    const initialCacheSize = (component as any)._domCache["cache"].size;
+
+                    // 更新列表（只修改一个元素）
+                    const newItems = [...items];
+                    newItems[50] = "Updated Item 50";
+                    component.setItems(newItems);
+
                     setTimeout(() => {
-                        // 获取初始缓存大小（通过 getDomCache 方法）
-                        const initialCacheSize = (component as any)._domCache["cache"].size;
+                        // 验证缓存大小应该增加很少（只添加新元素，不删除旧的）
+                        const finalCacheSize = (component as any)._domCache["cache"].size;
+                        // 缓存大小应该接近初始大小（大部分元素被复用）
+                        // 注意：由于每次渲染都会创建新的元素，缓存可能会增长
+                        // 这里我们只验证缓存机制工作正常
+                        expect(finalCacheSize).toBeGreaterThanOrEqual(initialCacheSize);
 
-                        // 更新列表（只修改一个元素）
-                        const newItems = [...items];
-                        newItems[50] = "Updated Item 50";
-                        component.setItems(newItems);
-
-                        setTimeout(() => {
-                            // 验证缓存大小应该增加很少（只添加新元素，不删除旧的）
-                            const finalCacheSize = (component as any)._domCache["cache"].size;
-                            // 缓存大小应该接近初始大小（大部分元素被复用）
-                            // 注意：由于每次渲染都会创建新的元素，缓存可能会增长
-                            // 这里我们只验证缓存机制工作正常
-                            expect(finalCacheSize).toBeGreaterThanOrEqual(initialCacheSize);
-
-                            component.remove();
-                            (component as any)._domCache.clear();
-                            resolve();
-                        }, 200);
-                    }, 100);
-                });
-            },
-            15000
-        ); // 15秒超时
+                        component.remove();
+                        (component as any)._domCache.clear();
+                        resolve();
+                    }, 200);
+                }, 100);
+            });
+        }, 15000); // 15秒超时
     });
 
     describe("Component ID Caching", () => {
@@ -291,4 +271,3 @@ describe("Performance Optimization (RFC 0037)", () => {
         });
     });
 });
-

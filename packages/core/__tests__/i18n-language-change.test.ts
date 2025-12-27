@@ -44,7 +44,11 @@ class I18nTestComponent extends WebComponent {
         // Simulate i18n.t() call
         const text = mockI18n.t("welcome");
         // Use key prop to ensure cache key consistency
-        return h("div", { __testId: "container" }, h("span", { __testId: "text", key: "text-span" }, text));
+        return h(
+            "div",
+            { __testId: "container" },
+            h("span", { __testId: "text", key: "text-span" }, text)
+        );
     }
 
     changeLanguage(lang: string) {
@@ -93,11 +97,11 @@ describe("i18n Language Change with DOM Caching", () => {
         // Verify element is reused (cached)
         // Note: render() returns a new DOM tree each time, but elements should be cached
         const span2 = render2!.querySelector("span") as HTMLElement;
-        
+
         // In actual component rendering, elements are reused via cache
         // Here we verify that text content is updated (which proves fine-grained update works)
         expect(span2.textContent).toBe("欢迎"); // Chinese translation
-        
+
         // Verify cache key is the same (proves element should be reused)
         const cacheKey1 = span1.getAttribute("__wsxCacheKey") || (span1 as any).__wsxCacheKey;
         const cacheKey2 = span2.getAttribute("__wsxCacheKey") || (span2 as any).__wsxCacheKey;
