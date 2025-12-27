@@ -259,9 +259,34 @@ export function updateChildren(
             // 元素节点：检查 oldChild 是否在 DOM 中
             // 如果 oldChild 的 parentNode 是当前 element，说明它在 DOM 中
             if (oldChild.parentNode === element) {
-                oldNode = oldChild;
+                // 关键修复：确保 oldChild 不是应该保留的元素（手动创建的元素、第三方库注入的元素）
+                // 如果 oldChild 是应该保留的元素，不应该在"更新现有子节点"循环中处理它
+                if (!shouldPreserveElement(oldChild)) {
+                    oldNode = oldChild;
+                }
+            } else {
+                // oldChild 不在 DOM 中，尝试通过 cache key 找到对应的 DOM 节点
+                // 这可以处理元素被替换但 cache key 相同的情况
+                const oldCacheKey = getElementCacheKey(oldChild);
+                if (oldCacheKey) {
+                    // 遍历 DOM 中的子节点，找到具有相同 cache key 的节点
+                    for (let j = 0; j < element.childNodes.length; j++) {
+                        const domChild = element.childNodes[j];
+                        if (domChild instanceof HTMLElement || domChild instanceof SVGElement) {
+                            // 跳过应该保留的元素（手动创建的元素、第三方库注入的元素）
+                            if (shouldPreserveElement(domChild)) {
+                                continue;
+                            }
+                            const domCacheKey = getElementCacheKey(domChild);
+                            if (domCacheKey === oldCacheKey) {
+                                oldNode = domChild;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
-            // 如果 oldChild 不在 DOM 中，oldNode 保持为 null
+            // 如果 oldChild 不在 DOM 中且找不到对应的节点，oldNode 保持为 null
         } else if (typeof oldChild === "string" || typeof oldChild === "number") {
             // 文本节点：按顺序找到对应的文本节点（跳过所有元素节点）
             // 关键：跳过应该保留的元素节点（手动创建的元素、第三方库注入的元素）
@@ -328,6 +353,13 @@ export function updateChildren(
                 }
             }
         } else if (oldChild instanceof HTMLElement || oldChild instanceof SVGElement) {
+            // 关键修复：如果 oldNode 是应该保留的元素（手动创建的元素、第三方库注入的元素），跳过处理
+            // 这些元素不在 oldChildren 或 newChildren 中，应该在第二步被保留
+            if (oldNode && shouldPreserveElement(oldNode)) {
+                // 跳过应该保留的元素，继续处理下一个
+                continue;
+            }
+
             // 如果是元素节点，检查是否是同一个元素
             if (newChild === oldChild) {
                 // 同一个元素，不需要更新（元素内容会在 updateElement 中更新）
