@@ -76,6 +76,7 @@ export function generateCacheKey(
     }
 
     // 优先级 4: 组件级别计数器（运行时回退，确保唯一性）
+    // 注意：计数器在 RenderContext.runInContext 开始时已重置
     if (component) {
         let counter = componentElementCounters.get(component) || 0;
         counter++;
@@ -85,6 +86,18 @@ export function generateCacheKey(
 
     // 最后回退：时间戳（不推荐，但确保唯一性）
     return `${componentId}:${tag}:fallback-${Date.now()}-${Math.random()}`;
+}
+
+/**
+ * Resets the element counter for a component when a new render cycle starts.
+ * This should be called at the beginning of RenderContext.runInContext.
+ *
+ * @param component - The component instance starting a new render cycle
+ * @internal
+ */
+export function resetCounterForNewRenderCycle(component: BaseComponent): void {
+    // 新的渲染周期开始，直接重置计数器
+    componentElementCounters.set(component, 0);
 }
 
 /**

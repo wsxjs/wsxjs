@@ -1,4 +1,5 @@
 import { BaseComponent } from "./base-component";
+import { resetCounterForNewRenderCycle } from "./utils/cache-key";
 
 /**
  * RenderContext
@@ -15,6 +16,9 @@ export class RenderContext {
      * @param fn The function to execute (usually the render method).
      */
     static runInContext<T>(component: BaseComponent, fn: () => T): T {
+        // 重置计数器以标记新的渲染周期开始
+        resetCounterForNewRenderCycle(component);
+
         const prev = RenderContext.current;
         RenderContext.current = component;
         try {

@@ -156,17 +156,50 @@ export function replaceOrInsertElement(
     newChild: HTMLElement | SVGElement,
     oldNode: Node | null
 ): void {
+    // 确定目标位置：应该在 oldNode 的位置（oldNode.nextSibling 之前）
+    const targetNextSibling = oldNode?.nextSibling || null;
+    replaceOrInsertElementAtPosition(parent, newChild, oldNode, targetNextSibling);
+}
+
+/**
+ * 替换或插入元素节点到指定位置
+ * 确保元素在正确的位置，保持 DOM 顺序
+ */
+export function replaceOrInsertElementAtPosition(
+    parent: HTMLElement | SVGElement,
+    newChild: HTMLElement | SVGElement,
+    oldNode: Node | null,
+    targetNextSibling: Node | null
+): void {
     // 如果新元素已经在其他父元素中，先移除
     if (newChild.parentNode && newChild.parentNode !== parent) {
         newChild.parentNode.removeChild(newChild);
     }
 
-    if (oldNode && !shouldPreserveElement(oldNode)) {
+    // 检查元素是否已经在正确位置
+    const isInCorrectPosition =
+        newChild.parentNode === parent && newChild.nextSibling === targetNextSibling;
+
+    if (isInCorrectPosition) {
+        // 已经在正确位置，不需要移动
+        return;
+    }
+
+    // 如果元素已经在 parent 中但位置不对，需要移动到正确位置
+    if (newChild.parentNode === parent) {
+        // insertBefore 会自动处理：如果元素已经在 DOM 中，会先移除再插入到新位置
+        parent.insertBefore(newChild, targetNextSibling);
+        return;
+    }
+
+    // 元素不在 parent 中，需要插入或替换
+    if (oldNode && oldNode.parentNode === parent && !shouldPreserveElement(oldNode)) {
         if (oldNode !== newChild) {
             parent.replaceChild(newChild, oldNode);
         }
-    } else if (newChild.parentNode !== parent) {
-        parent.insertBefore(newChild, oldNode || null);
+    } else {
+        // 插入到目标位置
+        parent.insertBefore(newChild, targetNextSibling);
     }
 }
 

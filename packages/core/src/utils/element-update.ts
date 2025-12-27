@@ -17,6 +17,7 @@ import {
     updateOrCreateTextNode,
     removeNodeIfNotPreserved,
     replaceOrInsertElement,
+    replaceOrInsertElementAtPosition,
     appendNewChild,
     buildNewChildrenMaps,
     deduplicateCacheKeys,
@@ -252,7 +253,7 @@ export function updateChildren(
     element: HTMLElement | SVGElement,
     oldChildren: JSXChildren[],
     newChildren: JSXChildren[],
-    cacheManager?: DOMCacheManager
+    _cacheManager?: DOMCacheManager // 可选参数，保留以保持 API 兼容性
 ): void {
     const flatOld = flattenChildrenSafe(oldChildren);
     const flatNew = flattenChildrenSafe(newChildren);
@@ -263,6 +264,8 @@ export function updateChildren(
     // 更新现有子节点
     const minLength = Math.min(flatOld.length, flatNew.length);
     const domIndex = { value: 0 }; // 使用对象包装，使其可在函数间传递
+    // 跟踪已处理的节点，用于确定正确的位置
+    const processedNodes = new Set<Node>();
 
     for (let i = 0; i < minLength; i++) {
         const oldChild = flatOld[i];
@@ -336,41 +339,62 @@ export function updateChildren(
                 continue; // 跳过保留的元素
             }
 
-            // 关键修复：即使 newChild === oldChild，如果它是元素，h() 应该已经调用了 updateElement 来更新其子元素
-            // 但是，为了确保子元素确实被更新了，我们不应该跳过，而是让后续代码确保元素在正确位置
-            // 如果 h() 已经正确更新了子元素，那么这里只需要确保元素在正确位置即可
-            if (
-                newChild === oldChild &&
-                (newChild instanceof HTMLElement || newChild instanceof SVGElement)
-            ) {
-                // 同一个元素引用，h() 应该已经通过 updateElement 更新了其子元素
-                // 但是，如果 cacheManager 可用，我们可以验证并确保子元素确实被更新了
-                if (cacheManager) {
-                    const childMetadata = cacheManager.getMetadata(newChild);
-                    if (childMetadata) {
-                        // 如果元数据存在，说明 h() 已经更新了子元素
-                        // 只需要确保元素在正确位置
-                        if (oldNode === newChild && newChild.parentNode === element) {
-                            // 元素已经在正确位置，且 h() 应该已经更新了其子元素
-                            // 不需要额外处理
-                            continue;
+            if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
+                // 关键修复：确定正确的位置
+                // 策略：基于 flatNew 数组的顺序来确定位置，而不是 DOM 中的实际顺序
+                // 因为某些元素可能被隐藏（position: absolute），导致 DOM 顺序与数组顺序不同
+
+                // 找到索引 i 之前的所有元素，确定 newChild 应该在这些元素之后
+                let targetNextSibling: Node | null = null;
+                let foundPreviousElement = false;
+
+                // 从后往前查找，找到最后一个在 DOM 中的前一个元素
+                for (let j = i - 1; j >= 0; j--) {
+                    const prevChild = flatNew[j];
+                    if (prevChild instanceof HTMLElement || prevChild instanceof SVGElement) {
+                        if (prevChild.parentNode === element) {
+                            // 找到前一个元素，newChild 应该在它之后
+                            targetNextSibling = prevChild.nextSibling;
+                            foundPreviousElement = true;
+                            break;
                         }
                     }
-                } else {
-                    // 如果没有 cacheManager，假设 h() 已经更新了子元素
-                    if (oldNode === newChild && newChild.parentNode === element) {
-                        continue;
-                    }
                 }
-                // 如果位置不对，需要调整
-            }
 
-            if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
-                // 如果 newChild 已经在 DOM 中且位置正确，不需要替换
-                if (newChild.parentNode === element && oldNode === newChild) {
+                // 如果没有找到前一个元素，newChild 应该在开头
+                if (!foundPreviousElement) {
+                    // 找到第一个非保留、未处理的子节点
+                    const firstChild = Array.from(element.childNodes).find(
+                        (node) => !shouldPreserveElement(node) && !processedNodes.has(node)
+                    );
+                    targetNextSibling = firstChild || null;
+                }
+
+                // 检查 newChild 是否已经在正确位置
+                const isInCorrectPosition =
+                    newChild.parentNode === element && newChild.nextSibling === targetNextSibling;
+
+                // 如果 newChild === oldChild 且位置正确，说明是同一个元素且位置正确
+                if (newChild === oldChild && isInCorrectPosition) {
+                    // 标记为已处理
+                    if (oldNode) processedNodes.add(oldNode);
+                    processedNodes.add(newChild);
                     continue; // 元素已经在正确位置，不需要更新
                 }
-                replaceOrInsertElement(element, newChild, oldNode);
+
+                // 如果 newChild 是从缓存复用的（与 oldChild 不同），或者位置不对，需要调整
+                // 使用 oldNode 作为参考（如果存在），但目标位置基于数组顺序
+                const referenceNode = oldNode && oldNode.parentNode === element ? oldNode : null;
+                replaceOrInsertElementAtPosition(
+                    element,
+                    newChild,
+                    referenceNode,
+                    targetNextSibling
+                );
+
+                // 标记为已处理
+                if (oldNode) processedNodes.add(oldNode);
+                processedNodes.add(newChild);
             } else {
                 // 类型变化：元素 -> 文本/Fragment
                 removeNodeIfNotPreserved(element, oldNode);
