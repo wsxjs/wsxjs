@@ -252,7 +252,7 @@ export function updateChildren(
     element: HTMLElement | SVGElement,
     oldChildren: JSXChildren[],
     newChildren: JSXChildren[],
-    _cacheManager?: DOMCacheManager
+    cacheManager?: DOMCacheManager
 ): void {
     const flatOld = flattenChildrenSafe(oldChildren);
     const flatNew = flattenChildrenSafe(newChildren);
@@ -342,11 +342,23 @@ export function updateChildren(
                 (newChild instanceof HTMLElement || newChild instanceof SVGElement)
             ) {
                 // 同一个元素引用，h() 应该已经通过 updateElement 更新了其子元素
-                // 只需要确保元素在正确位置
-                if (oldNode === newChild && newChild.parentNode === element) {
-                    // 元素已经在正确位置，且 h() 应该已经更新了其子元素
-                    // 不需要额外处理
-                    continue;
+                // 但是，如果 cacheManager 可用，我们可以验证并确保子元素确实被更新了
+                if (cacheManager) {
+                    const childMetadata = cacheManager.getMetadata(newChild);
+                    if (childMetadata) {
+                        // 如果元数据存在，说明 h() 已经更新了子元素
+                        // 只需要确保元素在正确位置
+                        if (oldNode === newChild && newChild.parentNode === element) {
+                            // 元素已经在正确位置，且 h() 应该已经更新了其子元素
+                            // 不需要额外处理
+                            continue;
+                        }
+                    }
+                } else {
+                    // 如果没有 cacheManager，假设 h() 已经更新了子元素
+                    if (oldNode === newChild && newChild.parentNode === element) {
+                        continue;
+                    }
                 }
                 // 如果位置不对，需要调整
             }
