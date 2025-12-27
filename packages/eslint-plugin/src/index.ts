@@ -13,6 +13,7 @@ import { requireJsxImportSource } from "./rules/require-jsx-import-source";
 import { noNullRender } from "./rules/no-null-render";
 import { noInnerHTML } from "./rules/no-inner-html";
 import { i18nAfterAutoRegister } from "./rules/i18n-after-autoregister";
+import { noDuplicateKeys } from "./rules/no-duplicate-keys";
 import { recommendedConfig } from "./configs/recommended";
 import { createFlatConfig } from "./configs/flat";
 import { WSXPlugin } from "./types";
@@ -34,6 +35,7 @@ const plugin: WSXPlugin = {
         "no-null-render": noNullRender,
         "no-inner-html": noInnerHTML,
         "i18n-after-autoregister": i18nAfterAutoRegister,
+        "no-duplicate-keys": noDuplicateKeys,
     },
 
     // 配置预设

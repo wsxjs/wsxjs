@@ -7,7 +7,7 @@
 
 import { shouldUseSVGNamespace, getSVGAttributeName } from "./svg-utils";
 import { flattenChildren, type JSXChildren } from "./dom-utils";
-import { setSmartProperty } from "./props-utils";
+import { setSmartProperty, isFrameworkInternalProp } from "./props-utils";
 import { shouldPreserveElement } from "./element-marking";
 import type { DOMCacheManager } from "../dom-cache-manager";
 
@@ -59,6 +59,11 @@ function removeProp(
             const attributeName = isSVG ? getSVGAttributeName(key) : key;
             element.removeAttribute(attributeName);
         }
+        return;
+    }
+
+    // 过滤框架内部属性（不应该从 DOM 移除，因为它们本来就不应该存在）
+    if (isFrameworkInternalProp(key)) {
         return;
     }
 
@@ -140,6 +145,11 @@ function applySingleProp(
             const attributeName = isSVG ? getSVGAttributeName(key) : key;
             element.setAttribute(attributeName, String(value));
         }
+        return;
+    }
+
+    // 过滤框架内部属性（不应该渲染到 DOM）
+    if (isFrameworkInternalProp(key)) {
         return;
     }
 

@@ -10,6 +10,38 @@ import { createLogger } from "./logger";
 const logger = createLogger("Props Utilities");
 
 /**
+ * 检查是否是框架内部属性
+ * 这些属性不应该被渲染到 DOM 元素上
+ *
+ * @param key - 属性名
+ * @returns 是否是框架内部属性
+ */
+export function isFrameworkInternalProp(key: string): boolean {
+    // JSX 标准：key 不应该渲染到 DOM
+    if (key === "key") {
+        return true;
+    }
+
+    // 框架内部属性（用于缓存和优化）
+    if (key === "__wsxPositionId" || key === "__wsxIndex") {
+        return true;
+    }
+
+    // 测试辅助属性（不应该渲染到 DOM）
+    if (key === "__testId") {
+        return true;
+    }
+
+    // ref 已经在 applySingleProp 中处理，但这里也标记为内部属性
+    // 确保不会传递到 setSmartProperty
+    if (key === "ref") {
+        return true;
+    }
+
+    return false;
+}
+
+/**
  * 检查是否是 HTML 标准属性
  * HTML First 策略的核心：优先识别标准属性
  *

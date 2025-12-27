@@ -7,7 +7,7 @@
 
 import { createElement, shouldUseSVGNamespace, getSVGAttributeName } from "./svg-utils";
 import { flattenChildren, type JSXChildren } from "./dom-utils";
-import { setSmartProperty } from "./props-utils";
+import { setSmartProperty, isFrameworkInternalProp } from "./props-utils";
 
 /**
  * Applies a single prop to an element.
@@ -72,6 +72,11 @@ function applySingleProp(
             const attributeName = isSVG ? getSVGAttributeName(key) : key;
             element.setAttribute(attributeName, String(value));
         }
+        return;
+    }
+
+    // 过滤框架内部属性（不应该渲染到 DOM）
+    if (isFrameworkInternalProp(key)) {
         return;
     }
 
