@@ -9,8 +9,6 @@
  */
 import { WebComponent, autoRegister, state } from "@wsxjs/wsx-core";
 import { i18nInstance } from "@wsxjs/wsx-i18next";
-import styles from "./LanguageSwitcher.css?inline";
-
 /**
  * 语言选项接口
  */
@@ -44,15 +42,8 @@ export default class LanguageSwitcher extends WebComponent {
     private dropdownElement?: HTMLElement;
     private buttonElement?: HTMLElement;
 
-    constructor() {
-        super({
-            styles,
-            styleName: "language-switcher",
-        });
-    }
-
     render(): HTMLElement {
-        const currentLang = this.languages.find((lang) => lang.code === this.currentLanguage);
+        const currentLang = this.languages.find((lang) => lang.code === i18nInstance.language);
         const displayName = currentLang?.name || this.currentLanguage.toUpperCase();
 
         return (
@@ -101,13 +92,9 @@ export default class LanguageSwitcher extends WebComponent {
      */
     private toggleDropdown = (): void => {
         this.isOpen = !this.isOpen;
-        this.rerender();
-
         if (this.isOpen) {
             // 点击外部关闭下拉菜单
-            setTimeout(() => {
-                document.addEventListener("click", this.handleOutsideClick, true);
-            }, 0);
+            document.addEventListener("click", this.handleOutsideClick, true);
         } else {
             document.removeEventListener("click", this.handleOutsideClick, true);
         }
@@ -136,7 +123,6 @@ export default class LanguageSwitcher extends WebComponent {
     private selectLanguage = (languageCode: string): void => {
         if (languageCode === this.currentLanguage) {
             this.isOpen = false;
-            this.rerender();
             return;
         }
 
@@ -144,7 +130,6 @@ export default class LanguageSwitcher extends WebComponent {
         i18nInstance.changeLanguage(languageCode).then(() => {
             this.currentLanguage = languageCode;
             this.isOpen = false;
-            this.rerender();
 
             // 保存到 localStorage
             localStorage.setItem("wsx-language", languageCode);
@@ -154,7 +139,8 @@ export default class LanguageSwitcher extends WebComponent {
     /**
      * 组件连接时初始化
      */
-    protected onConnected(): void {
+    onConnected(): void {
+        super.onConnected?.();
         // 从 localStorage 或 i18next 获取当前语言
         const savedLanguage = localStorage.getItem("wsx-language");
         const fallbackLng = i18nInstance.options.fallbackLng;
@@ -185,6 +171,7 @@ export default class LanguageSwitcher extends WebComponent {
      * 组件断开连接时清理
      */
     protected onDisconnected(): void {
+        super.onDisconnected?.();
         i18nInstance.off("languageChanged", this.handleLanguageChanged);
         document.removeEventListener("click", this.handleOutsideClick, true);
     }
@@ -196,7 +183,6 @@ export default class LanguageSwitcher extends WebComponent {
         const baseLanguage = lng.split("-")[0];
         if (baseLanguage !== this.currentLanguage) {
             this.currentLanguage = baseLanguage;
-            this.rerender();
         }
     };
 }

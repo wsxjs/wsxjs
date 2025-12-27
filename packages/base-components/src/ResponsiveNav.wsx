@@ -374,6 +374,7 @@ export default class ResponsiveNav extends WebComponent {
      * 组件连接时初始化
      */
     protected onConnected(): void {
+        super.onConnected?.();
         // 如果配置未初始化，从属性读取
         if (!this.navigation?.items || this.navigation?.items.length === 0) {
             try {
@@ -431,6 +432,7 @@ export default class ResponsiveNav extends WebComponent {
      * 组件断开连接时清理
      */
     protected onDisconnected(): void {
+        super.onDisconnected?.();
         if (this.resizeHandler) {
             window.removeEventListener("resize", this.resizeHandler);
         }

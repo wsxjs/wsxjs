@@ -30,6 +30,7 @@ export const recommendedConfig: WSXConfig = {
         "wsx/no-inner-html": "error",
         "wsx/i18n-after-autoregister": "error",
         "wsx/no-duplicate-keys": "error",
+        "wsx/lifecycle-must-call-super": "error",
 
         // TypeScript 规则（推荐）
         "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],

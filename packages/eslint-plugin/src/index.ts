@@ -14,6 +14,7 @@ import { noNullRender } from "./rules/no-null-render";
 import { noInnerHTML } from "./rules/no-inner-html";
 import { i18nAfterAutoRegister } from "./rules/i18n-after-autoregister";
 import { noDuplicateKeys } from "./rules/no-duplicate-keys";
+import { lifecycleMustCallSuper } from "./rules/lifecycle-must-call-super";
 import { recommendedConfig } from "./configs/recommended";
 import { createFlatConfig } from "./configs/flat";
 import { WSXPlugin } from "./types";
@@ -36,6 +37,7 @@ const plugin: WSXPlugin = {
         "no-inner-html": noInnerHTML,
         "i18n-after-autoregister": i18nAfterAutoRegister,
         "no-duplicate-keys": noDuplicateKeys,
+        "lifecycle-must-call-super": lifecycleMustCallSuper,
     },
 
     // 配置预设

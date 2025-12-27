@@ -4,6 +4,7 @@ import typescriptParser from "@typescript-eslint/parser";
 import prettier from "eslint-plugin-prettier";
 import prettierConfig from "eslint-config-prettier";
 import globals from "globals";
+import wsxPlugin from "@wsxjs/eslint-plugin-wsx";
 
 export default [
     // Ignore patterns - must be first
@@ -61,6 +62,7 @@ export default [
         plugins: {
             "@typescript-eslint": typescript,
             prettier,
+            wsx: wsxPlugin,
         },
         rules: {
             ...typescript.configs.recommended.rules,
@@ -80,6 +82,7 @@ export default [
             "@typescript-eslint/no-unused-expressions": "off",
             "no-console": ["warn", { allow: ["warn", "error", "info", "debug"] }],
             "no-undef": "off", // TypeScript handles this
+            "wsx/lifecycle-must-call-super": "error",
         },
     },
 

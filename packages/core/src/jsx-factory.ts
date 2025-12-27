@@ -116,6 +116,22 @@ function tryUseCacheOrCreate(
             // 缓存键已经确保了唯一性（componentId + tag + position/key/index）
             // 不需要再检查标签名（可能导致错误复用）
             const element = cachedElement as HTMLElement | SVGElement;
+
+            // 关键修复：检测自定义元素（Web Components）并重新触发生命周期
+            // 自定义元素有 connectedCallback 和 disconnectedCallback 方法
+            // 当它们被缓存复用时，需要模拟断开/重连以触发初始化逻辑
+            const isCustomElement = tag.includes("-") && customElements.get(tag);
+            if (isCustomElement && element.isConnected) {
+                // 临时从 DOM 断开以触发 disconnectedCallback
+                const parent = element.parentNode;
+                if (parent) {
+                    parent.removeChild(element);
+                    // disconnectedCallback 会在 removeChild 时自动调用
+                    // 然后在 parent.appendChild(element) 时 connectedCallback 会被调用
+                    // 但这会在 updateElement 之后由框架处理
+                }
+            }
+
             updateElement(element, props, children, tag, cacheManager);
             return element;
         }
