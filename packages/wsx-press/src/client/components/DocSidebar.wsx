@@ -36,6 +36,7 @@ export default class DocSidebar extends LightComponent {
     }
 
     protected async onConnected() {
+        super.onConnected?.();
         // 加载元数据
         await this.loadMetadata();
 
@@ -49,6 +50,7 @@ export default class DocSidebar extends LightComponent {
     }
 
     protected onDisconnected() {
+        super.onDisconnected?.();
         if (this.routeChangeUnsubscribe) {
             this.routeChangeUnsubscribe();
             this.routeChangeUnsubscribe = null;

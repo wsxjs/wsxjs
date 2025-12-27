@@ -30,6 +30,7 @@ export default class DocLayout extends LightComponent {
     }
 
     protected onConnected() {
+        super.onConnected?.();
         // 在连接后创建子组件实例
         requestAnimationFrame(() => {
             if (this.connected) {
@@ -58,6 +59,7 @@ export default class DocLayout extends LightComponent {
     }
 
     protected onDisconnected() {
+        super.onDisconnected?.();
         // 清理所有子组件实例
         if (this.sidebarInstance) {
             this.sidebarInstance.remove();

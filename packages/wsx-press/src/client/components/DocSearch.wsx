@@ -85,6 +85,7 @@ export default class DocSearch extends LightComponent {
     }
 
     protected async onConnected() {
+        super.onConnected?.();
         // 预加载搜索索引
         try {
             const index = await loadSearchIndex();

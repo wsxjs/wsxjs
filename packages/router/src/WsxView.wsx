@@ -48,6 +48,7 @@ export default class WsxView extends LightComponent {
     }
 
     protected onConnected() {
+        super.onConnected?.();
         // 延迟加载，避免在 connectedCallback 中同步执行
         requestAnimationFrame(() => {
             // 重新检查，防止在延迟期间已经加载
@@ -138,6 +139,7 @@ export default class WsxView extends LightComponent {
     }
 
     protected onDisconnected() {
+        super.onDisconnected?.();
         // 清理组件实例
         if (this.componentInstance) {
             this.componentInstance.remove();

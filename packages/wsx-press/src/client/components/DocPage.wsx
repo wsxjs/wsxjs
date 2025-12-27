@@ -155,6 +155,7 @@ export default class DocPage extends LightComponent {
     }
 
     protected onConnected() {
+        super.onConnected?.();
         // 监听路由变化（当路由参数更新时重新加载文档）
         // 注意：使用 onRouteChange 确保在路由匹配完成后再加载文档
         this.routeChangeUnsubscribe = RouterUtils.onRouteChange(() => {
@@ -189,6 +190,7 @@ export default class DocPage extends LightComponent {
     }
 
     protected onDisconnected() {
+        super.onDisconnected?.();
         // 清理路由变化监听器
         if (this.routeChangeUnsubscribe) {
             this.routeChangeUnsubscribe();

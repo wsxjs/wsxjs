@@ -44,6 +44,7 @@ export default class WsxLink extends WebComponent {
     }
 
     protected onConnected() {
+        super.onConnected?.();
         // Initialize attributes from HTML when connected
         this.to = this.to || "";
         this.activeClass = this.activeClass || "active";
@@ -63,6 +64,7 @@ export default class WsxLink extends WebComponent {
     }
 
     protected onDisconnected() {
+        super.onDisconnected?.();
         window.removeEventListener("popstate", this.updateActiveState);
         document.removeEventListener("route-changed", this.updateActiveState);
     }

@@ -77,6 +77,7 @@ export default class DocTOC extends LightComponent {
     }
 
     protected async onConnected() {
+        super.onConnected?.();
         // 加载 TOC 数据
         await this.loadTOC();
 
@@ -87,6 +88,7 @@ export default class DocTOC extends LightComponent {
     }
 
     protected onDisconnected() {
+        super.onDisconnected?.();
         if (this.observer) {
             this.observer.disconnect();
             this.observer = null;

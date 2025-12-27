@@ -53,6 +53,7 @@ export default class WsxRouter extends LightComponent {
     }
 
     protected onRendered() {
+        super.onRendered?.();
         // 在渲染完成后也收集视图和处理路由（作为备用）
         // 注意：onRendered 可能不会被调用（如果 hasActualContent 为 true）
         // 所以主要逻辑在 onConnected() 中
@@ -70,6 +71,7 @@ export default class WsxRouter extends LightComponent {
     }
 
     protected onConnected() {
+        super.onConnected?.();
         logger.debug("WsxRouter connected to DOM");
 
         // RFC 0033: 设置浏览器滚动恢复模式
@@ -103,6 +105,7 @@ export default class WsxRouter extends LightComponent {
     }
 
     protected onDisconnected() {
+        super.onDisconnected?.();
         window.removeEventListener("popstate", this.handleRouteChange);
     }
 
