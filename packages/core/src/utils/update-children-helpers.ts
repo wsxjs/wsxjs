@@ -343,11 +343,31 @@ export function collectNodesToRemove(
 
 /**
  * 批量移除节点（从后往前，避免索引变化）
+ * @param parent - 父元素
+ * @param nodes - 要移除的节点列表
+ * @param cacheManager - 可选的缓存管理器，用于获取元素的 ref 回调
  */
-export function removeNodes(parent: HTMLElement | SVGElement, nodes: Node[]): void {
+export function removeNodes(
+    parent: HTMLElement | SVGElement,
+    nodes: Node[],
+    cacheManager?: { getMetadata: (element: Element) => Record<string, unknown> | undefined }
+): void {
     for (let i = nodes.length - 1; i >= 0; i--) {
         const node = nodes[i];
         if (node.parentNode === parent) {
+            // 关键修复：在移除元素之前，检查是否有 ref 回调，如果有，调用它并传入 null
+            // 这确保组件可以清理引用，避免使用已移除的元素
+            if (cacheManager && (node instanceof HTMLElement || node instanceof SVGElement)) {
+                const metadata = cacheManager.getMetadata(node);
+                const refCallback = metadata?.ref;
+                if (typeof refCallback === "function") {
+                    try {
+                        refCallback(null);
+                    } catch {
+                        // 忽略回调错误
+                    }
+                }
+            }
             parent.removeChild(node);
         }
     }

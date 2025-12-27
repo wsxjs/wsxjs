@@ -40,7 +40,16 @@ function removeProp(
 
     // 处理特殊属性
     if (key === "ref") {
-        // ref 是回调，不需要移除
+        // 关键修复：当 ref 被移除时，调用回调并传入 null
+        // 这确保组件可以清理引用，避免使用已移除的元素
+        // 例如：LanguageSwitcher 的 dropdownElement 应该在元素被移除时设置为 null
+        if (typeof oldValue === "function") {
+            try {
+                oldValue(null);
+            } catch {
+                // 忽略回调错误
+            }
+        }
         return;
     }
 
@@ -424,7 +433,8 @@ export function updateChildren(
     const nodesToRemove = collectNodesToRemove(element, elementSet, cacheKeyMap);
 
     // 步骤 4: 批量移除节点（从后往前，避免索引变化）
-    removeNodes(element, nodesToRemove);
+    // 传递 cacheManager 以便在移除元素时调用 ref 回调
+    removeNodes(element, nodesToRemove, _cacheManager);
 
     // 步骤 5: 重新插入所有保留的元素到 DOM 末尾
     // 这确保了第三方库注入的元素不会丢失
