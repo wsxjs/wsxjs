@@ -51,6 +51,7 @@ export function generateCacheKey(
 ): string {
     const userKey = props?.key;
     const index = props?.[INDEX_KEY];
+    const positionId = props?.__wsxPositionId;
 
     // 优先级 1: 用户 key（最可靠, 符合 React/Vue 设计）
     if (userKey !== undefined && userKey !== null) {
@@ -62,7 +63,12 @@ export function generateCacheKey(
         return `${componentId}:${tag}:idx-${String(index)}`;
     }
 
-    // 优先级 3: 组件级别计数器（运行时回退, 确保唯一性）
+    // 优先级 3: 位置 ID（由 babel 插件生成）
+    if (positionId !== undefined && positionId !== null) {
+        return `${componentId}:${tag}:${String(positionId)}`;
+    }
+
+    // 优先级 4: 组件级别计数器（运行时回退, 确保唯一性）
     // 注意：计数器在 RenderContext.runInContext 开始时已重置
     if (component) {
         let counter = componentElementCounters.get(component) || 0;
