@@ -215,10 +215,6 @@ export abstract class WebComponent extends BaseComponent {
             }
 
             // 6. 执行 DOM 操作（同步，不使用 RAF，因为已经在 scheduleRerender 的 RAF 中）
-            console.warn("[_rerender] Starting DOM operations", {
-                component: this.constructor.name,
-            });
-
             // 关键修复 (RFC-0042)：检查 content 是否已经在 shadowRoot 中（元素复用场景）
             // 如果 content 已经在 shadowRoot 中，不需要再次添加
             // 这样可以避免移动元素，导致文本节点更新丢失
@@ -279,9 +275,6 @@ export abstract class WebComponent extends BaseComponent {
             this.onRendered?.();
 
             // 10. 清除渲染标志，允许后续的 scheduleRerender()
-            console.warn("[_rerender] Clearing _isRendering flag", {
-                component: this.constructor.name,
-            });
             this._isRendering = false;
         } catch (error) {
             logger.error("Error in _rerender:", error);
