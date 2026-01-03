@@ -1,4 +1,9 @@
-# WSXJS JSX 支持文档
+---
+title: WSXJS JSX 支持文档
+order: 3
+category: guide/core-concepts
+description: "WSXJS 提供了完整的 JSX 支持，无需依赖 React 或其他框架。通过框架级的配置，任何使用 WSX 的项目都能获得开箱即用的 JSX 体验。"
+---
 
 ## 概述
 

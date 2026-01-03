@@ -13,6 +13,8 @@ export interface DocMetadata {
     category: string;
     /** 文档路由 */
     route: string;
+    /** 文档顺序（用于控制侧边栏和导航中的显示顺序，数字越小越靠前） */
+    order?: number;
     /** 上一篇文档路由 */
     prev?: string | null;
     /** 下一篇文档路由 */

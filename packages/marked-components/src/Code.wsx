@@ -1,16 +1,82 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 /**
  * WSX Code Component
- * Custom code block component for markdown rendering
+ * Custom code block component for markdown rendering with syntax highlighting.
+ *
+ * Features:
+ * - Displays code as raw text (not rendered as HTML)
+ * - Syntax highlighting via Prism.js
+ * - Support for WSX language highlighting
  */
 
 import { LightComponent, autoRegister } from "@wsxjs/wsx-core";
 import styles from "./Code.css?inline";
 
+// Import Prism.js core
+import Prism from "prismjs";
+// Note: We don't import Prism's default theme here.
+// Instead, we use custom CSS in Code.css that supports both light and dark modes.
+
+// Import language components (in dependency order)
+// Base languages (no dependencies)
+import "prismjs/components/prism-markup";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-sql";
+import "prismjs/components/prism-yaml";
+import "prismjs/components/prism-c";
+import "prismjs/components/prism-markdown";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-java";
+import "prismjs/components/prism-rust";
+import "prismjs/components/prism-go";
+
+// Languages depending on base languages
+import "prismjs/components/prism-typescript"; // depends on javascript
+import "prismjs/components/prism-jsx"; // depends on javascript
+import "prismjs/components/prism-cpp"; // depends on c
+
+// Languages depending on other languages (must be after dependencies)
+import "prismjs/components/prism-tsx"; // depends on typescript and jsx
+
+// Import WSX language definition (depends on tsx)
+import "./prism-wsx";
+
+/** Language alias mapping for common language names */
+const LANGUAGE_ALIASES: Record<string, string> = {
+    js: "javascript",
+    ts: "typescript",
+    py: "python",
+    rb: "ruby",
+    sh: "bash",
+    shell: "bash",
+    yml: "yaml",
+    html: "markup",
+    xml: "markup",
+    svg: "markup",
+    vue: "markup",
+    md: "markdown",
+    plaintext: "text",
+    plain: "text",
+    txt: "text",
+};
+
+/**
+ * Normalize language name to Prism-compatible format
+ */
+function normalizeLanguage(lang: string): string {
+    const normalized = lang.toLowerCase().trim();
+    return LANGUAGE_ALIASES[normalized] || normalized;
+}
+
 @autoRegister({ tagName: "wsx-marked-code" })
 export default class Code extends LightComponent {
     private code: string = "";
     private language: string = "";
+    private codeElement: HTMLElement | null = null;
+    private isHighlighting: boolean = false;
 
     constructor() {
         super({
@@ -32,14 +98,135 @@ export default class Code extends LightComponent {
         this.rerender();
     }
 
+    protected onRendered() {
+        super.onRendered?.();
+        // Apply syntax highlighting after render
+        if (!this.isHighlighting && this.codeElement) {
+            this.highlightCode();
+        }
+    }
+
     render() {
+        const normalizedLang = normalizeLanguage(this.language);
+
         return (
-            <div>
+            <div class="code-container">
                 {this.language && <span class="language-label">{this.language}</span>}
                 <pre>
-                    <code>{this.code}</code>
+                    <code
+                        class={normalizedLang ? `language-${normalizedLang}` : ""}
+                        ref={(el) => {
+                            this.codeElement = el as HTMLElement | null;
+                        }}
+                    >
+                        {/* Code will be set via textContent in highlightCode() */}
+                    </code>
                 </pre>
             </div>
         );
+    }
+
+    /**
+     * Apply syntax highlighting to the code element
+     * Uses textContent to ensure code is displayed as raw text
+     */
+    private highlightCode(): void {
+        // Prevent concurrent highlighting
+        if (this.isHighlighting) {
+            return;
+        }
+
+        this.isHighlighting = true;
+
+        try {
+            // Use requestAnimationFrame to ensure DOM is fully updated
+            requestAnimationFrame(() => {
+                try {
+                    if (!this.codeElement) {
+                        this.isHighlighting = false;
+                        return;
+                    }
+
+                    // Skip if already highlighted with same content
+                    if (
+                        this.codeElement.hasAttribute("data-prism-highlighted") &&
+                        this.codeElement.getAttribute("data-code-hash") === this.hashCode(this.code)
+                    ) {
+                        this.isHighlighting = false;
+                        return;
+                    }
+
+                    // Set code as raw text (prevents HTML rendering)
+                    this.codeElement.textContent = this.code;
+
+                    // Get normalized language
+                    const normalizedLang = normalizeLanguage(this.language);
+
+                    // Apply syntax highlighting if language is supported
+                    if (normalizedLang && Prism.languages[normalizedLang]) {
+                        this.codeElement.className = `language-${normalizedLang}`;
+                        Prism.highlightElement(this.codeElement);
+                    } else if (normalizedLang && normalizedLang !== "text") {
+                        // Language not supported, try to fall back to similar language
+                        const fallback = this.getFallbackLanguage(normalizedLang);
+                        if (fallback && Prism.languages[fallback]) {
+                            this.codeElement.className = `language-${fallback}`;
+                            Prism.highlightElement(this.codeElement);
+                        }
+                    }
+
+                    // Mark as highlighted
+                    this.codeElement.setAttribute("data-prism-highlighted", "true");
+                    this.codeElement.setAttribute("data-code-hash", this.hashCode(this.code));
+                } catch (error) {
+                    console.error("[wsx-marked-code] Failed to highlight code:", error);
+                } finally {
+                    this.isHighlighting = false;
+                }
+            });
+        } catch (error) {
+            console.error("[wsx-marked-code] Failed to schedule highlight:", error);
+            this.isHighlighting = false;
+        }
+    }
+
+    /**
+     * Get fallback language for unsupported languages
+     */
+    private getFallbackLanguage(lang: string): string | null {
+        const fallbacks: Record<string, string> = {
+            vue: "markup",
+            svelte: "markup",
+            astro: "markup",
+            scss: "css",
+            sass: "css",
+            less: "css",
+            stylus: "css",
+            coffee: "javascript",
+            coffeescript: "javascript",
+            kotlin: "java",
+            scala: "java",
+            groovy: "java",
+            swift: "typescript",
+            dart: "typescript",
+            csharp: "typescript",
+            "c#": "typescript",
+            fsharp: "typescript",
+            "f#": "typescript",
+        };
+        return fallbacks[lang] || null;
+    }
+
+    /**
+     * Simple hash function for content comparison
+     */
+    private hashCode(str: string): string {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = (hash << 5) - hash + char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash.toString(36);
     }
 }

@@ -27,7 +27,8 @@ export async function scanDocsMetadata(docsRoot: string): Promise<DocsMetaCollec
         const dirname = path.dirname(relativePath);
         metadata[key] = {
             title: frontmatter.title || path.basename(file, ".md"),
-            category: dirname === "." ? "." : dirname,
+            // 优先使用 frontmatter 中的 category，如果没有则使用 dirname
+            category: frontmatter.category || (dirname === "." ? "." : dirname),
             route: `/docs/${key}`,
             ...frontmatter,
         };
@@ -64,7 +65,25 @@ export function extractFrontmatter(markdown: string): Partial<DocMetadata> {
         if (key && value) {
             // 类型安全的属性赋值
             if (key === "title" || key === "description" || key === "category") {
-                (meta as Record<string, string>)[key] = value;
+                // 移除值两端的引号（如果存在）
+                let cleanValue = value.replace(/^["']|["']$/g, "");
+                // 解码 HTML 实体（如 &quot; -> "）
+                // 使用 Node.js 兼容的方法
+                if (cleanValue.includes("&")) {
+                    cleanValue = cleanValue
+                        .replace(/&quot;/g, '"')
+                        .replace(/&apos;/g, "'")
+                        .replace(/&lt;/g, "<")
+                        .replace(/&gt;/g, ">")
+                        .replace(/&amp;/g, "&");
+                }
+                (meta as Record<string, string>)[key] = cleanValue;
+            } else if (key === "order") {
+                // 解析 order 字段为数字
+                const orderNum = Number.parseInt(value, 10);
+                if (!Number.isNaN(orderNum)) {
+                    meta.order = orderNum;
+                }
             } else if (key === "tags") {
                 // 简单的数组解析（实际应使用 YAML 解析器）
                 meta.tags = value
@@ -101,7 +120,15 @@ export function addPrevNextLinks(metadata: DocsMetaCollection): DocsMetaCollecti
 
     // 为每个类别添加 prev/next
     for (const [_category, keys] of categories) {
-        keys.sort();
+        // 按 order 字段排序（如果存在），然后按 key 排序
+        keys.sort((a, b) => {
+            const orderA = metadata[a].order ?? Number.MAX_SAFE_INTEGER;
+            const orderB = metadata[b].order ?? Number.MAX_SAFE_INTEGER;
+            if (orderA !== orderB) {
+                return orderA - orderB;
+            }
+            return a.localeCompare(b);
+        });
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
             metadata[key].prev = i > 0 ? `/docs/${keys[i - 1]}` : null;

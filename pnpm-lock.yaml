@@ -326,7 +326,13 @@ importers:
       marked:
         specifier: ^12.0.0
         version: 12.0.2
+      prismjs:
+        specifier: ^1.30.0
+        version: 1.30.0
     devDependencies:
+      '@types/prismjs':
+        specifier: ^1.26.5
+        version: 1.26.5
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.37.0
         version: 8.37.0(@typescript-eslint/parser@8.37.0(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.31.0(jiti@2.4.2))(typescript@5.8.3)

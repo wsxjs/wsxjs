@@ -3,8 +3,9 @@
 - **RFC编号**: 0022
 - **父 RFC**: [RFC-0021](./0021-framework-website-enhancement.md)
 - **里程碑**: M0
-- **开始日期**: 2025-01-XX
-- **状态**: In Progress
+- **开始日期**: 2024-12-23
+- **完成日期**: 2024-12-24
+- **状态**: Completed
 - **作者**: WSX Team
 
 ## 摘要

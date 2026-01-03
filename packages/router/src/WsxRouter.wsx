@@ -366,7 +366,19 @@ export default class WsxRouter extends LightComponent {
             return this.views.get(path)!;
         }
 
-        // RFC 0032: 3. 参数匹配（使用预编译的正则表达式）
+        // RFC 0032: 3. 前缀匹配（用于嵌套路由，如 /docs/*）
+        for (const [route, view] of this.views) {
+            if (route.endsWith("/*")) {
+                const prefix = route.slice(0, -2);
+                if (path.startsWith(prefix)) {
+                    this.matchCache.set(path, route);
+                    logger.warn(`matchRoute: prefix match found, route: ${route}, path: ${path}`);
+                    return view;
+                }
+            }
+        }
+
+        // RFC 0032: 4. 参数匹配（使用预编译的正则表达式）
         logger.warn(
             `matchRoute: checking parameter routes, compiledRoutes count: ${this.compiledRoutes.size}`
         );
@@ -391,7 +403,7 @@ export default class WsxRouter extends LightComponent {
             }
         }
 
-        // RFC 0032: 4. 通配符匹配
+        // RFC 0032: 5. 通配符匹配（完全通配符 *）
         const wildcardView = this.views.get("*") || null;
         if (wildcardView) {
             this.matchCache.set(path, "*");

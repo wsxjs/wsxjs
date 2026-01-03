@@ -1,4 +1,9 @@
-# WSXJS 设计说明文档
+---
+title: WSXJS 设计说明文档
+order: 5
+category: guide/core-concepts
+description: "WSXJS 框架的设计说明，包括项目结构、核心 API 和机制"
+---
 
 ## 一、框架简介
 WSXJS 是一套现代 Web Components 框架，主打 JSX 语法与 TypeScript 支持，完全零依赖 React，专注于原生 WebComponent 能力的极致开发体验。

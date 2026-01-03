@@ -1,4 +1,9 @@
-# @wsxjs/wsx-i18next 使用指南
+---
+title: @wsxjs/wsx-i18next 使用指南
+order: 3
+category: guide/advanced
+description: "@wsxjs/wsx-i18next 为 WSXJS 组件提供 i18next 国际化支持，让您的应用轻松支持多语言"
+---
 
 `@wsxjs/wsx-i18next` 为 WSXJS 组件提供 i18next 国际化支持，让您的应用轻松支持多语言。
 

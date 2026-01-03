@@ -213,7 +213,7 @@ WSX 框架提供框架级的 JSX 支持。配置你的 `tsconfig.json`：
 
 ## 文档
 
-- [快速开始指南](docs/QUICK_START.md) - 几分钟内开始使用 WSX 框架
+- [快速开始指南](site/public/docs/guide/essentials/getting-started.md) - 几分钟内开始使用 WSX 框架
 - [JSX 支持指南](docs/JSX_SUPPORT.md) - JSX 配置和使用的完整指南
 - [设计文档](docs/WSX_DESIGN.md) - 框架架构和设计决策
 - [开发计划](docs/WSX_PRACTICE_PLAN.md) - 开发工作流和最佳实践

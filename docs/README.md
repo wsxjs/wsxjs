@@ -5,8 +5,8 @@
 ## 📚 文档导航
 
 ### 🚀 快速开始
-- **[快速开始指南](guide/QUICK_START.md)** - 5分钟上手WSXJS
-- **[JSX支持详解](guide/JSX_SUPPORT.md)** - 完整的JSX语法和特性说明
+- **[快速开始指南](guide/essentials/getting-started.md)** - 5分钟上手WSXJS
+- **[JSX支持详解](guide/core-concepts/jsx-support.md)** - 完整的JSX语法和特性说明
 
 ### 🎯 核心概念
 - **[设计理念](wiki/DESIGN_PHILOSOPHY.md)** - WSXJS的设计哲学和原生优先理念
@@ -17,10 +17,10 @@
 
 这些指南帮助您使用 WSXJS 开发应用：
 
-- **[WebComponent 使用指南](guide/WEB_COMPONENT_GUIDE.md)** - Shadow DOM 组件开发指南
-- **[LightComponent 使用指南](guide/LIGHT_COMPONENT_GUIDE.md)** - Light DOM 组件开发指南
-- **[TypeScript 配置指南](guide/TYPESCRIPT_SETUP.md)** - 完整的 TypeScript 配置说明和最佳实践
-- **[发布指南](guide/PUBLISH_GUIDE.md)** - 如何发布 WSX 组件库
+- **[WebComponent 使用指南](guide/core-concepts/web-components.md)** - Shadow DOM 组件开发指南
+- **[LightComponent 使用指南](guide/core-concepts/light-components.md)** - Light DOM 组件开发指南
+- **[TypeScript 配置指南](guide/essentials/typescript-setup.md)** - 完整的 TypeScript 配置说明和最佳实践
+- **[发布指南](guide/advanced/publishing.md)** - 如何发布 WSX 组件库
 - **[代码覆盖率指南](guide/CODE_COVERAGE.md)** - 如何运行和查看代码覆盖率
 - **[Chrome调试指南](guide/2025-07-19-chrome-debugging-guide.md)** - 使用Chrome DevTools调试WSX组件
 - **[实践计划](guide/2025-07-14-wsx-practice-plan.md)** - 系统性的学习计划

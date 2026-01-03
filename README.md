@@ -266,7 +266,7 @@ export class Counter extends WebComponent {
 }
 ```
 
-> ⚠️ **Important**: The `@state` decorator **requires** `@wsxjs/wsx-vite-plugin` to be configured in `vite.config.ts`. The plugin includes a Babel plugin that processes `@state` decorators at compile time. Without this configuration, `@state` will throw an error at runtime. See [Setup Guide](docs/QUICK_START.md) for details.
+> ⚠️ **Important**: The `@state` decorator **requires** `@wsxjs/wsx-vite-plugin` to be configured in `vite.config.ts`. The plugin includes a Babel plugin that processes `@state` decorators at compile time. Without this configuration, `@state` will throw an error at runtime. See [Setup Guide](site/public/docs/guide/essentials/getting-started.md) for details.
 
 ### LightComponent (Light DOM + Reactive)
 Light DOM component with reactive support, perfect for third-party integration:
@@ -286,11 +286,11 @@ export class EditorDemo extends LightComponent {
 
 ## Documentation
 
-- [Quick Start Guide](docs/QUICK_START.md) - Get started with WSXJS in minutes
-- [TypeScript Setup Guide](docs/TYPESCRIPT_SETUP.md) - Complete TypeScript configuration and best practices
-- [LightComponent Guide](docs/LIGHT_COMPONENT_GUIDE.md) - Complete guide to using LightComponent
-- [JSX Support Guide](docs/JSX_SUPPORT.md) - Complete guide to JSX configuration and usage
-- [Design Documentation](docs/WSX_DESIGN.md) - Framework architecture and design decisions
+- [Quick Start Guide](site/public/docs/guide/essentials/getting-started.md) - Get started with WSXJS in minutes
+- [TypeScript Setup Guide](site/public/docs/guide/essentials/typescript-setup.md) - Complete TypeScript configuration and best practices
+- [LightComponent Guide](site/public/docs/guide/core-concepts/light-components.md) - Complete guide to using LightComponent
+- [JSX Support Guide](site/public/docs/guide/core-concepts/jsx-support.md) - Complete guide to JSX configuration and usage
+- [Design Documentation](site/public/docs/guide/core-concepts/wsx-design.md) - Framework architecture and design decisions
 - [Development Plan](docs/WSX_PRACTICE_PLAN.md) - Development workflow and best practices
 - [Chrome Debugging Guide](docs/chrome-debugging-guide.md) - Debug Web Components with Chrome DevTools
 - [Roadmap](docs/ROADMAP.md) - Future development plans and feature timeline

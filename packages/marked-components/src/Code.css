@@ -1,33 +1,546 @@
-/* WSX Marked Code Component Styles */
+/* WSX Marked Code Component Styles
+ * Following wsxjs site design system
+ */
+
+/* ===== Container ===== */
 wsx-marked-code {
     display: block;
+    width: 100%;
     margin: 1rem 0;
+    position: relative;
 }
 
-wsx-marked-code pre {
-    background: var(--bg-secondary, #f5f5f5);
-    border: 1px solid var(--border-color, #e0e0e0);
-    border-radius: 8px;
-    padding: 1rem;
-    overflow-x: auto;
-    font-family: "Courier New", monospace;
+.code-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background: var(--bg-secondary, #fde8d1);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color, #fed7aa);
+}
+
+/* ===== Language Label ===== */
+wsx-marked-code .language-label {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    background: var(--bg-primary, #fef2e5);
+    border-bottom: 1px solid var(--border-color, #fed7aa);
+    color: var(--text-primary, #2c3e50);
+    font-weight: 600;
     font-size: 0.9rem;
-    line-height: 1.5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ===== Pre/Code Block ===== */
+wsx-marked-code pre {
+    padding: 1.5rem;
+    margin: 0;
+    /* Light mode default - matches site theme */
+    background: var(--bg-primary, #fef2e5);
+    color: var(--text-primary, #2c3e50);
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    position: relative;
 }
 
 wsx-marked-code code {
+    display: block;
     background: transparent;
     padding: 0;
     border: none;
     font-family: inherit;
+    font-size: inherit;
+    white-space: pre;
+    word-wrap: normal;
+    word-break: normal;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
 }
 
-wsx-marked-code .language-label {
-    display: inline-block;
-    background: var(--primary-red, #dc2626);
-    color: white;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    border-radius: 4px 4px 0 0;
-    margin-bottom: -1px;
+/* ===== Dark Mode ===== */
+@media (prefers-color-scheme: dark) {
+    .code-container {
+        background: var(--bg-secondary, #2d2d2d);
+        border-color: var(--border-color, #404040);
+    }
+
+    wsx-marked-code .language-label {
+        background: var(--bg-primary, #1a1a1a);
+        border-color: var(--border-color, #404040);
+        color: var(--text-primary, #ffffff);
+    }
+
+    wsx-marked-code pre {
+        background: #2d2d2d;
+        color: #f8f8f2;
+    }
+}
+
+/* ===== Light Mode (explicit class) ===== */
+/* Override prefers-color-scheme when .light class is present */
+/* Using site theme colors for consistency */
+.light .code-container,
+[data-theme="light"] .code-container {
+    background: var(--bg-secondary, #fde8d1);
+    border-color: var(--border-color, #fed7aa);
+}
+
+.light wsx-marked-code .language-label,
+[data-theme="light"] wsx-marked-code .language-label {
+    background: var(--bg-primary, #fef2e5);
+    border-color: var(--border-color, #fed7aa);
+    color: var(--text-primary, #2c3e50);
+}
+
+.light wsx-marked-code pre,
+[data-theme="light"] wsx-marked-code pre {
+    background: var(--bg-primary, #fef2e5);
+    color: var(--text-primary, #2c3e50);
+}
+
+/* ===== Dark Mode (explicit class) ===== */
+[data-theme="dark"] .code-container,
+.dark .code-container {
+    background: var(--bg-secondary, #2d2d2d);
+    border-color: var(--border-color, #404040);
+}
+
+[data-theme="dark"] wsx-marked-code .language-label,
+.dark wsx-marked-code .language-label {
+    background: var(--bg-primary, #1a1a1a);
+    border-color: var(--border-color, #404040);
+    color: var(--text-primary, #ffffff);
+}
+
+[data-theme="dark"] wsx-marked-code pre,
+.dark wsx-marked-code pre {
+    background: #2d2d2d;
+    color: #f8f8f2;
+}
+
+/* ===== Syntax Highlighting (Light Mode - explicit class) ===== */
+/* WCAG AA compliant contrast ratios (4.5:1+) against #f3f4f6 background */
+/* Using darker, more saturated colors for better visibility */
+
+.light wsx-marked-code code[class*="language-"],
+[data-theme="light"] wsx-marked-code code[class*="language-"] {
+    background: transparent;
+    color: #1f2937; /* Dark gray text - high contrast */
+}
+
+.light wsx-marked-code .token.comment,
+.light wsx-marked-code .token.prolog,
+.light wsx-marked-code .token.doctype,
+.light wsx-marked-code .token.cdata,
+[data-theme="light"] wsx-marked-code .token.comment,
+[data-theme="light"] wsx-marked-code .token.prolog,
+[data-theme="light"] wsx-marked-code .token.doctype,
+[data-theme="light"] wsx-marked-code .token.cdata {
+    color: #4b5563; /* Medium gray comments */
+    font-style: italic;
+}
+
+.light wsx-marked-code .token.punctuation,
+[data-theme="light"] wsx-marked-code .token.punctuation {
+    color: #111827; /* Near black */
+}
+
+.light wsx-marked-code .token.property,
+.light wsx-marked-code .token.tag,
+.light wsx-marked-code .token.boolean,
+.light wsx-marked-code .token.number,
+.light wsx-marked-code .token.constant,
+.light wsx-marked-code .token.symbol,
+.light wsx-marked-code .token.deleted,
+[data-theme="light"] wsx-marked-code .token.property,
+[data-theme="light"] wsx-marked-code .token.tag,
+[data-theme="light"] wsx-marked-code .token.boolean,
+[data-theme="light"] wsx-marked-code .token.number,
+[data-theme="light"] wsx-marked-code .token.constant,
+[data-theme="light"] wsx-marked-code .token.symbol,
+[data-theme="light"] wsx-marked-code .token.deleted {
+    color: #be185d; /* Deep magenta/pink */
+}
+
+.light wsx-marked-code .token.selector,
+.light wsx-marked-code .token.attr-name,
+.light wsx-marked-code .token.string,
+.light wsx-marked-code .token.char,
+.light wsx-marked-code .token.builtin,
+.light wsx-marked-code .token.inserted,
+[data-theme="light"] wsx-marked-code .token.selector,
+[data-theme="light"] wsx-marked-code .token.attr-name,
+[data-theme="light"] wsx-marked-code .token.string,
+[data-theme="light"] wsx-marked-code .token.char,
+[data-theme="light"] wsx-marked-code .token.builtin,
+[data-theme="light"] wsx-marked-code .token.inserted {
+    color: #059669; /* Deep green for strings */
+}
+
+.light wsx-marked-code .token.operator,
+.light wsx-marked-code .token.entity,
+.light wsx-marked-code .token.url,
+.light wsx-marked-code .language-css .token.string,
+.light wsx-marked-code .style .token.string,
+[data-theme="light"] wsx-marked-code .token.operator,
+[data-theme="light"] wsx-marked-code .token.entity,
+[data-theme="light"] wsx-marked-code .token.url,
+[data-theme="light"] wsx-marked-code .language-css .token.string,
+[data-theme="light"] wsx-marked-code .style .token.string {
+    color: #111827; /* Near black */
+}
+
+.light wsx-marked-code .token.atrule,
+.light wsx-marked-code .token.attr-value,
+.light wsx-marked-code .token.keyword,
+[data-theme="light"] wsx-marked-code .token.atrule,
+[data-theme="light"] wsx-marked-code .token.attr-value,
+[data-theme="light"] wsx-marked-code .token.keyword {
+    color: #7c3aed; /* Deep purple for keywords */
+    font-weight: 600;
+}
+
+.light wsx-marked-code .token.function,
+.light wsx-marked-code .token.class-name,
+[data-theme="light"] wsx-marked-code .token.function,
+[data-theme="light"] wsx-marked-code .token.class-name {
+    color: #0369a1; /* Deep blue for functions/classes */
+}
+
+.light wsx-marked-code .token.regex,
+.light wsx-marked-code .token.important,
+.light wsx-marked-code .token.variable,
+[data-theme="light"] wsx-marked-code .token.regex,
+[data-theme="light"] wsx-marked-code .token.important,
+[data-theme="light"] wsx-marked-code .token.variable {
+    color: #c2410c; /* Deep orange for variables */
+}
+
+/* WSX-specific highlighting (light mode - explicit class) */
+.light wsx-marked-code .token.decorator,
+.light wsx-marked-code .token.decorator-name,
+[data-theme="light"] wsx-marked-code .token.decorator,
+[data-theme="light"] wsx-marked-code .token.decorator-name {
+    color: #c2410c; /* Deep orange for decorators */
+}
+
+.light wsx-marked-code .token.web-component,
+.light wsx-marked-code .token.tag-name,
+[data-theme="light"] wsx-marked-code .token.web-component,
+[data-theme="light"] wsx-marked-code .token.tag-name {
+    color: #0369a1; /* Deep blue for web components */
+}
+
+/* ===== Syntax Highlighting (Light Mode - fallback for no class) ===== */
+/* Default styles when neither .light nor .dark class is present */
+
+wsx-marked-code code[class*="language-"] {
+    background: transparent;
+    color: #24292e;
+}
+
+wsx-marked-code .token.comment,
+wsx-marked-code .token.prolog,
+wsx-marked-code .token.doctype,
+wsx-marked-code .token.cdata {
+    color: #5a6268;
+    font-style: italic;
+}
+
+wsx-marked-code .token.punctuation {
+    color: #1a1a1a;
+}
+
+wsx-marked-code .token.property,
+wsx-marked-code .token.tag,
+wsx-marked-code .token.boolean,
+wsx-marked-code .token.number,
+wsx-marked-code .token.constant,
+wsx-marked-code .token.symbol,
+wsx-marked-code .token.deleted {
+    color: #c7254e;
+}
+
+wsx-marked-code .token.selector,
+wsx-marked-code .token.attr-name,
+wsx-marked-code .token.string,
+wsx-marked-code .token.char,
+wsx-marked-code .token.builtin,
+wsx-marked-code .token.inserted {
+    color: #005cc5;
+}
+
+wsx-marked-code .token.operator,
+wsx-marked-code .token.entity,
+wsx-marked-code .token.url,
+wsx-marked-code .language-css .token.string,
+wsx-marked-code .style .token.string {
+    color: #1a1a1a;
+}
+
+wsx-marked-code .token.atrule,
+wsx-marked-code .token.attr-value,
+wsx-marked-code .token.keyword {
+    color: #d73a49;
+    font-weight: 600;
+}
+
+wsx-marked-code .token.function,
+wsx-marked-code .token.class-name {
+    color: #6f42c1;
+}
+
+wsx-marked-code .token.regex,
+wsx-marked-code .token.important,
+wsx-marked-code .token.variable {
+    color: #e36209;
+}
+
+/* WSX-specific highlighting (light mode - fallback) */
+wsx-marked-code .token.decorator,
+wsx-marked-code .token.decorator-name {
+    color: #e36209;
+}
+
+wsx-marked-code .token.web-component,
+wsx-marked-code .token.tag-name {
+    color: #6f42c1;
+}
+
+/* ===== Syntax Highlighting (Dark Mode - Monokai-inspired) ===== */
+@media (prefers-color-scheme: dark) {
+    wsx-marked-code code[class*="language-"] {
+        color: #f8f8f2; /* Bright white default text */
+    }
+
+    wsx-marked-code .token.comment,
+    wsx-marked-code .token.prolog,
+    wsx-marked-code .token.doctype,
+    wsx-marked-code .token.cdata {
+        color: #75715e; /* Gray comments */
+        font-style: italic;
+    }
+
+    wsx-marked-code .token.punctuation {
+        color: #f8f8f2; /* White punctuation */
+    }
+
+    wsx-marked-code .token.property,
+    wsx-marked-code .token.tag,
+    wsx-marked-code .token.boolean,
+    wsx-marked-code .token.number,
+    wsx-marked-code .token.constant,
+    wsx-marked-code .token.symbol,
+    wsx-marked-code .token.deleted {
+        color: #f92672; /* Pink/Red */
+    }
+
+    wsx-marked-code .token.selector,
+    wsx-marked-code .token.attr-name,
+    wsx-marked-code .token.string,
+    wsx-marked-code .token.char,
+    wsx-marked-code .token.builtin,
+    wsx-marked-code .token.inserted {
+        color: #e6db74; /* Yellow strings */
+    }
+
+    wsx-marked-code .token.operator,
+    wsx-marked-code .token.entity,
+    wsx-marked-code .token.url,
+    wsx-marked-code .language-css .token.string,
+    wsx-marked-code .style .token.string {
+        color: #f8f8f2; /* White operators */
+    }
+
+    wsx-marked-code .token.atrule,
+    wsx-marked-code .token.attr-value,
+    wsx-marked-code .token.keyword {
+        color: #66d9ef; /* Cyan keywords */
+        font-weight: 500;
+    }
+
+    wsx-marked-code .token.function,
+    wsx-marked-code .token.class-name {
+        color: #a6e22e; /* Green functions */
+    }
+
+    wsx-marked-code .token.regex,
+    wsx-marked-code .token.important,
+    wsx-marked-code .token.variable {
+        color: #fd971f; /* Orange variables */
+    }
+
+    /* WSX-specific highlighting (dark mode) */
+    wsx-marked-code .token.decorator,
+    wsx-marked-code .token.decorator-name {
+        color: #fd971f; /* Orange decorators */
+    }
+
+    wsx-marked-code .token.web-component,
+    wsx-marked-code .token.tag-name {
+        color: #a6e22e; /* Green web components */
+    }
+}
+
+/* Dark mode via attribute */
+[data-theme="dark"] wsx-marked-code code[class*="language-"],
+.dark wsx-marked-code code[class*="language-"] {
+    color: #f8f8f2;
+}
+
+[data-theme="dark"] wsx-marked-code .token.comment,
+[data-theme="dark"] wsx-marked-code .token.prolog,
+[data-theme="dark"] wsx-marked-code .token.doctype,
+[data-theme="dark"] wsx-marked-code .token.cdata,
+.dark wsx-marked-code .token.comment,
+.dark wsx-marked-code .token.prolog,
+.dark wsx-marked-code .token.doctype,
+.dark wsx-marked-code .token.cdata {
+    color: #75715e;
+    font-style: italic;
+}
+
+[data-theme="dark"] wsx-marked-code .token.punctuation,
+.dark wsx-marked-code .token.punctuation {
+    color: #f8f8f2;
+}
+
+[data-theme="dark"] wsx-marked-code .token.property,
+[data-theme="dark"] wsx-marked-code .token.tag,
+[data-theme="dark"] wsx-marked-code .token.boolean,
+[data-theme="dark"] wsx-marked-code .token.number,
+[data-theme="dark"] wsx-marked-code .token.constant,
+[data-theme="dark"] wsx-marked-code .token.symbol,
+[data-theme="dark"] wsx-marked-code .token.deleted,
+.dark wsx-marked-code .token.property,
+.dark wsx-marked-code .token.tag,
+.dark wsx-marked-code .token.boolean,
+.dark wsx-marked-code .token.number,
+.dark wsx-marked-code .token.constant,
+.dark wsx-marked-code .token.symbol,
+.dark wsx-marked-code .token.deleted {
+    color: #f92672;
+}
+
+[data-theme="dark"] wsx-marked-code .token.selector,
+[data-theme="dark"] wsx-marked-code .token.attr-name,
+[data-theme="dark"] wsx-marked-code .token.string,
+[data-theme="dark"] wsx-marked-code .token.char,
+[data-theme="dark"] wsx-marked-code .token.builtin,
+[data-theme="dark"] wsx-marked-code .token.inserted,
+.dark wsx-marked-code .token.selector,
+.dark wsx-marked-code .token.attr-name,
+.dark wsx-marked-code .token.string,
+.dark wsx-marked-code .token.char,
+.dark wsx-marked-code .token.builtin,
+.dark wsx-marked-code .token.inserted {
+    color: #e6db74;
+}
+
+[data-theme="dark"] wsx-marked-code .token.operator,
+[data-theme="dark"] wsx-marked-code .token.entity,
+[data-theme="dark"] wsx-marked-code .token.url,
+[data-theme="dark"] wsx-marked-code .language-css .token.string,
+[data-theme="dark"] wsx-marked-code .style .token.string,
+.dark wsx-marked-code .token.operator,
+.dark wsx-marked-code .token.entity,
+.dark wsx-marked-code .token.url,
+.dark wsx-marked-code .language-css .token.string,
+.dark wsx-marked-code .style .token.string {
+    color: #f8f8f2;
+}
+
+[data-theme="dark"] wsx-marked-code .token.atrule,
+[data-theme="dark"] wsx-marked-code .token.attr-value,
+[data-theme="dark"] wsx-marked-code .token.keyword,
+.dark wsx-marked-code .token.atrule,
+.dark wsx-marked-code .token.attr-value,
+.dark wsx-marked-code .token.keyword {
+    color: #66d9ef;
+    font-weight: 500;
+}
+
+[data-theme="dark"] wsx-marked-code .token.function,
+[data-theme="dark"] wsx-marked-code .token.class-name,
+.dark wsx-marked-code .token.function,
+.dark wsx-marked-code .token.class-name {
+    color: #a6e22e;
+}
+
+[data-theme="dark"] wsx-marked-code .token.regex,
+[data-theme="dark"] wsx-marked-code .token.important,
+[data-theme="dark"] wsx-marked-code .token.variable,
+.dark wsx-marked-code .token.regex,
+.dark wsx-marked-code .token.important,
+.dark wsx-marked-code .token.variable {
+    color: #fd971f;
+}
+
+/* WSX-specific (dark theme via attribute) */
+[data-theme="dark"] wsx-marked-code .token.decorator,
+[data-theme="dark"] wsx-marked-code .token.decorator-name,
+.dark wsx-marked-code .token.decorator,
+.dark wsx-marked-code .token.decorator-name {
+    color: #fd971f;
+}
+
+[data-theme="dark"] wsx-marked-code .token.web-component,
+[data-theme="dark"] wsx-marked-code .token.tag-name,
+.dark wsx-marked-code .token.web-component,
+.dark wsx-marked-code .token.tag-name {
+    color: #a6e22e;
+}
+
+/* ===== Special Token Types ===== */
+wsx-marked-code .token.namespace {
+    opacity: 0.7;
+}
+
+wsx-marked-code .token.important {
+    font-weight: bold;
+}
+
+wsx-marked-code .token.bold {
+    font-weight: bold;
+}
+
+wsx-marked-code .token.italic {
+    font-style: italic;
+}
+
+/* ===== Scrollbar Styling ===== */
+wsx-marked-code pre::-webkit-scrollbar {
+    height: 8px;
+}
+
+wsx-marked-code pre::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+wsx-marked-code pre::-webkit-scrollbar-thumb {
+    background: var(--border-color, #e5e7eb);
+    border-radius: 4px;
+}
+
+wsx-marked-code pre::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary, #6b7280);
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+    wsx-marked-code .language-label {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    wsx-marked-code pre {
+        padding: 1rem;
+        font-size: 0.85rem;
+    }
 }

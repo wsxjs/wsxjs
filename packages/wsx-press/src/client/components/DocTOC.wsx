@@ -105,14 +105,20 @@ export default class DocTOC extends LightComponent {
     private async loadTOC(): Promise<void> {
         try {
             const routeInfo = RouterUtils.getCurrentRoute();
-            const params = routeInfo.params as { category?: string; page?: string };
-
-            if (!params.category || !params.page) {
+            // 从路径中提取 docPath（移除 /docs/ 前缀）
+            let docPath: string;
+            if (routeInfo.path.startsWith("/docs/")) {
+                docPath = routeInfo.path.slice(6); // 移除 "/docs/" 前缀
+            } else {
                 this.items = [];
                 return;
             }
 
-            const docPath = `${params.category}/${params.page}`;
+            if (!docPath || docPath.trim() === "") {
+                this.items = [];
+                return;
+            }
+
             const tocData = await loadTOCData();
             this.items = tocData[docPath] || [];
 

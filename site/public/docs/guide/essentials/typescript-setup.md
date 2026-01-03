@@ -1,4 +1,9 @@
-# TypeScript 配置指南
+---
+title: TypeScript 配置指南
+order: 2
+category: guide/essentials
+description: "本指南详细说明如何在项目中正确配置 TypeScript 以使用 WSXJS。"
+---
 
 本指南详细说明如何在项目中正确配置 TypeScript 以使用 WSXJS。
 
@@ -567,8 +572,8 @@ const testComponent: typeof WebComponent = WebComponent;
 
 ### 📚 相关文档
 
-- [快速开始指南](QUICK_START.md) - 5分钟上手 WSXJS
-- [JSX 支持详解](JSX_SUPPORT.md) - 完整的 JSX 语法和特性
+- [快速开始指南](./getting-started.md) - 5分钟上手 WSXJS
+- [JSX 支持详解](../core-concepts/jsx-support.md) - 完整的 JSX 语法和特性
 - [Vite 插件文档](../packages/vite-plugin/README.md) - Vite 集成配置
 - [ESLint 插件文档](../packages/eslint-plugin/README.md) - 代码质量检查
 

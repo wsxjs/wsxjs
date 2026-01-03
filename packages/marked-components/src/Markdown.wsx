@@ -79,14 +79,24 @@ export default class Markdown extends LightComponent {
         return { ...this.customRenderers };
     }
 
+    /**
+     * 移除 markdown 中的 frontmatter（YAML 元数据块）
+     * frontmatter 格式：文件开头的 --- 包围的 YAML 块
+     */
+    private stripFrontmatter(markdown: string): string {
+        return markdown.replace(/^---\n[\s\S]*?\n---\n?/, "");
+    }
+
     render() {
         if (!this.markdown) {
             return <div class="marked-content"></div>;
         }
 
         try {
+            // 移除 frontmatter 后再解析
+            const cleanMarkdown = this.stripFrontmatter(this.markdown);
             // Use marked.lexer to get tokens, then render with WSX JSX
-            const tokens = marked.lexer(this.markdown);
+            const tokens = marked.lexer(cleanMarkdown);
             return <div class="marked-content">{this.renderTokens(tokens)}</div>;
         } catch (error) {
             logger.error("Failed to render markdown", error);

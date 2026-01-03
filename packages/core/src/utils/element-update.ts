@@ -288,19 +288,6 @@ export function updateChildren(
     const flatOld = flattenChildrenSafe(oldChildren);
     const flatNew = flattenChildrenSafe(newChildren);
 
-    // DEBUG: 追踪 children 更新
-    console.log("[updateChildren] DEBUG:", {
-        element: element.tagName + (element.className ? "." + element.className : ""),
-        flatOldLength: flatOld.length,
-        flatNewLength: flatNew.length,
-        flatOld: flatOld.map((c) =>
-            c instanceof HTMLElement ? c.tagName + (c.className ? "." + c.className : "") : typeof c
-        ),
-        flatNew: flatNew.map((c) =>
-            c instanceof HTMLElement ? c.tagName + (c.className ? "." + c.className : "") : typeof c
-        ),
-    });
-
     // 收集需要保留的元素（第三方库注入的元素）
     const preservedElements = collectPreservedElements(element);
 
@@ -487,18 +474,6 @@ export function updateChildren(
 
     // 步骤 3: 收集需要移除的节点（跳过保留元素和新子元素）
     const nodesToRemove = collectNodesToRemove(element, elementSet, cacheKeyMap, processedNodes);
-
-    // DEBUG: 追踪节点移除
-    console.log("[updateChildren] nodesToRemove:", {
-        count: nodesToRemove.length,
-        nodes: nodesToRemove.map((n) =>
-            n instanceof HTMLElement
-                ? n.tagName + (n.className ? "." + n.className : "")
-                : n.nodeName
-        ),
-        elementSetSize: elementSet.size,
-        cacheKeyMapSize: cacheKeyMap.size,
-    });
 
     // 步骤 4: 批量移除节点（从后往前，避免索引变化）
     // 传递 cacheManager 以便在移除元素时调用 ref 回调

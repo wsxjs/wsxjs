@@ -1,4 +1,9 @@
-# WSX 类型系统指南
+---
+title: WSX 类型系统指南
+order: 2
+category: guide/advanced
+description: "本指南详细说明了 WSXJS 中 `.wsx` 文件类型系统的工作原理、维护方式和最佳实践。"
+---
 
 本指南详细说明了 WSXJS 中 `.wsx` 文件类型系统的工作原理、维护方式和最佳实践。
 

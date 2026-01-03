@@ -110,15 +110,18 @@ export function getRouteMeta(path: string): RouteMeta {
     if (routeMeta[path]) {
         return routeMeta[path];
     }
-    // 2. 检查参数化路由：/docs/:category/:page
+    // 2. 检查文档路由：/docs/* (支持多级路径)
     if (path.startsWith("/docs/")) {
-        const docsPathMatch = path.match(/^\/docs\/([^/]+)\/([^/]+)$/);
-        if (docsPathMatch) {
+        // 支持多级路径，例如：/docs/guide/essentials/getting-started
+        const docPath = path.slice(6); // 移除 "/docs/" 前缀
+        if (docPath) {
             // 使用文档路由的 meta，但可以根据需要动态生成标题
             const baseMeta = routeMeta["/docs"] || routeMeta["/"];
+            // 从路径中提取最后一个部分作为标题（如果没有元数据）
+            const lastPart = docPath.split("/").pop() || docPath;
             return {
                 ...baseMeta,
-                title: `${docsPathMatch[2]} - Documentation | WSXJS`,
+                title: `${lastPart} - Documentation | WSXJS`,
                 description: baseMeta.description || "WSXJS Documentation",
             };
         }

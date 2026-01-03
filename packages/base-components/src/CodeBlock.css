@@ -1,10 +1,10 @@
 /* Code Block Component Styles */
 .code-block {
-    background: var(--bg-secondary, #f9fafb);
+    background: var(--bg-secondary, #fde8d1);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--border-color, #e5e7eb);
+    border: 1px solid var(--border-color, #fed7aa);
 }
 
 .code-header {
@@ -12,12 +12,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.5rem;
-    background: var(--bg-primary, #ffffff);
-    border-bottom: 1px solid var(--border-color, #e5e7eb);
+    background: var(--bg-primary, #fef2e5);
+    border-bottom: 1px solid var(--border-color, #fed7aa);
 }
 
 .code-title {
-    color: var(--text-primary, #111827);
+    color: var(--text-primary, #2c3e50);
     font-weight: 600;
     font-size: 0.9rem;
 }
@@ -40,13 +40,13 @@
 }
 
 .btn-copy {
-    background: var(--border-color, #e5e7eb);
-    color: var(--text-primary, #111827);
+    background: var(--border-color, #fed7aa);
+    color: var(--text-primary, #2c3e50);
 }
 
 .btn-copy:hover {
-    background: var(--text-secondary, #6b7280);
-    color: var(--bg-primary, #ffffff);
+    background: var(--text-secondary, #7f8c8d);
+    color: var(--bg-primary, #fef2e5);
 }
 
 .btn-copy.copied {
@@ -67,22 +67,11 @@
 .code-content {
     padding: 2rem;
     margin: 0;
-    /* 浅色模式默认 */
-    background: #f8f9fa;
-    color: #24292e;
     font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
     font-size: 0.9rem;
     line-height: 1.6;
     overflow-x: auto;
     position: relative;
-}
-
-/* 深色模式 */
-@media (prefers-color-scheme: dark) {
-    .code-content {
-        background: #2d2d2d;
-        color: #f8f8f2;
-    }
 }
 
 .code-segment {
@@ -110,132 +99,188 @@
     background: transparent;
 }
 
-/* 浅色模式 - 使用更深的颜色，确保 WCAG AA 对比度 (4.5:1+) */
-/* 背景: #f8f9fa (RGB: 248, 249, 250) */
-.code-content .token.comment,
-.code-content .token.prolog,
-.code-content .token.doctype,
-.code-content .token.cdata {
-    color: #5a6268 !important; /* 深灰色注释 - 对比度 7.2:1 */
+/* ===== 浅色模式 ===== */
+.code-block.light {
+    background: var(--bg-secondary, #fde8d1);
+    border-color: var(--border-color, #fed7aa);
+}
+
+.code-block.light .code-header {
+    background: var(--bg-primary, #fef2e5);
+    border-color: var(--border-color, #fed7aa);
+}
+
+.code-block.light .code-title {
+    color: var(--text-primary, #2c3e50);
+}
+
+.code-block.light .btn-copy {
+    background: var(--border-color, #fed7aa);
+    color: var(--text-primary, #2c3e50);
+}
+
+.code-block.light .btn-copy:hover {
+    background: var(--text-secondary, #7f8c8d);
+    color: var(--bg-primary, #fef2e5);
+}
+
+.code-block.light .code-content {
+    background: var(--bg-primary, #fef2e5);
+    color: var(--text-primary, #2c3e50);
+}
+
+/* 浅色模式语法高亮 - 针对暖橙色背景 #fef2e5 优化 */
+.code-block.light .code-content code[class*="language-"] {
+    color: #1a1a1a !important;
+}
+
+.code-block.light .code-content .token.comment,
+.code-block.light .code-content .token.prolog,
+.code-block.light .code-content .token.doctype,
+.code-block.light .code-content .token.cdata {
+    color: #6b5b47 !important;
     font-style: italic;
 }
 
-.code-content .token.punctuation {
-    color: #1a1a1a !important; /* 接近黑色标点符号 - 对比度 15.8:1 */
+.code-block.light .code-content .token.punctuation {
+    color: #1a1a1a !important;
 }
 
-.code-content .token.property,
-.code-content .token.tag,
-.code-content .token.boolean,
-.code-content .token.number,
-.code-content .token.constant,
-.code-content .token.symbol,
-.code-content .token.deleted {
-    color: #c7254e !important; /* 深红色 - 对比度 5.8:1 */
+.code-block.light .code-content .token.property,
+.code-block.light .code-content .token.tag,
+.code-block.light .code-content .token.boolean,
+.code-block.light .code-content .token.number,
+.code-block.light .code-content .token.constant,
+.code-block.light .code-content .token.symbol,
+.code-block.light .code-content .token.deleted {
+    color: #9f1239 !important;
 }
 
-.code-content .token.selector,
-.code-content .token.attr-name,
-.code-content .token.string,
-.code-content .token.char,
-.code-content .token.builtin,
-.code-content .token.inserted {
-    color: #005cc5 !important; /* 深蓝色字符串 - 对比度 7.1:1 */
+.code-block.light .code-content .token.selector,
+.code-block.light .code-content .token.attr-name,
+.code-block.light .code-content .token.string,
+.code-block.light .code-content .token.char,
+.code-block.light .code-content .token.builtin,
+.code-block.light .code-content .token.inserted {
+    color: #166534 !important;
 }
 
-.code-content .token.operator,
-.code-content .token.entity,
-.code-content .token.url,
-.code-content .language-css .token.string,
-.code-content .style .token.string {
-    color: #1a1a1a !important; /* 接近黑色操作符 - 对比度 15.8:1 */
+.code-block.light .code-content .token.operator,
+.code-block.light .code-content .token.entity,
+.code-block.light .code-content .token.url,
+.code-block.light .code-content .language-css .token.string,
+.code-block.light .code-content .style .token.string {
+    color: #1a1a1a !important;
 }
 
-.code-content .token.atrule,
-.code-content .token.attr-value,
-.code-content .token.keyword {
-    color: #d73a49 !important; /* 深红色关键字 - 对比度 5.2:1 */
+.code-block.light .code-content .token.atrule,
+.code-block.light .code-content .token.attr-value,
+.code-block.light .code-content .token.keyword {
+    color: #6d28d9 !important;
     font-weight: 600;
 }
 
-.code-content .token.function,
-.code-content .token.class-name {
-    color: #6f42c1 !important; /* 深紫色函数/类名 - 对比度 6.1:1 */
+.code-block.light .code-content .token.function,
+.code-block.light .code-content .token.class-name {
+    color: #0c4a6e !important;
 }
 
-.code-content .token.regex,
-.code-content .token.important,
-.code-content .token.variable {
-    color: #e36209 !important; /* 深橙色变量 - 对比度 4.8:1 */
+.code-block.light .code-content .token.regex,
+.code-block.light .code-content .token.important,
+.code-block.light .code-content .token.variable {
+    color: #9a3412 !important;
 }
 
-/* 默认文字颜色 */
-.code-content code[class*="language-"] {
-    color: #24292e !important; /* 深色文字 - 对比度 12.6:1 */
+/* ===== 深色模式 ===== */
+.code-block.dark {
+    background: #1e1e1e;
+    border-color: #374151;
 }
 
-/* 深色模式 - 使用更鲜明的颜色 */
-@media (prefers-color-scheme: dark) {
-    .code-content code[class*="language-"] {
-        color: #f8f8f2 !important; /* 默认文字颜色 - 更亮的白色 */
-    }
+.code-block.dark .code-header {
+    background: #2d2d2d;
+    border-color: #374151;
+}
 
-    .code-content .token.comment,
-    .code-content .token.prolog,
-    .code-content .token.doctype,
-    .code-content .token.cdata {
-        color: #75715e !important; /* 深灰色注释 */
-        font-style: italic;
-    }
+.code-block.dark .code-title {
+    color: #e5e7eb;
+}
 
-    .code-content .token.punctuation {
-        color: #f8f8f2 !important; /* 白色标点符号 */
-    }
+.code-block.dark .btn-copy {
+    background: #374151;
+    color: #e5e7eb;
+}
 
-    .code-content .token.property,
-    .code-content .token.tag,
-    .code-content .token.boolean,
-    .code-content .token.number,
-    .code-content .token.constant,
-    .code-content .token.symbol,
-    .code-content .token.deleted {
-        color: #f92672 !important; /* 深粉色/红色 */
-    }
+.code-block.dark .btn-copy:hover {
+    background: #4b5563;
+    color: #f3f4f6;
+}
 
-    .code-content .token.selector,
-    .code-content .token.attr-name,
-    .code-content .token.string,
-    .code-content .token.char,
-    .code-content .token.builtin,
-    .code-content .token.inserted {
-        color: #e6db74 !important; /* 深黄色字符串 */
-    }
+.code-block.dark .code-content {
+    background: #2d2d2d;
+    color: #f8f8f2;
+}
 
-    .code-content .token.operator,
-    .code-content .token.entity,
-    .code-content .token.url,
-    .code-content .language-css .token.string,
-    .code-content .style .token.string {
-        color: #f8f8f2 !important; /* 白色操作符 */
-    }
+/* 深色模式语法高亮 - Monokai 风格 */
+.code-block.dark .code-content code[class*="language-"] {
+    color: #f8f8f2 !important;
+}
 
-    .code-content .token.atrule,
-    .code-content .token.attr-value,
-    .code-content .token.keyword {
-        color: #66d9ef !important; /* 深青色关键字 */
-        font-weight: 500;
-    }
+.code-block.dark .code-content .token.comment,
+.code-block.dark .code-content .token.prolog,
+.code-block.dark .code-content .token.doctype,
+.code-block.dark .code-content .token.cdata {
+    color: #75715e !important;
+    font-style: italic;
+}
 
-    .code-content .token.function,
-    .code-content .token.class-name {
-        color: #a6e22e !important; /* 深绿色函数/类名 */
-    }
+.code-block.dark .code-content .token.punctuation {
+    color: #f8f8f2 !important;
+}
 
-    .code-content .token.regex,
-    .code-content .token.important,
-    .code-content .token.variable {
-        color: #fd971f !important; /* 深橙色变量 */
-    }
+.code-block.dark .code-content .token.property,
+.code-block.dark .code-content .token.tag,
+.code-block.dark .code-content .token.boolean,
+.code-block.dark .code-content .token.number,
+.code-block.dark .code-content .token.constant,
+.code-block.dark .code-content .token.symbol,
+.code-block.dark .code-content .token.deleted {
+    color: #f92672 !important;
+}
+
+.code-block.dark .code-content .token.selector,
+.code-block.dark .code-content .token.attr-name,
+.code-block.dark .code-content .token.string,
+.code-block.dark .code-content .token.char,
+.code-block.dark .code-content .token.builtin,
+.code-block.dark .code-content .token.inserted {
+    color: #e6db74 !important;
+}
+
+.code-block.dark .code-content .token.operator,
+.code-block.dark .code-content .token.entity,
+.code-block.dark .code-content .token.url,
+.code-block.dark .code-content .language-css .token.string,
+.code-block.dark .code-content .style .token.string {
+    color: #f8f8f2 !important;
+}
+
+.code-block.dark .code-content .token.atrule,
+.code-block.dark .code-content .token.attr-value,
+.code-block.dark .code-content .token.keyword {
+    color: #66d9ef !important;
+    font-weight: 500;
+}
+
+.code-block.dark .code-content .token.function,
+.code-block.dark .code-content .token.class-name {
+    color: #a6e22e !important;
+}
+
+.code-block.dark .code-content .token.regex,
+.code-block.dark .code-content .token.important,
+.code-block.dark .code-content .token.variable {
+    color: #fd971f !important;
 }
 
 /* 特殊 token 类型 */

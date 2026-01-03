@@ -47,41 +47,20 @@ export default class LanguageSwitcher extends WebComponent {
      * 切换下拉菜单
      */
     private handleToggleDropdown(): void {
-        // DEBUG: 追踪下拉菜单切换
-        console.log("[handleToggleDropdown] BEFORE:", {
-            isOpen: this.isOpen,
-        });
         this.isOpen = !this.isOpen;
-        console.log("[handleToggleDropdown] AFTER:", {
-            isOpen: this.isOpen,
-        });
     }
 
     /**
      * 处理点击外部区域
      */
     private handleOutsideClick(_event: Event): void {
-        // DEBUG: 追踪外部点击
-        console.log("[handleOutsideClick] BEFORE:", {
-            isOpen: this.isOpen,
-        });
         this.isOpen = false;
-        console.log("[handleOutsideClick] AFTER:", {
-            isOpen: this.isOpen,
-        });
     }
 
     /**
      * 选择语言
      */
     private handleSelectLanguage(languageCode: string): void {
-        // DEBUG: 追踪语言选择
-        console.log("[handleSelectLanguage] BEFORE:", {
-            languageCode,
-            currentLanguage: this.currentLanguage,
-            isOpen: this.isOpen,
-        });
-
         if (languageCode === this.currentLanguage) {
             this.isOpen = false;
             return;
@@ -90,12 +69,6 @@ export default class LanguageSwitcher extends WebComponent {
         // 立即更新状态（同步），确保 UI 立即响应
         this.currentLanguage = languageCode;
         this.isOpen = false;
-
-        // DEBUG: 追踪状态变化
-        console.log("[handleSelectLanguage] AFTER:", {
-            currentLanguage: this.currentLanguage,
-            isOpen: this.isOpen,
-        });
 
         requestAnimationFrame(() => {
             i18nInstance.changeLanguage(languageCode);
@@ -138,12 +111,6 @@ export default class LanguageSwitcher extends WebComponent {
     };
 
     render(): HTMLElement {
-        // DEBUG: 追踪渲染
-        console.log("[LanguageSwitcher.render] DEBUG:", {
-            currentLanguage: this.currentLanguage,
-            isOpen: this.isOpen,
-        });
-
         // 使用响应式的 this.currentLanguage，而不是 i18nInstance.language
         const currentLang = this.languages.find((lang) => lang.code === this.currentLanguage);
         const displayName = currentLang?.name || this.currentLanguage.toUpperCase();

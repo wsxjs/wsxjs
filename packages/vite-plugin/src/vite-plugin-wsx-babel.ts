@@ -126,6 +126,7 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
                                       cssFileExists,
                                       cssFilePath,
                                       componentName,
+                                      debug: options.debug, // Pass debug flag
                                   },
                               ],
                           ]

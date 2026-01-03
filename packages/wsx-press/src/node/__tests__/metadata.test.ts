@@ -158,6 +158,26 @@ anotherField: 123
             expect((result as Record<string, unknown>).customField).toBe("custom value");
             expect((result as Record<string, unknown>).anotherField).toBe("123");
         });
+
+        it("应该解析 order 字段为数字", () => {
+            const markdown = `---
+title: 快速开始
+order: 1
+---`;
+            const result = extractFrontmatter(markdown);
+            expect(result.title).toBe("快速开始");
+            expect(result.order).toBe(1);
+        });
+
+        it("应该忽略无效的 order 值", () => {
+            const markdown = `---
+title: 测试
+order: invalid
+---`;
+            const result = extractFrontmatter(markdown);
+            expect(result.title).toBe("测试");
+            expect(result.order).toBeUndefined();
+        });
     });
 
     describe("scanDocsMetadata", () => {
@@ -270,7 +290,39 @@ anotherField: 123
             expect(result["api/core"].next).toBeNull();
         });
 
-        it("应该按字母顺序排序", () => {
+        it("应该按 order 字段排序，然后按字母顺序", () => {
+            const metadata: DocsMetaCollection = {
+                "guide/quickstart": {
+                    title: "快速开始",
+                    category: "guide",
+                    route: "/docs/guide/quickstart",
+                    order: 1,
+                },
+                "guide/advanced": {
+                    title: "高级",
+                    category: "guide",
+                    route: "/docs/guide/advanced",
+                    order: 3,
+                },
+                "guide/basics": {
+                    title: "基础",
+                    category: "guide",
+                    route: "/docs/guide/basics",
+                    order: 2,
+                },
+            };
+
+            const result = addPrevNextLinks(metadata);
+            // 排序后顺序：quickstart (order: 1), basics (order: 2), advanced (order: 3)
+            expect(result["guide/quickstart"].prev).toBeNull();
+            expect(result["guide/quickstart"].next).toBe("/docs/guide/basics");
+            expect(result["guide/basics"].prev).toBe("/docs/guide/quickstart");
+            expect(result["guide/basics"].next).toBe("/docs/guide/advanced");
+            expect(result["guide/advanced"].prev).toBe("/docs/guide/basics");
+            expect(result["guide/advanced"].next).toBeNull();
+        });
+
+        it("应该按字母顺序排序（当没有 order 时）", () => {
             const metadata: DocsMetaCollection = {
                 "guide/zebra": { title: "Z", category: "guide", route: "/docs/guide/zebra" },
                 "guide/apple": { title: "A", category: "guide", route: "/docs/guide/apple" },

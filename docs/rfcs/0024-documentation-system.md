@@ -3,8 +3,9 @@
 - **RFC编号**: 0024
 - **父 RFC**: [RFC-0021](./0021-framework-website-enhancement.md)
 - **里程碑**: M2
-- **开始日期**: 2025-12-24
-- **状态**: Approved
+- **开始日期**: 2024-12-24
+- **完成日期**: 2024-12-24
+- **状态**: Completed
 - **作者**: WSX Team
 
 ## 摘要
@@ -1971,6 +1972,143 @@ pnpm --filter @wsxjs/wsx-press build
 - [VitePress](https://vitepress.dev/) - Vite 静态站点生成器（架构参考）
 - [Fuse.js](https://fusejs.io/) - 轻量级模糊搜索库
 - [marked](https://marked.js.org/) - Markdown 解析器
+
+## 文档组织最佳实践
+
+### 目录结构（参考 Vue.js/Svelte）
+
+遵循开源框架的最佳实践，文档应按学习路径组织：
+
+```
+docs/
+├── guide/
+│   ├── essentials/          # 基础入门（必读）
+│   │   ├── getting-started.md (order: 1)
+│   │   ├── installation.md (order: 2)
+│   │   └── typescript-setup.md (order: 3)
+│   ├── core-concepts/       # 核心概念
+│   │   ├── web-components.md (order: 1)
+│   │   ├── light-components.md (order: 2)
+│   │   ├── jsx-support.md (order: 3)
+│   │   └── design-philosophy.md (order: 4)
+│   └── advanced/            # 高级主题
+│       ├── dom-cache.md (order: 1)
+│       ├── typescript-wsx-types.md (order: 2)
+│       └── i18next-integration.md (order: 3)
+```
+
+### Frontmatter 规范
+
+每个文档必须包含 frontmatter，用于元数据管理：
+
+```yaml
+---
+title: 快速开始
+order: 1
+category: guide/essentials
+description: "5分钟上手 WSXJS，从安装到创建第一个组件"
+---
+```
+
+**必需字段**：
+- `title`: 文档标题（用于侧边栏和页面标题）
+- `order`: 显示顺序（数字越小越靠前）
+- `category`: 文档分类（用于侧边栏分组）
+
+**可选字段**：
+- `description`: 文档描述（用于 SEO 和搜索，建议用引号包裹）
+- `tags`: 标签数组（用于搜索和分类）
+
+### 文件命名规范
+
+- ✅ **使用 kebab-case**：`getting-started.md`, `web-components.md`
+- ❌ **避免大写和下划线**：`QUICK_START.md`, `WebComponent.md`
+
+### 文档分类原则
+
+1. **Essentials（基础入门）**
+   - 新用户必读文档
+   - 安装、配置、快速开始
+   - 顺序：1-10
+
+2. **Core Concepts（核心概念）**
+   - 框架的核心概念和设计理念
+   - 组件类型、JSX 支持、状态管理
+   - 顺序：1-20
+
+3. **Advanced（高级主题）**
+   - 高级用法和优化技巧
+   - 性能优化、类型系统、集成指南
+   - 顺序：1-30
+
+### 文档顺序管理（2025-01-03 新增）
+
+**功能说明**：
+- 通过 `order` 字段控制文档在侧边栏和导航中的显示顺序
+- 支持在 frontmatter 中设置 `order: 1` 等数字值
+- 系统会自动按 `order` 值排序，值越小越靠前
+
+**实现细节**：
+1. **元数据扫描**：`extractFrontmatter()` 函数解析 `order` 字段为数字
+2. **侧边栏排序**：`DocSidebar.organizeByCategory()` 优先按 `order` 排序
+3. **导航链接**：`addPrevNextLinks()` 按 `order` 生成 prev/next 链接
+
+**使用示例**：
+
+```markdown
+---
+title: Quick Start
+order: 1
+category: guide/essentials
+description: "5分钟上手 WSXJS"
+---
+
+# Quick Start
+
+这是快速开始文档，会显示在其他文档之前。
+```
+
+**排序规则**：
+- `order` 值越小，排序越靠前
+- 有 `order` 的文档排在无 `order` 的文档之前
+- 都没有 `order` 时按标题字母顺序排序
+- 同一分类内的文档按 `order` 排序，跨分类按分类名称排序
+
+### 迁移指南
+
+从旧结构迁移到新结构：
+
+1. **创建分类目录**：
+   ```bash
+   mkdir -p docs/guide/{essentials,core-concepts,advanced}
+   ```
+
+2. **添加 frontmatter**：
+   为每个文档添加 frontmatter，包括 `title`、`order`、`category`
+
+3. **重命名文件**：
+   将 `QUICK_START.md` 重命名为 `getting-started.md`（kebab-case）
+
+4. **更新链接**：
+   更新文档内的相对链接，确保指向新路径
+
+5. **验证**：
+   运行构建，检查文档是否正确显示在侧边栏
+
+### 实施记录（2025-01-03）
+
+**新增功能**：
+- ✅ 在 `DocMetadata` 类型中添加 `order?: number` 字段
+- ✅ 在 `extractFrontmatter()` 中解析 `order` 字段
+- ✅ 在 `DocSidebar.organizeByCategory()` 中使用 `order` 排序
+- ✅ 在 `addPrevNextLinks()` 中使用 `order` 排序
+- ✅ 添加测试用例验证 `order` 功能
+
+**文档重组**：
+- ✅ 创建 `essentials/`、`core-concepts/`、`advanced/` 分类目录
+- ✅ 为所有文档添加 frontmatter（包括 `order` 字段）
+- ✅ 重命名文件为 kebab-case
+- ✅ 创建文档组织最佳实践指南（`DOCUMENTATION_ORGANIZATION.md`）
 
 ## 相关文档
 

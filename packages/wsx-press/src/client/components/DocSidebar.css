@@ -12,6 +12,28 @@ wsx-doc-sidebar {
     max-height: calc(100vh - 70px);
 }
 
+/* 浅色模式（通过类名，覆盖媒体查询） */
+.light wsx-doc-sidebar,
+[data-theme="light"] wsx-doc-sidebar {
+    background: var(--wsx-press-sidebar-bg, #f9fafb);
+    border-right-color: var(--wsx-press-border, #e5e7eb);
+}
+
+/* 暗色模式（通过类名） */
+.dark wsx-doc-sidebar,
+[data-theme="dark"] wsx-doc-sidebar {
+    background: var(--wsx-press-sidebar-bg, #1f2937);
+    border-right-color: var(--wsx-press-border, #374151);
+}
+
+/* 暗色模式（通过媒体查询作为后备，仅当没有显式类名时） */
+@media (prefers-color-scheme: dark) {
+    html:not(.light):not([data-theme="light"]) wsx-doc-sidebar {
+        background: var(--wsx-press-sidebar-bg, #1f2937);
+        border-right-color: var(--wsx-press-border, #374151);
+    }
+}
+
 .doc-sidebar {
     display: flex;
     flex-direction: column;
@@ -48,6 +70,24 @@ wsx-doc-sidebar {
     margin: 0 0 0.5rem 0;
 }
 
+/* 浅色模式分类标题（覆盖媒体查询） */
+.light .doc-sidebar-category-title,
+[data-theme="light"] .doc-sidebar-category-title {
+    color: var(--wsx-press-text-secondary, #6b7280);
+}
+
+/* 暗色模式分类标题 */
+.dark .doc-sidebar-category-title,
+[data-theme="dark"] .doc-sidebar-category-title {
+    color: var(--wsx-press-text-secondary, #9ca3af);
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.light):not([data-theme="light"]) .doc-sidebar-category-title {
+        color: var(--wsx-press-text-secondary, #9ca3af);
+    }
+}
+
 .doc-sidebar-list {
     list-style: none;
     margin: 0;
@@ -75,10 +115,65 @@ wsx-doc-sidebar {
 }
 
 .doc-sidebar-link.active {
-    background: var(--wsx-press-sidebar-active-bg, #eff6ff);
-    color: var(--wsx-press-sidebar-active-color, #2563eb);
-    border-left-color: var(--wsx-press-sidebar-active-color, #2563eb);
+    background: var(--wsx-press-sidebar-active-bg, #fef2f2);
+    color: var(--wsx-press-sidebar-active-color, #dc2626);
+    border-left-color: var(--wsx-press-sidebar-active-color, #dc2626);
     font-weight: 500;
+}
+
+/* 浅色模式链接样式（覆盖媒体查询） */
+.light .doc-sidebar-link,
+[data-theme="light"] .doc-sidebar-link {
+    color: var(--wsx-press-text-primary, #111827);
+}
+
+.light .doc-sidebar-link:hover,
+[data-theme="light"] .doc-sidebar-link:hover {
+    background: var(--wsx-press-sidebar-hover-bg, #f3f4f6);
+    color: var(--wsx-press-text-primary, #111827);
+}
+
+.light .doc-sidebar-link.active,
+[data-theme="light"] .doc-sidebar-link.active {
+    background: var(--wsx-press-sidebar-active-bg, #fef2f2);
+    color: var(--wsx-press-sidebar-active-color, #dc2626);
+    border-left-color: var(--wsx-press-sidebar-active-color, #dc2626);
+}
+
+/* 暗色模式链接样式 */
+.dark .doc-sidebar-link,
+[data-theme="dark"] .doc-sidebar-link {
+    color: var(--wsx-press-text-primary, #e5e7eb);
+}
+
+.dark .doc-sidebar-link:hover,
+[data-theme="dark"] .doc-sidebar-link:hover {
+    background: var(--wsx-press-sidebar-hover-bg, #374151);
+    color: var(--wsx-press-text-primary, #f3f4f6);
+}
+
+.dark .doc-sidebar-link.active,
+[data-theme="dark"] .doc-sidebar-link.active {
+    background: var(--wsx-press-sidebar-active-bg, rgba(220, 38, 38, 0.15));
+    color: var(--wsx-press-sidebar-active-color, #f87171);
+    border-left-color: var(--wsx-press-sidebar-active-color, #f87171);
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.light):not([data-theme="light"]) .doc-sidebar-link {
+        color: var(--wsx-press-text-primary, #e5e7eb);
+    }
+
+    html:not(.light):not([data-theme="light"]) .doc-sidebar-link:hover {
+        background: var(--wsx-press-sidebar-hover-bg, #374151);
+        color: var(--wsx-press-text-primary, #f3f4f6);
+    }
+
+    html:not(.light):not([data-theme="light"]) .doc-sidebar-link.active {
+        background: var(--wsx-press-sidebar-active-bg, rgba(220, 38, 38, 0.15));
+        color: var(--wsx-press-sidebar-active-color, #f87171);
+        border-left-color: var(--wsx-press-sidebar-active-color, #f87171);
+    }
 }
 
 /* 响应式设计 */

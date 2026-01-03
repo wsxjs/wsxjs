@@ -1,3 +1,10 @@
+---
+title: 示例组件开发计划
+order: 5
+category: guide/advanced
+description: "通过丰富的示例组件充分展示 WSXJS 的能力，为开发者提供最佳实践参考"
+---
+
 # WSX 示例组件开发计划
 
 ## 目标

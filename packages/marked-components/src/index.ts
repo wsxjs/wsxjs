@@ -12,5 +12,8 @@ export { default as Markdown } from "./Markdown.wsx";
 // Export utilities
 export * from "./marked-utils";
 
+// Export Prism WSX language registration
+export { registerWsxLanguage } from "./prism-wsx";
+
 // Export types
 export type { TokenRenderer, CustomRenderers, MarkdownOptions } from "./types";

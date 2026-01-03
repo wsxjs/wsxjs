@@ -1,4 +1,9 @@
-# WebComponent 使用指南
+---
+title: WebComponent 使用指南
+order: 1
+category: guide/core-concepts
+description: "WebComponent 是 WSXJS 提供的标准自定义元素基类，使用 Shadow DOM 提供完全的样式隔离和封装"
+---
 
 ## 概述
 

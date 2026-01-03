@@ -1,4 +1,9 @@
-# WSXJS 设计理念
+---
+title: WSXJS 设计理念
+order: 4
+category: guide/core-concepts
+description: "WSXJS 是一个原生优先的 Web Components 框架，致力于提供最接近原生 Web 开发的开发体验"
+---
 
 ## 概述
 

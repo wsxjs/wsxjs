@@ -1,7 +1,8 @@
 # RFC-0042: LanguageSwitcher 立即 UI 更新修复
 
-**状态**: Implemented
+**状态**: Completed
 **创建日期**: 2024-12-27
+**完成日期**: 2025-01-02
 **作者**: WSX Team
 
 ## 摘要
@@ -440,7 +441,200 @@ RFC-0042 的修复建立在 RFC-0040 的基础上，进一步解决了：
 
 修复的核心原则：**组件应该依赖内部响应式状态，而不是外部非响应式数据源**。
 
+## 核心修复 4：移除嵌套 RAF 防止渲染死锁（框架层面）
+
+**日期**: 2025-01-03
+**问题**: `_isRendering` 标志永久卡在 `true`，阻止所有后续重渲染
+
+### 根本原因
+
+在 `WebComponent._rerender()` 方法中，使用了**嵌套 `requestAnimationFrame` 回调**：
+
+```typescript
+// 问题代码 (web-component.ts)
+requestAnimationFrame(() => {
+    // 第一层 RAF: DOM 操作
+    // ...
+    requestAnimationFrame(() => {
+        // 第二层 RAF: 清除 _isRendering 标志
+        this._isRendering = false;
+    });
+});
+```
+
+**问题**：
+1. `_rerender()` 是在 `scheduleRerender()` 的 RAF 回调中被调用的
+2. 在 RAF 中再次调用 RAF（嵌套 RAF）可能导致回调永不执行
+3. 第二层 RAF 从不执行，导致 `_isRendering` 永远保持 `true`
+4. 所有后续的 `scheduleRerender()` 调用都被跳过（"SKIPPED: already rendering"）
+5. 语言切换器无法响应状态变化，下拉菜单无法显示/隐藏
+
+### 症状
+
+用户点击语言切换器按钮：
+```
+[scheduleRerender] called: {component: 'ResponsiveNav', isRendering: true, ...}
+[scheduleRerender] SKIPPED: already rendering
+[scheduleRerender] called: {component: 'ResponsiveNav', isRendering: true, ...}
+[scheduleRerender] SKIPPED: already rendering
+...
+```
+
+- 控制台显示 `_isRendering: true`
+- 没有任何 `[_rerender]` 日志输出
+- 下拉菜单不出现
+- 按钮标签不更新
+
+### 修复方案
+
+**移除所有嵌套 RAF，使 DOM 操作同步执行**：
+
+```typescript
+// 修复后 (web-component.ts, line 217-286)
+// 6. 执行 DOM 操作（同步，不使用 RAF，因为已经在 scheduleRerender 的 RAF 中）
+console.warn("[_rerender] Starting DOM operations", {
+    component: this.constructor.name,
+});
+
+// DOM 操作（同步执行）
+const isContentAlreadyInShadowRoot = content.parentNode === this.shadowRoot;
+if (!isContentAlreadyInShadowRoot) {
+    this.shadowRoot.appendChild(content);
+}
+// ... 其他 DOM 操作 ...
+
+// 8. 恢复焦点状态并清除渲染标志（同步执行）
+this.restoreFocusState(focusState);
+this._pendingFocusState = null;
+
+// 9. 调用 onRendered 生命周期钩子
+this.onRendered?.();
+
+// 10. 清除渲染标志，允许后续的 scheduleRerender()
+console.warn("[_rerender] Clearing _isRendering flag", {
+    component: this.constructor.name,
+});
+this._isRendering = false;  // ✅ 立即清除，不等待 RAF
+```
+
+### 修复前后对比
+
+**修复前**：
+```
+scheduleRerender()
+  → RAF callback
+    → _rerender()
+      → RAF callback (第一层，从不执行)
+        → RAF callback (第二层，从不执行)
+          → _isRendering = false (永不执行)
+```
+
+**修复后**：
+```
+scheduleRerender()
+  → RAF callback
+    → _rerender()
+      → DOM 操作 (同步)
+      → _isRendering = false (立即执行) ✅
+```
+
+### 为什么同步执行是安全的
+
+1. **已经在 RAF 中**：`_rerender()` 是在 `scheduleRerender()` 的 RAF 回调中执行的
+2. **批量更新保证**：`scheduleRerender()` 已经使用 `_hasScheduledRender` 标志实现批量更新
+3. **单帧内完成**：所有 DOM 操作在单个渲染帧内完成，不会造成布局抖动
+4. **错误处理**：try-catch 块确保即使出错也能清除 `_isRendering` 标志
+
+### 性能影响
+
+**正面影响**：
+- ✅ 消除嵌套 RAF 带来的不确定性
+- ✅ 减少一帧延迟（从 2 帧减少到 1 帧）
+- ✅ 确保 `_isRendering` 标志总是被正确清除
+
+**无负面影响**：
+- DOM 操作仍然在 RAF 中（来自 `scheduleRerender`）
+- 批量更新机制不受影响
+- 焦点恢复和生命周期钩子正常执行
+
+### 技术细节
+
+**RAF 执行顺序问题**：
+- 浏览器在每一帧只执行一次 `requestAnimationFrame` 回调队列
+- 在 RAF 回调中注册的 RAF 会被推迟到**下一帧**
+- 如果某些条件导致下一帧的 RAF 不执行（如页面不可见），嵌套 RAF 可能永远不执行
+
+**为什么嵌套 RAF 会失败**：
+```javascript
+// Frame 1
+requestAnimationFrame(() => {
+    console.log('Frame 1: First RAF');  // ✅ 执行
+    requestAnimationFrame(() => {
+        console.log('Frame 2: Nested RAF');  // ❌ 可能不执行
+    });
+});
+```
+
+在以下情况下，Frame 2 的 RAF 可能不执行：
+- 页面失去焦点（tab 切换）
+- 页面最小化
+- 浏览器节流（节能模式）
+- 其他框架或库干扰 RAF 队列
+
+### 最佳实践
+
+基于这次修复，我们总结以下最佳实践：
+
+1. **避免嵌套 RAF**
+   ```typescript
+   // ❌ 不好：嵌套 RAF 不可靠
+   requestAnimationFrame(() => {
+       // DOM 操作
+       requestAnimationFrame(() => {
+           // 清理操作（可能不执行）
+       });
+   });
+
+   // ✅ 好：在单个 RAF 中完成所有操作
+   requestAnimationFrame(() => {
+       // DOM 操作
+       // 清理操作
+   });
+   ```
+
+2. **确保标志位总是被清除**
+   ```typescript
+   // ❌ 不好：标志位清除依赖异步操作
+   this._isRendering = true;
+   requestAnimationFrame(() => {
+       this._isRendering = false;  // 可能不执行
+   });
+
+   // ✅ 好：标志位清除在同步代码中
+   try {
+       this._isRendering = true;
+       // 操作
+       this._isRendering = false;  // 总是执行
+   } catch (error) {
+       this._isRendering = false;  // 错误时也清除
+   }
+   ```
+
+3. **使用 try-catch 保护关键标志位**
+   ```typescript
+   try {
+       this._isRendering = true;
+       // 可能出错的操作
+   } catch (error) {
+       logger.error("Error:", error);
+   } finally {
+       this._isRendering = false;  // 无论如何都清除
+   }
+   ```
+
 ## 相关 RFC
 
 - [RFC-0041](./0041-cache-reuse-element-order-and-ref-callback-fixes.md): 缓存复用元素顺序和 Ref 回调修复
 - [RFC-0029](./0029-i18next-integration.md): i18next 国际化支持
+- [RFC-0047](./0047-text-node-duplicate-render-fix.md): 文本节点重复渲染修复
+- [RFC-0048](./0048-reconciliation-architecture-realignment.md): 协调架构重新对齐

@@ -1,5 +1,8 @@
 /* WSXJS App Styles - 基于Vue.js设计风格 */
 
+.app-content {
+    min-height: 100vh;
+}
 /* Router Navigation Styles */
 .nav-link-active {
     color: var(--primary-red) !important;
@@ -180,6 +183,7 @@ wsx-link[active]::part(link)::after {
     color: var(--text-primary);
     background-color: var(--bg-primary);
     overflow-x: hidden;
+    min-height: 60vh;
 }
 
 /* 通用容器 */

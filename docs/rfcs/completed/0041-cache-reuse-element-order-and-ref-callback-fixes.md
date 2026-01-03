@@ -1,7 +1,8 @@
 # RFC-0041: Cache Reuse Element Order and Ref Callback Fixes
 
-**状态**: Implemented  
-**创建日期**: 2024-12-19  
+**状态**: Completed
+**创建日期**: 2024-12-19
+**完成日期**: 2024-12-19
 **作者**: WSX Team
 
 ## 摘要

@@ -6,9 +6,9 @@
 import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
 import type { CodeSegment, CodeBlockConfig } from "./CodeBlock.types";
 
-// 导入 Prism.js 主题 CSS
-import "prismjs/themes/prism-tomorrow.css";
 // 静态导入 Prism.js 核心
+// Note: We don't import Prism's default theme here.
+// Instead, we use custom CSS in CodeBlock.css that supports both light and dark modes.
 import Prism from "prismjs";
 // 静态导入所有支持的语言（按依赖顺序）
 // 基础语言（无依赖）
@@ -47,9 +47,92 @@ export default class CodeBlock extends LightComponent {
     @state private showCopy: boolean = true;
     @state private showTryOnline: boolean = false;
     @state private tryOnlineUrl: string = "";
+    // 注意：currentTheme 不使用 @state，因为主题变化只需要更新 CSS 类，不需要重新渲染组件
+    private currentTheme: "light" | "dark" = "light";
     private onTryOnlineCallback?: () => void;
     private codeElements: HTMLElement[] = [];
     private isHighlighting: boolean = false; // 防止重复高亮
+    private themeObserver: MutationObserver | null = null;
+    private codeBlockElement: HTMLElement | null = null; // 缓存根元素引用
+
+    /**
+     * 检测当前主题
+     * 优先级: html[data-theme] > html.light/dark > prefers-color-scheme
+     */
+    private detectTheme(): "light" | "dark" {
+        const html = document.documentElement;
+        const dataTheme = html.getAttribute("data-theme");
+        if (dataTheme === "light" || dataTheme === "dark") {
+            return dataTheme;
+        }
+        if (html.classList.contains("dark")) {
+            return "dark";
+        }
+        if (html.classList.contains("light")) {
+            return "light";
+        }
+        // 使用媒体查询作为后备
+        if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
+            return "dark";
+        }
+        return "light";
+    }
+
+    /**
+     * 更新组件根元素的主题类
+     * 直接操作 DOM，不触发重新渲染
+     */
+    private updateThemeClass(theme: "light" | "dark"): void {
+        if (this.codeBlockElement) {
+            this.codeBlockElement.classList.remove("light", "dark");
+            this.codeBlockElement.classList.add(theme);
+        }
+    }
+
+    /**
+     * 设置主题观察器，监听主题变化
+     */
+    private setupThemeObserver(): void {
+        // 清理旧的观察器
+        this.themeObserver?.disconnect();
+
+        // 监听 html 元素的 class 和 data-theme 属性变化
+        this.themeObserver = new MutationObserver(() => {
+            const newTheme = this.detectTheme();
+            if (newTheme !== this.currentTheme) {
+                this.currentTheme = newTheme;
+                // 直接更新 DOM 类，不触发重新渲染
+                this.updateThemeClass(newTheme);
+            }
+        });
+
+        this.themeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class", "data-theme"],
+        });
+
+        // 监听系统主题变化
+        window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener("change", () => {
+            const newTheme = this.detectTheme();
+            if (newTheme !== this.currentTheme) {
+                this.currentTheme = newTheme;
+                // 直接更新 DOM 类，不触发重新渲染
+                this.updateThemeClass(newTheme);
+            }
+        });
+    }
+
+    protected onConnected(): void {
+        super.onConnected?.();
+        this.currentTheme = this.detectTheme();
+        this.setupThemeObserver();
+    }
+
+    protected onDisconnected(): void {
+        super.onDisconnected?.();
+        this.themeObserver?.disconnect();
+        this.themeObserver = null;
+    }
 
     protected onRendered() {
         super.onRendered?.();
@@ -104,14 +187,21 @@ export default class CodeBlock extends LightComponent {
 
         // 始终返回有效的 DOM 节点，不能返回 null
         if (displaySegments.length === 0) {
-            return <div class="code-block"></div>;
+            return <div class={`code-block ${this.currentTheme}`}></div>;
         }
 
         // 合并所有代码用于复制功能
         const allCode = displaySegments.map((seg) => seg.code).join("\n\n");
 
         return (
-            <div class="code-block">
+            <div
+                class={`code-block ${this.currentTheme}`}
+                ref={(el) => {
+                    if (el) {
+                        this.codeBlockElement = el as HTMLElement;
+                    }
+                }}
+            >
                 {(this.codeTitle || this.showCopy || this.showTryOnline) && (
                     <div class="code-header">
                         {this.codeTitle && <span class="code-title">{this.codeTitle}</span>}

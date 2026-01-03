@@ -252,28 +252,44 @@ export default class DocPage extends LightComponent {
             // 创建新的 AbortController
             this.loadingAbortController = new AbortController();
 
-            // 从 RouterUtils 获取当前路由信息（包含参数）
+            // 从 RouterUtils 获取当前路由信息
             const routeInfo = RouterUtils.getCurrentRoute();
-            const params = routeInfo.params as { category?: string; page?: string };
 
-            // 验证参数
-            if (!params.category || !params.page) {
-                logger.warn("Missing route parameters:", { params, routeInfo });
-                // 如果参数为空，可能是路由还未初始化，保持 idle 状态
-                if (Object.keys(params).length === 0) {
-                    logger.debug("Route params not yet initialized, keeping idle state");
-                    this.loadingState = "idle";
+            // 从路径中提取文档路径（支持多级路径）
+            // 例如：/docs/guide/essentials/getting-started -> guide/essentials/getting-started
+            let docPath: string;
+            if (routeInfo.path.startsWith("/docs/")) {
+                // 移除 /docs/ 前缀，得到文档路径
+                docPath = routeInfo.path.slice(6); // 移除 "/docs/"
+            } else {
+                // 尝试从 params 获取（向后兼容）
+                const params = routeInfo.params as { category?: string; page?: string };
+                if (params.category && params.page) {
+                    docPath = `${params.category}/${params.page}`;
+                } else {
+                    logger.warn("Invalid document path:", { path: routeInfo.path, params });
+                    // 如果参数为空，可能是路由还未初始化，保持 idle 状态
+                    if (Object.keys(params).length === 0) {
+                        logger.debug("Route params not yet initialized, keeping idle state");
+                        this.loadingState = "idle";
+                        return;
+                    }
+                    this.loadingState = "error";
+                    this.error = new DocumentLoadError(
+                        "Invalid document path: path must start with /docs/",
+                        "INVALID_PARAMS"
+                    );
                     return;
                 }
-                this.loadingState = "error";
-                this.error = new DocumentLoadError(
-                    "Missing route parameters: category and page are required",
-                    "INVALID_PARAMS"
-                );
-                return;
             }
 
-            const docPath = `${params.category}/${params.page}`;
+            // 验证文档路径不为空
+            if (!docPath || docPath.trim() === "") {
+                logger.warn("Empty document path:", { path: routeInfo.path });
+                this.loadingState = "error";
+                this.error = new DocumentLoadError("Document path is empty", "INVALID_PARAMS");
+                return;
+            }
 
             // 防止竞态条件：记录当前加载路径
             this.currentLoadingPath = docPath;

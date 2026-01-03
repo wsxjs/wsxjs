@@ -103,9 +103,24 @@ export default class DocSidebar extends LightComponent {
         // 按分类名称排序
         const sortedCategories = Object.keys(organized).sort();
 
-        // 对每个分类内的文档排序（按标题）
+        // 对每个分类内的文档排序（优先按 order，然后按标题）
         sortedCategories.forEach((category) => {
-            organized[category].sort((a, b) => a.title.localeCompare(b.title));
+            organized[category].sort((a, b) => {
+                // 如果两个文档都有 order，按 order 排序
+                if (a.order !== undefined && b.order !== undefined) {
+                    return a.order - b.order;
+                }
+                // 如果只有 a 有 order，a 排在前面
+                if (a.order !== undefined) {
+                    return -1;
+                }
+                // 如果只有 b 有 order，b 排在前面
+                if (b.order !== undefined) {
+                    return 1;
+                }
+                // 都没有 order，按标题排序
+                return a.title.localeCompare(b.title);
+            });
         });
 
         return organized;

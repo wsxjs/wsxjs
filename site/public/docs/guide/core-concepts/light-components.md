@@ -1,4 +1,9 @@
-# LightComponent 使用指南
+---
+title: LightComponent 使用指南
+order: 2
+category: guide/core-concepts
+description: "LightComponent 是 WSXJS 提供的轻量级自定义元素基类，专为需要与第三方库集成或使用 Light DOM 的场景设计"
+---
 
 ## 概述
 

@@ -1,4 +1,9 @@
-# DOM 缓存与 Key 最佳实践
+---
+title: DOM 缓存与 Key 最佳实践
+order: 1
+category: guide/advanced
+description: "WSXJS 使用 DOM 缓存机制来优化渲染性能，避免不必要的 DOM 元素重建"
+---
 
 ## 概述
 
@@ -263,10 +268,10 @@ A: 有几个选择：
 
 ## 相关资源
 
-- [快速开始指南](./QUICK_START.md)
-- [Web Component 指南](./WEB_COMPONENT_GUIDE.md)
-- [Light Component 指南](./LIGHT_COMPONENT_GUIDE.md)
-- [TypeScript 配置](./TYPESCRIPT_SETUP.md)
+- [快速开始指南](../essentials/getting-started.md)
+- [Web Component 指南](../core-concepts/web-components.md)
+- [Light Component 指南](../core-concepts/light-components.md)
+- [TypeScript 配置](../essentials/typescript-setup.md)
 
 ---
 

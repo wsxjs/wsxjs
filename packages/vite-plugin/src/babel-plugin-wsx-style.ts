@@ -21,6 +21,7 @@ interface WSXStylePluginPass extends PluginPass {
     cssFileExists: boolean;
     cssFilePath: string;
     componentName: string;
+    debug?: boolean;
 }
 
 /**
@@ -70,7 +71,7 @@ export default function babelPluginWSXStyle(): PluginObj<WSXStylePluginPass> {
         name: "babel-plugin-wsx-style",
         visitor: {
             Program(path, state) {
-                const { cssFileExists, cssFilePath, componentName } =
+                const { cssFileExists, cssFilePath, componentName, debug } =
                     state.opts as WSXStylePluginPass;
 
                 // Skip if CSS file doesn't exist
@@ -80,15 +81,19 @@ export default function babelPluginWSXStyle(): PluginObj<WSXStylePluginPass> {
 
                 // Check if styles are already manually imported
                 if (hasStylesImport(path.node)) {
-                    console.info(
-                        `[Babel Plugin WSX Style] Skipping ${componentName}: styles already manually imported`
-                    );
+                    if (debug) {
+                        console.info(
+                            `[Babel Plugin WSX Style] Skipping ${componentName}: styles already manually imported`
+                        );
+                    }
                     return; // Skip auto-injection if manual import exists
                 }
 
-                console.info(
-                    `[Babel Plugin WSX Style] Injecting CSS import for ${componentName}: ${cssFilePath}`
-                );
+                if (debug) {
+                    console.info(
+                        `[Babel Plugin WSX Style] Injecting CSS import for ${componentName}: ${cssFilePath}`
+                    );
+                }
 
                 // Add CSS import at the top of the file
                 const importStatement = t.importDeclaration(

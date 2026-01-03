@@ -1,4 +1,9 @@
-# WSXJS 发布指南
+---
+title: WSXJS 发布指南
+order: 4
+category: guide/advanced
+description: "本指南说明如何使用 Turbo 和 Changesets 发布 WSXJS 的所有包。"
+---
 
 本指南说明如何使用 Turbo 和 Changesets 发布 WSXJS 的所有包。
 

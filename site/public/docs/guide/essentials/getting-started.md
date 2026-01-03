@@ -1,4 +1,9 @@
-# WSXJS 快速开始指南
+---
+title: 快速开始
+order: 1
+category: guide/essentials
+description: "5分钟上手 WSXJS，从安装到创建第一个组件"
+---
 
 ## 安装
 
@@ -40,10 +45,10 @@ npm install --save-dev @wsxjs/wsx-tsconfig
 > ⚠️ **重要**：如果使用 `@state` 装饰器，必须配置：
 > - `experimentalDecorators: true` - 启用装饰器语法
 > - `useDefineForClassFields: false` - 确保装饰器与类属性兼容
-> 
+>
 > 同时，必须在 `vite.config.ts` 中配置 `@wsxjs/wsx-vite-plugin`，该插件包含处理 `@state` 装饰器的 Babel 插件。
 
-> 💡 **提示**：查看 [TypeScript 配置指南](TYPESCRIPT_SETUP.md) 了解完整的配置说明、最佳实践和常见问题解决方案。
+> 💡 **提示**：查看 [TypeScript 配置指南](./typescript-setup.md) 了解完整的配置说明、最佳实践和常见问题解决方案。
 
 ### 2. Vite 配置
 
@@ -204,6 +209,6 @@ export class Counter extends WebComponent {
 
 ## 下一步
 
-- 查看 **[WebComponent 使用指南](WEB_COMPONENT_GUIDE.md)** 了解 Shadow DOM 组件开发
-- 查看 **[LightComponent 使用指南](LIGHT_COMPONENT_GUIDE.md)** 了解 Light DOM 组件开发
-- 查看 **[JSX 支持文档](JSX_SUPPORT.md)** 了解更多高级用法 
+- 查看 **[WebComponent 使用指南](../core-concepts/web-components.md)** 了解 Shadow DOM 组件开发
+- 查看 **[LightComponent 使用指南](../core-concepts/light-components.md)** 了解 Light DOM 组件开发
+- 查看 **[JSX 支持文档](../core-concepts/jsx-support.md)** 了解更多高级用法
