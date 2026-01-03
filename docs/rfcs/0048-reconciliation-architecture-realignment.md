@@ -115,6 +115,103 @@
 - **修复前**：`<li><span>文本</span></li>` → 渲染为 "文本文本文本"（重复 3 次）
 - **修复后**：`<li><span>文本</span></li>` → 正确渲染为 "文本"（不重复）
 
+### **重复元素问题的进一步修复 (2025-01-02 更新)**
+
+#### 问题描述
+在实施 RFC 0048 的 key-based 算法后，发现从 HTML 字符串解析而来的元素（如 `<span>`）仍然会出现重复插入的问题。
+
+**问题现象**：
+- `<li><span>使用 WSX 组件自定义标题渲染</span></li>` 会渲染为 `<li><span>...</span><span>...</span><span>...</span></li>`
+- 每次 `parseHTMLToNodes` 调用都会创建新的 DOM 元素，即使内容相同
+
+**问题根源**：
+1. HTML 字符串解析（`parseHTMLToNodes`）每次调用都会创建新的 DOM 元素
+2. 这些元素没有 `__wsxCacheKey`（因为它们不是由 `h()` 创建的）
+3. 新算法无法通过 key 匹配这些元素（因为它们没有 key）
+4. 导致每次更新都会插入新的元素，造成重复
+
+#### 修复方案
+
+**位置**：`packages/core/src/utils/update-children-helpers.ts` - `replaceOrInsertElementAtPosition` 函数
+
+**修复逻辑**：
+```typescript
+// RFC 0048 关键修复：在插入元素之前，检查是否已经存在相同内容的元素
+// 注意：这个检查只适用于从 HTML 字符串解析而来的元素（没有 __wsxCacheKey）
+// 对于由 h() 创建的元素（有 __wsxCacheKey），应该通过引用匹配，而不是内容匹配
+const newChildCacheKey = getElementCacheKey(newChild);
+// 只有当 newChild 没有 cache key 时，才进行内容匹配检查
+if (!newChildCacheKey) {
+    const newChildContent = newChild.textContent || "";
+    const newChildTag = newChild.tagName.toLowerCase();
+    // 检查 parent 中是否已经存在相同标签名和内容的元素（且也没有 cache key）
+    for (let i = 0; i < parent.childNodes.length; i++) {
+        const existingNode = parent.childNodes[i];
+        if (existingNode instanceof HTMLElement || existingNode instanceof SVGElement) {
+            const existingCacheKey = getElementCacheKey(existingNode);
+            // 只有当 existingNode 也没有 cache key 时，才进行内容匹配
+            if (
+                !existingCacheKey &&
+                existingNode.tagName.toLowerCase() === newChildTag &&
+                existingNode.textContent === newChildContent &&
+                existingNode !== newChild
+            ) {
+                // 找到相同内容的元素（且都没有 cache key），不需要插入 newChild
+                // 这是从 HTML 字符串解析而来的重复元素
+                return;
+            }
+        }
+    }
+}
+```
+
+**关键设计原则**：
+1. **内容匹配仅适用于 HTML 解析的元素**：只有没有 `__wsxCacheKey` 的元素才进行内容匹配
+2. **框架管理的元素使用引用匹配**：由 `h()` 创建的元素（有 `__wsxCacheKey`）通过引用匹配，避免误判
+3. **防止组件消失**：这确保了像 `LanguageSwitcher` 这样的组件（由 `h()` 创建）不会被内容匹配逻辑误判为重复元素
+
+#### 修复效果
+- **修复前**：`<li><span>文本</span></li>` → 每次更新都会插入新的 `<span>`，导致重复
+- **修复后**：`<li><span>文本</span></li>` → 检测到已存在相同内容的 `<span>`，不重复插入
+
+### **语言切换器消失问题的修复 (2025-01-02 更新)**
+
+#### 问题描述
+在实施内容匹配修复后，发现语言切换器组件在切换语言时会消失。
+
+**问题现象**：
+- 切换语言时，`LanguageSwitcher` 组件会从 DOM 中消失
+- 组件由 `h()` 创建，每次渲染可能有相同内容但不同引用
+
+**问题根源**：
+- 内容匹配逻辑过于严格，误判了由 `h()` 创建的组件
+- 即使元素有 `__wsxCacheKey`，如果内容相同，也可能被误判为重复
+
+#### 修复方案
+
+**位置**：`packages/core/src/utils/update-children-helpers.ts` - `replaceOrInsertElementAtPosition` 函数
+
+**修复逻辑**：
+```typescript
+// 关键修复：内容匹配检查只适用于从 HTML 字符串解析而来的元素（没有 __wsxCacheKey）
+// 对于由 h() 创建的元素（有 __wsxCacheKey），应该通过引用匹配，而不是内容匹配
+// 这样可以避免误判语言切换器等组件（它们由 h() 创建，每次渲染可能有相同内容但不同引用）
+const newChildCacheKey = getElementCacheKey(newChild);
+// 只有当 newChild 没有 cache key 时，才进行内容匹配检查
+if (!newChildCacheKey) {
+    // ... 内容匹配逻辑
+}
+```
+
+**关键设计原则**：
+1. **区分元素来源**：通过 `__wsxCacheKey` 的存在与否区分元素来源
+2. **HTML 解析元素**：没有 `__wsxCacheKey` → 使用内容匹配防止重复
+3. **框架管理元素**：有 `__wsxCacheKey` → 使用引用匹配，避免误判
+
+#### 修复效果
+- **修复前**：切换语言时，`LanguageSwitcher` 组件消失
+- **修复后**：切换语言时，`LanguageSwitcher` 组件正常工作，不会消失
+
 ### **实施计划 (Implementation Plan)**
 
 1.  **重写 `updateChildren`**:
@@ -169,6 +266,36 @@
   - 修复了 style 属性处理：同时设置 attribute 和 `style.cssText`
   - 修复了 class 属性处理：正确处理 SVG 和非 SVG 元素
 - **效果**：确保元素重用时的属性正确更新
+
+#### 重复元素修复 (2025-01-02)
+- **位置**：`packages/core/src/utils/update-children-helpers.ts` - `replaceOrInsertElementAtPosition` 函数
+- **修复**：
+  - 添加内容匹配检查，防止从 HTML 字符串解析而来的元素重复插入
+  - 内容匹配仅适用于没有 `__wsxCacheKey` 的元素
+  - 由 `h()` 创建的元素（有 `__wsxCacheKey`）使用引用匹配，避免误判
+- **效果**：防止 HTML 解析元素的重复插入，同时保护框架管理的组件
+
+#### 保留元素插入修复 (2025-01-02)
+- **位置**：`packages/core/src/utils/update-children-helpers.ts` - `replaceOrInsertElement` 函数
+- **修复**：
+  - 修复 `targetNextSibling` 计算逻辑
+  - 当 `oldNode` 是保留元素时，应该在 `oldNode` 之前插入（`targetNextSibling = oldNode`）
+  - 否则，应该在 `oldNode.nextSibling` 之前插入
+- **效果**：确保新元素正确插入到保留元素之前
+
+#### Cache Key 去重修复 (2025-01-02)
+- **位置**：`packages/core/src/utils/update-children-helpers.ts` - `deduplicateCacheKeys` 函数
+- **修复**：
+  - 添加对已处理 cache key 的检查
+  - 如果 cache key 已被处理，且当前节点不是新节点，则移除旧节点
+- **效果**：确保每个 cache key 在 DOM 中只出现一次
+
+#### Position ID 支持 (2025-01-02)
+- **位置**：`packages/core/src/utils/cache-key.ts` - `generateCacheKey` 函数
+- **修复**：
+  - 添加对 `__wsxPositionId` 的支持（优先级 3）
+  - 优先级顺序：key > index > positionId > counter > fallback
+- **效果**：支持 babel 插件生成的 position ID，提供更稳定的 cache key
 
 ## 6. 收益 (Benefits)
 

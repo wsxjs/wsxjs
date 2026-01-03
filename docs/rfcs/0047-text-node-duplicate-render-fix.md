@@ -426,3 +426,32 @@ RFC-0047 的 `processedNodes` 机制本身是正确的，但 `shouldRemoveNode` 
 2. ✅ 保留文本节点标记逻辑
 3. ❌ 移除 `shouldRemoveNode` 中的递归检查父元素逻辑
 4. ✅ 只依赖直接检查 `processedNodes.has(node)`
+
+## 后续修复 (2025-01-02)
+
+### RFC 0048 的最终解决方案
+
+RFC-0047 的修复虽然解决了部分问题，但根本性的解决方案是通过 RFC-0048 的 key-based reconciliation 算法。新算法彻底解决了文本节点重复问题，不再依赖 `processedNodes` 的复杂逻辑。
+
+### 关键改进
+
+1. **精确的节点识别**：
+   - 通过 `node.parentNode === parentElement` 检查确保只处理直接子文本节点
+   - 防止将元素内部的文本节点误判为独立的文本节点
+
+2. **Key-based 匹配**：
+   - 文本节点使用位置索引作为 key（`__text__0`, `__text__1`, ...）
+   - 通过 key 精确匹配和重用现有文本节点
+   - 匹配成功后从 `oldNodesMap` 中删除，标记为已处理
+
+3. **简化的处理流程**：
+   - Step 1: 只将直接子文本节点加入 `oldNodesMap`
+   - Step 2: 通过 key 匹配重用或创建文本节点
+   - Step 3: 移除未匹配的旧节点
+
+### 最终状态
+
+- ✅ RFC-0047 的 `processedNodes` 机制已保留，作为辅助保护机制
+- ✅ RFC-0048 的 key-based 算法已实施，作为主要解决方案
+- ✅ 文本节点重复问题已彻底解决
+- ✅ 所有相关测试通过
