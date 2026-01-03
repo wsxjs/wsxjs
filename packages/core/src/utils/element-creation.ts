@@ -48,7 +48,12 @@ function applySingleProp(
     // 处理事件监听器
     if (key.startsWith("on") && typeof value === "function") {
         const eventName = key.slice(2).toLowerCase();
+
+        // 关键修复：保存监听器引用，以便后续更新时移除旧的监听器
+        const listenerKey = `__wsxListener_${eventName}`;
         element.addEventListener(eventName, value as EventListener);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (element as any)[listenerKey] = value;
         return;
     }
 

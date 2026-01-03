@@ -92,6 +92,13 @@ export abstract class BaseComponent extends HTMLElement {
     protected _isRendering: boolean = false;
 
     /**
+     * 已调度渲染标志（防止在同一事件循环中重复注册 requestAnimationFrame）
+     * 用于批量更新：同一事件循环中的多个状态变化只触发一次渲染
+     * @internal
+     */
+    private _hasScheduledRender: boolean = false;
+
+    /**
      * 子类应该重写这个方法来定义观察的属性
      * @returns 要观察的属性名数组
      */
@@ -252,6 +259,14 @@ export abstract class BaseComponent extends HTMLElement {
      * 使用 queueMicrotask 进行异步调度，与 reactive() 系统保持一致
      */
     protected scheduleRerender(): void {
+        // DEBUG: 追踪 scheduleRerender 调用
+        console.log("[scheduleRerender] called:", {
+            component: this.constructor.name,
+            connected: this.connected,
+            isRendering: this._isRendering,
+            hasScheduledRender: this._hasScheduledRender,
+        });
+
         if (!this.connected) {
             // 如果组件已断开，清除定时器
             if (this._rerenderDebounceTimer !== null) {
@@ -263,6 +278,14 @@ export abstract class BaseComponent extends HTMLElement {
 
         // 如果正在渲染，跳过本次调度（防止无限循环）
         if (this._isRendering) {
+            console.log("[scheduleRerender] SKIPPED: already rendering");
+            return;
+        }
+
+        // 如果已经调度了渲染，跳过（避免在同一事件循环中重复注册 requestAnimationFrame）
+        // 这实现了批量更新：同一事件循环中的多个状态变化只触发一次渲染
+        if (this._hasScheduledRender) {
+            console.log("[scheduleRerender] SKIPPED: already scheduled");
             return;
         }
 
@@ -315,10 +338,24 @@ export abstract class BaseComponent extends HTMLElement {
         if (this._pendingRerender) {
             this._pendingRerender = false;
         }
+
+        // 标记已调度渲染（批量更新的关键）
+        this._hasScheduledRender = true;
+
         // 使用 requestAnimationFrame 而不是 queueMicrotask，确保在渲染帧中执行
         // 这样可以避免在 render() 执行期间触发的 scheduleRerender() 立即执行
         requestAnimationFrame(() => {
+            console.warn("[scheduleRerender] RAF callback:", {
+                component: this.constructor.name,
+                connected: this.connected,
+                isRendering: this._isRendering,
+            });
+
+            // 重置调度标志（允许后续的状态变化调度新的渲染）
+            this._hasScheduledRender = false;
+
             if (this.connected && !this._isRendering) {
+                console.warn("[scheduleRerender] calling _rerender()");
                 // 设置渲染标志，防止在 _rerender() 执行期间再次触发
                 // 注意：_isRendering 标志会在 _rerender() 的 onRendered() 调用完成后清除
                 this._isRendering = true;

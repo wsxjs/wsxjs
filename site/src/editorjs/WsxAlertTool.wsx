@@ -41,7 +41,7 @@ export default class WsxAlertTool implements BlockTool {
 
     render() {
         // Create a plain wrapper div for EditorJS
-        this.wrapper = (
+        return (
             <div>
                 <wsx-alert-component
                     type={this.data.type}
@@ -59,7 +59,6 @@ export default class WsxAlertTool implements BlockTool {
                 ></wsx-alert-component>
             </div>
         );
-        return this.wrapper;
     }
 
     save(): AlertData {

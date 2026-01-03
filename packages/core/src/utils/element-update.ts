@@ -68,8 +68,17 @@ function removeProp(
     }
 
     if (key.startsWith("on") && typeof oldValue === "function") {
-        // 事件监听器：需要移除（但无法获取原始监听器，所以跳过）
-        // 注意：这可能导致内存泄漏，但在实际使用中，事件监听器通常不会变化
+        // 关键修复：移除事件监听器，避免内存泄漏
+        const eventName = key.slice(2).toLowerCase();
+        const listenerKey = `__wsxListener_${eventName}`;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const savedListener = (element as any)[listenerKey];
+
+        if (savedListener) {
+            element.removeEventListener(eventName, savedListener);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            delete (element as any)[listenerKey];
+        }
         return;
     }
 
@@ -144,9 +153,21 @@ function applySingleProp(
     // 处理事件监听器
     if (key.startsWith("on") && typeof value === "function") {
         const eventName = key.slice(2).toLowerCase();
-        // 注意：这里会重复添加事件监听器，但这是预期的行为
-        // 在实际使用中，事件监听器通常不会频繁变化
+
+        // 关键修复：移除旧的监听器，避免重复添加
+        // 在元素上保存监听器引用，以便后续移除
+        const listenerKey = `__wsxListener_${eventName}`;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const oldListener = (element as any)[listenerKey];
+
+        if (oldListener) {
+            element.removeEventListener(eventName, oldListener);
+        }
+
+        // 添加新监听器并保存引用
         element.addEventListener(eventName, value as EventListener);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (element as any)[listenerKey] = value;
         return;
     }
 
@@ -266,6 +287,19 @@ export function updateChildren(
 ): void {
     const flatOld = flattenChildrenSafe(oldChildren);
     const flatNew = flattenChildrenSafe(newChildren);
+
+    // DEBUG: 追踪 children 更新
+    console.log("[updateChildren] DEBUG:", {
+        element: element.tagName + (element.className ? "." + element.className : ""),
+        flatOldLength: flatOld.length,
+        flatNewLength: flatNew.length,
+        flatOld: flatOld.map((c) =>
+            c instanceof HTMLElement ? c.tagName + (c.className ? "." + c.className : "") : typeof c
+        ),
+        flatNew: flatNew.map((c) =>
+            c instanceof HTMLElement ? c.tagName + (c.className ? "." + c.className : "") : typeof c
+        ),
+    });
 
     // 收集需要保留的元素（第三方库注入的元素）
     const preservedElements = collectPreservedElements(element);
@@ -453,6 +487,18 @@ export function updateChildren(
 
     // 步骤 3: 收集需要移除的节点（跳过保留元素和新子元素）
     const nodesToRemove = collectNodesToRemove(element, elementSet, cacheKeyMap, processedNodes);
+
+    // DEBUG: 追踪节点移除
+    console.log("[updateChildren] nodesToRemove:", {
+        count: nodesToRemove.length,
+        nodes: nodesToRemove.map((n) =>
+            n instanceof HTMLElement
+                ? n.tagName + (n.className ? "." + n.className : "")
+                : n.nodeName
+        ),
+        elementSetSize: elementSet.size,
+        cacheKeyMapSize: cacheKeyMap.size,
+    });
 
     // 步骤 4: 批量移除节点（从后往前，避免索引变化）
     // 传递 cacheManager 以便在移除元素时调用 ref 回调

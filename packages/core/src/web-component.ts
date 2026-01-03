@@ -79,6 +79,9 @@ export abstract class WebComponent extends BaseComponent {
             const hasActualContent =
                 allChildren.length > styleElements.length + slotElements.length;
 
+            // 调用子类的初始化钩子
+            this.onConnected?.();
+
             // 如果有错误元素，需要重新渲染以恢复正常
             // 如果有实际内容且没有错误，跳过渲染（避免重复元素）
             if (hasActualContent && !hasErrorElement) {
@@ -109,9 +112,6 @@ export abstract class WebComponent extends BaseComponent {
 
             // 初始化事件监听器
             this.initializeEventListeners();
-
-            // 调用子类的初始化钩子
-            this.onConnected?.();
 
             // 如果进行了渲染，调用 onRendered 钩子
             if (hasActualContent === false || hasErrorElement) {
@@ -214,71 +214,75 @@ export abstract class WebComponent extends BaseComponent {
                 }
             }
 
-            // 6. 使用 requestAnimationFrame 批量执行 DOM 操作
-            requestAnimationFrame(() => {
-                // 关键修复 (RFC-0042)：检查 content 是否已经在 shadowRoot 中（元素复用场景）
-                // 如果 content 已经在 shadowRoot 中，不需要再次添加
-                // 这样可以避免移动元素，导致文本节点更新丢失
-                const isContentAlreadyInShadowRoot = content.parentNode === this.shadowRoot;
-
-                if (!isContentAlreadyInShadowRoot) {
-                    // 添加新内容（仅在不在 shadowRoot 中时）
-                    this.shadowRoot.appendChild(content);
-                }
-
-                // 移除旧内容（保留样式元素和未标记元素）
-                // 关键修复：使用 shouldPreserveElement() 来保护第三方库注入的元素
-                const oldChildren = Array.from(this.shadowRoot.children).filter((child) => {
-                    // 保留新添加的内容（或已经在 shadowRoot 中的 content）
-                    if (child === content) {
-                        return false;
-                    }
-                    // 保留样式元素
-                    if (child instanceof HTMLStyleElement) {
-                        return false;
-                    }
-                    // 保留未标记的元素（第三方库注入的元素、自定义元素）
-                    // 这是 RFC 0037 Phase 5 的核心：保护未标记元素
-                    if (shouldPreserveElement(child)) {
-                        return false;
-                    }
-                    return true;
-                });
-                oldChildren.forEach((child) => child.remove());
-
-                // 7. 恢复 adopted stylesheets（在 DOM 操作之后，确保样式不被意外移除）
-                // 关键修复：在 DOM 操作之后恢复样式，防止样式在 DOM 操作过程中被意外清空
-                // 自动检测模式：检查实际的样式状态，确保样式正确恢复
-                const hasStylesAfterDOM =
-                    this.shadowRoot.adoptedStyleSheets &&
-                    this.shadowRoot.adoptedStyleSheets.length > 0;
-                const hasStyleElementAfterDOM = Array.from(this.shadowRoot.children).some(
-                    (child) => child instanceof HTMLStyleElement
-                );
-
-                if (adoptedStyleSheets.length > 0) {
-                    // 恢复保存的 adoptedStyleSheets
-                    this.shadowRoot.adoptedStyleSheets = adoptedStyleSheets;
-                } else if (!hasStylesAfterDOM && !hasStyleElementAfterDOM) {
-                    // 自动检测模式：如果 DOM 操作后没有样式，自动重新应用（防止样式丢失）
-                    // 关键修复：在元素复用场景中，如果 _autoStyles 存在但样式未应用，需要重新应用
-                    const stylesToApply = this._autoStyles || this.config.styles;
-                    if (stylesToApply) {
-                        const styleName = this.config.styleName || this.constructor.name;
-                        StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
-                    }
-                }
-
-                // 恢复焦点状态
-                requestAnimationFrame(() => {
-                    this.restoreFocusState(focusState);
-                    this._pendingFocusState = null;
-                    // 调用 onRendered 生命周期钩子
-                    this.onRendered?.();
-                    // 在 onRendered() 完成后清除渲染标志，允许后续的 scheduleRerender()
-                    this._isRendering = false;
-                });
+            // 6. 执行 DOM 操作（同步，不使用 RAF，因为已经在 scheduleRerender 的 RAF 中）
+            console.warn("[_rerender] Starting DOM operations", {
+                component: this.constructor.name,
             });
+
+            // 关键修复 (RFC-0042)：检查 content 是否已经在 shadowRoot 中（元素复用场景）
+            // 如果 content 已经在 shadowRoot 中，不需要再次添加
+            // 这样可以避免移动元素，导致文本节点更新丢失
+            const isContentAlreadyInShadowRoot = content.parentNode === this.shadowRoot;
+
+            if (!isContentAlreadyInShadowRoot) {
+                // 添加新内容（仅在不在 shadowRoot 中时）
+                this.shadowRoot.appendChild(content);
+            }
+
+            // 移除旧内容（保留样式元素和未标记元素）
+            // 关键修复：使用 shouldPreserveElement() 来保护第三方库注入的元素
+            const oldChildren = Array.from(this.shadowRoot.children).filter((child) => {
+                // 保留新添加的内容（或已经在 shadowRoot 中的 content）
+                if (child === content) {
+                    return false;
+                }
+                // 保留样式元素
+                if (child instanceof HTMLStyleElement) {
+                    return false;
+                }
+                // 保留未标记的元素（第三方库注入的元素、自定义元素）
+                // 这是 RFC 0037 Phase 5 的核心：保护未标记元素
+                if (shouldPreserveElement(child)) {
+                    return false;
+                }
+                return true;
+            });
+            oldChildren.forEach((child) => child.remove());
+
+            // 7. 恢复 adopted stylesheets（在 DOM 操作之后，确保样式不被意外移除）
+            // 关键修复：在 DOM 操作之后恢复样式，防止样式在 DOM 操作过程中被意外清空
+            // 自动检测模式：检查实际的样式状态，确保样式正确恢复
+            const hasStylesAfterDOM =
+                this.shadowRoot.adoptedStyleSheets && this.shadowRoot.adoptedStyleSheets.length > 0;
+            const hasStyleElementAfterDOM = Array.from(this.shadowRoot.children).some(
+                (child) => child instanceof HTMLStyleElement
+            );
+
+            if (adoptedStyleSheets.length > 0) {
+                // 恢复保存的 adoptedStyleSheets
+                this.shadowRoot.adoptedStyleSheets = adoptedStyleSheets;
+            } else if (!hasStylesAfterDOM && !hasStyleElementAfterDOM) {
+                // 自动检测模式：如果 DOM 操作后没有样式，自动重新应用（防止样式丢失）
+                // 关键修复：在元素复用场景中，如果 _autoStyles 存在但样式未应用，需要重新应用
+                const stylesToApply = this._autoStyles || this.config.styles;
+                if (stylesToApply) {
+                    const styleName = this.config.styleName || this.constructor.name;
+                    StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
+                }
+            }
+
+            // 8. 恢复焦点状态并清除渲染标志
+            this.restoreFocusState(focusState);
+            this._pendingFocusState = null;
+
+            // 9. 调用 onRendered 生命周期钩子
+            this.onRendered?.();
+
+            // 10. 清除渲染标志，允许后续的 scheduleRerender()
+            console.warn("[_rerender] Clearing _isRendering flag", {
+                component: this.constructor.name,
+            });
+            this._isRendering = false;
         } catch (error) {
             logger.error("Error in _rerender:", error);
             this.renderError(error);

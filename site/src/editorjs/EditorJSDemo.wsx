@@ -1,4 +1,5 @@
 /** @jsxImportSource @wsxjs/wsx-core */
+
 import { LightComponent, autoRegister, createLogger } from "@wsxjs/wsx-core";
 import { i18n } from "@wsxjs/wsx-i18next";
 import EditorJS from "@editorjs/editorjs";
@@ -209,11 +210,6 @@ export default class EditorJSDemo extends LightComponent {
         );
     }
 
-    protected onConnected() {
-        super.onConnected?.();
-        this.initializeEditor();
-    }
-
     protected onDisconnected() {
         super.onDisconnected?.();
         if (this.editor && typeof this.editor.destroy === "function") {
@@ -225,6 +221,11 @@ export default class EditorJSDemo extends LightComponent {
             }
         }
         this.editor = undefined;
+    }
+
+    protected onRendered() {
+        super.onRendered?.();
+        this.initializeEditor();
     }
 
     private initializeEditor() {

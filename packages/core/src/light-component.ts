@@ -79,6 +79,9 @@ export abstract class LightComponent extends BaseComponent {
                 (child) => child !== styleElement && !(child instanceof HTMLSlotElement)
             );
 
+            // 调用子类的初始化钩子（无论是否渲染，都需要调用，因为组件已连接）
+            this.onConnected?.();
+
             // 如果有错误元素，需要重新渲染以恢复正常
             // 如果有实际内容且没有错误，跳过渲染（避免重复元素）
             if (hasActualContent && !hasErrorElement) {
@@ -108,9 +111,6 @@ export abstract class LightComponent extends BaseComponent {
 
             // 初始化事件监听器（无论是否渲染，都需要重新初始化，因为 DOM 可能被移动）
             this.initializeEventListeners();
-
-            // 调用子类的初始化钩子（无论是否渲染，都需要调用，因为组件已连接）
-            this.onConnected?.();
 
             // 如果进行了渲染，调用 onRendered 钩子
             if (hasActualContent === false || hasErrorElement) {
