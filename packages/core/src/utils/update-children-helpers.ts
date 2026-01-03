@@ -176,8 +176,11 @@ export function replaceOrInsertElement(
     newChild: HTMLElement | SVGElement,
     oldNode: Node | null
 ): void {
-    // 确定目标位置：应该在 oldNode 的位置（oldNode.nextSibling 之前）
-    const targetNextSibling = oldNode?.nextSibling || null;
+    // 确定目标位置：
+    // - 如果 oldNode 是保留元素，应该在 oldNode 之前插入（targetNextSibling = oldNode）
+    // - 否则，应该在 oldNode 的位置（oldNode.nextSibling 之前）
+    const targetNextSibling =
+        oldNode && shouldPreserveElement(oldNode) ? oldNode : oldNode?.nextSibling || null;
     replaceOrInsertElementAtPosition(parent, newChild, oldNode, targetNextSibling);
 }
 
@@ -416,6 +419,14 @@ export function deduplicateCacheKeys(
                 // 如果 child 不是 newChild，说明是旧元素，应该被替换
                 if (child !== newChild) {
                     parent.replaceChild(newChild, child);
+                }
+                // 如果 child === newChild，说明 newChild 已经在正确位置，不需要操作
+            } else if (cacheKey && cacheKeyMap.has(cacheKey) && processedCacheKeys.has(cacheKey)) {
+                // 如果 cache key 已经被处理过，说明有重复，应该移除这个旧元素
+                // 但是，只有当 child 不是 newChild 时才移除
+                const newChild = cacheKeyMap.get(cacheKey)!;
+                if (child !== newChild) {
+                    parent.removeChild(child);
                 }
             }
         }
