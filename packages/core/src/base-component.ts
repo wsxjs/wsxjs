@@ -259,14 +259,6 @@ export abstract class BaseComponent extends HTMLElement {
      * 使用 queueMicrotask 进行异步调度，与 reactive() 系统保持一致
      */
     protected scheduleRerender(): void {
-        // DEBUG: 追踪 scheduleRerender 调用
-        console.log("[scheduleRerender] called:", {
-            component: this.constructor.name,
-            connected: this.connected,
-            isRendering: this._isRendering,
-            hasScheduledRender: this._hasScheduledRender,
-        });
-
         if (!this.connected) {
             // 如果组件已断开，清除定时器
             if (this._rerenderDebounceTimer !== null) {
@@ -278,14 +270,12 @@ export abstract class BaseComponent extends HTMLElement {
 
         // 如果正在渲染，跳过本次调度（防止无限循环）
         if (this._isRendering) {
-            console.log("[scheduleRerender] SKIPPED: already rendering");
             return;
         }
 
         // 如果已经调度了渲染，跳过（避免在同一事件循环中重复注册 requestAnimationFrame）
         // 这实现了批量更新：同一事件循环中的多个状态变化只触发一次渲染
         if (this._hasScheduledRender) {
-            console.log("[scheduleRerender] SKIPPED: already scheduled");
             return;
         }
 
