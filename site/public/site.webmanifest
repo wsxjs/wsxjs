@@ -24,8 +24,7 @@
             "type": "image/svg+xml"
         }
     ],
-    "theme_color": "#dc2626",
+    "theme_color": "#EF4444",
     "background_color": "#ffffff",
     "display": "standalone"
 }
-

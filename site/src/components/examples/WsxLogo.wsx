@@ -53,10 +53,11 @@ export default class WsxLogo extends WebComponent {
     }
 
     private renderIconLogo() {
-        const strokeWidth = 2.5;
+        const strokeWidth = 2;
         // If color is default red, use multi-tone (grey brackets). Otherwise monochrome.
-        const isDefaultColor = this.color === "#dc2626";
+        const isDefaultColor = this.color === "#dc2626" || this.color === "#EF4444"; // Support both old and new default
         const bracketColor = isDefaultColor ? "#4B5563" : this.color;
+        const wStroke = isDefaultColor ? "url(#wsx-logo-gradient)" : this.color;
 
         return (
             <svg
@@ -66,23 +67,36 @@ export default class WsxLogo extends WebComponent {
                 fill="none"
                 style="display: inline-block; vertical-align: middle;"
             >
+                <defs>
+                    <linearGradient
+                        id="wsx-logo-gradient"
+                        x1="2"
+                        y1="2"
+                        x2="22"
+                        y2="22"
+                        gradientUnits="userSpaceOnUse"
+                    >
+                        <stop stop-color="#EF4444" />
+                        <stop offset="1" stop-color="#F97316" />
+                    </linearGradient>
+                </defs>
                 <path
-                    d="M6 8L3 12L6 16"
+                    d="M4.8 7.2L1.2 12L4.8 16.8"
                     stroke={bracketColor}
                     stroke-width={strokeWidth}
                     stroke-linecap="round"
                     stroke-linejoin="round"
                 />
                 <path
-                    d="M18 8L21 12L18 16"
+                    d="M19.2 7.2L22.8 12L19.2 16.8"
                     stroke={bracketColor}
                     stroke-width={strokeWidth}
                     stroke-linecap="round"
                     stroke-linejoin="round"
                 />
                 <path
-                    d="M9 9L10.5 15L12 11.5L13.5 15L15 9"
-                    stroke={this.color}
+                    d="M8.4 8.4L10.2 15.6L12 11.4L13.8 15.6L15.6 8.4"
+                    stroke={wStroke}
                     stroke-width={strokeWidth}
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -105,9 +119,10 @@ export default class WsxLogo extends WebComponent {
     private renderFullLogo() {
         const iconSize = this.size * 0.8;
         const fontSize = this.size * 0.5;
-        const strokeWidth = 2.5;
-        const isDefaultColor = this.color === "#dc2626";
+        const strokeWidth = 2;
+        const isDefaultColor = this.color === "#dc2626" || this.color === "#EF4444";
         const bracketColor = isDefaultColor ? "#4B5563" : this.color;
+        const wStroke = isDefaultColor ? "url(#wsx-logo-gradient-full)" : this.color; // Unique ID for full variant
 
         return (
             <div style="display: inline-flex; align-items: center; gap: 8px;">
@@ -118,23 +133,36 @@ export default class WsxLogo extends WebComponent {
                     fill="none"
                     style="display: inline-block;"
                 >
+                    <defs>
+                        <linearGradient
+                            id="wsx-logo-gradient-full"
+                            x1="2"
+                            y1="2"
+                            x2="22"
+                            y2="22"
+                            gradientUnits="userSpaceOnUse"
+                        >
+                            <stop stop-color="#EF4444" />
+                            <stop offset="1" stop-color="#F97316" />
+                        </linearGradient>
+                    </defs>
                     <path
-                        d="M6 8L3 12L6 16"
+                        d="M4.8 7.2L1.2 12L4.8 16.8"
                         stroke={bracketColor}
                         stroke-width={strokeWidth}
                         stroke-linecap="round"
                         stroke-linejoin="round"
                     />
                     <path
-                        d="M18 8L21 12L18 16"
+                        d="M19.2 7.2L22.8 12L19.2 16.8"
                         stroke={bracketColor}
                         stroke-width={strokeWidth}
                         stroke-linecap="round"
                         stroke-linejoin="round"
                     />
                     <path
-                        d="M9 9L10.5 15L12 11.5L13.5 15L15 9"
-                        stroke={this.color}
+                        d="M8.4 8.4L10.2 15.6L12 11.4L13.8 15.6L15.6 8.4"
+                        stroke={wStroke}
                         stroke-width={strokeWidth}
                         stroke-linecap="round"
                         stroke-linejoin="round"
