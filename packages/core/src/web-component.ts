@@ -173,12 +173,21 @@ export abstract class WebComponent extends BaseComponent {
         const focusState = this.captureFocusState();
         this._pendingFocusState = focusState;
 
-        // 2. 保存当前的 adopted stylesheets
+        // 2. 保存当前的 adopted stylesheets 并检测实际的样式状态
         const adoptedStyleSheets = this.shadowRoot.adoptedStyleSheets || [];
+        // 自动检测模式：检查实际的 ShadowRoot 样式状态，而不仅仅是保存的数组
+        // 这样可以更准确地检测样式是否真的已应用
+        const hasActualAdoptedStyles =
+            this.shadowRoot.adoptedStyleSheets && this.shadowRoot.adoptedStyleSheets.length > 0;
+        // 检查 fallback 模式的样式元素
+        const hasFallbackStyleElement = Array.from(this.shadowRoot.children).some(
+            (child) => child instanceof HTMLStyleElement
+        );
 
         try {
-            // 3. 只有在没有 adopted stylesheets 时才重新应用样式
-            if (adoptedStyleSheets.length === 0) {
+            // 3. 自动检测模式：只有在没有实际样式时才重新应用样式
+            // 检查 adoptedStyleSheets 和 fallback 样式元素
+            if (!hasActualAdoptedStyles && !hasFallbackStyleElement) {
                 const stylesToApply = this._autoStyles || this.config.styles;
                 if (stylesToApply) {
                     const styleName = this.config.styleName || this.constructor.name;
@@ -205,20 +214,22 @@ export abstract class WebComponent extends BaseComponent {
                 }
             }
 
-            // 6. 恢复 adopted stylesheets
-            if (this.shadowRoot.adoptedStyleSheets) {
-                this.shadowRoot.adoptedStyleSheets = adoptedStyleSheets;
-            }
-
-            // 7. 使用 requestAnimationFrame 批量执行 DOM 操作
+            // 6. 使用 requestAnimationFrame 批量执行 DOM 操作
             requestAnimationFrame(() => {
-                // 添加新内容
-                this.shadowRoot.appendChild(content);
+                // 关键修复 (RFC-0042)：检查 content 是否已经在 shadowRoot 中（元素复用场景）
+                // 如果 content 已经在 shadowRoot 中，不需要再次添加
+                // 这样可以避免移动元素，导致文本节点更新丢失
+                const isContentAlreadyInShadowRoot = content.parentNode === this.shadowRoot;
+
+                if (!isContentAlreadyInShadowRoot) {
+                    // 添加新内容（仅在不在 shadowRoot 中时）
+                    this.shadowRoot.appendChild(content);
+                }
 
                 // 移除旧内容（保留样式元素和未标记元素）
                 // 关键修复：使用 shouldPreserveElement() 来保护第三方库注入的元素
                 const oldChildren = Array.from(this.shadowRoot.children).filter((child) => {
-                    // 保留新添加的内容
+                    // 保留新添加的内容（或已经在 shadowRoot 中的 content）
                     if (child === content) {
                         return false;
                     }
@@ -234,6 +245,29 @@ export abstract class WebComponent extends BaseComponent {
                     return true;
                 });
                 oldChildren.forEach((child) => child.remove());
+
+                // 7. 恢复 adopted stylesheets（在 DOM 操作之后，确保样式不被意外移除）
+                // 关键修复：在 DOM 操作之后恢复样式，防止样式在 DOM 操作过程中被意外清空
+                // 自动检测模式：检查实际的样式状态，确保样式正确恢复
+                const hasStylesAfterDOM =
+                    this.shadowRoot.adoptedStyleSheets &&
+                    this.shadowRoot.adoptedStyleSheets.length > 0;
+                const hasStyleElementAfterDOM = Array.from(this.shadowRoot.children).some(
+                    (child) => child instanceof HTMLStyleElement
+                );
+
+                if (adoptedStyleSheets.length > 0) {
+                    // 恢复保存的 adoptedStyleSheets
+                    this.shadowRoot.adoptedStyleSheets = adoptedStyleSheets;
+                } else if (!hasStylesAfterDOM && !hasStyleElementAfterDOM) {
+                    // 自动检测模式：如果 DOM 操作后没有样式，自动重新应用（防止样式丢失）
+                    // 关键修复：在元素复用场景中，如果 _autoStyles 存在但样式未应用，需要重新应用
+                    const stylesToApply = this._autoStyles || this.config.styles;
+                    if (stylesToApply) {
+                        const styleName = this.config.styleName || this.constructor.name;
+                        StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
+                    }
+                }
 
                 // 恢复焦点状态
                 requestAnimationFrame(() => {

@@ -27,6 +27,8 @@ export function i18nDecorator(namespace: string = "common") {
             // 使用 public 而不是 private，因为导出的匿名类类型限制
             public _i18nNamespace!: string;
             public _i18nUnsubscribe?: () => void;
+            // 防抖定时器，避免多次 rerender 调用
+            private _i18nRerenderTimer?: number;
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             constructor(...args: any[]) {
@@ -52,10 +54,20 @@ export function i18nDecorator(namespace: string = "common") {
 
                 // 创建回调函数并保存引用，以便后续取消订阅
                 const handler = (() => {
+                    // 关键修复 (RFC-0042)：防抖 rerender 调用，避免多次更新导致文本节点更新丢失
+                    // i18next 的 languageChanged 事件可能在 changeLanguage 完成之前被多次触发
+                    // 使用 requestAnimationFrame 确保只在下一个渲染帧触发一次 rerender
+                    if (this._i18nRerenderTimer !== undefined) {
+                        cancelAnimationFrame(this._i18nRerenderTimer);
+                    }
+
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     if ((this as any).rerender) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (this as any).rerender();
+                        this._i18nRerenderTimer = requestAnimationFrame(() => {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (this as any).rerender();
+                            this._i18nRerenderTimer = undefined;
+                        });
                     }
                 }) as () => void;
 
@@ -82,6 +94,12 @@ export function i18nDecorator(namespace: string = "common") {
 
             // 生命周期：组件断开时取消订阅
             public onDisconnected(): void {
+                // 取消防抖定时器
+                if (this._i18nRerenderTimer !== undefined) {
+                    cancelAnimationFrame(this._i18nRerenderTimer);
+                    this._i18nRerenderTimer = undefined;
+                }
+
                 // 取消 i18n 订阅
                 if (this._i18nUnsubscribe && typeof this._i18nUnsubscribe === "function") {
                     try {

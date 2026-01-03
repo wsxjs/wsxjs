@@ -296,13 +296,20 @@ export function updateChildren(
             }
         } else if (typeof oldChild === "string" || typeof oldChild === "number") {
             oldNode = findTextNode(element, domIndex);
-            // 关键修复：如果 findTextNode 返回 null，尝试从当前 domIndex 位置开始查找文本节点
-            // 这可以处理文本节点存在但 domIndex 不正确的情况
-            // Bug 1 修复：从 domIndex.value 开始搜索，而不是从 0 开始，避免重新处理已处理的节点
+            // RFC-0044 修复：fallback 搜索必须验证文本内容
+            // 在缓存元素复用场景下，不能盲目返回第一个找到的文本节点
+            // 必须确保内容匹配，否则会导致错误的更新
             if (!oldNode && element.childNodes.length > 0) {
+                const oldText = String(oldChild);
                 for (let j = domIndex.value; j < element.childNodes.length; j++) {
                     const node = element.childNodes[j];
-                    if (node.nodeType === Node.TEXT_NODE) {
+                    // 关键修复：只检查直接子文本节点，确保 node.parentNode === element
+                    // 并且必须验证文本内容是否匹配
+                    if (
+                        node.nodeType === Node.TEXT_NODE &&
+                        node.parentNode === element &&
+                        node.textContent === oldText
+                    ) {
                         oldNode = node;
                         // 更新 domIndex 到找到的文本节点之后
                         domIndex.value = j + 1;
@@ -328,10 +335,19 @@ export function updateChildren(
                         oldNode.textContent !== newText);
 
                 if (needsUpdate) {
-                    updateOrCreateTextNode(element, oldNode, newText);
+                    // RFC-0044 修复：使用返回的节点引用直接标记
+                    // updateOrCreateTextNode 现在返回更新/创建的节点
+                    // 这样可以准确标记，避免搜索失败导致的重复创建
+                    const updatedNode = updateOrCreateTextNode(element, oldNode, newText);
+                    if (updatedNode && !processedNodes.has(updatedNode)) {
+                        processedNodes.add(updatedNode);
+                    }
+                } else {
+                    // 即使不需要更新，也要标记为已处理（文本节点已存在且内容正确）
+                    if (oldNode && oldNode.parentNode === element) {
+                        processedNodes.add(oldNode);
+                    }
                 }
-                // 如果文本内容相同且 oldNode 为 null，不需要做任何操作
-                // 因为文本节点可能已经存在于 DOM 中且内容正确，或者不需要创建
             } else {
                 // 类型变化：文本 -> 元素/Fragment
                 removeNodeIfNotPreserved(element, oldNode);
@@ -401,8 +417,12 @@ export function updateChildren(
                     targetNextSibling
                 );
 
-                // 标记为已处理
-                if (oldNode) processedNodes.add(oldNode);
+                // 关键修复：在替换元素后，从 processedNodes 中移除旧的元素引用
+                // 这样可以防止旧的 span 元素内部的文本节点被误判为不应该移除
+                if (oldNode && oldNode !== newChild) {
+                    processedNodes.delete(oldNode);
+                }
+                // 标记新元素为已处理
                 processedNodes.add(newChild);
             } else {
                 // 类型变化：元素 -> 文本/Fragment
@@ -410,6 +430,8 @@ export function updateChildren(
                 if (typeof newChild === "string" || typeof newChild === "number") {
                     const newTextNode = document.createTextNode(String(newChild));
                     element.insertBefore(newTextNode, oldNode?.nextSibling || null);
+                    // 关键修复：标记新创建的文本节点为已处理，防止在移除阶段被误删
+                    processedNodes.add(newTextNode);
                 } else if (newChild instanceof DocumentFragment) {
                     element.insertBefore(newChild, oldNode?.nextSibling || null);
                 }
@@ -419,7 +441,7 @@ export function updateChildren(
 
     // 添加新子节点
     for (let i = minLength; i < flatNew.length; i++) {
-        appendNewChild(element, flatNew[i]);
+        appendNewChild(element, flatNew[i], processedNodes);
     }
 
     // 移除多余子节点（使用纯函数简化逻辑）
@@ -430,7 +452,7 @@ export function updateChildren(
     deduplicateCacheKeys(element, cacheKeyMap);
 
     // 步骤 3: 收集需要移除的节点（跳过保留元素和新子元素）
-    const nodesToRemove = collectNodesToRemove(element, elementSet, cacheKeyMap);
+    const nodesToRemove = collectNodesToRemove(element, elementSet, cacheKeyMap, processedNodes);
 
     // 步骤 4: 批量移除节点（从后往前，避免索引变化）
     // 传递 cacheManager 以便在移除元素时调用 ref 回调

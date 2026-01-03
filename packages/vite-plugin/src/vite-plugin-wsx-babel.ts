@@ -142,6 +142,7 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
                             // Pass ORIGINAL source code (before JSX import injection) to plugin
                             // This ensures we can detect @state decorators even if they're removed by TypeScript preset
                             originalSource: code, // Use original code, not transformedCode
+                            debug: options.debug, // Pass debug flag
                         },
                     ],
                     // Decorator plugin runs after our custom plugins

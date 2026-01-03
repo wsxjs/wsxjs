@@ -11,6 +11,17 @@ import { WebComponent } from "../src/web-component";
 import { h } from "../src/jsx-factory";
 import { getElementCacheKey } from "../src/utils/element-marking";
 
+// Mock loggers to avoid console output during tests
+jest.mock("@wsxjs/wsx-logger", () => ({
+    createLogger: () => ({
+        debug: jest.fn(),
+        info: jest.fn(),
+        warn: jest.fn(),
+        error: jest.fn(),
+        trace: jest.fn(),
+    }),
+}));
+
 // 创建一个测试用的 WebComponent 子类
 class TestWebComponent extends WebComponent {
     public renderCallCount = 0;

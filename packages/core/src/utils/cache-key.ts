@@ -1,18 +1,12 @@
 /**
  * Cache Key Generation Utilities
  *
- * Pure functions for generating cache keys for DOM elements (RFC 0037).
+ * Pure functions for generating cache keys for DOM elements (RFC 0037 & RFC 0046).
  * These functions are used by the jsx-factory to identify and cache DOM elements.
  */
 
 import { RenderContext } from "../render-context";
 import type { BaseComponent } from "../base-component";
-
-/**
- * Internal symbol for position ID (used by Babel plugin in future)
- * For now, we use a string key for backward compatibility
- */
-const POSITION_ID_KEY = "__wsxPositionId";
 
 /**
  * Internal symbol for index (used in list scenarios)
@@ -22,7 +16,7 @@ const INDEX_KEY = "__wsxIndex";
 /**
  * Component-level element counters (using WeakMap to avoid memory leaks)
  * Each component instance maintains its own counter to ensure unique cache keys
- * when position ID is not available.
+ * when a user-provided `key` is not available.
  */
 const componentElementCounters = new WeakMap<BaseComponent, number>();
 
@@ -37,15 +31,14 @@ const componentIdCache = new WeakMap<BaseComponent, string>();
  *
  * Cache key format: `${componentId}:${tag}:${identifier}`
  *
- * Priority:
- * 1. User-provided key (if exists) - most reliable
- * 2. Index (if in list scenario)
- * 3. Position ID (if provided and valid)
- * 4. Component-level counter (runtime fallback, ensures uniqueness)
- * 5. Timestamp fallback (last resort, ensures uniqueness)
+ * Priority (as per RFC 0048, following React/Vue model):
+ * 1. User-provided `key` (if exists) - most reliable
+ * 2. Index (if in list scenario, e.g., from `.map`)
+ * 3. Component-level counter (runtime fallback, ensures uniqueness per render)
+ * 4. Timestamp fallback (last resort, should rarely be hit)
  *
  * @param tag - HTML tag name
- * @param props - Element props (may contain position ID, index, or key)
+ * @param props - Element props (may contain index or key)
  * @param componentId - Component instance ID (from RenderContext)
  * @param component - Optional component instance (for counter-based fallback)
  * @returns Cache key string
@@ -56,11 +49,10 @@ export function generateCacheKey(
     componentId: string,
     component?: BaseComponent
 ): string {
-    const positionId = props?.[POSITION_ID_KEY];
     const userKey = props?.key;
     const index = props?.[INDEX_KEY];
 
-    // 优先级 1: 用户 key（最可靠）
+    // 优先级 1: 用户 key（最可靠, 符合 React/Vue 设计）
     if (userKey !== undefined && userKey !== null) {
         return `${componentId}:${tag}:key-${String(userKey)}`;
     }
@@ -70,12 +62,7 @@ export function generateCacheKey(
         return `${componentId}:${tag}:idx-${String(index)}`;
     }
 
-    // 优先级 3: 位置 ID（编译时注入，如果有效）
-    if (positionId !== undefined && positionId !== null && positionId !== "no-id") {
-        return `${componentId}:${tag}:${String(positionId)}`;
-    }
-
-    // 优先级 4: 组件级别计数器（运行时回退，确保唯一性）
+    // 优先级 3: 组件级别计数器（运行时回退, 确保唯一性）
     // 注意：计数器在 RenderContext.runInContext 开始时已重置
     if (component) {
         let counter = componentElementCounters.get(component) || 0;
@@ -84,7 +71,7 @@ export function generateCacheKey(
         return `${componentId}:${tag}:auto-${counter}`;
     }
 
-    // 最后回退：时间戳（不推荐，但确保唯一性）
+    // 最后回退：时间戳（不推荐, 但确保唯一性）
     return `${componentId}:${tag}:fallback-${Date.now()}-${Math.random()}`;
 }
 
@@ -96,7 +83,7 @@ export function generateCacheKey(
  * @internal
  */
 export function resetCounterForNewRenderCycle(component: BaseComponent): void {
-    // 新的渲染周期开始，直接重置计数器
+    // 新的渲染周期开始, 直接重置计数器
     componentElementCounters.set(component, 0);
 }
 

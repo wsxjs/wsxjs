@@ -85,13 +85,15 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0033](./completed/0033-modern-router-features.md) | Modern Router Features - View Transitions, Scroll Restoration & Navigation Events | Implemented | WSX Team |
 | [RFC-0036](./0036-smart-property-assignment.md) | Smart Property Assignment Strategy for Large Data | Completed | WSX Team |
 | [RFC-0039](./0039-enforce-super-lifecycle-calls.md) | 强制生命周期方法调用 super 的 ESLint 规则 | Implemented | WSX Team |
-| [RFC-0040](./0040-text-node-update-bug-fixes.md) | 文本节点更新逻辑 Bug 修复 | Implemented | WSX Team |
+| [RFC-0042](./0042-language-switcher-immediate-ui-update.md) | LanguageSwitcher 立即 UI 更新修复 | Implemented | WSX Team |
+| [RFC-0043](./0043-style-injection-verification-and-fixes.md) | Web Component 样式注入验证与修复 | Proposed | WSX Team |
 
 ### 提议中的RFCs
 
 | RFC | 标题 | 状态 | 提议人 |
 |-----|------|------|--------|
 | [RFC-0019](./0019-zero-config-initialization.md) | 零配置初始化方案 | Proposed | WSX Team |
+| [RFC-0044](./0044-stable-cache-keys-for-all-elements.md) | 为所有元素提供稳定的缓存键 | Proposed | WSX Team |
 | [RFC-0021](./0021-framework-website-enhancement.md) | 框架网站增强计划（根 RFC） | Proposed | WSX Team |
 | [RFC-0022](./0022-homepage-value-proposition.md) | 首页价值主张优化（M0） | Proposed | WSX Team |
 | [RFC-0024](./0024-documentation-system.md) | 文档系统集成（M2） | Proposed | WSX Team |
@@ -115,6 +117,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0005](./0005-wsx-router-enhancements.md) | WSX Router 增强 | Draft | Claude |
 | [RFC-0009](./0009-scss-sass-preprocessing.md) | SCSS/SASS 预处理支持 | Draft (Future) | Claude |
 | [RFC-0010](./0010-eslint-rules-enhancement.md) | ESLint 规则增强 | Draft | Claude |
+| [RFC-0042](./0042-calendar-appointment-management.md) | 预约管理日历组件 | Draft | WSX Team |
 
 ## RFC原则
 

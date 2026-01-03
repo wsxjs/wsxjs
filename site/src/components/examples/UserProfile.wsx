@@ -11,7 +11,7 @@
  */
 
 import { WebComponent, state, autoRegister, createLogger } from "@wsxjs/wsx-core";
-import "./UserProfile.css";
+// CSS 自动注入：UserProfile.css 会被 Babel 插件自动注入为 _autoStyles
 
 const logger = createLogger("UserProfile");
 

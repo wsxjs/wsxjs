@@ -23,6 +23,7 @@ interface WSXStatePluginPass extends PluginPass {
         isObject: boolean;
         isArray?: boolean; // Add isArray flag
     }>;
+    showDebugLogs?: boolean;
     reactiveMethodName: string;
 }
 
@@ -33,26 +34,36 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
         visitor: {
             Program: {
                 enter(_path, state) {
-                    // CRITICAL: Debug log to check state.opts
-                    console.info(
-                        `[Babel Plugin WSX State] DEBUG: state.opts keys = ${Object.keys(state.opts || {}).join(", ")}`
-                    );
-                    console.info(
-                        `[Babel Plugin WSX State] DEBUG: state.opts = ${JSON.stringify(state.opts).substring(0, 200)}`
-                    );
+                    const opts = state.opts as Record<string, unknown> | undefined;
+                    const debug = !!opts?.debug;
+                    // Store debug flag in state for other visitors
+                    (state as any).showDebugLogs = debug;
+
+                    if (debug) {
+                        // CRITICAL: Debug log to check state.opts
+                        console.info(
+                            `[Babel Plugin WSX State] DEBUG: state.opts keys = ${Object.keys(state.opts || {}).join(", ")}`
+                        );
+                        console.info(
+                            `[Babel Plugin WSX State] DEBUG: state.opts = ${JSON.stringify(state.opts).substring(0, 200)}`
+                        );
+                    }
 
                     // Store original source code for later checking
                     // First try to get from plugin options (passed from vite plugin)
-                    const opts = state.opts as Record<string, unknown> | undefined;
                     if (opts?.originalSource) {
                         (state as Record<string, unknown>).originalSource = opts.originalSource;
-                        console.info(
-                            `[Babel Plugin WSX State] ✅ Stored original source from options (length: ${String(opts.originalSource).length})`
-                        );
+                        if (debug) {
+                            console.info(
+                                `[Babel Plugin WSX State] ✅ Stored original source from options (length: ${String(opts.originalSource).length})`
+                            );
+                        }
                     } else {
-                        console.warn(
-                            `[Babel Plugin WSX State] ⚠️ state.opts.originalSource not found, trying fallback...`
-                        );
+                        if (debug) {
+                            console.warn(
+                                `[Babel Plugin WSX State] ⚠️ state.opts.originalSource not found, trying fallback...`
+                            );
+                        }
                         // Fallback: try to get from file
                         const file = state.file;
                         if (file) {
@@ -61,9 +72,11 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                                 | undefined;
                             if (sourceCode) {
                                 (state as Record<string, unknown>).originalSource = sourceCode;
-                                console.info(
-                                    `[Babel Plugin WSX State] ✅ Stored original source from file (length: ${sourceCode.length})`
-                                );
+                                if (debug) {
+                                    console.info(
+                                        `[Babel Plugin WSX State] ✅ Stored original source from file (length: ${sourceCode.length})`
+                                    );
+                                }
                             } else {
                                 console.error(
                                     `[Babel Plugin WSX State] ❌ ERROR: Could not get original source code from state.opts or state.file!`
@@ -77,7 +90,11 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                     }
                 },
             },
-            ClassDeclaration(path) {
+            ClassDeclaration(path, state) {
+                const debug = !!(state as any).showDebugLogs;
+                const logInfo = (msg: string) => {
+                    if (debug) console.info(msg);
+                };
                 const classBody = path.node.body;
                 const stateProperties: Array<{
                     key: string;
@@ -88,23 +105,27 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
 
                 // Find all @state decorated properties
                 // Debug: log all class members
-                console.info(
-                    `[Babel Plugin WSX State] Processing class ${path.node.id?.name || "anonymous"}, members: ${classBody.body.length}`
-                );
-
-                // CRITICAL: Log all decorators at class level to debug
-                if (path.node.decorators && path.node.decorators.length > 0) {
-                    console.info(
-                        `[Babel Plugin WSX State] Class-level decorators: ${path.node.decorators.length}`
+                if (debug) {
+                    logInfo(
+                        `[Babel Plugin WSX State] Processing class ${path.node.id?.name || "anonymous"}, members: ${classBody.body.length}`
                     );
+
+                    // CRITICAL: Log all decorators at class level to debug
+                    if (path.node.decorators && path.node.decorators.length > 0) {
+                        logInfo(
+                            `[Babel Plugin WSX State] Class-level decorators: ${path.node.decorators.length}`
+                        );
+                    }
                 }
 
                 for (const member of classBody.body) {
                     // Debug: log member type
 
-                    console.info(
-                        `  - Member type: ${member.type}, key: ${member.type === "ClassProperty" || member.type === "ClassPrivateProperty" ? (member.key as any)?.name : "N/A"}`
-                    );
+                    if (debug) {
+                        logInfo(
+                            `  - Member type: ${member.type}, key: ${member.type === "ClassProperty" || member.type === "ClassPrivateProperty" ? (member.key as any)?.name : "N/A"}`
+                        );
+                    }
 
                     // Check both ClassProperty and ClassPrivateProperty
                     // @babel/plugin-proposal-class-properties might convert them
@@ -143,16 +164,18 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                                 ? (member.value as t.Identifier).name
                                 : "none";
 
-                        console.info(
-                            `  - Property: ${propertyName}, decorators: ${decoratorCount}, hasValue: ${hasValue}, isUndefined: ${isUndefined}, value type: ${valueType}, value name: ${valueName}`
-                        );
+                        if (debug) {
+                            logInfo(
+                                `  - Property: ${propertyName}, decorators: ${decoratorCount}, hasValue: ${hasValue}, isUndefined: ${isUndefined}, value type: ${valueType}, value name: ${valueName}`
+                            );
+                        }
 
                         // Wrap the entire detection logic in try-catch to pinpoint crash location
                         try {
                             // CRITICAL: If property has undefined value, check source code for @state decorator
                             // This handles the case where decorator was removed but property has undefined from optional syntax
                             if (isUndefined) {
-                                const originalSource = (path.state as Record<string, unknown>)
+                                const originalSource = (state as Record<string, unknown>)
                                     ?.originalSource as string | undefined;
                                 if (originalSource) {
                                     // Escape special regex characters in property name
@@ -197,17 +220,17 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                             // Even if decorators array is empty (decorators: 0), the decorator might exist in source
                             // This is the main way to detect @state when decorators are removed before our plugin runs
 
-                            // DEBUG: Check path.state structure
-                            if (propertyName === "count") {
-                                console.info(
-                                    `[Babel Plugin WSX State] DEBUG path.state keys for '${propertyName}': ${path.state ? Object.keys(path.state).join(", ") : "null"}`
+                            // DEBUG: Check state structure
+                            if (propertyName === "count" && debug) {
+                                logInfo(
+                                    `[Babel Plugin WSX State] DEBUG state keys for '${propertyName}': ${state ? Object.keys(state).join(", ") : "null"}`
                                 );
-                                console.info(
-                                    `[Babel Plugin WSX State] DEBUG path.state.originalSource type: ${path.state ? typeof (path.state as any).originalSource : "path.state is null"}`
+                                logInfo(
+                                    `[Babel Plugin WSX State] DEBUG state.originalSource type: ${state ? typeof (state as any).originalSource : "state is null"}`
                                 );
                             }
 
-                            const originalSource = (path.state as Record<string, unknown>)
+                            const originalSource = (state as Record<string, unknown>)
                                 ?.originalSource as string | undefined;
 
                             if (originalSource) {
@@ -225,9 +248,11 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
 
                                 const hasStateInSource = propertyPattern.test(originalSource);
                                 if (hasStateInSource) {
-                                    console.info(
-                                        `[Babel Plugin WSX State] Found @state in source for property '${propertyName}' (decorators array was empty: ${decoratorCount})`
-                                    );
+                                    if (debug) {
+                                        logInfo(
+                                            `[Babel Plugin WSX State] Found @state in source for property '${propertyName}' (decorators array was empty: ${decoratorCount})`
+                                        );
+                                    }
                                     // Found @state in source but decorators array is empty
                                     // Check if it has an initial value in source (not just undefined from TypeScript)
                                     // Escape special regex characters in property name (already escaped above, reuse)
@@ -265,7 +290,7 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                                 }
                             } else {
                                 // Log when originalSource is not available for debugging
-                                if (propertyName === "count") {
+                                if (propertyName === "count" && debug) {
                                     console.warn(
                                         `[Babel Plugin WSX State] WARNING: originalSource not available for property '${propertyName}'`
                                     );
@@ -274,20 +299,22 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
 
                             if (member.decorators && member.decorators.length > 0) {
                                 // Debug: log decorator names
-                                member.decorators.forEach((decorator) => {
-                                    if (decorator.expression.type === "Identifier") {
-                                        console.info(`    Decorator: ${decorator.expression.name}`);
-                                    } else if (
-                                        decorator.expression.type === "CallExpression" &&
-                                        decorator.expression.callee.type === "Identifier"
-                                    ) {
-                                        console.info(
-                                            `    Decorator: ${decorator.expression.callee.name}()`
-                                        );
-                                    } else {
-                                        console.info(`    Decorator: ${decorator.expression.type}`);
-                                    }
-                                });
+                                if (debug) {
+                                    member.decorators.forEach((decorator) => {
+                                        if (decorator.expression.type === "Identifier") {
+                                            logInfo(`    Decorator: ${decorator.expression.name}`);
+                                        } else if (
+                                            decorator.expression.type === "CallExpression" &&
+                                            decorator.expression.callee.type === "Identifier"
+                                        ) {
+                                            logInfo(
+                                                `    Decorator: ${decorator.expression.callee.name}()`
+                                            );
+                                        } else {
+                                            logInfo(`    Decorator: ${decorator.expression.type}`);
+                                        }
+                                    });
+                                }
                             } else {
                                 // Check if this property might have had @state decorator but it was removed
                                 // This can happen if TypeScript preset or another plugin processed it first
@@ -343,7 +370,7 @@ export default function babelPluginWSXState(): PluginObj<WSXStatePluginPass> {
                                 );
 
                                 // DEBUG: Log hasInitialValue for count
-                                if (key === "count") {
+                                if (key === "count" && debug) {
                                     console.error(
                                         `[Babel Plugin WSX State] DEBUG: hasInitialValue for 'count' = ${hasInitialValue}, type = ${typeof hasInitialValue}`
                                     );

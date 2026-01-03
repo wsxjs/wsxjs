@@ -8,7 +8,6 @@ import {
     collectPreservedElements,
     findElementNode,
     findTextNode,
-    shouldUpdateTextNode,
     updateOrCreateTextNode,
     removeNodeIfNotPreserved,
     replaceOrInsertElement,
@@ -130,26 +129,6 @@ describe("findTextNode", () => {
         const found = findTextNode(parent, domIndex);
         expect(found).toBeNull();
         expect(domIndex.value).toBe(1);
-    });
-});
-
-describe("shouldUpdateTextNode", () => {
-    test("应该返回 true 如果文本内容不同", () => {
-        expect(shouldUpdateTextNode("Old", "New", null)).toBe(true);
-    });
-
-    test("应该返回 false 如果文本内容相同", () => {
-        expect(shouldUpdateTextNode("Same", "Same", null)).toBe(false);
-    });
-
-    test("应该返回 true 如果 DOM 中的文本内容不同", () => {
-        const textNode = document.createTextNode("DOM Text");
-        expect(shouldUpdateTextNode("Same", "Same", textNode)).toBe(true);
-    });
-
-    test("应该返回 false 如果文本内容和 DOM 内容都相同", () => {
-        const textNode = document.createTextNode("Same");
-        expect(shouldUpdateTextNode("Same", "Same", textNode)).toBe(false);
     });
 });
 
@@ -374,7 +353,7 @@ describe("shouldRemoveNode", () => {
         const elementSet = new Set<HTMLElement | SVGElement | DocumentFragment>();
         const cacheKeyMap = new Map<string, HTMLElement | SVGElement>();
 
-        expect(shouldRemoveNode(preserved, elementSet, cacheKeyMap)).toBe(false);
+        expect(shouldRemoveNode(preserved, elementSet, cacheKeyMap, undefined)).toBe(false);
     });
 
     test("应该返回 false 对于在新子元素集合中的元素", () => {
@@ -382,7 +361,7 @@ describe("shouldRemoveNode", () => {
         const elementSet = new Set([element]);
         const cacheKeyMap = new Map();
 
-        expect(shouldRemoveNode(element, elementSet, cacheKeyMap)).toBe(false);
+        expect(shouldRemoveNode(element, elementSet, cacheKeyMap, undefined)).toBe(false);
     });
 
     test("应该返回 false 对于通过 cache key 匹配的元素", () => {
@@ -391,7 +370,7 @@ describe("shouldRemoveNode", () => {
         const elementSet = new Set<HTMLElement | SVGElement | DocumentFragment>();
         const cacheKeyMap = new Map<string, HTMLElement | SVGElement>([[cacheKey, element]]);
 
-        expect(shouldRemoveNode(element, elementSet, cacheKeyMap)).toBe(false);
+        expect(shouldRemoveNode(element, elementSet, cacheKeyMap, undefined)).toBe(false);
     });
 
     test("应该返回 true 对于应该移除的节点", () => {
@@ -399,7 +378,7 @@ describe("shouldRemoveNode", () => {
         const elementSet = new Set<HTMLElement | SVGElement | DocumentFragment>();
         const cacheKeyMap = new Map<string, HTMLElement | SVGElement>();
 
-        expect(shouldRemoveNode(element, elementSet, cacheKeyMap)).toBe(true);
+        expect(shouldRemoveNode(element, elementSet, cacheKeyMap, undefined)).toBe(true);
     });
 });
 
@@ -412,6 +391,10 @@ describe("deduplicateCacheKeys", () => {
 
         const cacheKey = getElementCacheKey(newElement)!;
         const cacheKeyMap = new Map([[cacheKey, newElement]]);
+
+        // 关键修复：在 deduplicateCacheKeys 中，只有当 newElement 已经在 DOM 中时才会替换
+        // 所以我们需要先将 newElement 添加到 DOM（模拟 updateChildren 的完整流程）
+        parent.appendChild(newElement);
 
         deduplicateCacheKeys(parent, cacheKeyMap);
         expect(parent.childNodes.length).toBe(1);

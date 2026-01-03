@@ -26,6 +26,10 @@
 - **[实践计划](guide/2025-07-14-wsx-practice-plan.md)** - 系统性的学习计划
 - **[独立开发模板](guide/2025-07-16-wsx-solo-dev-template.md)** - 快速搭建开发环境
 
+### 🤖 AI 代理开发指南
+
+- **[AI 代理指南](./AI_AGENT_GUIDE.md)** - AI 代理开发 WSXJS 代码的完整指南，包含组件开发规范、RFC 流程、代码风格等
+
 ### 📋 RFC（设计决策文档）
 
 所有重要的设计决策和技术方案都记录在 RFC 中：

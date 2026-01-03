@@ -1,5 +1,6 @@
 /**
  * Babel plugin to automatically add data-wsx-key attributes to focusable elements
+ * for focus preservation only (RFC-0046).
  *
  * Transforms:
  *   <input value={this.name} onInput={this.handleInput} />
@@ -12,6 +13,10 @@
  *   />
  *
  * This enables automatic focus preservation during component rerenders.
+ *
+ * IMPORTANT: This plugin ONLY handles focus preservation. It does NOT generate
+ * cache keys or position IDs. The framework handles cache key generation using
+ * user-provided `key` prop or runtime counters (following React/Vue design).
  */
 
 import type { PluginObj, NodePath } from "@babel/core";

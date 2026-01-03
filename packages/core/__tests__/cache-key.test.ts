@@ -42,6 +42,12 @@ describe("Cache Key Generation", () => {
             expect(cacheKey).toBe("TestComponent:123:div:pos-1");
         });
 
+        test("应该使用位置 ID（当没有 key 和 index 时）", () => {
+            const props = { __wsxPositionId: "pos-1" };
+            const cacheKey = generateCacheKey("div", props, componentId);
+            expect(cacheKey).toBe("TestComponent:123:div:pos-1");
+        });
+
         test("应该使用组件计数器（当没有任何标识符时，且提供了 component）", () => {
             const component = new MockComponent();
             const props = {};
@@ -78,6 +84,18 @@ describe("Cache Key Generation", () => {
             const props = { key: "user-key", __wsxPositionId: "pos-1" };
             const cacheKey = generateCacheKey("div", props, componentId);
             expect(cacheKey).toBe("TestComponent:123:div:key-user-key");
+        });
+
+        test("key 优先级高于 position ID", () => {
+            const props = { key: "user-key", __wsxPositionId: "pos-1" };
+            const cacheKey = generateCacheKey("div", props, componentId);
+            expect(cacheKey).toBe("TestComponent:123:div:key-user-key");
+        });
+
+        test("index 优先级高于 position ID", () => {
+            const props = { __wsxIndex: 3, __wsxPositionId: "pos-1" };
+            const cacheKey = generateCacheKey("li", props, componentId);
+            expect(cacheKey).toBe("TestComponent:123:li:idx-3");
         });
 
         test("index 优先级高于 position ID", () => {

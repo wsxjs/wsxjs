@@ -251,12 +251,24 @@ export abstract class LightComponent extends BaseComponent {
                 });
                 oldChildren.forEach((child) => child.remove());
 
-                // 确保样式元素在第一个位置
-                if (stylesToApply && this.children.length > 1) {
-                    const styleElement = this.querySelector(
+                // 确保样式元素存在并在第一个位置
+                // 关键修复：在元素复用场景中，如果 _autoStyles 存在但样式元素被意外移除，需要重新创建
+                if (stylesToApply) {
+                    let styleElement = this.querySelector(
                         `style[data-wsx-light-component="${styleName}"]`
-                    );
-                    if (styleElement && styleElement !== this.firstChild) {
+                    ) as HTMLStyleElement | null;
+
+                    if (!styleElement) {
+                        // 样式元素被意外移除，重新创建
+                        styleElement = document.createElement("style");
+                        styleElement.setAttribute("data-wsx-light-component", styleName);
+                        styleElement.textContent = stylesToApply;
+                        this.insertBefore(styleElement, this.firstChild);
+                    } else if (styleElement.textContent !== stylesToApply) {
+                        // 样式内容已变化，更新
+                        styleElement.textContent = stylesToApply;
+                    } else if (styleElement !== this.firstChild) {
+                        // 样式元素存在但不在第一个位置，移动到第一个位置
                         this.insertBefore(styleElement, this.firstChild);
                     }
                 }
