@@ -569,18 +569,19 @@ The following RFCs document important design decisions and best practices:
 
 - **[RFC-0006](./rfcs/completed/0006-light-dom-components.md)**: Container-Light, Leaf-Shadow architecture pattern
 - **[RFC-0013](./rfcs/completed/0013-state-initial-value-validation.md)**: @state decorator initial value validation
-- **[RFC-0037](./rfcs/0037-vapor-mode-inspired-dom-optimization.md)**: DOM optimization and cache key best practices
-- **[RFC-0039](./rfcs/0039-enforce-super-lifecycle-calls.md)**: Enforce super calls in lifecycle methods
-- **[RFC-0040](./rfcs/0040-text-node-update-bug-fixes.md)**: Text node update bug fixes
-- **[RFC-0041](./rfcs/0041-cache-reuse-element-order-and-ref-callback-fixes.md)**: Cache reuse, element order, and ref callback fixes
-- **[RFC-0042](./rfcs/0042-language-switcher-immediate-ui-update.md)**: State management best practices for immediate UI updates
+- **[RFC-0037](./rfcs/completed/0037-vapor-mode-inspired-dom-optimization.md)**: DOM optimization and cache key best practices
+- **[RFC-0039](./rfcs/completed/0039-enforce-super-lifecycle-calls.md)**: Enforce super calls in lifecycle methods
+- **[RFC-0040](./rfcs/completed/0040-text-node-update-bug-fixes.md)**: Text node update bug fixes
+- **[RFC-0041](./rfcs/completed/0041-cache-reuse-element-order-and-ref-callback-fixes.md)**: Cache reuse, element order, and ref callback fixes
+- **[RFC-0042](./rfcs/completed/0042-language-switcher-immediate-ui-update.md)**: State management best practices for immediate UI updates
 
 ### Related Documentation
 
+- [AI Agent Site Build Guide](./AI_AGENT_SITE_BUILD_GUIDE.md) - Guide for building complete websites with WSXJS
 - [WSXJS Design Philosophy](../site/public/docs/guide/DESIGN_PHILOSOPHY.md)
 - [Web Component Guide](../site/public/docs/guide/WEB_COMPONENT_GUIDE.md)
 - [RFC Index](./rfcs/README.md)
 
 ---
 
-**Last Updated**: Based on RFC-0039, RFC-0041, RFC-0006, RFC-0013, RFC-0037, RFC-0040, and RFC-0042
+**Last Updated**: 2025-01-03 - Based on RFC-0039, RFC-0041, RFC-0006, RFC-0013, RFC-0037, RFC-0040, and RFC-0042

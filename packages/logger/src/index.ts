@@ -1,9 +1,10 @@
 /**
  * @wsxjs/wsx-logger
  * Browser-optimized logging utility for WSXJS
+ *
+ * Pure native browser implementation - zero dependencies
+ * Uses native console API for maximum compatibility and minimal bundle size
  */
-
-import log from "loglevel";
 
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "silent";
 
@@ -32,27 +33,15 @@ export interface LoggerConfig {
 }
 
 /**
- * Map WSXJS log levels to loglevel string levels
+ * Log level hierarchy (numeric values for comparison)
  */
-const LOG_LEVEL_MAP: Record<LogLevel, log.LogLevelDesc> = {
-    trace: "trace",
-    debug: "debug",
-    info: "info",
-    warn: "warn",
-    error: "error",
-    silent: "silent",
-};
-
-/**
- * Map loglevel numeric levels to WSXJS log levels
- */
-const NUMERIC_TO_LEVEL: Record<number, LogLevel> = {
-    0: "trace",
-    1: "debug",
-    2: "info",
-    3: "warn",
-    4: "error",
-    5: "silent",
+const LOG_LEVEL_VALUES: Record<LogLevel, number> = {
+    trace: 0,
+    debug: 1,
+    info: 2,
+    warn: 3,
+    error: 4,
+    silent: 5,
 };
 
 /**
@@ -88,23 +77,6 @@ const DEFAULT_CONFIG: LoggerConfig = {
 };
 
 /**
- * Create a loglevel logger instance with prefix support
- */
-function createLoglevelLogger(config: LoggerConfig = {}): log.Logger {
-    const { name, level } = { ...DEFAULT_CONFIG, ...config };
-
-    // Create a new logger instance for this component
-    const loggerName = name || DEFAULT_CONFIG.name || "WSX";
-    const loggerInstance = log.getLogger(loggerName);
-
-    // Set the log level
-    const targetLevel = level || DEFAULT_CONFIG.level || "info";
-    loggerInstance.setLevel(LOG_LEVEL_MAP[targetLevel]);
-
-    return loggerInstance;
-}
-
-/**
  * Format log message with prefix
  */
 function formatMessage(name: string, message: string): string {
@@ -112,21 +84,43 @@ function formatMessage(name: string, message: string): string {
 }
 
 /**
- * WSX Logger wrapper that implements the Logger interface
- * and uses loglevel under the hood
+ * Native browser logger implementation using console API
+ * Zero dependencies, perfect browser compatibility
  */
-export class WSXLogger implements Logger {
-    private logInstance: log.Logger;
+class NativeLogger {
     private name: string;
+    private level: LogLevel;
+    private levelValue: number;
     private isProd: boolean;
-    private currentLevel: LogLevel;
 
-    constructor(config: LoggerConfig = {}) {
+    constructor(name: string, level: LogLevel) {
+        this.name = name;
+        this.level = level;
+        this.levelValue = LOG_LEVEL_VALUES[level];
         this.isProd = isProduction();
-        this.name = config.name || DEFAULT_CONFIG.name || "WSX";
-        this.currentLevel =
-            config.level || DEFAULT_CONFIG.level || (this.isProd ? "info" : "debug");
-        this.logInstance = createLoglevelLogger(config);
+    }
+
+    /**
+     * Check if a log level should be logged
+     */
+    private shouldLog(level: LogLevel): boolean {
+        if (this.level === "silent") {
+            return false;
+        }
+        return LOG_LEVEL_VALUES[level] >= this.levelValue;
+    }
+
+    trace(message: string, ...args: unknown[]): void {
+        // Trace is only shown in non-production or if explicitly enabled
+        if (!this.isProd || this.shouldLog("trace")) {
+            const formattedMessage = formatMessage(this.name, message);
+            // Use console.debug for trace (browsers don't have console.trace as a log method)
+            if (args.length > 0) {
+                console.debug(formattedMessage, ...args);
+            } else {
+                console.debug(formattedMessage);
+            }
+        }
     }
 
     debug(message: string, ...args: unknown[]): void {
@@ -134,9 +128,9 @@ export class WSXLogger implements Logger {
         if (!this.isProd || this.shouldLog("debug")) {
             const formattedMessage = formatMessage(this.name, message);
             if (args.length > 0) {
-                this.logInstance.debug(formattedMessage, ...args);
+                console.debug(formattedMessage, ...args);
             } else {
-                this.logInstance.debug(formattedMessage);
+                console.debug(formattedMessage);
             }
         }
     }
@@ -145,71 +139,97 @@ export class WSXLogger implements Logger {
         if (this.shouldLog("info")) {
             const formattedMessage = formatMessage(this.name, message);
             if (args.length > 0) {
-                this.logInstance.info(formattedMessage, ...args);
+                console.info(formattedMessage, ...args);
             } else {
-                this.logInstance.info(formattedMessage);
+                console.info(formattedMessage);
             }
         }
     }
 
     warn(message: string, ...args: unknown[]): void {
         // Always show warnings (in both production and development)
-        const formattedMessage = formatMessage(this.name, message);
-        if (args.length > 0) {
-            this.logInstance.warn(formattedMessage, ...args);
-        } else {
-            this.logInstance.warn(formattedMessage);
+        if (this.shouldLog("warn")) {
+            const formattedMessage = formatMessage(this.name, message);
+            if (args.length > 0) {
+                console.warn(formattedMessage, ...args);
+            } else {
+                console.warn(formattedMessage);
+            }
         }
     }
 
     error(message: string, ...args: unknown[]): void {
         // Always show errors (in both production and development)
-        const formattedMessage = formatMessage(this.name, message);
-        if (args.length > 0) {
-            this.logInstance.error(formattedMessage, ...args);
-        } else {
-            this.logInstance.error(formattedMessage);
-        }
-    }
-
-    fatal(message: string, ...args: unknown[]): void {
-        // Fatal is treated as error in loglevel
-        const formattedMessage = formatMessage(this.name, message);
-        if (args.length > 0) {
-            this.logInstance.error(`[FATAL] ${formattedMessage}`, ...args);
-        } else {
-            this.logInstance.error(`[FATAL] ${formattedMessage}`);
-        }
-    }
-
-    trace(message: string, ...args: unknown[]): void {
-        // Always show trace logs in non-production environments
-        if (!this.isProd || this.shouldLog("trace")) {
+        if (this.shouldLog("error")) {
             const formattedMessage = formatMessage(this.name, message);
             if (args.length > 0) {
-                this.logInstance.trace(formattedMessage, ...args);
+                console.error(formattedMessage, ...args);
             } else {
-                this.logInstance.trace(formattedMessage);
+                console.error(formattedMessage);
             }
         }
     }
 
     /**
-     * Check if a log level should be logged based on current level
+     * Set the log level dynamically
      */
-    private shouldLog(level: LogLevel): boolean {
-        const levels: LogLevel[] = ["trace", "debug", "info", "warn", "error", "silent"];
-        const currentLevelIndex = levels.indexOf(this.currentLevel);
-        const messageLevelIndex = levels.indexOf(level);
-
-        return messageLevelIndex >= currentLevelIndex;
+    setLevel(level: LogLevel): void {
+        this.level = level;
+        this.levelValue = LOG_LEVEL_VALUES[level];
     }
 
     /**
-     * Get the underlying loglevel logger instance
+     * Get the current log level
      */
-    getLoglevelLogger(): log.Logger {
-        return this.logInstance;
+    getLevel(): LogLevel {
+        return this.level;
+    }
+}
+
+/**
+ * WSX Logger wrapper that implements the Logger interface
+ * Uses native browser console API - zero dependencies
+ */
+export class WSXLogger implements Logger {
+    private nativeLogger: NativeLogger;
+    private name: string;
+    private currentLevel: LogLevel;
+
+    constructor(config: LoggerConfig = {}) {
+        this.name = config.name || DEFAULT_CONFIG.name || "WSX";
+        this.currentLevel =
+            config.level || DEFAULT_CONFIG.level || (isProduction() ? "info" : "debug");
+        this.nativeLogger = new NativeLogger(this.name, this.currentLevel);
+    }
+
+    debug(message: string, ...args: unknown[]): void {
+        this.nativeLogger.debug(message, ...args);
+    }
+
+    info(message: string, ...args: unknown[]): void {
+        this.nativeLogger.info(message, ...args);
+    }
+
+    warn(message: string, ...args: unknown[]): void {
+        this.nativeLogger.warn(message, ...args);
+    }
+
+    error(message: string, ...args: unknown[]): void {
+        this.nativeLogger.error(message, ...args);
+    }
+
+    fatal(message: string, ...args: unknown[]): void {
+        // Fatal is treated as error with [FATAL] prefix
+        const formattedMessage = formatMessage(this.name, `[FATAL] ${message}`);
+        if (args.length > 0) {
+            console.error(formattedMessage, ...args);
+        } else {
+            console.error(formattedMessage);
+        }
+    }
+
+    trace(message: string, ...args: unknown[]): void {
+        this.nativeLogger.trace(message, ...args);
     }
 
     /**
@@ -217,15 +237,14 @@ export class WSXLogger implements Logger {
      */
     setLevel(level: LogLevel): void {
         this.currentLevel = level;
-        this.logInstance.setLevel(LOG_LEVEL_MAP[level] as log.LogLevelDesc);
+        this.nativeLogger.setLevel(level);
     }
 
     /**
      * Get the current log level
      */
     getLevel(): LogLevel {
-        const numericLevel = this.logInstance.getLevel();
-        return NUMERIC_TO_LEVEL[numericLevel] || this.currentLevel;
+        return this.nativeLogger.getLevel();
     }
 }
 
@@ -257,7 +276,3 @@ export function createLogger(componentName: string, config: LoggerConfig = {}): 
 export function createLoggerWithConfig(config: LoggerConfig): Logger {
     return new WSXLogger(config);
 }
-
-// Export loglevel types for advanced usage
-export type { Logger as LoglevelLogger } from "loglevel";
-export { log as loglevel } from "loglevel";

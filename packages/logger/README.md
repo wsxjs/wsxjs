@@ -1,6 +1,6 @@
 # @wsxjs/wsx-logger
 
-Browser-optimized logging utility for WSXJS, powered by [loglevel](https://github.com/pimterry/loglevel).
+Browser-optimized logging utility for WSXJS. Pure native browser implementation with zero dependencies.
 
 ## Installation
 
@@ -42,18 +42,17 @@ const logger = createLoggerWithConfig({
 });
 ```
 
-### Advanced Usage with Loglevel
+### Advanced Usage
 
 ```typescript
-import { createLogger, type LoglevelLogger } from "@wsxjs/wsx-logger";
+import { createLogger } from "@wsxjs/wsx-logger";
 
-const wsxLogger = createLogger("MyComponent");
-const loglevelLogger = wsxLogger.getLoglevelLogger(); // Access underlying loglevel logger
+const logger = createLogger("MyComponent");
 
-// Use loglevel's advanced features
-loglevelLogger.setLevel("warn");
-const currentLevel = wsxLogger.getLevel();
-wsxLogger.setLevel("debug");
+// Dynamic log level control
+logger.setLevel("warn");
+const currentLevel = logger.getLevel();
+logger.setLevel("debug");
 ```
 
 ## Configuration
@@ -74,22 +73,24 @@ wsxLogger.setLevel("debug");
 
 ## Features
 
-- ✅ Browser-optimized with loglevel (~1KB)
-- ✅ Zero dependencies (loglevel is the only dependency)
-- ✅ Compatible with WSXJS core logger interface
-- ✅ TypeScript support
-- ✅ Environment-aware configuration
-- ✅ Component-specific loggers
-- ✅ Dynamic log level control
-- ✅ Production-ready (automatically reduces verbosity in production)
+- ✅ **Zero dependencies** - Pure native browser implementation
+- ✅ **Lightweight** - Minimal bundle size (~500 bytes gzipped)
+- ✅ **Browser-optimized** - Uses native `console` API
+- ✅ **Compatible** - WSXJS core logger interface
+- ✅ **TypeScript** - Full type support
+- ✅ **Environment-aware** - Auto-configures based on production/development
+- ✅ **Component-specific** - Create loggers with custom prefixes
+- ✅ **Dynamic control** - Change log levels at runtime
+- ✅ **Production-ready** - Automatically reduces verbosity in production
 
-## Why Loglevel?
+## Why Native Implementation?
 
-- **Lightweight**: Only ~1KB minified
-- **Browser-first**: Designed specifically for browser environments
-- **No Node.js dependencies**: Pure browser implementation
-- **Performance**: Minimal overhead, uses native console methods
-- **Flexible**: Easy to configure and extend
+- **Zero dependencies**: No external packages, perfect for WSXJS's zero-dependency philosophy
+- **Native browser API**: Uses standard `console` methods (debug, info, warn, error)
+- **Maximum compatibility**: Works in all modern browsers without polyfills
+- **Minimal overhead**: Direct console calls, no abstraction layer
+- **Full control**: Complete control over logging behavior
+- **Bundle size**: Smaller than any external logging library
 
 ## License
 

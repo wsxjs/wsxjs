@@ -28,9 +28,7 @@
         "lint": "eslint .",
         "lint:fix": "eslint . --fix"
     },
-    "dependencies": {
-        "loglevel": "^1.9.1"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@types/node": "^20.0.0",
         "@typescript-eslint/eslint-plugin": "^8.37.0",
@@ -42,10 +40,11 @@
     "keywords": [
         "wsx",
         "logger",
-        "loglevel",
         "logging",
         "web-components",
-        "browser"
+        "browser",
+        "zero-dependencies",
+        "native"
     ],
     "author": "WSXJS Team",
     "license": "MIT",

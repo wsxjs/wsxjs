@@ -13,11 +13,8 @@ export default defineConfig({
             fileName: (format) => `index.${format === "es" ? "js" : "cjs"}`,
         },
         rollupOptions: {
-            external: ["loglevel"],
+            // No external dependencies - pure native browser implementation
             output: {
-                globals: {
-                    loglevel: "log",
-                },
                 // 禁用压缩，保持代码可读性，便于调试和 tree-shaking
                 minifyInternalExports: false,
             },

@@ -21,7 +21,7 @@ WSXJS 致力于成为构建原生 Web Components 的最佳开发体验，在保�
 - **响应式系统** - `@state` 装饰器、`reactive()` 和 `useState()` API
 - **路由系统** - `@wsxjs/wsx-router` 基于 History API 的路由
 - **国际化支持** - `@wsxjs/wsx-i18next` 集成 i18next
-- **日志系统** - `@wsxjs/wsx-logger` 基于 loglevel 的浏览器优化日志工具
+- **日志系统** - `@wsxjs/wsx-logger` 零依赖的原生浏览器日志工具
 - **文档生成器** - `@wsxjs/wsx-press` 静态文档站点生成
 - **Markdown 组件** - `@wsxjs/wsx-marked-components` Markdown 渲染组件
 - **基础组件库** - Button, ColorPicker, Dropdown, Combobox, CodeBlock, ThemeSwitcher, ResponsiveNav, SvgIcon, ButtonGroup, LanguageSwitcher
