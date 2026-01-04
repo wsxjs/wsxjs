@@ -1,0 +1,12 @@
+{
+    "projectName": "quizerjs",
+    "packageManager": "pnpm",
+    "demos": [
+        {
+            "name": "Site",
+            "value": "site",
+            "description": "WSXJS Site",
+            "package": "@wsxjs/wsx-site"
+        }
+    ]
+}
