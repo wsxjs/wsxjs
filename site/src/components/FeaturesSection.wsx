@@ -60,7 +60,10 @@ export default class FeaturesSection extends WebComponent {
 
                     <div class="features-grid">
                         {features.map((feature, index) => (
-                            <div class={`feature-card feature-${feature.color}`} key={index}>
+                            <div
+                                class={`feature-card feature-${feature.color} scroll-fade-in`}
+                                key={index}
+                            >
                                 <div class="feature-icon">{feature.icon}</div>
                                 <h3 class="feature-title">{feature.title}</h3>
                                 <p class="feature-description">{feature.description}</p>

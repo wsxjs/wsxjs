@@ -107,7 +107,7 @@ export default class ExamplesSection extends WebComponent {
                     <div class="category-section">
                         <h3 class="category-title">{this.t("examplesSection.categories.core")}</h3>
                         <div class="examples-grid">
-                            <div class="example-card">
+                            <div class="example-card scroll-fade-in">
                                 <div class="example-header">
                                     <h3>
                                         {this.t("examplesSection.examples.reactiveState.title")}
@@ -124,7 +124,7 @@ export default class ExamplesSection extends WebComponent {
                                 </div>
                             </div>
 
-                            <div class="example-card">
+                            <div class="example-card scroll-fade-in">
                                 <div class="example-header">
                                     <h3>{this.t("examplesSection.examples.router.title")}</h3>
                                     <span class="example-badge">
@@ -155,7 +155,7 @@ export default class ExamplesSection extends WebComponent {
                             {this.t("examplesSection.categories.advanced")}
                         </h3>
                         <div class="examples-grid">
-                            <div class="example-card">
+                            <div class="example-card scroll-fade-in">
                                 <div class="example-header">
                                     <h3>{this.t("examplesSection.examples.svg.title")}</h3>
                                     <span class="example-badge">
@@ -168,7 +168,7 @@ export default class ExamplesSection extends WebComponent {
                                 </div>
                             </div>
 
-                            <div class="example-card">
+                            <div class="example-card scroll-fade-in">
                                 <div class="example-header">
                                     <h3>{this.t("examplesSection.examples.colorPicker.title")}</h3>
                                     <span class="example-badge">
@@ -189,7 +189,7 @@ export default class ExamplesSection extends WebComponent {
                             {this.t("examplesSection.categories.integrations")}
                         </h3>
                         <div class="examples-grid">
-                            <div class="example-card full-width">
+                            <div class="example-card full-width scroll-fade-in">
                                 <div class="example-header">
                                     <h3>{this.t("examplesSection.examples.editorjs.title")}</h3>
                                     <span class="example-badge">

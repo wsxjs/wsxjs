@@ -246,23 +246,42 @@ wsx-link[active]::part(link)::after {
     padding: 0 2rem;
 }
 
-/* 导航栏样式 */
+/* 导航栏样式 - UI/UX PRO MAX 增强版 */
 .main-nav {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    background: var(--bg-primary);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    background: rgba(254, 242, 229, 0.8);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border-color);
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    /* 玻璃态效果增强 */
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
 }
 
 .main-nav.nav-scrolled {
-    background: var(--bg-primary);
-    box-shadow: 0 2px 20px var(--card-shadow);
+    background: rgba(254, 242, 229, 0.95);
+    box-shadow:
+        0 4px 30px rgba(220, 38, 38, 0.1),
+        0 1px 0 rgba(0, 0, 0, 0.05);
+    border-bottom-color: rgba(220, 38, 38, 0.2);
+}
+
+/* 深色模式导航栏 */
+.dark .main-nav,
+html:not(.light):not([data-theme="light"]) .main-nav {
+    background: rgba(26, 26, 26, 0.8);
+}
+
+.dark .main-nav.nav-scrolled,
+html:not(.light):not([data-theme="light"]) .main-nav.nav-scrolled {
+    background: rgba(26, 26, 26, 0.95);
+    box-shadow:
+        0 4px 30px rgba(0, 0, 0, 0.3),
+        0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .nav-container {
@@ -362,7 +381,7 @@ wsx-link[active]::part(link)::after {
     transition: all 0.3s ease;
 }
 
-/* Hero区域 - 深红橘色主题 */
+/* Hero区域 - 深红橘色主题 - UI/UX PRO MAX 增强版 */
 .hero-section {
     background: linear-gradient(
         135deg,
@@ -378,6 +397,36 @@ wsx-link[active]::part(link)::after {
     position: relative;
     overflow: hidden;
     padding-top: 70px;
+    /* 增强的视觉效果 */
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* Hero 背景增强 - 添加动态渐变 */
+.hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    animation: gradientShift 15s ease infinite;
+    z-index: 0;
+}
+
+@keyframes gradientShift {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
 }
 
 .hero-background {
@@ -465,6 +514,14 @@ wsx-link[active]::part(link)::after {
     border-radius: 20px;
     padding: 0.5rem 1rem;
     margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.hero-badge:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .badge-text {
@@ -554,12 +611,42 @@ wsx-link[active]::part(link)::after {
     background: var(--btn-primary-bg);
     color: white;
     box-shadow: 0 4px 15px var(--btn-primary-shadow);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-primary::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition:
+        width 0.6s,
+        height 0.6s;
+    z-index: -1;
 }
 
 .btn-primary:hover {
     background: var(--btn-primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px var(--btn-primary-shadow-hover);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow:
+        0 8px 25px var(--btn-primary-shadow-hover),
+        0 0 20px rgba(220, 38, 38, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+.btn-primary:hover::after {
+    width: 300px;
+    height: 300px;
 }
 
 .btn-secondary {
@@ -590,10 +677,11 @@ wsx-link[active]::part(link)::after {
     font-size: 1.1rem;
 }
 
-/* 区域标题样式 */
+/* 区域标题样式 - UI/UX PRO MAX 增强版 */
 .section-header {
     text-align: center;
     margin-bottom: 4rem;
+    position: relative;
 }
 
 .section-title {
@@ -601,6 +689,24 @@ wsx-link[active]::part(link)::after {
     font-weight: 700;
     color: var(--text-primary);
     margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary-red), var(--accent-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: titleFadeIn 0.8s ease-out;
+}
+
+@keyframes titleFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .section-description {
@@ -610,6 +716,18 @@ wsx-link[active]::part(link)::after {
     max-width: 600px;
     margin: 0 auto;
     line-height: 1.6;
+    animation: descriptionFadeIn 0.8s ease-out 0.2s both;
+}
+
+@keyframes descriptionFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* 特性区域样式 */
@@ -630,15 +748,39 @@ wsx-link[active]::part(link)::after {
     text-align: center;
     padding: 3rem 2rem;
     background: var(--bg-primary);
-    border-radius: 12px;
+    border-radius: 16px;
     box-shadow: 0 4px 20px var(--card-shadow);
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    /* 玻璃态效果 */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* 卡片悬停光效 */
+.feature-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.feature-card:hover::before {
+    left: 100%;
 }
 
 .feature-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px var(--card-shadow-hover);
+    transform: translateY(-12px) scale(1.02);
+    box-shadow:
+        0 20px 40px var(--card-shadow-hover),
+        0 0 0 1px rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.3);
 }
 
 .feature-icon {
@@ -699,10 +841,21 @@ wsx-link[active]::part(link)::after {
 
 .code-example {
     background: var(--bg-primary);
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 8px 30px var(--card-shadow-hover);
+    box-shadow:
+        0 8px 30px var(--card-shadow-hover),
+        0 0 0 1px rgba(220, 38, 38, 0.05);
     border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.code-example:hover {
+    box-shadow:
+        0 12px 40px var(--card-shadow-hover),
+        0 0 0 1px rgba(220, 38, 38, 0.1);
+    transform: translateY(-2px);
 }
 
 .code-header {
@@ -725,15 +878,50 @@ wsx-link[active]::part(link)::after {
     color: var(--text-primary);
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.8rem;
-    transition: background 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    font-weight: 500;
+}
+
+.copy-btn::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(220, 38, 38, 0.2);
+    transform: translate(-50%, -50%);
+    transition:
+        width 0.6s,
+        height 0.6s;
+    z-index: 0;
 }
 
 .copy-btn:hover {
-    background: var(--text-secondary);
-    color: var(--bg-primary);
+    background: var(--primary-red);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.copy-btn:active {
+    transform: scale(0.98);
+}
+
+.copy-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.copy-btn > * {
+    position: relative;
+    z-index: 1;
 }
 
 .code-block {
@@ -804,16 +992,38 @@ wsx-link[active]::part(link)::after {
 
 .example-card {
     background: var(--bg-primary);
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 4px 20px var(--card-shadow);
     border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.example-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.example-card:hover::before {
+    left: 100%;
 }
 
 .example-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px var(--card-shadow-hover);
+    transform: translateY(-8px) scale(1.01);
+    box-shadow:
+        0 12px 30px var(--card-shadow-hover),
+        0 0 0 1px rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.3);
 }
 
 .example-header {
@@ -880,14 +1090,36 @@ wsx-link[active]::part(link)::after {
     text-align: center;
     padding: 3rem 2rem;
     background: var(--bg-secondary);
-    border-radius: 12px;
+    border-radius: 16px;
     border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.ecosystem-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.ecosystem-card:hover::before {
+    left: 100%;
 }
 
 .ecosystem-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px var(--card-shadow-hover);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow:
+        0 12px 30px var(--card-shadow-hover),
+        0 0 0 1px rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.3);
 }
 
 .ecosystem-icon {
@@ -925,11 +1157,45 @@ wsx-link[active]::part(link)::after {
     color: var(--btn-primary-hover);
 }
 
-/* 页脚 */
+/* 页脚 - UI/UX PRO MAX 增强版 */
 .footer {
     background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
     color: white;
     padding: 4rem 2rem 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    animation: footerGradientShift 20s ease infinite;
+    z-index: 0;
+}
+
+@keyframes footerGradientShift {
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+.footer-content,
+.footer-bottom {
+    position: relative;
+    z-index: 1;
 }
 
 .footer-content {
@@ -1019,8 +1285,26 @@ wsx-link[active]::part(link)::after {
     margin-bottom: 0.5rem;
 }
 
-/* 响应式设计 */
+/* 响应式设计 - UI/UX PRO MAX 增强版 */
 @media (max-width: 768px) {
+    /* 移动端优化动画性能 */
+    .hero-shape,
+    .hero-pattern {
+        animation-duration: 10s;
+    }
+
+    /* 移动端减少模糊效果以提升性能 */
+    .main-nav {
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+    }
+
+    /* 移动端优化卡片悬停效果 */
+    .feature-card:hover,
+    .example-card:hover,
+    .ecosystem-card:hover {
+        transform: translateY(-4px) scale(1);
+    }
     .nav-menu {
         position: fixed;
         top: 70px;
@@ -1117,9 +1401,66 @@ wsx-link[active]::part(link)::after {
     .ecosystem-card {
         padding: 2rem 1.5rem;
     }
+
+    /* 小屏幕优化标题 */
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .title-main {
+        font-size: clamp(2rem, 6vw, 3.5rem);
+    }
+
+    /* 小屏幕优化动画性能 */
+    .hero-shape {
+        display: none; /* 小屏幕隐藏装饰元素以提升性能 */
+    }
+
+    /* 小屏幕优化卡片效果 */
+    .feature-card::before,
+    .example-card::before,
+    .ecosystem-card::before {
+        display: none; /* 小屏幕禁用光效以提升性能 */
+    }
 }
 
-/* 动画效果 */
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+    /* 触摸设备上禁用悬停效果，使用点击反馈 */
+    .feature-card:active,
+    .example-card:active,
+    .ecosystem-card:active {
+        transform: scale(0.98);
+    }
+
+    .btn-primary:active,
+    .btn-secondary:active,
+    .btn-ghost:active {
+        transform: scale(0.95);
+    }
+}
+
+/* ============================================
+   UI/UX PRO MAX - 高级动画和交互效果
+   ============================================ */
+
+/* 页面过渡动画 */
+@keyframes pageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.app-content {
+    animation: pageFadeIn 0.4s ease-out;
+}
+
+/* 滚动触发的渐入动画 */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -1131,34 +1472,359 @@ wsx-link[active]::part(link)::after {
     }
 }
 
-.feature-card {
-    animation: fadeInUp 0.6s ease-out;
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.feature-card:nth-child(2) {
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 滚动动画类 - 通过 Intersection Observer 添加 */
+.scroll-fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+        opacity 0.6s ease-out,
+        transform 0.6s ease-out;
+}
+
+.scroll-fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.scroll-fade-in-left {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition:
+        opacity 0.6s ease-out,
+        transform 0.6s ease-out;
+}
+
+.scroll-fade-in-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.scroll-fade-in-right {
+    opacity: 0;
+    transform: translateX(30px);
+    transition:
+        opacity 0.6s ease-out,
+        transform 0.6s ease-out;
+}
+
+.scroll-fade-in-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.scroll-scale-in {
+    opacity: 0;
+    transform: scale(0.9);
+    transition:
+        opacity 0.6s ease-out,
+        transform 0.6s ease-out;
+}
+
+.scroll-scale-in.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* 卡片动画 */
+.feature-card,
+.example-card,
+.ecosystem-card {
+    animation: fadeInUp 0.6s ease-out;
+    will-change: transform;
+}
+
+.feature-card:nth-child(2),
+.example-card:nth-child(2),
+.ecosystem-card:nth-child(2) {
     animation-delay: 0.1s;
 }
 
-.feature-card:nth-child(3) {
+.feature-card:nth-child(3),
+.example-card:nth-child(3),
+.ecosystem-card:nth-child(3) {
     animation-delay: 0.2s;
 }
 
-/* 滚动条样式 */
+.feature-card:nth-child(4),
+.example-card:nth-child(4),
+.ecosystem-card:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+/* 按钮涟漪效果 */
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.nav-cta {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before,
+.btn-secondary::before,
+.btn-ghost::before,
+.nav-cta::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition:
+        width 0.6s,
+        height 0.6s;
+}
+
+.btn-primary:active::before,
+.btn-secondary:active::before,
+.btn-ghost:active::before,
+.nav-cta:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* 加载状态动画 */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* Hero Section 增强动画 */
+@keyframes heroFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes heroSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.hero-content {
+    animation: heroFadeIn 1s ease-out;
+}
+
+.hero-badge {
+    animation: heroSlideIn 0.8s ease-out 0.2s both;
+}
+
+.hero-title {
+    animation: heroFadeIn 1s ease-out 0.3s both;
+}
+
+.hero-description {
+    animation: heroFadeIn 1s ease-out 0.5s both;
+}
+
+.hero-actions {
+    animation: heroFadeIn 1s ease-out 0.7s both;
+}
+
+/* 增强的浮动动画 */
+@keyframes floatEnhanced {
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg) scale(1);
+    }
+    33% {
+        transform: translateY(-30px) rotate(120deg) scale(1.1);
+    }
+    66% {
+        transform: translateY(-15px) rotate(240deg) scale(0.9);
+    }
+}
+
+.hero-shape {
+    animation: floatEnhanced 8s ease-in-out infinite;
+}
+
+.hero-shape-1 {
+    animation-delay: 0s;
+}
+
+.hero-shape-2 {
+    animation-delay: 2.5s;
+}
+
+.hero-shape-3 {
+    animation-delay: 5s;
+}
+
+/* 视差滚动效果 */
+.parallax-slow {
+    transition: transform 0.3s ease-out;
+}
+
+.parallax-fast {
+    transition: transform 0.1s ease-out;
+}
+
+/* 焦点可见性增强 - 可访问性 */
+*:focus-visible {
+    outline: 2px solid var(--primary-red);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* 减少动画偏好设置支持 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .hero-shape {
+        animation: none;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    .feature-card,
+    .example-card,
+    .ecosystem-card {
+        border-width: 2px;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-ghost {
+        border: 2px solid currentColor;
+    }
+}
+
+/* 滚动条样式 - UI/UX PRO MAX 增强版 */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-track {
     background: var(--bg-secondary);
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--border-color);
-    border-radius: 4px;
+    background: linear-gradient(135deg, var(--primary-red), var(--accent-orange));
+    border-radius: 10px;
+    border: 2px solid var(--bg-secondary);
+    transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
+    background: linear-gradient(135deg, var(--secondary-red), var(--primary-red));
+}
+
+/* 平滑滚动 */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 选择文本样式 */
+::selection {
+    background: rgba(220, 38, 38, 0.3);
+    color: var(--text-primary);
+}
+
+::-moz-selection {
+    background: rgba(220, 38, 38, 0.3);
+    color: var(--text-primary);
 }
 
 /* ThemeSwitcher CSS变量定义 */

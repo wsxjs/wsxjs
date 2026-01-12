@@ -14,6 +14,8 @@ import "@wsxjs/wsx-base-components";
 import "./i18n";
 // Initialize error handler
 import { ErrorHandler } from "./utils/error-handler";
+// Initialize scroll animations - UI/UX PRO MAX
+import { initAllScrollEffects } from "./utils/scroll-animations";
 import "./App.wsx";
 
 const logger = createLogger("Main");
@@ -33,6 +35,13 @@ function initApp() {
     // Mount the WSX App component
     const appElement = document.createElement("wsx-app");
     appContainer.appendChild(appElement);
+
+    // 初始化滚动动画效果 - UI/UX PRO MAX
+    // 等待 DOM 完全渲染后再初始化
+    setTimeout(() => {
+        initAllScrollEffects();
+        logger.info("Scroll animations initialized");
+    }, 100);
 
     logger.info("WSXJS Example App initialized");
 }

@@ -27,7 +27,7 @@ export default class EcosystemSection extends WebComponent {
                     </div>
 
                     <div class="ecosystem-grid">
-                        <div class="ecosystem-card">
+                        <div class="ecosystem-card scroll-fade-in">
                             <div class="ecosystem-icon">🔧</div>
                             <h3>{t("core.title")}</h3>
                             <p>{t("core.description")}</p>
@@ -41,7 +41,7 @@ export default class EcosystemSection extends WebComponent {
                             </div>
                         </div>
 
-                        <div class="ecosystem-card">
+                        <div class="ecosystem-card scroll-fade-in">
                             <div class="ecosystem-icon">🧭</div>
                             <h3>{t("router.title")}</h3>
                             <p>{t("router.description")}</p>
@@ -55,7 +55,7 @@ export default class EcosystemSection extends WebComponent {
                             </div>
                         </div>
 
-                        <div class="ecosystem-card">
+                        <div class="ecosystem-card scroll-fade-in">
                             <div class="ecosystem-icon">🎨</div>
                             <h3>{t("baseComponents.title")}</h3>
                             <p>{t("baseComponents.description")}</p>
@@ -69,7 +69,7 @@ export default class EcosystemSection extends WebComponent {
                             </div>
                         </div>
 
-                        <div class="ecosystem-card">
+                        <div class="ecosystem-card scroll-fade-in">
                             <div class="ecosystem-icon">⚡</div>
                             <h3>{t("vitePlugin.title")}</h3>
                             <p>{t("vitePlugin.description")}</p>
@@ -83,7 +83,7 @@ export default class EcosystemSection extends WebComponent {
                             </div>
                         </div>
 
-                        <div class="ecosystem-card">
+                        <div class="ecosystem-card scroll-fade-in">
                             <div class="ecosystem-icon">🔍</div>
                             <h3>{t("eslintPlugin.title")}</h3>
                             <p>{t("eslintPlugin.description")}</p>
@@ -97,7 +97,7 @@ export default class EcosystemSection extends WebComponent {
                             </div>
                         </div>
 
-                        <div class="ecosystem-card">
+                        <div class="ecosystem-card scroll-fade-in">
                             <div class="ecosystem-icon">🧪</div>
                             <h3>{t("testing.title")}</h3>
                             <p>{t("testing.description")}</p>
