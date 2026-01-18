@@ -9,7 +9,14 @@ import wsxPlugin from "@wsxjs/eslint-plugin-wsx";
 export default [
     // Ignore patterns - must be first
     {
-        ignores: ["**/dist/", "**/node_modules/", "**/coverage/", "*.config.js", "**/scripts/"],
+        ignores: [
+            "**/dist/",
+            "**/node_modules/",
+            "**/coverage/",
+            "*.config.js",
+            "**/scripts/",
+            "**/*.timestamp-*.mjs", // Vite generated temporary files
+        ],
     },
 
     // Base configuration for all files
