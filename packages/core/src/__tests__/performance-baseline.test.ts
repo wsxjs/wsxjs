@@ -1,6 +1,6 @@
-import { WebComponent } from "../src/web-component";
-import { state } from "../src/reactive-decorator";
-import { h } from "../src/jsx-factory";
+import { WebComponent } from "../web-component";
+import { state } from "../reactive-decorator";
+import { h } from "../jsx-factory";
 
 /**
  * Performance Baseline Test

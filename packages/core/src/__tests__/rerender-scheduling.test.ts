@@ -12,9 +12,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // 测试需要访问私有方法，使用 any 类型是必要的
 
-import { LightComponent } from "../src/light-component";
-import { WebComponent } from "../src/web-component";
-import { h } from "../src/jsx-factory";
+import { LightComponent } from "../light-component";
+import { WebComponent } from "../web-component";
+import { h } from "../jsx-factory";
 
 // 创建一个测试用的 LightComponent 子类
 class TestLightComponent extends LightComponent {

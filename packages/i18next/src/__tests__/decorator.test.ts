@@ -116,7 +116,7 @@ describe("decorator.ts", () => {
             expect(i18nInstance).toBe(i18n);
         });
 
-        test("应该在 onConnected 时订阅语言变化", () => {
+        test("应该在 onConnected 时订阅语言变化", (done) => {
             @i18nDecorator("common")
             class TestComponent extends WebComponent {
                 rerenderCallCount = 0;
@@ -141,7 +141,11 @@ describe("decorator.ts", () => {
             const callback = mockOn.mock.calls[0][1];
             callback();
 
-            expect(component.rerenderCallCount).toBe(1);
+            // 等待 requestAnimationFrame 执行完成
+            requestAnimationFrame(() => {
+                expect(component.rerenderCallCount).toBe(1);
+                done();
+            });
         });
 
         test("应该在 onDisconnected 时取消订阅", () => {

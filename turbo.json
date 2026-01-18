@@ -14,7 +14,7 @@
             "env": ["NODE_ENV"]
         },
         "test": {
-            "dependsOn": ["build"],
+            "dependsOn": ["^build"],
             "outputs": ["coverage/**"],
             "cache": false
         },

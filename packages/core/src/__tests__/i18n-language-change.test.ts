@@ -9,10 +9,10 @@
  * Phase 4 will implement fine-grained updates to fix this.
  */
 
-import { h } from "../src/jsx-factory";
-import { WebComponent } from "../src/web-component";
-import { state } from "../src/reactive-decorator";
-import { RenderContext } from "../src/render-context";
+import { h } from "../jsx-factory";
+import { WebComponent } from "../web-component";
+import { state } from "../reactive-decorator";
+import { RenderContext } from "../render-context";
 
 // Mock i18n instance
 const mockI18n = {

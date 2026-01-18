@@ -109,7 +109,7 @@ describe("ColorPickerUtils", () => {
     });
 
     describe("throttle", () => {
-        it("应该节流函数调用", (done) => {
+        it("应该节流函数调用", async () => {
             const fn = vi.fn();
             const throttled = throttle(fn, 100);
 
@@ -119,39 +119,31 @@ describe("ColorPickerUtils", () => {
 
             expect(fn).toHaveBeenCalledTimes(0);
 
-            setTimeout(() => {
-                expect(fn).toHaveBeenCalledTimes(1);
-                done();
-            }, 150);
+            await new Promise((resolve) => setTimeout(resolve, 150));
+            expect(fn).toHaveBeenCalledTimes(1);
         });
 
-        it("应该传递参数给节流函数", (done) => {
+        it("应该传递参数给节流函数", async () => {
             const fn = vi.fn();
             const throttled = throttle(fn, 100);
 
             throttled("arg1", "arg2");
 
-            setTimeout(() => {
-                expect(fn).toHaveBeenCalledWith("arg1", "arg2");
-                done();
-            }, 150);
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(fn).toHaveBeenCalledWith("arg1", "arg2");
         });
 
-        it("应该允许在延迟后再次调用", (done) => {
+        it("应该允许在延迟后再次调用", async () => {
             const fn = vi.fn();
             const throttled = throttle(fn, 50);
-
             throttled();
-            setTimeout(() => {
-                throttled();
-                setTimeout(() => {
-                    expect(fn).toHaveBeenCalledTimes(2);
-                    done();
-                }, 100);
-            }, 100);
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            throttled();
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(fn).toHaveBeenCalledTimes(2);
         });
 
-        it("应该处理 throttle 函数中的 id 清理", (done) => {
+        it("应该处理 throttle 函数中的 id 清理", async () => {
             const fn = vi.fn();
             const throttled = throttle(fn, 50);
 
@@ -160,36 +152,30 @@ describe("ColorPickerUtils", () => {
             throttled("test2");
             throttled("test3");
 
-            setTimeout(() => {
-                expect(fn).toHaveBeenCalledTimes(1);
-                expect(fn).toHaveBeenCalledWith("test");
-                // id 应该被清理（设置为 null），允许下次调用
-                throttled("test4");
-                setTimeout(() => {
-                    expect(fn).toHaveBeenCalledTimes(2);
-                    expect(fn).toHaveBeenCalledWith("test4");
-                    done();
-                }, 100);
-            }, 100);
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(fn).toHaveBeenCalledTimes(1);
+            expect(fn).toHaveBeenCalledWith("test");
+            // id 应该被清理（设置为 null），允许下次调用
+            throttled("test4");
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            expect(fn).toHaveBeenCalledTimes(2);
+            expect(fn).toHaveBeenCalledWith("test4");
         });
 
-        it("应该处理 throttle 中 id 为 null 的情况", (done) => {
+        it("应该处理 throttle 中 id 为 null 的情况", async () => {
             const fn = vi.fn();
             const throttled = throttle(fn, 10);
 
             // 第一次调用
             throttled("first");
             // 等待执行完成，id 应该被设置为 null
-            setTimeout(() => {
-                // 此时 id 为 null，应该允许新的调用
-                throttled("second");
-                setTimeout(() => {
-                    expect(fn).toHaveBeenCalledTimes(2);
-                    expect(fn).toHaveBeenNthCalledWith(1, "first");
-                    expect(fn).toHaveBeenNthCalledWith(2, "second");
-                    done();
-                }, 50);
-            }, 50);
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            // 此时 id 为 null，应该允许新的调用
+            throttled("second");
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            expect(fn).toHaveBeenCalledTimes(2);
+            expect(fn).toHaveBeenNthCalledWith(1, "first");
+            expect(fn).toHaveBeenNthCalledWith(2, "second");
         });
     });
 

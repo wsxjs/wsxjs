@@ -1,5 +1,5 @@
-import { RenderContext } from "../src/render-context";
-import { BaseComponent } from "../src/base-component";
+import { RenderContext } from "../render-context";
+import { BaseComponent } from "../base-component";
 
 // Mock component for testing
 class MockComponent extends BaseComponent {

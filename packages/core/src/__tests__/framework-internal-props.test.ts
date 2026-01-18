@@ -5,10 +5,10 @@
  * are not rendered to DOM elements, following JSX conventions.
  */
 
-import { h } from "../src/jsx-factory";
-import { WebComponent } from "../src/web-component";
-import { LightComponent } from "../src/light-component";
-import { isFrameworkInternalProp } from "../src/utils/props-utils";
+import { h } from "../jsx-factory";
+import { WebComponent } from "../web-component";
+import { LightComponent } from "../light-component";
+import { isFrameworkInternalProp } from "../utils/props-utils";
 
 class InternalPropsTestComponent extends WebComponent {
     render() {

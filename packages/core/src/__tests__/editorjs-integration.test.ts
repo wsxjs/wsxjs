@@ -5,10 +5,10 @@
  * into LightComponent containers and those elements are preserved during re-renders.
  */
 
-import { LightComponent } from "../src/light-component";
-import { h } from "../src/jsx-factory";
-import { state } from "../src/reactive-decorator";
-import { shouldPreserveElement, isCreatedByH } from "../src/utils/element-marking";
+import { LightComponent } from "../light-component";
+import { h } from "../jsx-factory";
+import { state } from "../reactive-decorator";
+import { shouldPreserveElement, isCreatedByH } from "../utils/element-marking";
 
 class EditorJSTestComponent extends LightComponent {
     @state private count: number = 0;

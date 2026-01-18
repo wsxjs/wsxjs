@@ -9,7 +9,7 @@ import {
     getElementCacheKey,
     isCreatedByH,
     shouldPreserveElement,
-} from "../src/utils/element-marking";
+} from "../utils/element-marking";
 
 describe("Element Marking", () => {
     describe("markElement", () => {

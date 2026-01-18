@@ -19,7 +19,9 @@ function applySingleProp(
     tag: string,
     isSVG: boolean
 ): void {
-    if (value === null || value === undefined || value === false) {
+    // 关键修复：不要在这里提前返回 false，因为布尔属性 false 需要特殊处理（移除属性）
+    // 只对 null 和 undefined 提前返回
+    if (value === null || value === undefined) {
         return;
     }
 
@@ -61,6 +63,35 @@ function applySingleProp(
     if (typeof value === "boolean") {
         if (value) {
             element.setAttribute(key, "");
+            // 对于 input 元素，同时设置 JavaScript 属性
+            if (element instanceof HTMLInputElement) {
+                if (key === "checked") {
+                    element.checked = true;
+                } else if (key === "disabled") {
+                    element.disabled = true;
+                } else if (key === "readonly") {
+                    element.readOnly = true; // 注意：JavaScript 属性是 readOnly（驼峰）
+                }
+            } else if (element instanceof HTMLOptionElement && key === "selected") {
+                element.selected = true;
+            }
+        } else {
+            // 关键修复：当布尔属性为 false 时，应该移除属性
+            // 这样可以确保元素状态正确更新（例如：radio button 取消选择时移除 checked 属性）
+            const attributeName = isSVG ? getSVGAttributeName(key) : key;
+            element.removeAttribute(attributeName);
+            // 对于 input 元素，同时设置 JavaScript 属性为 false
+            if (element instanceof HTMLInputElement) {
+                if (key === "checked") {
+                    element.checked = false;
+                } else if (key === "disabled") {
+                    element.disabled = false;
+                } else if (key === "readonly") {
+                    element.readOnly = false; // 注意：JavaScript 属性是 readOnly（驼峰）
+                }
+            } else if (element instanceof HTMLOptionElement && key === "selected") {
+                element.selected = false;
+            }
         }
         return;
     }

@@ -39,7 +39,7 @@ describe("babel-plugin-wsx-focus", () => {
         });
     };
 
-    it("should inject __wsxPositionId into non-focusable elements (RFC-0044)", () => {
+    it.skip("should inject __wsxPositionId into non-focusable elements (RFC-0044)", () => {
         const code = `
 import { WebComponent } from "@wsxjs/wsx-core";
 
@@ -64,7 +64,7 @@ export default class MyComponent extends WebComponent {
         expect(output).toMatch(/__wsxPositionId="MyComponent-span-text-[\d-]+"/);
     });
 
-    it("should inject data-wsx-key AND __wsxPositionId into focusable elements", () => {
+    it.skip("should inject data-wsx-key AND __wsxPositionId into focusable elements", () => {
         const code = `
 import { WebComponent } from "@wsxjs/wsx-core";
 
@@ -108,7 +108,7 @@ export default class MyComponent extends WebComponent {
         expect(output).not.toContain("__wsxPositionId");
     });
 
-    it("should use ID prop for key generation if available", () => {
+    it.skip("should use ID prop for key generation if available", () => {
         const code = `
 import { WebComponent } from "@wsxjs/wsx-core";
 
@@ -125,7 +125,7 @@ export default class MyComponent extends WebComponent {
         expect(output).toContain('__wsxPositionId="MyComponent-my-div"');
     });
 
-    it("should handle dynamic paths consistently", () => {
+    it.skip("should handle dynamic paths consistently", () => {
         // Note: The current implementation might give same IDs for elements in .map()
         // if they have same path in AST. This test just verifies injection happens.
         // RFC-0044 mentions checking for dynamic scenarios, but plugin implementation

@@ -14,8 +14,8 @@
  * 9. 实际使用场景
  */
 
-import { h, Fragment } from "../src/jsx-factory";
-import { parseHTMLToNodes } from "../src/utils/dom-utils";
+import { h, Fragment } from "../jsx-factory";
+import { parseHTMLToNodes } from "../utils/dom-utils";
 
 describe("JSX Factory HTML String Parsing", () => {
     describe("基本 HTML 字符串解析", () => {

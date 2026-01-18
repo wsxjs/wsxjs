@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 // @ts-expect-error - .wsx files are handled by Vite plugin at build time
 import DocPage, { metadataCache } from "../DocPage.wsx";
+import { RouterUtils } from "@wsxjs/wsx-router";
 
 describe("DocPage 组件", () => {
     let mockFetch: ReturnType<typeof vi.fn>;
@@ -13,6 +14,13 @@ describe("DocPage 组件", () => {
             metadataCache.data = null;
             metadataCache.promise = null;
         }
+        // 重置 RouterUtils 的路由信息
+        RouterUtils._setCurrentRoute({
+            path: "/",
+            params: {},
+            query: {},
+            hash: "",
+        });
     });
 
     afterEach(() => {
@@ -20,29 +28,54 @@ describe("DocPage 组件", () => {
     });
 
     it("应该正确加载文档", async () => {
-        mockFetch
-            .mockResolvedValueOnce({
-                ok: true,
-                json: () =>
-                    Promise.resolve({
-                        "guide/intro": {
-                            title: "介绍",
-                            category: "guide",
-                            route: "/docs/guide/intro",
-                        },
-                    }),
-            } as Response)
-            .mockResolvedValueOnce({
-                ok: true,
-                text: () => Promise.resolve("# 介绍\n内容"),
-            } as Response);
+        // Mock fetch to handle both metadata and markdown requests
+        mockFetch.mockImplementation((url: string) => {
+            if (url === "/.wsx-press/docs-meta.json") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () =>
+                        Promise.resolve({
+                            "guide/intro": {
+                                title: "介绍",
+                                category: "guide",
+                                route: "/docs/guide/intro",
+                            },
+                        }),
+                } as Response);
+            } else if (url === "/docs/guide/intro.md") {
+                return Promise.resolve({
+                    ok: true,
+                    text: () => Promise.resolve("# 介绍\n内容"),
+                } as Response);
+            }
+            return Promise.reject(new Error(`Unexpected URL: ${url}`));
+        });
+
+        // 设置路由信息
+        RouterUtils._setCurrentRoute({
+            path: "/docs/guide/intro",
+            params: { category: "guide", page: "intro" },
+            query: {},
+            hash: "",
+        });
 
         const page = document.createElement("wsx-doc-page") as DocPage;
         document.body.appendChild(page);
-        page.setAttribute("params", JSON.stringify({ category: "guide", page: "intro" }));
 
-        // 等待加载完成
-        await new Promise((resolve) => setTimeout(resolve, 300));
+        // 触发 route-changed 事件以触发加载
+        document.dispatchEvent(
+            new CustomEvent("route-changed", {
+                detail: {
+                    path: "/docs/guide/intro",
+                    params: { category: "guide", page: "intro" },
+                    query: {},
+                    hash: "",
+                },
+            })
+        );
+
+        // 等待加载完成（需要更长时间，因为有两个 requestAnimationFrame）
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         // @ts-expect-error - 访问私有状态用于测试
         expect(page.loadingState).toBe("success");
@@ -59,9 +92,28 @@ describe("DocPage 组件", () => {
             json: () => Promise.resolve({}),
         } as Response);
 
+        // 设置路由信息
+        RouterUtils._setCurrentRoute({
+            path: "/docs/guide/notfound",
+            params: { category: "guide", page: "notfound" },
+            query: {},
+            hash: "",
+        });
+
         const page = document.createElement("wsx-doc-page") as DocPage;
         document.body.appendChild(page);
-        page.setAttribute("params", JSON.stringify({ category: "guide", page: "notfound" }));
+
+        // 触发 route-changed 事件以触发加载
+        document.dispatchEvent(
+            new CustomEvent("route-changed", {
+                detail: {
+                    path: "/docs/guide/notfound",
+                    params: { category: "guide", page: "notfound" },
+                    query: {},
+                    hash: "",
+                },
+            })
+        );
 
         await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -73,27 +125,52 @@ describe("DocPage 组件", () => {
     });
 
     it("应该处理 404 错误（文件不存在）", async () => {
-        mockFetch
-            .mockResolvedValueOnce({
-                ok: true,
-                json: () =>
-                    Promise.resolve({
-                        "guide/test": {
-                            title: "Test",
-                            category: "guide",
-                            route: "/docs/guide/test",
-                        },
-                    }),
-            } as Response)
-            .mockResolvedValueOnce({
-                ok: false,
-                status: 404,
-                statusText: "Not Found",
-            } as Response);
+        // Mock fetch to handle both metadata and markdown requests
+        mockFetch.mockImplementation((url: string) => {
+            if (url === "/.wsx-press/docs-meta.json") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () =>
+                        Promise.resolve({
+                            "guide/test": {
+                                title: "Test",
+                                category: "guide",
+                                route: "/docs/guide/test",
+                            },
+                        }),
+                } as Response);
+            } else if (url === "/docs/guide/test.md") {
+                return Promise.resolve({
+                    ok: false,
+                    status: 404,
+                    statusText: "Not Found",
+                } as Response);
+            }
+            return Promise.reject(new Error(`Unexpected URL: ${url}`));
+        });
+
+        // 设置路由信息
+        RouterUtils._setCurrentRoute({
+            path: "/docs/guide/test",
+            params: { category: "guide", page: "test" },
+            query: {},
+            hash: "",
+        });
 
         const page = document.createElement("wsx-doc-page") as DocPage;
         document.body.appendChild(page);
-        page.setAttribute("params", JSON.stringify({ category: "guide", page: "test" }));
+
+        // 触发 route-changed 事件以触发加载
+        document.dispatchEvent(
+            new CustomEvent("route-changed", {
+                detail: {
+                    path: "/docs/guide/test",
+                    params: { category: "guide", page: "test" },
+                    query: {},
+                    hash: "",
+                },
+            })
+        );
 
         await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -123,9 +200,28 @@ describe("DocPage 组件", () => {
                 statusText: "Internal Server Error",
             } as Response);
 
+        // 设置路由信息
+        RouterUtils._setCurrentRoute({
+            path: "/docs/guide/test",
+            params: { category: "guide", page: "test" },
+            query: {},
+            hash: "",
+        });
+
         const page = document.createElement("wsx-doc-page") as DocPage;
         document.body.appendChild(page);
-        page.setAttribute("params", JSON.stringify({ category: "guide", page: "test" }));
+
+        // 触发 route-changed 事件以触发加载
+        document.dispatchEvent(
+            new CustomEvent("route-changed", {
+                detail: {
+                    path: "/docs/guide/test",
+                    params: { category: "guide", page: "test" },
+                    query: {},
+                    hash: "",
+                },
+            })
+        );
 
         await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -179,9 +275,40 @@ describe("DocPage 组件", () => {
         const page = document.createElement("wsx-doc-page") as DocPage;
         document.body.appendChild(page);
 
-        // 快速切换两次
-        page.setAttribute("params", JSON.stringify({ category: "guide", page: "doc1" }));
-        page.setAttribute("params", JSON.stringify({ category: "guide", page: "doc2" }));
+        // 快速切换两次路由
+        RouterUtils._setCurrentRoute({
+            path: "/docs/guide/doc1",
+            params: { category: "guide", page: "doc1" },
+            query: {},
+            hash: "",
+        });
+        document.dispatchEvent(
+            new CustomEvent("route-changed", {
+                detail: {
+                    path: "/docs/guide/doc1",
+                    params: { category: "guide", page: "doc1" },
+                    query: {},
+                    hash: "",
+                },
+            })
+        );
+
+        RouterUtils._setCurrentRoute({
+            path: "/docs/guide/doc2",
+            params: { category: "guide", page: "doc2" },
+            query: {},
+            hash: "",
+        });
+        document.dispatchEvent(
+            new CustomEvent("route-changed", {
+                detail: {
+                    path: "/docs/guide/doc2",
+                    params: { category: "guide", page: "doc2" },
+                    query: {},
+                    hash: "",
+                },
+            })
+        );
 
         // 解析第二个请求
         resolve2!();
@@ -223,13 +350,30 @@ describe("DocPage 组件", () => {
                 text: () => Promise.resolve("# Test\nContent"),
             } as Response);
 
+        // 设置路由信息
+        RouterUtils._setCurrentRoute({
+            path: "/docs/guide/test",
+            params: { category: "guide", page: "test" },
+            query: {},
+            hash: "",
+        });
+
         const page1 = document.createElement("wsx-doc-page") as DocPage;
         const page2 = document.createElement("wsx-doc-page") as DocPage;
         document.body.appendChild(page1);
         document.body.appendChild(page2);
 
-        page1.setAttribute("params", JSON.stringify({ category: "guide", page: "test" }));
-        page2.setAttribute("params", JSON.stringify({ category: "guide", page: "test" }));
+        // 触发 route-changed 事件以触发加载
+        document.dispatchEvent(
+            new CustomEvent("route-changed", {
+                detail: {
+                    path: "/docs/guide/test",
+                    params: { category: "guide", page: "test" },
+                    query: {},
+                    hash: "",
+                },
+            })
+        );
 
         await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -263,9 +407,28 @@ describe("DocPage 组件", () => {
 
         mockFetch.mockReturnValueOnce(fetchPromise);
 
+        // 设置路由信息
+        RouterUtils._setCurrentRoute({
+            path: "/docs/guide/test",
+            params: { category: "guide", page: "test" },
+            query: {},
+            hash: "",
+        });
+
         const page = document.createElement("wsx-doc-page") as DocPage;
         document.body.appendChild(page);
-        page.setAttribute("params", JSON.stringify({ category: "guide", page: "test" }));
+
+        // 触发 route-changed 事件以触发加载
+        document.dispatchEvent(
+            new CustomEvent("route-changed", {
+                detail: {
+                    path: "/docs/guide/test",
+                    params: { category: "guide", page: "test" },
+                    query: {},
+                    hash: "",
+                },
+            })
+        );
 
         // 在加载过程中
         await new Promise((resolve) => setTimeout(resolve, 50));

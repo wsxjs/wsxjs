@@ -4,9 +4,9 @@
  * Tests for cache key generation utilities (RFC 0037).
  */
 
-import { generateCacheKey, getComponentId } from "../src/utils/cache-key";
-import { RenderContext } from "../src/render-context";
-import { BaseComponent } from "../src/base-component";
+import { generateCacheKey, getComponentId } from "../utils/cache-key";
+import { RenderContext } from "../render-context";
+import { BaseComponent } from "../base-component";
 
 class MockComponent extends BaseComponent {
     render(): HTMLElement {

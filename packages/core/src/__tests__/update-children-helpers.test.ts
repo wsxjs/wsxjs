@@ -18,9 +18,9 @@ import {
     collectNodesToRemove,
     removeNodes,
     reinsertPreservedElements,
-} from "../src/utils/update-children-helpers";
-import { markElement, getElementCacheKey } from "../src/utils/element-marking";
-import { h } from "../src/jsx-factory";
+} from "../utils/update-children-helpers";
+import { markElement, getElementCacheKey } from "../utils/element-marking";
+import { h } from "../jsx-factory";
 
 describe("collectPreservedElements", () => {
     test("应该收集所有应该保留的元素", () => {

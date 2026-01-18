@@ -5,12 +5,12 @@
  * are preserved during DOM updates.
  */
 
-import { h } from "../src/jsx-factory";
-import { WebComponent } from "../src/web-component";
-import { LightComponent } from "../src/light-component";
-import { state } from "../src/reactive-decorator";
-import { RenderContext } from "../src/render-context";
-import { shouldPreserveElement, isCreatedByH } from "../src/utils/element-marking";
+import { h } from "../jsx-factory";
+import { WebComponent } from "../web-component";
+import { LightComponent } from "../light-component";
+import { state } from "../reactive-decorator";
+import { RenderContext } from "../render-context";
+import { shouldPreserveElement, isCreatedByH } from "../utils/element-marking";
 
 class PreservationTestComponent extends WebComponent {
     @state private count: number = 0;

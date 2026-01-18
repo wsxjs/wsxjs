@@ -1,29 +1,18 @@
 /**
- * WebComponent 测试
+ * LightComponent 测试
  *
- * 测试 WebComponent 的生命周期和渲染逻辑，特别是：
+ * 测试 LightComponent 的生命周期和渲染逻辑，特别是：
  * 1. 首次连接时的渲染
  * 2. 重新连接时的智能渲染（避免重复）
  * 3. Editor.js 移动元素场景的处理
  */
 
-import { WebComponent } from "../src/web-component";
-import { h } from "../src/jsx-factory";
-import { getElementCacheKey } from "../src/utils/element-marking";
+import { LightComponent } from "../light-component";
+import { h } from "../jsx-factory";
+import { getElementCacheKey } from "../utils/element-marking";
 
-// Mock loggers to avoid console output during tests
-jest.mock("@wsxjs/wsx-logger", () => ({
-    createLogger: () => ({
-        debug: jest.fn(),
-        info: jest.fn(),
-        warn: jest.fn(),
-        error: jest.fn(),
-        trace: jest.fn(),
-    }),
-}));
-
-// 创建一个测试用的 WebComponent 子类
-class TestWebComponent extends WebComponent {
+// 创建一个测试用的 LightComponent 子类
+class TestLightComponent extends LightComponent {
     public renderCallCount = 0;
     public onConnectedCallCount = 0;
     public onDisconnectedCallCount = 0;
@@ -48,16 +37,16 @@ class TestWebComponent extends WebComponent {
 }
 
 // 注册自定义元素
-if (!customElements.get("test-web-component")) {
-    customElements.define("test-web-component", TestWebComponent);
+if (!customElements.get("test-light-component")) {
+    customElements.define("test-light-component", TestLightComponent);
 }
 
-describe("WebComponent", () => {
-    let component: TestWebComponent;
+describe("LightComponent", () => {
+    let component: TestLightComponent;
 
     beforeEach(() => {
         // 使用 document.createElement 创建已注册的自定义元素
-        component = document.createElement("test-web-component") as TestWebComponent;
+        component = document.createElement("test-light-component") as TestLightComponent;
     });
 
     afterEach(() => {
@@ -67,11 +56,11 @@ describe("WebComponent", () => {
     });
 
     describe("首次连接 (First Connection)", () => {
-        test("应该渲染内容到 Shadow DOM", () => {
+        test("应该渲染内容", () => {
             document.body.appendChild(component);
 
             expect(component.renderCallCount).toBe(1);
-            expect(component.shadowRoot.children.length).toBeGreaterThan(0);
+            expect(component.children.length).toBeGreaterThan(0);
             expect(component.querySelector(".test-content")).toBeTruthy();
             expect(component.querySelector("#test-paragraph")?.textContent).toBe(
                 "This is a test component"
@@ -96,7 +85,7 @@ describe("WebComponent", () => {
             expect(component.renderCallCount).toBe(1); // 只渲染了一次（跳过重复渲染）
         });
 
-        test("首次渲染时元素应该有 __wsxCacheKey 标记（RFC 0038 修复）", () => {
+        test("首次渲染时元素应该有 __wsxCacheKey 标记（RFC 0038 验证）", () => {
             document.body.appendChild(component);
 
             // 获取首次渲染的元素
@@ -110,14 +99,15 @@ describe("WebComponent", () => {
             const contentCacheKey = getElementCacheKey(contentDiv);
             const paragraphCacheKey = getElementCacheKey(paragraph);
 
-            // 首次渲染时，元素应该有 cache key（修复后）
+            // 首次渲染时，元素应该有 cache key
+            // LightComponent 从一开始就正确使用了 RenderContext.runInContext()
             expect(contentCacheKey).toBeTruthy();
             expect(paragraphCacheKey).toBeTruthy();
             expect(typeof contentCacheKey).toBe("string");
             expect(typeof paragraphCacheKey).toBe("string");
         });
 
-        test("首次渲染和重渲染时元素标记应该一致（RFC 0038 修复）", async () => {
+        test("首次渲染和重渲染时元素标记应该一致（RFC 0038 验证）", async () => {
             // 首次渲染
             document.body.appendChild(component);
 
@@ -150,7 +140,7 @@ describe("WebComponent", () => {
     });
 
     describe("重新连接 (Reconnection) - Editor.js 场景", () => {
-        test("如果 Shadow DOM 内容存在，应该跳过渲染（避免重复）", () => {
+        test("如果内容存在，应该跳过渲染（避免重复）", () => {
             // 首次连接
             document.body.appendChild(component);
             expect(component.renderCallCount).toBe(1);
@@ -158,28 +148,25 @@ describe("WebComponent", () => {
             const firstContent = component.querySelector(".test-content");
             expect(firstContent).toBeTruthy();
 
-            // 模拟 Editor.js 移动元素：断开连接但 Shadow DOM 内容仍然存在
+            // 模拟 Editor.js 移动元素：断开连接但保留内容
             component.disconnectedCallback();
             expect((component as any).connected).toBe(false);
-            // Shadow DOM 内容应该仍然存在（Editor.js 只是移动，不删除）
-            expect(component.shadowRoot.children.length).toBeGreaterThan(0);
 
-            // 重新连接（Shadow DOM 内容仍然存在）
+            // 重新连接（内容仍然存在）
             component.connectedCallback();
-            expect((component as any).connected).toBe(true);
 
-            // 应该跳过渲染（避免重复）
-            expect(component.renderCallCount).toBe(1); // 仍然是 1
+            // 应该跳过渲染，因为内容仍然存在
+            expect(component.renderCallCount).toBe(1); // 仍然是 1，没有重新渲染
             expect(component.querySelector(".test-content")).toBe(firstContent); // 同一个元素
         });
 
-        test("如果 Shadow DOM 内容不存在，应该重新渲染", () => {
+        test("如果内容不存在，应该重新渲染", () => {
             // 首次连接
             document.body.appendChild(component);
             expect(component.renderCallCount).toBe(1);
 
-            // 手动清空 Shadow DOM 内容（模拟外部库清理）
-            component.shadowRoot.innerHTML = "";
+            // 手动清空内容（模拟外部库清理）
+            component.innerHTML = "";
 
             // 断开连接
             component.disconnectedCallback();
@@ -187,7 +174,7 @@ describe("WebComponent", () => {
             // 重新连接
             component.connectedCallback();
 
-            // 应该重新渲染，因为 Shadow DOM 内容不存在
+            // 应该重新渲染，因为内容不存在
             expect(component.renderCallCount).toBe(2); // 渲染了两次
             expect(component.querySelector(".test-content")).toBeTruthy();
         });
@@ -215,7 +202,7 @@ describe("WebComponent", () => {
             component.disconnectedCallback();
             expect(component.onDisconnectedCallCount).toBe(1);
 
-            // 重新连接（Shadow DOM 内容存在）
+            // 重新连接（内容存在）
             component.connectedCallback();
 
             // onConnected 应该被调用两次
@@ -224,8 +211,8 @@ describe("WebComponent", () => {
     });
 
     describe("样式处理", () => {
-        test("应该应用样式到 Shadow DOM", () => {
-            class StyledWebComponent extends WebComponent {
+        test("应该应用样式", () => {
+            class StyledTestComponent extends LightComponent {
                 constructor() {
                     super({
                         styles: ".test { color: red; }",
@@ -238,27 +225,25 @@ describe("WebComponent", () => {
                 }
             }
 
-            if (!customElements.get("styled-web-component")) {
-                customElements.define("styled-web-component", StyledWebComponent);
+            if (!customElements.get("styled-test-component")) {
+                customElements.define("styled-test-component", StyledTestComponent);
             }
 
             const componentWithStyles = document.createElement(
-                "styled-web-component"
-            ) as StyledWebComponent;
+                "styled-test-component"
+            ) as StyledTestComponent;
 
             document.body.appendChild(componentWithStyles);
 
-            // StyleManager 使用 adoptedStyleSheets，检查样式是否应用
-            // 注意：jsdom 可能不支持 adoptedStyleSheets，所以检查 shadowRoot 是否有内容
-            // 在测试环境中，StyleManager 可能会使用 fallback 方法
-            // 我们主要验证 connectedCallback 不会因为样式问题而失败
-            expect(componentWithStyles.shadowRoot).toBeTruthy();
-            // 验证组件已成功连接和渲染
-            expect(componentWithStyles.querySelector("div")).toBeTruthy();
+            const styleElement = componentWithStyles.querySelector(
+                'style[data-wsx-light-component="test-component"]'
+            );
+            expect(styleElement).toBeTruthy();
+            expect(styleElement?.textContent).toContain("color: red");
         });
 
-        test("重新连接时样式应该保持", () => {
-            class StyledWebComponent2 extends WebComponent {
+        test("样式元素应该在第一个位置", () => {
+            class StyledTestComponent2 extends LightComponent {
                 constructor() {
                     super({
                         styles: ".test { color: red; }",
@@ -271,54 +256,87 @@ describe("WebComponent", () => {
                 }
             }
 
-            if (!customElements.get("styled-web-component-2")) {
-                customElements.define("styled-web-component-2", StyledWebComponent2);
+            if (!customElements.get("styled-test-component-2")) {
+                customElements.define("styled-test-component-2", StyledTestComponent2);
             }
 
             const componentWithStyles = document.createElement(
-                "styled-web-component-2"
-            ) as StyledWebComponent2;
+                "styled-test-component-2"
+            ) as StyledTestComponent2;
+
+            document.body.appendChild(componentWithStyles);
+
+            const styleElement = componentWithStyles.querySelector(
+                'style[data-wsx-light-component="test-component-2"]'
+            );
+            expect(styleElement).toBe(componentWithStyles.firstChild);
+        });
+
+        test("重新连接时应该保持样式元素位置", () => {
+            class StyledTestComponent3 extends LightComponent {
+                constructor() {
+                    super({
+                        styles: ".test { color: red; }",
+                        styleName: "test-component-3",
+                    });
+                }
+
+                render(): HTMLElement | SVGElement {
+                    return h("div", {}, "Test") as HTMLElement;
+                }
+            }
+
+            if (!customElements.get("styled-test-component-3")) {
+                customElements.define("styled-test-component-3", StyledTestComponent3);
+            }
+
+            const componentWithStyles = document.createElement(
+                "styled-test-component-3"
+            ) as StyledTestComponent3;
 
             // 首次连接
             document.body.appendChild(componentWithStyles);
-            const initialContent = componentWithStyles.shadowRoot.children.length;
+
+            const styleElement = componentWithStyles.querySelector(
+                'style[data-wsx-light-component="test-component-3"]'
+            );
+            expect(styleElement).toBe(componentWithStyles.firstChild);
 
             // 断开连接
             componentWithStyles.disconnectedCallback();
 
-            // 重新连接（Shadow DOM 内容存在）
+            // 重新连接（内容存在）
             componentWithStyles.connectedCallback();
 
-            // 验证：重新连接时应该跳过渲染（因为内容存在）
-            // 样式应该仍然存在（StyleManager.applyStyles 是幂等的）
-            // 主要验证 connectedCallback 不会因为样式问题而失败
-            expect(componentWithStyles.shadowRoot.children.length).toBeGreaterThanOrEqual(
-                initialContent
+            // 样式元素应该仍然在第一个位置
+            // 注意：重新连接后，firstChild 可能是一个新的引用，但内容相同
+            const newStyleElement = componentWithStyles.querySelector(
+                'style[data-wsx-light-component="test-component-3"]'
             );
-            expect(componentWithStyles.querySelector("div")).toBeTruthy();
+            expect(newStyleElement).toBe(componentWithStyles.firstChild);
         });
     });
 
     describe("错误处理", () => {
         test("渲染错误时应该显示错误信息", () => {
-            class ErrorWebComponent extends WebComponent {
+            class ErrorTestComponent extends LightComponent {
                 render(): HTMLElement {
                     throw new Error("Render error");
                 }
             }
 
-            if (!customElements.get("error-web-component")) {
-                customElements.define("error-web-component", ErrorWebComponent);
+            if (!customElements.get("error-test-component")) {
+                customElements.define("error-test-component", ErrorTestComponent);
             }
 
             const errorComponent = document.createElement(
-                "error-web-component"
-            ) as ErrorWebComponent;
+                "error-test-component"
+            ) as ErrorTestComponent;
 
             document.body.appendChild(errorComponent);
 
             // 应该显示错误信息
-            const errorElement = errorComponent.shadowRoot.querySelector("div");
+            const errorElement = errorComponent.querySelector("div");
             expect(errorElement).toBeTruthy();
             expect(errorElement?.textContent).toContain("Component Error");
             expect(errorElement?.textContent).toContain("Render error");
@@ -327,7 +345,7 @@ describe("WebComponent", () => {
         test("错误后重新连接应该恢复正常", () => {
             let shouldThrow = true;
 
-            class RecoverableErrorWebComponent extends WebComponent {
+            class RecoverableErrorComponent extends LightComponent {
                 render(): HTMLElement {
                     if (shouldThrow) {
                         shouldThrow = false;
@@ -337,32 +355,29 @@ describe("WebComponent", () => {
                 }
             }
 
-            if (!customElements.get("recoverable-error-web-component")) {
-                customElements.define(
-                    "recoverable-error-web-component",
-                    RecoverableErrorWebComponent
-                );
+            if (!customElements.get("recoverable-error-component")) {
+                customElements.define("recoverable-error-component", RecoverableErrorComponent);
             }
 
             const errorComponent = document.createElement(
-                "recoverable-error-web-component"
-            ) as RecoverableErrorWebComponent;
+                "recoverable-error-component"
+            ) as RecoverableErrorComponent;
 
             // 首次连接（错误）
             document.body.appendChild(errorComponent);
-            expect(errorComponent.shadowRoot.querySelector("div")?.textContent).toContain("Error");
+            expect(errorComponent.querySelector("div")?.textContent).toContain("Error");
 
             // 断开连接
             errorComponent.disconnectedCallback();
 
             // 重新连接（应该成功）
             errorComponent.connectedCallback();
-            expect(errorComponent.shadowRoot.querySelector("div")?.textContent).toBe("Success");
+            expect(errorComponent.querySelector("div")?.textContent).toBe("Success");
         });
     });
 
     describe("DOM 查询方法", () => {
-        test("querySelector 应该能在 Shadow DOM 中找到子元素", () => {
+        test("querySelector 应该能找到子元素", () => {
             document.body.appendChild(component);
 
             const paragraph = component.querySelector("#test-paragraph");
@@ -370,8 +385,8 @@ describe("WebComponent", () => {
             expect(paragraph?.textContent).toBe("This is a test component");
         });
 
-        test("querySelectorAll 应该能在 Shadow DOM 中找到所有匹配的元素", () => {
-            class MultiItemWebComponent extends WebComponent {
+        test("querySelectorAll 应该能找到所有匹配的元素", () => {
+            class MultiItemComponent extends LightComponent {
                 render(): HTMLElement | SVGElement {
                     return h("div", {}, [
                         h("p", { class: "item" }, "Item 1"),
@@ -381,13 +396,13 @@ describe("WebComponent", () => {
                 }
             }
 
-            if (!customElements.get("multi-item-web-component")) {
-                customElements.define("multi-item-web-component", MultiItemWebComponent);
+            if (!customElements.get("multi-item-component")) {
+                customElements.define("multi-item-component", MultiItemComponent);
             }
 
             const multiComponent = document.createElement(
-                "multi-item-web-component"
-            ) as MultiItemWebComponent;
+                "multi-item-component"
+            ) as MultiItemComponent;
 
             document.body.appendChild(multiComponent);
 
@@ -406,12 +421,11 @@ describe("WebComponent", () => {
             const originalContent = component.querySelector(".test-content");
             expect(originalContent).toBeTruthy();
 
-            // 2. Editor.js 移动元素：断开连接（但 Shadow DOM 内容仍然存在）
+            // 2. Editor.js 移动元素：断开连接（但内容仍然存在）
             component.disconnectedCallback();
             expect((component as any).connected).toBe(false);
             expect(component.onDisconnectedCallCount).toBe(1);
-            // Shadow DOM 内容应该仍然存在（Editor.js 只是移动，不删除）
-            expect(component.shadowRoot.children.length).toBeGreaterThan(0);
+            // 内容应该仍然存在（Editor.js 只是移动，不删除）
             expect(component.querySelector(".test-content")).toBe(originalContent);
 
             // 3. Editor.js 将元素插入到新位置：重新连接
@@ -426,7 +440,7 @@ describe("WebComponent", () => {
             expect(component.onConnectedCallCount).toBe(2); // 首次 + 重新连接
         });
 
-        test("如果 Editor.js 清理了 Shadow DOM 内容，应该重新渲染", () => {
+        test("如果 Editor.js 清理了内容，应该重新渲染", () => {
             // 1. 首次连接
             document.body.appendChild(component);
             expect(component.renderCallCount).toBe(1);
@@ -434,8 +448,8 @@ describe("WebComponent", () => {
             // 2. Editor.js 移动元素：断开连接
             component.disconnectedCallback();
 
-            // 3. 模拟 Editor.js 清理了 Shadow DOM 内容（某些情况下可能发生）
-            component.shadowRoot.innerHTML = "";
+            // 3. 模拟 Editor.js 清理了内容（某些情况下可能发生）
+            component.innerHTML = "";
 
             // 4. Editor.js 将元素插入到新位置：重新连接
             component.connectedCallback();
@@ -443,20 +457,6 @@ describe("WebComponent", () => {
             // 5. 验证：应该重新渲染
             expect(component.renderCallCount).toBe(2); // 渲染了两次
             expect(component.querySelector(".test-content")).toBeTruthy();
-        });
-    });
-
-    describe("Shadow DOM 隔离", () => {
-        test("Shadow DOM 内容应该与外部 DOM 隔离", () => {
-            document.body.appendChild(component);
-
-            // Shadow DOM 中的元素不应该在 document 中可见
-            const shadowElement = component.shadowRoot.querySelector(".test-content");
-            expect(shadowElement).toBeTruthy();
-
-            // 但通过组件的 querySelector 应该能找到
-            const foundElement = component.querySelector(".test-content");
-            expect(foundElement).toBe(shadowElement);
         });
     });
 });

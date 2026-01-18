@@ -57,11 +57,9 @@ describe("WsxLink", () => {
     });
 
     it("should set href attribute from to prop", () => {
-        link.setAttribute("to", "/users");
-        // Trigger attribute change callback manually
+        // Use property directly, WSX framework will handle it
+        link.to = "/users";
         link.connectedCallback();
-        // Manually trigger attribute change since setAttribute doesn't automatically trigger it in tests
-        (link as WsxLinkWithProtectedMethods).onAttributeChanged("to", "", "/users");
 
         const anchor = link.shadowRoot?.querySelector("a");
         expect(anchor?.getAttribute("href")).toBe("/users");

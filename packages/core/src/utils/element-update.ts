@@ -124,7 +124,9 @@ function applySingleProp(
     tag: string,
     isSVG: boolean
 ): void {
-    if (value === null || value === undefined || value === false) {
+    // 关键修复：不要在这里提前返回 false，因为布尔属性 false 需要特殊处理（移除属性）
+    // 只对 null 和 undefined 提前返回
+    if (value === null || value === undefined) {
         return;
     }
 
@@ -175,6 +177,35 @@ function applySingleProp(
     if (typeof value === "boolean") {
         if (value) {
             element.setAttribute(key, "");
+            // 对于 input 元素，同时设置 JavaScript 属性
+            if (element instanceof HTMLInputElement) {
+                if (key === "checked") {
+                    element.checked = true;
+                } else if (key === "disabled") {
+                    element.disabled = true;
+                } else if (key === "readonly") {
+                    element.readOnly = true; // 注意：JavaScript 属性是 readOnly（驼峰）
+                }
+            } else if (element instanceof HTMLOptionElement && key === "selected") {
+                element.selected = true;
+            }
+        } else {
+            // 关键修复：当布尔属性为 false 时，应该移除属性
+            // 这样可以确保元素状态正确更新（例如：radio button 取消选择时移除 checked 属性）
+            const attributeName = isSVG ? getSVGAttributeName(key) : key;
+            element.removeAttribute(attributeName);
+            // 对于 input 元素，同时设置 JavaScript 属性为 false
+            if (element instanceof HTMLInputElement) {
+                if (key === "checked") {
+                    element.checked = false;
+                } else if (key === "disabled") {
+                    element.disabled = false;
+                } else if (key === "readonly") {
+                    element.readOnly = false; // 注意：JavaScript 属性是 readOnly（驼峰）
+                }
+            } else if (element instanceof HTMLOptionElement && key === "selected") {
+                element.selected = false;
+            }
         }
         return;
     }
@@ -367,6 +398,26 @@ export function updateChildren(
                     // 即使不需要更新，也要标记为已处理（文本节点已存在且内容正确）
                     if (oldNode && oldNode.parentNode === element) {
                         processedNodes.add(oldNode);
+                    } else if (!oldNode && oldText === newText) {
+                        // 关键修复：如果 oldNode 为 null 但 oldText === newText，
+                        // 说明 DOM 中可能已经存在一个匹配的文本节点，只是没有被 findTextNode 找到
+                        // 我们需要查找并标记它，避免在清理阶段被误删
+                        // 这种情况可能发生在文本节点和元素节点混合排列时，domIndex 位置不准确
+                        // 从 domIndex.value 开始搜索，因为这是 findTextNode 停止的位置
+                        // 这样可以更准确地找到对应的文本节点
+                        for (let j = domIndex.value; j < element.childNodes.length; j++) {
+                            const node = element.childNodes[j];
+                            if (
+                                node.nodeType === Node.TEXT_NODE &&
+                                node.parentNode === element &&
+                                node.textContent === newText &&
+                                !processedNodes.has(node)
+                            ) {
+                                // 找到匹配的文本节点，标记为已处理
+                                processedNodes.add(node);
+                                break; // 只标记第一个匹配的节点
+                            }
+                        }
                     }
                 }
             } else {

@@ -12,10 +12,10 @@
  * - Small component scenarios: No performance degradation
  */
 
-import { h } from "../src/jsx-factory";
-import { WebComponent } from "../src/web-component";
-import { state } from "../src/reactive-decorator";
-import { RenderContext } from "../src/render-context";
+import { h } from "../jsx-factory";
+import { WebComponent } from "../web-component";
+import { state } from "../reactive-decorator";
+import { RenderContext } from "../render-context";
 
 /**
  * Test component for large list rendering
@@ -255,8 +255,8 @@ describe("Performance Optimization (RFC 0037)", () => {
             document.body.appendChild(component);
 
             // 多次调用 getComponentId，应该使用缓存
-            // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
-            const { getComponentId } = require("../src/utils/cache-key");
+
+            const { getComponentId } = require("../utils/cache-key");
 
             RenderContext.runInContext(component, () => {
                 const id1 = getComponentId();

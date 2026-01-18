@@ -94,7 +94,7 @@ export default class Button extends WebComponent {
 
         const linkElement = (
             <a
-                href={this.disabled || this.loading ? undefined : this.href}
+                href={this.disabled || this.loading ? null : this.href || undefined}
                 target={this.target}
                 rel={this.rel || undefined}
                 download={this.download || undefined}

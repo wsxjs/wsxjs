@@ -10,7 +10,7 @@
         "build:pages": "cross-env NODE_ENV=production GITHUB_PAGES=true CUSTOM_DOMAIN=true vite build",
         "preview": "vite preview",
         "deploy:pages": "pnpm build:pages && gh-pages -d dist",
-        "test": "vitest",
+        "test": "vitest --run",
         "test:coverage": "vitest run --coverage",
         "test:watch": "vitest watch",
         "test:ui": "vitest --ui",

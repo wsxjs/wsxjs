@@ -7,10 +7,10 @@
  * 3. Third-party library integration (Monaco Editor)
  */
 
-import { h } from "../src/jsx-factory";
-import { WebComponent } from "../src/web-component";
-import { state } from "../src/reactive-decorator";
-import { RenderContext } from "../src/render-context";
+import { h } from "../jsx-factory";
+import { WebComponent } from "../web-component";
+import { state } from "../reactive-decorator";
+import { RenderContext } from "../render-context";
 
 /**
  * Test component for performance comparison
@@ -253,7 +253,7 @@ describe("Performance Comparison (RFC 0037)", () => {
 
                         const { isCreatedByH, shouldPreserveElement } =
                             typeof require !== "undefined"
-                                ? require("../src/utils/element-marking")
+                                ? require("../utils/element-marking")
                                 : { isCreatedByH: () => false, shouldPreserveElement: () => false };
                         expect(isCreatedByH(monacoElement)).toBe(false);
                         expect(shouldPreserveElement(monacoElement)).toBe(true);

@@ -114,7 +114,7 @@ describe("configureTypeScript", () => {
             });
 
             expect(result.success).toBe(false);
-            expect(result.message).toContain("错误");
+            expect(result.message).toContain("无法解析");
         });
     });
 });

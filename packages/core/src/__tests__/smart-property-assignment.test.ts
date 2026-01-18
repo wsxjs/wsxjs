@@ -14,7 +14,7 @@
 
 // 测试需要访问动态创建的自定义元素的 JavaScript 属性，类型系统无法推断这些属性
 
-import { h } from "../src/jsx-factory";
+import { h } from "../jsx-factory";
 
 describe("Smart Property Assignment (RFC 0036)", () => {
     describe("标准 HTML 属性", () => {

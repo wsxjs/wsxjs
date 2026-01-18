@@ -1,6 +1,6 @@
-import { DOMCacheManager } from "../src/dom-cache-manager";
-import { BaseComponent } from "../src/base-component";
-import { RenderContext } from "../src/render-context";
+import { DOMCacheManager } from "../dom-cache-manager";
+import { BaseComponent } from "../base-component";
+import { RenderContext } from "../render-context";
 
 class MockComponentWithCache extends BaseComponent {
     render(): HTMLElement {

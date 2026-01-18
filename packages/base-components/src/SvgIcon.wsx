@@ -74,15 +74,4 @@ export default class SvgIcon extends WebComponent {
         const svg = event.target as SVGElement;
         svg.style.transform = "scale(1)";
     };
-
-    static get observedAttributes() {
-        return ["name", "size", "color"];
-    }
-
-    protected onAttributeChanged(name: string, oldValue: string, newValue: string): void {
-        logger.debug(`Attribute ${name} changed from ${oldValue} to ${newValue}`);
-        if (this.connected) {
-            this.rerender();
-        }
-    }
 }

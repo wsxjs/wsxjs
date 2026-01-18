@@ -7,17 +7,17 @@
  * 3. 保留元素处理修复 - 确保第三方注入元素不丢失
  */
 
-import { h } from "../src/jsx-factory";
-import { WebComponent } from "../src/web-component";
-import { state } from "../src/reactive-decorator";
-import { shouldPreserveElement } from "../src/utils/element-marking";
-import { DOMCacheManager } from "../src/dom-cache-manager";
+import { h } from "../jsx-factory";
+import { WebComponent } from "../web-component";
+import { state } from "../reactive-decorator";
+import { shouldPreserveElement } from "../utils/element-marking";
+import { DOMCacheManager } from "../dom-cache-manager";
 
 /**
  * 纯函数工具集 - 减少测试代码复杂度
  */
 
-const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+const wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getShadowRoot = (component: WebComponent) => {
     const shadowRoot = component.shadowRoot;

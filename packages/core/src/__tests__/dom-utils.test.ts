@@ -4,7 +4,7 @@
  * Tests for DOM manipulation utilities.
  */
 
-import { isHTMLString, flattenChildren, parseHTMLToNodes } from "../src/utils/dom-utils";
+import { isHTMLString, flattenChildren, parseHTMLToNodes } from "../utils/dom-utils";
 
 describe("DOM Utilities", () => {
     describe("isHTMLString", () => {

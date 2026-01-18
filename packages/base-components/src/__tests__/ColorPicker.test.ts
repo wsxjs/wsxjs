@@ -10,7 +10,7 @@ describe("ColorPicker", () => {
     let colorPicker: ColorPicker;
     let originalLocalStorage: Storage;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         originalLocalStorage = window.localStorage;
         const store: Record<string, string> = {};
         Object.defineProperty(window, "localStorage", {
@@ -31,6 +31,16 @@ describe("ColorPicker", () => {
 
         colorPicker = document.createElement("wsx-color-picker") as ColorPicker;
         document.body.appendChild(colorPicker);
+        if (colorPicker.connectedCallback) {
+            colorPicker.connectedCallback();
+        }
+        await new Promise((resolve) => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => resolve(undefined), 10);
+                });
+            });
+        });
     });
 
     afterEach(() => {
@@ -167,10 +177,24 @@ describe("ColorPicker", () => {
 
     describe("面板切换", () => {
         it("应该切换面板", async () => {
+            await new Promise((resolve) => {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        setTimeout(() => resolve(undefined), 100);
+                    });
+                });
+            });
             const colorBtn = colorPicker.shadowRoot?.querySelector(".color-btn");
+            expect(colorBtn).toBeTruthy();
             if (colorBtn) {
                 colorBtn.click();
-                await new Promise((resolve) => setTimeout(resolve, 10));
+                await new Promise((resolve) => {
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            setTimeout(() => resolve(undefined), 100);
+                        });
+                    });
+                });
                 const panel = colorPicker.shadowRoot?.querySelector(".color-panel");
                 expect(panel).toBeTruthy();
             }
