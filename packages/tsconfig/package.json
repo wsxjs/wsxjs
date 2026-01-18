@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-tsconfig",
-    "version": "0.0.26",
+    "version": "0.0.27",
     "description": "Shared TypeScript configuration for WSXJS projects",
     "type": "module",
     "main": "./tsconfig.json",
