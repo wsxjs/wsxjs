@@ -133,12 +133,12 @@ export default class SvgDemo extends WebComponent {
                 <div>
                     <h4 style="margin: 10px 0; color: #666;">Icon Components</h4>
                     <div style="display: flex; gap: 15px; align-items: center;">
-                        <svg-icon name="star" size="32" color="#f39c12"></svg-icon>
-                        <svg-icon name="heart" size="32" color="#e74c3c"></svg-icon>
-                        <svg-icon name="check" size="32" color="#27ae60"></svg-icon>
-                        <svg-icon name="github" size="32" color="#333"></svg-icon>
-                        <svg-icon name="play" size="32" color="#3498db"></svg-icon>
-                        <svg-icon name="settings" size="32" color="#9b59b6"></svg-icon>
+                        <wsx-svg-icon name="star" size="32" color="#f39c12"></wsx-svg-icon>
+                        <wsx-svg-icon name="heart" size="32" color="#e74c3c"></wsx-svg-icon>
+                        <wsx-svg-icon name="check" size="32" color="#27ae60"></wsx-svg-icon>
+                        <wsx-svg-icon name="github" size="32" color="#333"></wsx-svg-icon>
+                        <wsx-svg-icon name="play" size="32" color="#3498db"></wsx-svg-icon>
+                        <wsx-svg-icon name="settings" size="32" color="#9b59b6"></wsx-svg-icon>
                     </div>
                 </div>
             </div>

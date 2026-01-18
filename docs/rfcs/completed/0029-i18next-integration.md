@@ -572,7 +572,7 @@ import './components/LanguageSwitcher.wsx';
 <nav class="main-nav">
     {/* ... 其他导航项 ... */}
     <language-switcher></language-switcher>
-    <theme-switcher></theme-switcher>
+    <wsx-theme-switcher></wsx-theme-switcher>
 </nav>
 ```
 

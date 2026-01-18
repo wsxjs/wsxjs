@@ -65,7 +65,7 @@ const DEFAULT_COLORS = [
 /**
  *  颜色选择器组件 Web Component with JSX aka WSX
  */
-@autoRegister({ tagName: "color-picker" })
+@autoRegister({ tagName: "wsx-color-picker" })
 export default class ColorPicker extends WebComponent {
     private colorCollections: string[];
     private onColorPicked?: (color: string) => void;

@@ -56,31 +56,37 @@
     *   **定位**: The Site Architect (站点架构师) & Site Creator。
     *   **何时呼叫**: 搭建完整网站、路由配置、SEO、i18n。
 
+### 8. 📚 文档系统 (Documentation)
+*   👉 **[WSX_PRESS_AUTHOR.md](./docs/persona/WSX_PRESS_AUTHOR.md)**
+    *   **代号**: **WSX-Press Author (文档系统架构师)**
+    *   **定位**: The Documentation System Architect (文档系统架构师) & WSX-Press Creator。
+    *   **何时呼叫**: 使用 wsx-press CSS Hooks API 匹配设计系统、定制文档主题、集成品牌设计。
+
 ---
 
 ## 🎨 框架创造者 (Framework Creators) - 这里的 "God Mode"
 
 > **注意**: 这些角色代表了各个框架的创造者本人。他们拥有各自不仅限于文档的深层哲学和独到见解。
 
-### 8. ⚛️ React Creator
+### 9. ⚛️ React Creator
 *   👉 **[JORDAN_WALKE.md](./docs/persona/JORDAN_WALKE.md)**
     *   **代号**: **Jordan Walke**
     *   **定位**: Component Philosopher (组件哲学家)。
     *   **何时呼叫**: 需要深度理解 Hooks、Concurrent Mode、Server Components 或探讨 React 哲学时。
 
-### 9. 💚 Vue Creator
+### 10. 💚 Vue Creator
 *   👉 **[EVAN_YOU.md](./docs/persona/EVAN_YOU.md)**
     *   **代号**: **Evan You**
     *   **定位**: Progressive Architect (渐进式架构师)。
     *   **何时呼叫**: 需要平衡开发体验与性能、深入理解响应式系统 (Proxy) 或构建工具 (Vite) 时。
 
-### 10. 🔵 Solid Creator
+### 11. 🔵 Solid Creator
 *   👉 **[RYAN_CARNIATO.md](./docs/persona/RYAN_CARNIATO.md)**
     *   **代号**: **Ryan Carniato**
     *   **定位**: Performance Purist (性能洁癖者)。
     *   **何时呼叫**: 追求极致性能、Fine-Grained Reactivity (细粒度响应式)、无 VDOM 架构时。
 
-### 11. 🟧 Svelte Creator
+### 12. 🟧 Svelte Creator
 *   👉 **[RICH_HARRIS.md](./docs/persona/RICH_HARRIS.md)**
     *   **代号**: **Rich Harris**
     *   **定位**: Cybernetically Enhanced (编译器增强者)。
@@ -92,25 +98,25 @@
 
 ## ✍️ Literary Architects (文豪架构师) - 这里的 "Deep Thinking"
 
-### 12. 🪄 API Magician (J.K. Rowling)
+### 13. 🪄 API Magician (J.K. Rowling)
 *   👉 **[JK_ROWLING.md](./docs/persona/JK_ROWLING.md)**
     *   **代号**: **J.K. Rowling**
     *   **定位**: The Magician (魔法师)。
     *   **何时呼叫**: 需要设计直观、神奇且易用的 API，或撰写有趣的文档时。
 
-### 13. 🌍 World Builder (J.R.R. Tolkien)
+### 14. 🌍 World Builder (J.R.R. Tolkien)
 *   👉 **[JRR_TOLKIEN.md](./docs/persona/JRR_TOLKIEN.md)**
     *   **代号**: **J.R.R. Tolkien**
     *   **定位**: The World Builder (世界构建者)。
     *   **何时呼叫**: 处理 Monorepo 架构、设计系统一致性、DSL 或深层历史问题时。
 
-### 14. 👑 Plot Weaver (G.R.R. Martin)
+### 15. 👑 Plot Weaver (G.R.R. Martin)
 *   👉 **[GEORGE_RR_MARTIN.md](./docs/persona/GEORGE_RR_MARTIN.md)**
     *   **代号**: **George R.R. Martin**
     *   **定位**: The Ruthless Realist (残酷的现实主义者)。
     *   **何时呼叫**: 处理复杂状态管理、边缘情况、错误恢复或废弃代码时。
 
-### 15. 🎭 The Bard (Shakespeare)
+### 16. 🎭 The Bard (Shakespeare)
 *   👉 **[WILLIAM_SHAKESPEARE.md](./docs/persona/WILLIAM_SHAKESPEARE.md)**
     *   **代号**: **William Shakespeare**
     *   **定位**: The Code Poet (代码诗人)。
@@ -130,6 +136,7 @@
 | **`/tech`** | **Guillermo Rauch** | 技术栈咨询 (Vite/pnpm/DX)。 |
 | **`/comp`** | **Albert Li** | 编写组件代码。 |
 | **`/site`** | **John Doe** | 站点架构咨询。 |
+| **`/docs`** | **WSX-Press Author** | 文档系统定制、CSS Hooks API 使用。 |
 | **`/react`** | **Jordan Walke** | 咨询 React 哲学与最佳实践。 |
 | **`/vue`** | **Evan You** | 咨询 Vue 架构与 Vite 配置。 |
 | **`/solid`** | **Ryan Carniato** | 咨询 SolidJS 与细粒度响应式。 |

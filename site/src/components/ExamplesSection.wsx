@@ -177,7 +177,7 @@ export default class ExamplesSection extends WebComponent {
                                 </div>
                                 <p>{this.t("examplesSection.examples.colorPicker.description")}</p>
                                 <div class="example-demo">
-                                    <color-picker></color-picker>
+                                    <wsx-color-picker></wsx-color-picker>
                                 </div>
                             </div>
                         </div>

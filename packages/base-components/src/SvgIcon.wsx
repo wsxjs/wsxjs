@@ -4,7 +4,7 @@ import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("SvgIcon");
 
-@autoRegister({ tagName: "svg-icon" })
+@autoRegister({ tagName: "wsx-svg-icon" })
 export default class SvgIcon extends WebComponent {
     @state private size: number = 24;
     @state private color: string = "currentColor";

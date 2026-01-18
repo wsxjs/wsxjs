@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import ColorPicker from "../ColorPicker.wsx";
 
 // 注册组件
-if (!customElements.get("color-picker")) {
-    customElements.define("color-picker", ColorPicker);
+if (!customElements.get("wsx-color-picker")) {
+    customElements.define("wsx-color-picker", ColorPicker);
 }
 
 describe("ColorPicker", () => {
@@ -29,7 +29,7 @@ describe("ColorPicker", () => {
             writable: true,
         });
 
-        colorPicker = document.createElement("color-picker") as ColorPicker;
+        colorPicker = document.createElement("wsx-color-picker") as ColorPicker;
         document.body.appendChild(colorPicker);
     });
 

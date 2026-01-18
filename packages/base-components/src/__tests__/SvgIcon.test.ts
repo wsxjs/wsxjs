@@ -2,15 +2,15 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import SvgIcon from "../SvgIcon.wsx";
 
 // 注册组件
-if (!customElements.get("svg-icon")) {
-    customElements.define("svg-icon", SvgIcon);
+if (!customElements.get("wsx-svg-icon")) {
+    customElements.define("wsx-svg-icon", SvgIcon);
 }
 
 describe("SvgIcon", () => {
     let svgIcon: SvgIcon;
 
     beforeEach(() => {
-        svgIcon = document.createElement("svg-icon") as SvgIcon;
+        svgIcon = document.createElement("wsx-svg-icon") as SvgIcon;
         document.body.appendChild(svgIcon);
     });
 

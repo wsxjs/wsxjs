@@ -54,32 +54,32 @@ export default class HomeSection extends WebComponent {
 
                         <div class="hero-actions">
                             <wsx-link to="/quick-start" class="btn-primary">
-                                <svg-icon
+                                <wsx-svg-icon
                                     name="play"
                                     size="18"
                                     color="white"
                                     style="margin-right: 8px;"
-                                ></svg-icon>
+                                ></wsx-svg-icon>
                                 {this.t("hero.getStarted")}
                             </wsx-link>
 
                             <button class="btn-secondary" onClick={this.openPlayground}>
-                                <svg-icon
+                                <wsx-svg-icon
                                     name="code"
                                     size="18"
                                     color="currentColor"
                                     style="margin-right: 8px;"
-                                ></svg-icon>
+                                ></wsx-svg-icon>
                                 {this.t("hero.tryOnline")}
                             </button>
 
                             <button class="btn-ghost" onClick={this.openGitHub}>
-                                <svg-icon
+                                <wsx-svg-icon
                                     name="github"
                                     size="18"
                                     color="currentColor"
                                     style="margin-right: 8px;"
-                                ></svg-icon>
+                                ></wsx-svg-icon>
                                 {this.t("hero.viewGitHub")}
                             </button>
                         </div>

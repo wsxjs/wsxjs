@@ -2,7 +2,7 @@
 
 import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
 
-@autoRegister({ tagName: "theme-switcher" })
+@autoRegister({ tagName: "wsx-theme-switcher" })
 export default class ThemeSwitcher extends WebComponent {
     private currentTheme: "light" | "dark" | "auto" = "auto";
 

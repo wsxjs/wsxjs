@@ -135,7 +135,7 @@ export default class App extends LightComponent {
                 { label: t("nav.useCases"), to: "/use-cases" },
                 { label: t("nav.ecosystem"), to: "/ecosystem" },
             ],
-            actionTags: ["language-switcher", "theme-switcher"],
+            actionTags: ["wsx-language-switcher", "wsx-theme-switcher"],
             autoOverflow: true,
             mobileBreakpoint: 768,
         };

@@ -87,6 +87,8 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0039](./0039-enforce-super-lifecycle-calls.md) | 强制生命周期方法调用 super 的 ESLint 规则 | Implemented | WSX Team |
 | [RFC-0042](./0042-language-switcher-immediate-ui-update.md) | LanguageSwitcher 立即 UI 更新修复 | Implemented | WSX Team |
 | [RFC-0043](./0043-style-injection-verification-and-fixes.md) | Web Component 样式注入验证与修复 | Proposed | WSX Team |
+| [RFC-0050](./completed/0050-toc-anchor-scrolling-fix.md) | TOC Anchor Scrolling Fix | Completed | Claude |
+| [RFC-0052](./0052-marked-code-theme-and-toc-scrolling.md) | Marked Code Component Theme Support and TOC Scrolling Enhancement | Completed | Claude |
 
 ### 提议中的RFCs
 

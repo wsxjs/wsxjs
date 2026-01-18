@@ -20,7 +20,7 @@ export interface LanguageOption {
     name: string;
 }
 
-@autoRegister({ tagName: "language-switcher" })
+@autoRegister({ tagName: "wsx-language-switcher" })
 export default class LanguageSwitcher extends WebComponent {
     /** 支持的语言列表 */
     private languages: LanguageOption[] = [

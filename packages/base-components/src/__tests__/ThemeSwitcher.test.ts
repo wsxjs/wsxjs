@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import ThemeSwitcher from "../ThemeSwitcher.wsx";
 
 // 注册组件
-if (!customElements.get("theme-switcher")) {
-    customElements.define("theme-switcher", ThemeSwitcher);
+if (!customElements.get("wsx-theme-switcher")) {
+    customElements.define("wsx-theme-switcher", ThemeSwitcher);
 }
 
 describe("ThemeSwitcher", () => {
@@ -48,7 +48,7 @@ describe("ThemeSwitcher", () => {
             } as MediaQueryList;
         });
 
-        themeSwitcher = document.createElement("theme-switcher") as ThemeSwitcher;
+        themeSwitcher = document.createElement("wsx-theme-switcher") as ThemeSwitcher;
         document.body.appendChild(themeSwitcher);
     });
 
@@ -70,7 +70,7 @@ describe("ThemeSwitcher", () => {
 
         it("应该从 localStorage 加载主题", () => {
             window.localStorage.setItem("wsx-theme", "dark");
-            const newSwitcher = document.createElement("theme-switcher") as ThemeSwitcher;
+            const newSwitcher = document.createElement("wsx-theme-switcher") as ThemeSwitcher;
             document.body.appendChild(newSwitcher);
             expect(document.documentElement.className).toBe("dark");
             document.body.removeChild(newSwitcher);
@@ -78,7 +78,7 @@ describe("ThemeSwitcher", () => {
 
         it("应该使用默认主题 auto", () => {
             window.localStorage.clear();
-            const newSwitcher = document.createElement("theme-switcher") as ThemeSwitcher;
+            const newSwitcher = document.createElement("wsx-theme-switcher") as ThemeSwitcher;
             document.body.appendChild(newSwitcher);
             // 默认应该是 auto，会根据系统主题设置
             expect(newSwitcher.shadowRoot).toBeTruthy();
@@ -153,7 +153,7 @@ describe("ThemeSwitcher", () => {
                 dispatchEvent: vi.fn(),
             })) as unknown as typeof window.matchMedia;
 
-            const newSwitcher = document.createElement("theme-switcher") as ThemeSwitcher;
+            const newSwitcher = document.createElement("wsx-theme-switcher") as ThemeSwitcher;
             document.body.appendChild(newSwitcher);
             expect(addEventListener).toHaveBeenCalled();
             document.body.removeChild(newSwitcher);
@@ -178,7 +178,7 @@ describe("ThemeSwitcher", () => {
                 dispatchEvent: vi.fn(),
             })) as unknown as typeof window.matchMedia;
 
-            const newSwitcher = document.createElement("theme-switcher") as ThemeSwitcher;
+            const newSwitcher = document.createElement("wsx-theme-switcher") as ThemeSwitcher;
             document.body.appendChild(newSwitcher);
 
             if (changeCallback) {

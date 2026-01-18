@@ -12,9 +12,14 @@
     text-decoration: var(--link-decoration, underline);
     cursor: pointer;
     transition: color 0.2s ease;
-    display: inline-block;
+    display: block;
+    width: 100%;
+    height: 100%;
     min-height: 1.2em;
     line-height: 1.2;
+    /* 确保整个链接区域可点击 */
+    padding: inherit;
+    margin: inherit;
 }
 
 .wsx-link:hover {

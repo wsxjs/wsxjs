@@ -42,7 +42,7 @@ describe("ResponsiveNav", () => {
             const configuredNav = new ResponsiveNav({
                 brand: "Test",
                 items: mockItems,
-                actionTags: ["theme-switcher"],
+                actionTags: ["wsx-theme-switcher"],
             });
             expect(configuredNav).toBeInstanceOf(ResponsiveNav);
         });
@@ -137,7 +137,7 @@ describe("ResponsiveNav", () => {
             const config = {
                 brand: "Test",
                 items: mockItems,
-                actionTags: ["theme-switcher"],
+                actionTags: ["wsx-theme-switcher"],
             };
             nav.setAttribute("config", JSON.stringify(config));
             document.body.appendChild(nav);

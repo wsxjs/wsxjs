@@ -640,7 +640,7 @@ export class DocSearch extends LightComponent {
                     onClick={() => { this.isOpen = true; }}
                     aria-label="Search documentation (Cmd+K)"
                 >
-                    <svg-icon name="search" size="20"></svg-icon>
+                    <wsx-svg-icon name="search" size="20"></wsx-svg-icon>
                     <span class="search-hint">Search (⌘K)</span>
                 </button>
                 
@@ -649,7 +649,7 @@ export class DocSearch extends LightComponent {
                     <div class="search-modal" onClick={this.handleBackdropClick}>
                         <div class="search-modal-content" onClick={(e) => e.stopPropagation()}>
                             <div class="search-input-wrapper">
-                                <svg-icon name="search" size="20"></svg-icon>
+                                <wsx-svg-icon name="search" size="20"></wsx-svg-icon>
                                 <input
                                     type="text"
                                     placeholder="Search documentation..."
@@ -660,7 +660,7 @@ export class DocSearch extends LightComponent {
                                 />
                                 {this.query && (
                                     <button onClick={this.clearQuery} aria-label="Clear">
-                                        <svg-icon name="close" size="16"></svg-icon>
+                                        <wsx-svg-icon name="close" size="16"></wsx-svg-icon>
                                     </button>
                                 )}
                             </div>
