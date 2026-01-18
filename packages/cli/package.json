@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/cli",
-    "version": "0.0.25",
+    "version": "0.0.26",
     "description": "CLI tool for WSXJS initialization and configuration",
     "type": "module",
     "main": "./dist/index.js",

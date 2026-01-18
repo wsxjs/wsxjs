@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-i18next",
-    "version": "0.0.25",
+    "version": "0.0.26",
     "description": "i18next integration for WSXJS components",
     "type": "module",
     "main": "./dist/index.cjs",
