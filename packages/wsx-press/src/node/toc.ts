@@ -64,7 +64,7 @@ export function extractTOCFromMarkdown(markdown: string): TOCItem[] {
 
                 const item: TOCItem = {
                     level,
-                    text,
+                    text: text.trim(),
                     id,
                     children: [],
                 };
@@ -112,14 +112,15 @@ function extractTextFromTokens(tokens: Token[]): string {
 
 /**
  * 生成锚点 ID
+ * 保留中文等 Unicode 字符，只移除特殊符号
  */
 function generateId(text: string): string {
     return text
         .toLowerCase()
-        .replace(/[^\w\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .trim();
+        .replace(/\s+/g, "-") // 空格转连字符
+        .replace(/[^\p{L}\p{N}-]/gu, "") // 保留字母、数字、连字符（Unicode-aware）
+        .replace(/-+/g, "-") // 合并多个连字符
+        .replace(/^-+|-+$/g, ""); // 移除首尾连字符
 }
 
 /**

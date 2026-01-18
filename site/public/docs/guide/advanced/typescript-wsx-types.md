@@ -1,68 +1,68 @@
 ---
-title: WSX 类型系统指南
+title: WSX Type System Guide
 order: 2
 category: guide/advanced
-description: "本指南详细说明了 WSXJS 中 `.wsx` 文件类型系统的工作原理、维护方式和最佳实践。"
+description: "This guide details how the `.wsx` file type system works in WSXJS, maintenance methods, and best practices."
 ---
 
-本指南详细说明了 WSXJS 中 `.wsx` 文件类型系统的工作原理、维护方式和最佳实践。
+This guide details how the `.wsx` file type system works in WSXJS, maintenance methods, and best practices.
 
-## 目录
+## Table of Contents
 
-- [为什么每个包都需要 wsx.d.ts？](#为什么每个包都需要-wsxdts)
-- [如何维护类型一致性？](#如何维护类型一致性)
-- [开发者指南](#开发者指南)
-- [故障排查](#故障排查)
+- [Why Does Each Package Need wsx.d.ts?](#why-does-each-package-need-wsxdts)
+- [How to Maintain Type Consistency?](#how-to-maintain-type-consistency)
+- [Developer Guide](#developer-guide)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-## 为什么每个包都需要 wsx.d.ts？
+## Why Does Each Package Need wsx.d.ts?
 
-### 问题背景
+### Problem Background
 
-在 WSXJS 的 monorepo 结构中，多个包（`wsx-router`、`base-components`、`examples` 等）都包含了相同的 `wsx.d.ts` 文件，这看起来是重复的。但这是**必需的**，而不是设计失误。
+In WSXJS's monorepo structure, multiple packages (`wsx-router`, `base-components`, `examples`, etc.) all contain the same `wsx.d.ts` file, which looks redundant. But this is **required**, not a design flaw.
 
-### TypeScript 模块类型声明的限制
+### TypeScript Module Type Declaration Limitations
 
-**关键概念**：`declare module "*.wsx"` 属于 **模块模式声明（Pattern Ambient Module）**。
+**Key Concept**: `declare module "*.wsx"` belongs to **Pattern Ambient Module**.
 
-TypeScript 的类型解析机制要求：
-- **模块模式声明必须存在于编译上下文中**
-- **无法从 `node_modules` 自动传播**
-- `compilerOptions.types` 字段只影响**全局类型**（如 `@types/node`），不影响模块模式声明
+TypeScript's type resolution mechanism requires:
+- **Pattern ambient module declarations must exist in compilation context**
+- **Cannot automatically propagate from `node_modules`**
+- `compilerOptions.types` field only affects **global types** (like `@types/node`), doesn't affect pattern ambient module declarations
 
-**这意味着**：即使 `@wsxjs/wsx-core` 正确配置了类型定义，其他包也无法自动"继承"这个模块声明。
+**This means**: Even if `@wsxjs/wsx-core` correctly configures type definitions, other packages cannot automatically "inherit" this module declaration.
 
-###  实际验证结果
+### Actual Verification Results
 
-我们尝试了多种技术方案，包括：
+We tried various technical solutions, including:
 
-1. **`typesVersions` 字段**：TypeScript 官方的类型版本映射机制
-   - **结果**：在 monorepo 中部分失败
-   - `examples` 包可以工作，但 `wsx-router` 和 `base-components` 失败
-   - 行为不一致，不可靠
+1. **`typesVersions` field**: TypeScript official type version mapping mechanism
+   - **Result**: Partially failed in monorepo
+   - `examples` package works, but `wsx-router` and `base-components` fail
+   - Inconsistent behavior, unreliable
 
-2. **三斜线指令**：`/// <reference types="..." />`
-   - **结果**：技术上可行，但违反现代 TypeScript 最佳实践
-   - 需要在每个文件中手动添加
-   - 容易遗漏，维护困难
+2. **Triple-slash directives**: `/// <reference types="..." />`
+   - **Result**: Technically feasible, but violates modern TypeScript best practices
+   - Need to manually add in each file
+   - Easy to miss, difficult to maintain
 
-3. **当前方案**：每个包保留自己的 `wsx.d.ts`
-   - **结果**：完全稳定可靠
-   - 符合 TypeScript 的设计限制
-   - 与 Vue、Svelte 等成熟框架一致
+3. **Current solution**: Each package keeps its own `wsx.d.ts`
+   - **Result**: Completely stable and reliable
+   - Complies with TypeScript design limitations
+   - Consistent with mature frameworks like Vue, Svelte
 
-### 业界最佳实践
+### Industry Best Practices
 
-成熟的框架都采用相同的方案：
+Mature frameworks all adopt the same solution:
 
-- **Vue.js**：每个包都有 `shims-vue.d.ts` 文件
-- **Svelte**：每个包都有 `ambient.d.ts` 文件
-- **Solid.js**：每个包都有模块声明文件
+- **Vue.js**: Each package has `shims-vue.d.ts` file
+- **Svelte**: Each package has `ambient.d.ts` file
+- **Solid.js**: Each package has module declaration file
 
-这证明了这是业界公认的最佳实践，而不是 WSX 的特殊问题。
+This proves this is an industry-recognized best practice, not a WSX-specific problem.
 
-### 参考资料
+### References
 
 - [TypeScript Documentation - Modules Reference](https://www.typescriptlang.org/docs/handbook/modules/reference.html)
 - [TypeScript Issue #57652 - Monorepo dependency resolution](https://github.com/microsoft/TypeScript/issues/57652)
@@ -70,45 +70,45 @@ TypeScript 的类型解析机制要求：
 
 ---
 
-## 如何维护类型一致性？
+## How to Maintain Type Consistency?
 
-虽然我们必须保留重复的 `wsx.d.ts` 文件，但通过自动化工具确保了一致性和零维护成本。
+Although we must keep duplicate `wsx.d.ts` files, we ensure consistency and zero maintenance cost through automation tools.
 
-### 自动同步机制
+### Automatic Synchronization Mechanism
 
-**核心脚本**：`scripts/sync-wsx-types.mjs`
+**Core Script**: `scripts/sync-wsx-types.mjs`
 
-该脚本会：
-1. 从 `@wsxjs/wsx-core/types/wsx-types.d.ts` 读取标准类型定义
-2. 自动同步到所有包的 `wsx.d.ts` 文件
-3. 添加"自动生成"注释，提醒开发者不要手动编辑
+This script will:
+1. Read standard type definitions from `@wsxjs/wsx-core/types/wsx-types.d.ts`
+2. Automatically synchronize to all packages' `wsx.d.ts` files
+3. Add "auto-generated" comments to remind developers not to manually edit
 
-**使用方法**：
+**Usage**:
 
 ```bash
-# 手动同步
+# Manual synchronization
 pnpm sync:types
 
-# 查看同步结果
+# View synchronization results
 git status
 ```
 
 ### Pre-commit Hook
 
-**配置文件**：`.husky/pre-commit`
+**Configuration File**: `.husky/pre-commit`
 
-每次提交代码前，pre-commit hook 会：
-1. 自动运行 `pnpm sync:types`
-2. 将同步后的文件添加到 git
-3. 确保提交的代码中所有类型文件都是一致的
+Before each commit, the pre-commit hook will:
+1. Automatically run `pnpm sync:types`
+2. Add synchronized files to git
+3. Ensure all type files in committed code are consistent
 
-**开发者无需任何操作**，hook 会自动处理。
+**Developers need no action**, the hook automatically handles it.
 
-### CI/CD 验证
+### CI/CD Verification
 
-**GitHub Actions 配置**：`.github/workflows/ci.yml`
+**GitHub Actions Configuration**: `.github/workflows/ci.yml`
 
-CI 流程中包含类型一致性验证：
+CI workflow includes type consistency verification:
 
 ```yaml
 - name: Verify wsx.d.ts files consistency
@@ -117,25 +117,25 @@ CI 流程中包含类型一致性验证：
     git diff --exit-code packages/*/src/types/wsx.d.ts
 ```
 
-如果检测到不一致：
-- CI 会失败
-- 提示开发者运行 `pnpm sync:types`
-- 确保不会合并不一致的代码
+If inconsistency is detected:
+- CI will fail
+- Prompt developers to run `pnpm sync:types`
+- Ensure inconsistent code won't be merged
 
 ---
 
-## 开发者指南
+## Developer Guide
 
-### 修改类型定义
+### Modifying Type Definitions
 
-**重要**：只修改 `@wsxjs/wsx-core/types/wsx-types.d.ts`，不要修改其他包的 `wsx.d.ts`！
+**Important**: Only modify `@wsxjs/wsx-core/types/wsx-types.d.ts`, don't modify other packages' `wsx.d.ts`!
 
-**步骤**：
+**Steps**:
 
-1. 编辑 `packages/core/types/wsx-types.d.ts`：
+1. Edit `packages/core/types/wsx-types.d.ts`:
 
 ```typescript
-// 修改模块声明
+// Modify module declaration
 declare module "*.wsx" {
     import { WebComponent, LightComponent } from "../src/index";
     const Component: new (...args: unknown[]) => WebComponent | LightComponent;
@@ -143,49 +143,49 @@ declare module "*.wsx" {
 }
 ```
 
-2. 运行同步脚本：
+2. Run synchronization script:
 
 ```bash
 pnpm sync:types
 ```
 
-3. 提交更改：
+3. Commit changes:
 
 ```bash
 git add packages/core/types/wsx-types.d.ts packages/*/src/types/wsx.d.ts
 git commit -m "feat: update wsx type definitions"
 ```
 
-**注意**：如果你忘记运行 `pnpm sync:types`，pre-commit hook 会自动帮你运行。
+**Note**: If you forget to run `pnpm sync:types`, the pre-commit hook will automatically run it for you.
 
-### 添加新包
+### Adding New Package
 
-如果你创建了新的包，需要：
+If you create a new package, you need to:
 
-1. **创建类型文件夹**：
+1. **Create types folder**:
 
 ```bash
 mkdir -p packages/your-new-package/src/types
 ```
 
-2. **更新同步脚本**，编辑 `scripts/sync-wsx-types.mjs`：
+2. **Update synchronization script**, edit `scripts/sync-wsx-types.mjs`:
 
 ```javascript
 const TARGET_FILES = [
   'packages/wsx-router/src/types/wsx.d.ts',
   'packages/base-components/src/types/wsx.d.ts',
   'packages/examples/src/types/wsx.d.ts',
-  'packages/your-new-package/src/types/wsx.d.ts',  // 添加这行
+  'packages/your-new-package/src/types/wsx.d.ts',  // Add this line
 ];
 ```
 
-3. **运行同步**：
+3. **Run synchronization**:
 
 ```bash
 pnpm sync:types
 ```
 
-4. **配置 `tsconfig.json`**（如果需要）：
+4. **Configure `tsconfig.json`** (if needed):
 
 ```json
 {
@@ -197,80 +197,80 @@ pnpm sync:types
 }
 ```
 
-### 检查类型一致性
+### Checking Type Consistency
 
-手动检查所有 `wsx.d.ts` 文件是否一致：
+Manually check if all `wsx.d.ts` files are consistent:
 
 ```bash
-# 运行同步
+# Run synchronization
 pnpm sync:types
 
-# 检查是否有差异
+# Check if there are differences
 git diff packages/*/src/types/wsx.d.ts
 ```
 
-如果没有输出，说明所有文件都是一致的。
+If there's no output, all files are consistent.
 
 ---
 
-## 故障排查
+## Troubleshooting
 
-### 问题 1：TypeScript 报错 `Cannot find module '*.wsx'`
+### Problem 1: TypeScript Error `Cannot find module '*.wsx'`
 
-**症状**：
+**Symptoms**:
 
 ```
 error TS2307: Cannot find module './Component.wsx' or its corresponding type declarations.
 ```
 
-**原因**：`wsx.d.ts` 文件缺失或未被 TypeScript 识别。
+**Cause**: `wsx.d.ts` file is missing or not recognized by TypeScript.
 
-**解决方案**：
+**Solution**:
 
-1. 检查 `src/types/wsx.d.ts` 是否存在：
+1. Check if `src/types/wsx.d.ts` exists:
 
 ```bash
 ls -la packages/your-package/src/types/wsx.d.ts
 ```
 
-2. 如果不存在，运行同步脚本：
+2. If it doesn't exist, run synchronization script:
 
 ```bash
 pnpm sync:types
 ```
 
-3. 检查 `tsconfig.json` 的 `include` 配置：
+3. Check `tsconfig.json`'s `include` configuration:
 
 ```json
 {
   "include": [
     "src/**/*",
-    "src/types/**/*"  // 确保包含 types 目录
+    "src/types/**/*"  // Ensure types directory is included
   ]
 }
 ```
 
-4. 重启 TypeScript server（VS Code）：
+4. Restart TypeScript server (VS Code):
 
 - `Cmd+Shift+P` → "TypeScript: Restart TS Server"
 
-### 问题 2：IDE 显示 "React is not in scope" 错误
+### Problem 2: IDE Shows "React is not in scope" Error
 
-**症状**：
+**Symptoms**:
 
-虽然代码能编译，但 IDE 显示红色波浪线：`This JSX tag requires 'React' to be in scope`。
+Although code compiles, IDE shows red squiggles: `This JSX tag requires 'React' to be in scope`.
 
-**原因**：IDE 的 TypeScript 服务未正确加载 JSX 配置。
+**Cause**: IDE's TypeScript service didn't correctly load JSX configuration.
 
-**解决方案**：
+**Solution**:
 
-1. 在 `.wsx` 文件顶部添加 JSX pragma：
+1. Add JSX pragma at top of `.wsx` files:
 
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
 ```
 
-2. 确保 `tsconfig.json` 配置正确：
+2. Ensure `tsconfig.json` is correctly configured:
 
 ```json
 {
@@ -281,28 +281,28 @@ pnpm sync:types
 }
 ```
 
-3. 重启 TypeScript server
+3. Restart TypeScript server
 
-### 问题 3：CI 验证失败 "wsx.d.ts files are inconsistent"
+### Problem 3: CI Verification Failed "wsx.d.ts files are inconsistent"
 
-**症状**：
+**Symptoms**:
 
-CI 中报错：
+CI reports error:
 ```
 Error: wsx.d.ts files are inconsistent
 ```
 
-**原因**：某个包的 `wsx.d.ts` 文件与其他包不一致。
+**Cause**: A package's `wsx.d.ts` file is inconsistent with other packages.
 
-**解决方案**：
+**Solution**:
 
-1. 本地运行同步脚本：
+1. Run synchronization script locally:
 
 ```bash
 pnpm sync:types
 ```
 
-2. 提交更改：
+2. Commit changes:
 
 ```bash
 git add packages/*/src/types/wsx.d.ts
@@ -310,55 +310,55 @@ git commit -m "chore: sync wsx.d.ts files"
 git push
 ```
 
-### 问题 4：Pre-commit hook 没有自动运行
+### Problem 4: Pre-commit Hook Not Automatically Running
 
-**症状**：
+**Symptoms**:
 
-提交代码时，`wsx.d.ts` 文件没有自动同步。
+When committing code, `wsx.d.ts` files are not automatically synchronized.
 
-**原因**：Husky hooks 未正确安装。
+**Cause**: Husky hooks are not correctly installed.
 
-**解决方案**：
+**Solution**:
 
-1. 重新安装 hooks：
+1. Reinstall hooks:
 
 ```bash
 pnpm install
 ```
 
-2. 手动启用 hooks：
+2. Manually enable hooks:
 
 ```bash
 chmod +x .husky/pre-commit
 ```
 
-3. 测试 hook：
+3. Test hook:
 
 ```bash
 git commit -m "test" --allow-empty
 ```
 
-应该看到 `pnpm sync:types` 自动运行。
+Should see `pnpm sync:types` automatically run.
 
-### 问题 5：新创建的包无法识别 .wsx 文件
+### Problem 5: Newly Created Package Cannot Recognize .wsx Files
 
-**症状**：
+**Symptoms**:
 
-新包中的 `.wsx` 文件无法被 TypeScript 识别。
+`.wsx` files in new package cannot be recognized by TypeScript.
 
-**原因**：新包未添加到同步脚本中。
+**Cause**: New package not added to synchronization script.
 
-**解决方案**：
+**Solution**:
 
-参考 [添加新包](#添加新包) 章节。
+Refer to [Adding New Package](#adding-new-package) section.
 
 ---
 
-## 总结
+## Summary
 
-- **为什么重复？** TypeScript 的模块模式声明限制，这是技术必然
-- **如何维护？** 自动同步脚本 + Pre-commit hook + CI/CD 验证
-- **开发者体验？** 完全自动化，零手动维护成本
-- **是否可以改进？** 未来 TypeScript 改进类型系统后可以迁移到统一配置
+- **Why duplicate?** TypeScript's pattern ambient module declaration limitations, this is a technical necessity
+- **How to maintain?** Automatic synchronization script + Pre-commit hook + CI/CD verification
+- **Developer experience?** Fully automated, zero manual maintenance cost
+- **Can it be improved?** Can migrate to unified configuration after TypeScript improves type system in the future
 
-WSXJS 选择了工程实用主义：承认技术限制，通过自动化工具提供最佳开发体验。
+WSXJS chose engineering pragmatism: acknowledge technical limitations, provide best developer experience through automation tools.

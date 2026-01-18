@@ -1,30 +1,32 @@
 ---
-title: 示例组件开发计划
+title: Example Component Development Plan
 order: 5
 category: guide/advanced
-description: "通过丰富的示例组件充分展示 WSXJS 的能力，为开发者提供最佳实践参考"
+description: "Fully demonstrate WSXJS capabilities through rich example components, providing developers with best practice references"
 ---
 
-# WSX 示例组件开发计划
+# WSX Example Component Development Plan
 
-## 目标
-通过丰富的示例组件充分展示 WSXJS 的能力，为开发者提供最佳实践参考。
+## Goals
 
-## 开发原则
-1. **教学优先** - 每个示例都要清晰展示特定功能
-2. **代码简洁** - 避免过度复杂，聚焦核心概念
-3. **实用性强** - 提供可复用的模式和解决方案
-4. **文档完善** - 每个示例都要有详细注释
+Fully demonstrate WSXJS capabilities through rich example components, providing developers with best practice references.
 
-## 第一阶段：核心功能示例（1-2周）
+## Development Principles
 
-### 1. 生命周期示例 `<wsx-lifecycle-demo>`
-**优先级：高**
-- 展示所有生命周期钩子
-- 演示钩子调用顺序
-- 实际应用场景（资源管理、事件监听）
+1. **Teaching First** - Each example should clearly demonstrate specific functionality
+2. **Code Simplicity** - Avoid over-complexity, focus on core concepts
+3. **Practical** - Provide reusable patterns and solutions
+4. **Well Documented** - Each example should have detailed comments
+
+## Phase 1: Core Feature Examples (1-2 weeks)
+
+### 1. Lifecycle Example `<wsx-lifecycle-demo>`
+**Priority: High**
+- Demonstrate all lifecycle hooks
+- Show hook call order
+- Practical application scenarios (resource management, event listeners)
 ```typescript
-// 功能点：
+// Features:
 - constructor
 - connectedCallback / onConnected
 - disconnectedCallback / onDisconnected
@@ -32,172 +34,172 @@ description: "通过丰富的示例组件充分展示 WSXJS 的能力，为开�
 - adoptedCallback / onAdopted
 ```
 
-### 2. 属性观察示例 `<wsx-attribute-demo>`
-**优先级：高**
-- observedAttributes 声明
-- 属性变化响应
-- 属性类型转换
-- 默认值处理
+### 2. Attribute Observation Example `<wsx-attribute-demo>`
+**Priority: High**
+- observedAttributes declaration
+- Attribute change response
+- Attribute type conversion
+- Default value handling
 ```typescript
-// 功能点：
+// Features:
 - static observedAttributes
-- 布尔、数字、字符串属性
-- 属性验证
-- 属性到内部状态的映射
+- Boolean, number, string attributes
+- Attribute validation
+- Attribute to internal state mapping
 ```
 
-### 3. 事件系统示例 `<wsx-event-demo>`
-**优先级：高**
-- 自定义事件派发
-- 事件冒泡控制
-- 跨组件通信
-- 事件委托模式
+### 3. Event System Example `<wsx-event-demo>`
+**Priority: High**
+- Custom event dispatching
+- Event bubbling control
+- Cross-component communication
+- Event delegation pattern
 ```typescript
-// 功能点：
-- CustomEvent 创建和派发
-- 事件监听和移除
-- 事件数据传递
-- Shadow DOM 事件边界
+// Features:
+- CustomEvent creation and dispatching
+- Event listening and removal
+- Event data passing
+- Shadow DOM event boundaries
 ```
 
-## 第二阶段：交互模式示例（2-3周）
+## Phase 2: Interaction Pattern Examples (2-3 weeks)
 
-### 4. 表单集成示例 `<wsx-form-demo>`
-**优先级：高**
-- 表单控件集成
-- 验证逻辑
-- FormData API 使用
-- 受控/非受控模式
+### 4. Form Integration Example `<wsx-form-demo>`
+**Priority: High**
+- Form control integration
+- Validation logic
+- FormData API usage
+- Controlled/uncontrolled modes
 ```typescript
-// 功能点：
-- 自定义表单控件
+// Features:
+- Custom form controls
 - Constraint Validation API
-- 表单状态管理
-- 错误提示UI
+- Form state management
+- Error message UI
 ```
 
-### 5. 组件通信示例 `<wsx-communication-demo>`
-**优先级：中**
-- 父子组件通信
-- 兄弟组件通信
-- 事件总线模式
-- Context 模式
+### 5. Component Communication Example `<wsx-communication-demo>`
+**Priority: Medium**
+- Parent-child component communication
+- Sibling component communication
+- Event bus pattern
+- Context pattern
 ```typescript
-// 功能点：
-- Props 传递
-- 事件向上传播
-- 共享状态管理
-- Pub/Sub 模式
+// Features:
+- Props passing
+- Event upward propagation
+- Shared state management
+- Pub/Sub pattern
 ```
 
-### 6. 动态内容示例 `<wsx-dynamic-demo>`
-**优先级：中**
-- 列表渲染
-- 条件渲染
-- 动态组件
-- Key 的使用
+### 6. Dynamic Content Example `<wsx-dynamic-demo>`
+**Priority: Medium**
+- List rendering
+- Conditional rendering
+- Dynamic components
+- Key usage
 ```typescript
-// 功能点：
-- map 渲染列表
-- if/else 条件分支
-- switch 多分支
-- 动态标签名
+// Features:
+- map rendering lists
+- if/else conditional branches
+- switch multiple branches
+- Dynamic tag names
 ```
 
-## 第三阶段：高级特性示例（3-4周）
+## Phase 3: Advanced Feature Examples (3-4 weeks)
 
-### 7. 异步数据示例 `<wsx-async-demo>`
-**优先级：中**
-- 数据加载状态
-- 错误处理
-- 加载指示器
-- 数据缓存
+### 7. Async Data Example `<wsx-async-demo>`
+**Priority: Medium**
+- Data loading state
+- Error handling
+- Loading indicator
+- Data caching
 ```typescript
-// 功能点：
-- fetch API 使用
-- Promise 处理
-- Loading/Error/Success 状态
-- 重试机制
+// Features:
+- fetch API usage
+- Promise handling
+- Loading/Error/Success states
+- Retry mechanism
 ```
 
-### 8. 性能优化示例 `<wsx-performance-demo>`
-**优先级：低**
-- 虚拟滚动
-- 懒加载
-- 防抖/节流
-- 批量更新
+### 8. Performance Optimization Example `<wsx-performance-demo>`
+**Priority: Low**
+- Virtual scrolling
+- Lazy loading
+- Debounce/throttle
+- Batch updates
 ```typescript
-// 功能点：
+// Features:
 - IntersectionObserver
 - requestAnimationFrame
 - DocumentFragment
-- 事件委托优化
+- Event delegation optimization
 ```
 
-### 9. 原生 API 集成示例 `<wsx-native-api-demo>`
-**优先级：低**
+### 9. Native API Integration Example `<wsx-native-api-demo>`
+**Priority: Low**
 - ResizeObserver
 - MutationObserver
 - Drag & Drop API
 - Web Animations API
 ```typescript
-// 功能点：
-- 响应式布局
-- DOM 变化监听
-- 拖拽排序
-- 动画序列
+// Features:
+- Responsive layout
+- DOM change monitoring
+- Drag and drop sorting
+- Animation sequences
 ```
 
-### 10. 组合模式示例 `<wsx-composition-demo>`
-**优先级：低**
-- HOC 模式
-- Mixin 模式
-- 插槽组合
-- 渲染属性模式
+### 10. Composition Pattern Example `<wsx-composition-demo>`
+**Priority: Low**
+- HOC pattern
+- Mixin pattern
+- Slot composition
+- Render props pattern
 ```typescript
-// 功能点：
-- 功能增强
-- 行为复用
-- 灵活布局
-- 逻辑共享
+// Features:
+- Feature enhancement
+- Behavior reuse
+- Flexible layout
+- Logic sharing
 ```
 
-## 实施计划
+## Implementation Plan
 
-### 第一周
-- [ ] 完成生命周期示例
-- [ ] 完成属性观察示例
-- [ ] 更新文档
+### Week 1
+- [ ] Complete lifecycle example
+- [ ] Complete attribute observation example
+- [ ] Update documentation
 
-### 第二周
-- [ ] 完成事件系统示例
-- [ ] 完成表单集成示例
-- [ ] 创建示例索引页面
+### Week 2
+- [ ] Complete event system example
+- [ ] Complete form integration example
+- [ ] Create example index page
 
-### 第三周
-- [ ] 完成组件通信示例
-- [ ] 完成动态内容示例
-- [ ] 添加交互式演示
+### Week 3
+- [ ] Complete component communication example
+- [ ] Complete dynamic content example
+- [ ] Add interactive demonstrations
 
-### 第四周
-- [ ] 完成异步数据示例
-- [ ] 优化现有示例
-- [ ] 完善文档和注释
+### Week 4
+- [ ] Complete async data example
+- [ ] Optimize existing examples
+- [ ] Improve documentation and comments
 
-### 后续计划
-- [ ] 根据社区反馈添加新示例
-- [ ] 创建在线 Playground
-- [ ] 制作视频教程
-- [ ] 整理最佳实践指南
+### Future Plans
+- [ ] Add new examples based on community feedback
+- [ ] Create online Playground
+- [ ] Create video tutorials
+- [ ] Organize best practices guide
 
-## 成功标准
+## Success Criteria
 
-1. **覆盖度** - 涵盖 WSX 所有核心功能
-2. **清晰度** - 代码易懂，注释充分
-3. **实用性** - 可直接复用到实际项目
-4. **可维护性** - 示例代码质量高，易于更新
+1. **Coverage** - Cover all WSX core features
+2. **Clarity** - Code is easy to understand, comments are sufficient
+3. **Practicality** - Can be directly reused in actual projects
+4. **Maintainability** - Example code quality is high, easy to update
 
-## 示例组件模板
+## Example Component Template
 
 ```typescript
 /** @jsxImportSource @wsxjs/wsx-core */
@@ -207,14 +209,14 @@ import styles from './ComponentName.css?inline';
 const logger = createLogger('ComponentName');
 
 /**
- * 示例组件：展示 XXX 功能
+ * Example Component: Demonstrates XXX functionality
  * 
- * 主要功能：
- * - 功能点1
- * - 功能点2
- * - 功能点3
+ * Main features:
+ * - Feature point 1
+ * - Feature point 2
+ * - Feature point 3
  * 
- * 使用方法：
+ * Usage:
  * ```html
  * <component-name attribute="value"></component-name>
  * ```
@@ -231,8 +233,8 @@ export class ComponentName extends WebComponent {
   render() {
     return (
       <div class="demo-container">
-        <h3>功能演示</h3>
-        {/* 示例代码 */}
+        <h3>Feature Demonstration</h3>
+        {/* Example code */}
       </div>
     );
   }
@@ -247,15 +249,15 @@ export class ComponentName extends WebComponent {
 }
 ```
 
-## 文档要求
+## Documentation Requirements
 
-每个示例组件都需要包含：
-1. **功能说明** - 清晰描述展示的功能
-2. **代码注释** - 关键代码行内注释
-3. **使用示例** - HTML 使用代码
-4. **最佳实践** - 推荐的使用方式
-5. **常见问题** - 可能遇到的问题和解决方案
+Each example component should include:
+1. **Feature Description** - Clear description of demonstrated functionality
+2. **Code Comments** - Inline comments for key code lines
+3. **Usage Examples** - HTML usage code
+4. **Best Practices** - Recommended usage patterns
+5. **Common Issues** - Possible issues and solutions
 
 ---
 
-最后更新：2025年1月
+Last updated: January 2025

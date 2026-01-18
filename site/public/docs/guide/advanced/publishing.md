@@ -1,148 +1,148 @@
 ---
-title: WSXJS 发布指南
+title: WSXJS Publishing Guide
 order: 4
 category: guide/advanced
-description: "本指南说明如何使用 Turbo 和 Changesets 发布 WSXJS 的所有包。"
+description: "This guide explains how to publish all WSXJS packages using Turbo and Changesets."
 ---
 
-本指南说明如何使用 Turbo 和 Changesets 发布 WSXJS 的所有包。
+This guide explains how to publish all WSXJS packages using Turbo and Changesets.
 
-> **最佳实践**: 本发布流程遵循开源 npm 包发布的最佳实践，包括安全性检查、dry-run 测试、版本验证等。
+> **Best Practice**: This publishing workflow follows best practices for open-source npm package publishing, including security checks, dry-run testing, version verification, etc.
 
-## 前置要求
+## Prerequisites
 
-1. **安装 Turbo**（已包含在 devDependencies 中）
+1. **Install Turbo** (already included in devDependencies)
    ```bash
    pnpm install
    ```
 
-2. **确保已登录 NPM**
+2. **Ensure logged into NPM**
    ```bash
    npm login
    ```
 
-3. **确保在 main 分支且所有更改已提交**
+3. **Ensure on main branch and all changes committed**
    ```bash
    git checkout main
    git pull origin main
    ```
 
-## 发布流程
+## Publishing Workflow
 
-### 方法 1: 使用自动化发布脚本（推荐）
+### Method 1: Using Automated Publishing Script (Recommended)
 
 ```bash
 pnpm release
 ```
 
-这个脚本会自动执行以下步骤：
+This script automatically executes the following steps:
 
-## 阶段 1: 版本管理（可选）
+## Phase 1: Version Management (Optional)
 
-1. ✅ **检查 NPM 认证** - 验证登录状态和 registry 配置
-2. ✅ **检查 Git 状态** - 验证分支、未提交更改、未推送提交
-3. ✅ **检查远程更新** - 自动拉取远程最新代码（推荐）
-4. ✅ **询问版本更新** - 是否要更新版本号
-5. ✅ **创建 Changeset** - 如果没有 changeset，自动创建
-6. ✅ **应用版本更新** - 使用 changeset version 更新所有包版本
-7. ✅ **重新构建** - 版本更新后重新构建
-8. ✅ **Git 提交** - 提交版本更新和 CHANGELOG
-9. ✅ **创建标签** - 创建 Git 标签（vX.X.X）
-10. ✅ **推送到远程** - 自动推送分支和标签
+1. ✅ **Check NPM Authentication** - Verify login status and registry configuration
+2. ✅ **Check Git Status** - Verify branch, uncommitted changes, unpushed commits
+3. ✅ **Check Remote Updates** - Automatically pull latest remote code (recommended)
+4. ✅ **Ask for Version Update** - Whether to update version numbers
+5. ✅ **Create Changeset** - Automatically create if no changeset exists
+6. ✅ **Apply Version Updates** - Use changeset version to update all package versions
+7. ✅ **Rebuild** - Rebuild after version update
+8. ✅ **Git Commit** - Commit version updates and CHANGELOG
+9. ✅ **Create Tag** - Create Git tag (vX.X.X)
+10. ✅ **Push to Remote** - Automatically push branch and tags
 
-## 阶段 2: 发布到 NPM
+## Phase 2: Publish to NPM
 
-11. ✅ **清理构建产物** - 清理旧的构建文件
-12. ✅ **安装依赖** - 使用 frozen-lockfile 确保一致性
-13. ✅ **代码质量检查** - ESLint、Prettier、TypeScript 类型检查
-14. ✅ **运行测试** - 确保所有测试通过
-15. ✅ **构建所有包** - 使用 Turbo 并行构建（带缓存）
-16. ✅ **验证构建产物** - 检查所有包的构建输出
-17. ✅ **显示发布列表** - 显示将要发布的包和版本
-18. ✅ **检查已存在版本** - 避免重复发布
-19. ✅ **Dry-run 测试** - 可选，模拟发布过程（推荐）
-20. ✅ **发布到 NPM** - 支持交互式 OTP 输入（2FA）
-21. ✅ **完成确认** - 显示发布结果摘要
+11. ✅ **Clean Build Artifacts** - Clean old build files
+12. ✅ **Install Dependencies** - Use frozen-lockfile to ensure consistency
+13. ✅ **Code Quality Checks** - ESLint, Prettier, TypeScript type checking
+14. ✅ **Run Tests** - Ensure all tests pass
+15. ✅ **Build All Packages** - Use Turbo parallel build (with cache)
+16. ✅ **Verify Build Artifacts** - Check all package build outputs
+17. ✅ **Display Publish List** - Show packages and versions to be published
+18. ✅ **Check Existing Versions** - Avoid duplicate publishing
+19. ✅ **Dry-run Test** - Optional, simulate publishing process (recommended)
+20. ✅ **Publish to NPM** - Support interactive OTP input (2FA)
+21. ✅ **Completion Confirmation** - Display publishing result summary
 
-## 最佳实践特性
+## Best Practice Features
 
-- 🔒 **安全性**: 检查 NPM 认证、registry 配置
-- 🔍 **验证**: 检查包是否已存在，避免重复发布
-- 🧪 **Dry-run**: 发布前模拟测试，降低风险
-- 🔄 **同步**: 自动检查并拉取远程更新
-- 📦 **透明**: 显示将要发布的所有包和版本
-- 🛡️ **错误处理**: 完善的错误提示和恢复建议
+- 🔒 **Security**: Check NPM authentication, registry configuration
+- 🔍 **Verification**: Check if packages already exist, avoid duplicate publishing
+- 🧪 **Dry-run**: Simulate before publishing, reduce risk
+- 🔄 **Synchronization**: Automatically check and pull remote updates
+- 📦 **Transparency**: Display all packages and versions to be published
+- 🛡️ **Error Handling**: Comprehensive error messages and recovery suggestions
 
-**为什么使用 JavaScript 而不是 Shell 脚本？**
+**Why Use JavaScript Instead of Shell Scripts?**
 
-发布脚本使用 Node.js (`.mjs`) 实现，并使用专业的 CLI 库：
+The publishing script uses Node.js (`.mjs`) implementation and professional CLI libraries:
 
-- ✅ **跨平台兼容**：Windows、macOS、Linux 都能运行，无需 Git Bash 或 WSL
-- ✅ **更好的维护性**：与项目技术栈一致（TypeScript/JavaScript）
-- ✅ **更容易调试**：可以使用 Node.js 调试工具
-- ✅ **更好的错误处理**：JavaScript 的异常处理更完善
-- ✅ **专业的 CLI 体验**：使用以下库提供更好的用户体验：
-  - **chalk** - 彩色输出，更清晰的视觉反馈
-  - **inquirer** - 交互式提示，友好的用户交互
-  - **ora** - 加载动画，显示任务进度
-  - **listr2** - 任务列表，清晰展示执行步骤
+- ✅ **Cross-platform Compatibility**: Works on Windows, macOS, Linux, no need for Git Bash or WSL
+- ✅ **Better Maintainability**: Consistent with project tech stack (TypeScript/JavaScript)
+- ✅ **Easier Debugging**: Can use Node.js debugging tools
+- ✅ **Better Error Handling**: JavaScript exception handling is more comprehensive
+- ✅ **Professional CLI Experience**: Uses the following libraries for better user experience:
+  - **chalk** - Colored output, clearer visual feedback
+  - **inquirer** - Interactive prompts, friendly user interaction
+  - **ora** - Loading animations, show task progress
+  - **listr2** - Task list, clearly display execution steps
 
-### 方法 2: 手动发布流程
+### Method 2: Manual Publishing Workflow
 
-#### 步骤 1: 创建 Changeset
+#### Step 1: Create Changeset
 
-在开发过程中，为每个变更创建 changeset：
+During development, create a changeset for each change:
 
 ```bash
 pnpm changeset
 ```
 
-这会引导你：
-- 选择要发布的包
-- 选择版本类型（patch/minor/major）
-- 添加变更说明
+This will guide you to:
+- Select packages to publish
+- Select version type (patch/minor/major)
+- Add change description
 
-#### 步骤 2: 构建和测试
+#### Step 2: Build and Test
 
 ```bash
-# 使用 Turbo 并行构建所有包（自动处理依赖顺序）
+# Use Turbo to build all packages in parallel (automatically handles dependency order)
 pnpm build
 
-# 运行测试
+# Run tests
 pnpm test
 
-# 类型检查
+# Type check
 pnpm typecheck
 ```
 
-#### 步骤 3: 应用版本更新
+#### Step 3: Apply Version Updates
 
 ```bash
 pnpm changeset:version
 ```
 
-这会：
-- 根据 changesets 更新所有包的版本号
-- 更新 CHANGELOG.md
-- 删除已应用的 changeset 文件
+This will:
+- Update all package version numbers based on changesets
+- Update CHANGELOG.md
+- Delete applied changeset files
 
-#### 步骤 4: 重新构建
+#### Step 4: Rebuild
 
-版本更新后需要重新构建：
+Need to rebuild after version update:
 
 ```bash
 pnpm build
 ```
 
-#### 步骤 5: 发布到 NPM
+#### Step 5: Publish to NPM
 
 ```bash
 pnpm changeset:publish
 ```
 
-这会发布所有版本已更新的包到 NPM。
+This will publish all packages with updated versions to NPM.
 
-#### 步骤 6: 提交和推送
+#### Step 6: Commit and Push
 
 ```bash
 git add .
@@ -150,130 +150,130 @@ git commit -m "chore: release vX.X.X"
 git push --follow-tags
 ```
 
-## Turbo 的优势
+## Turbo Advantages
 
-使用 Turbo 后，构建过程有以下优势：
+After using Turbo, the build process has the following advantages:
 
-### 1. 并行构建
-- 多个包可以同时构建
-- 自动处理依赖顺序（例如：core 先于 base-components）
+### 1. Parallel Build
+- Multiple packages can build simultaneously
+- Automatically handles dependency order (e.g., core before base-components)
 
-### 2. 智能缓存
-- 未变更的包不会重新构建
-- 大幅提升构建速度
+### 2. Smart Caching
+- Unchanged packages won't rebuild
+- Significantly improves build speed
 
-### 3. 依赖感知
-- 自动识别包之间的依赖关系
-- 确保构建顺序正确
+### 3. Dependency Awareness
+- Automatically identifies dependencies between packages
+- Ensures correct build order
 
-### 4. 增量构建
-- 只构建变更的包及其依赖
-- 使用 `turbo build --filter=@wsxjs/wsx-core` 构建单个包
+### 4. Incremental Build
+- Only build changed packages and their dependencies
+- Use `turbo build --filter=@wsxjs/wsx-core` to build a single package
 
-## 常用命令
+## Common Commands
 
-### 构建相关
+### Build Related
 
 ```bash
-# 构建所有包
+# Build all packages
 pnpm build
 
-# 构建特定包
+# Build specific package
 pnpm build:filter @wsxjs/wsx-core
 
-# 构建开发版本（带 sourcemap）
+# Build development version (with sourcemap)
 pnpm build:dev
 
-# 清理所有构建产物
+# Clean all build artifacts
 pnpm clean
 ```
 
-### 代码质量
+### Code Quality
 
 ```bash
-# 运行所有包的 lint
+# Run lint for all packages
 pnpm lint
 
-# 类型检查所有包
+# Type check all packages
 pnpm typecheck
 
-# 格式化代码
+# Format code
 pnpm format
 
-# 检查代码格式
+# Check code format
 pnpm format:check
 ```
 
-### Changeset 相关
+### Changeset Related
 
 ```bash
-# 创建新的 changeset
+# Create new changeset
 pnpm changeset
 
-# 查看 changeset 状态
+# View changeset status
 pnpm changeset:status
 
-# 应用版本更新
+# Apply version updates
 pnpm changeset:version
 
-# 发布（dry-run）
+# Publish (dry-run)
 pnpm release:dry-run
 ```
 
-## 发布检查清单
+## Publishing Checklist
 
-在发布前，请确认：
+Before publishing, please confirm:
 
-- [ ] 所有测试通过 (`pnpm test`)
-- [ ] 类型检查通过 (`pnpm typecheck`)
-- [ ] 代码格式正确 (`pnpm format:check`)
-- [ ] Lint 检查通过 (`pnpm lint`)
-- [ ] 所有包构建成功 (`pnpm build`)
-- [ ] 构建产物存在且完整
-- [ ] Changeset 已创建并描述清楚
-- [ ] 在 main 分支
-- [ ] 所有更改已提交
-- [ ] 已登录 NPM
+- [ ] All tests pass (`pnpm test`)
+- [ ] Type check passes (`pnpm typecheck`)
+- [ ] Code format is correct (`pnpm format:check`)
+- [ ] Lint check passes (`pnpm lint`)
+- [ ] All packages build successfully (`pnpm build`)
+- [ ] Build artifacts exist and are complete
+- [ ] Changeset created and clearly described
+- [ ] On main branch
+- [ ] All changes committed
+- [ ] Logged into NPM
 
-## 故障排除
+## Troubleshooting
 
-### 构建失败
+### Build Failure
 
-如果某个包构建失败：
+If a package build fails:
 
-1. 检查该包的依赖是否已构建
-2. 清理并重新构建：
+1. Check if the package's dependencies are built
+2. Clean and rebuild:
    ```bash
    pnpm clean
    pnpm build
    ```
 
-### 版本冲突
+### Version Conflict
 
-如果遇到版本冲突：
+If encountering version conflicts:
 
-1. 检查是否有未应用的 changeset
-2. 手动解决版本冲突
-3. 重新运行 `pnpm changeset:version`
+1. Check if there are unapplied changesets
+2. Manually resolve version conflicts
+3. Re-run `pnpm changeset:version`
 
-### 发布失败
+### Publishing Failure
 
-如果发布失败：
+If publishing fails:
 
-1. 检查 NPM 登录状态：`npm whoami`
-2. 检查包名和版本是否已存在
-3. 检查是否有发布权限
+1. Check NPM login status: `npm whoami`
+2. Check if package name and version already exist
+3. Check if you have publishing permissions
 
-## CI/CD 集成
+## CI/CD Integration
 
-发布流程已集成到 GitHub Actions（`.github/workflows/release.yml`）：
+The publishing workflow is integrated into GitHub Actions (`.github/workflows/release.yml`):
 
-- 自动运行 CI 检查
-- 自动构建和测试
-- 使用 semantic-release 自动发布
+- Automatically run CI checks
+- Automatically build and test
+- Use semantic-release for automatic publishing
 
-## 相关文档
+## Related Documentation
 
-- [Changesets 文档](https://github.com/changesets/changesets)
-- [Turbo 文档](https://turbo.build/repo/docs)
-- [Semantic Release 配置](.releaserc.js)
+- [Changesets Documentation](https://github.com/changesets/changesets)
+- [Turbo Documentation](https://turbo.build/repo/docs)
+- [Semantic Release Configuration](.releaserc.js)

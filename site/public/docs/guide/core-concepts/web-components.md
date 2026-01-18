@@ -1,60 +1,60 @@
 ---
-title: WebComponent 使用指南
+title: WebComponent Guide
 order: 1
 category: guide/core-concepts
-description: "WebComponent 是 WSXJS 提供的标准自定义元素基类，使用 Shadow DOM 提供完全的样式隔离和封装"
+description: "WebComponent is the standard custom element base class provided by WSXJS, using Shadow DOM to provide complete style isolation and encapsulation"
 ---
 
-## 概述
+## Overview
 
-`WebComponent` 是 WSXJS 提供的标准自定义元素基类，使用 Shadow DOM 提供完全的样式隔离和封装。它是构建可复用 UI 组件的首选，特别适合需要样式隔离和完全封装的场景。
+`WebComponent` is the standard custom element base class provided by WSXJS, using Shadow DOM to provide complete style isolation and encapsulation. It is the preferred choice for building reusable UI components, especially suitable for scenarios requiring style isolation and complete encapsulation.
 
-## 为什么使用 WebComponent？
+## Why Use WebComponent?
 
-### 适用场景
+### Use Cases
 
-1. **可复用 UI 组件**
-   - 按钮、输入框、卡片等通用组件
-   - 需要完全样式隔离的组件
-   - 组件库开发
+1. **Reusable UI Components**
+   - Common components like buttons, inputs, cards, etc.
+   - Components requiring complete style isolation
+   - Component library development
 
-2. **样式隔离需求**
-   - 避免样式冲突
-   - 需要完全封装的组件
-   - 组件样式不应影响外部
+2. **Style Isolation Requirements**
+   - Avoid style conflicts
+   - Components requiring complete encapsulation
+   - Component styles should not affect external elements
 
-3. **焦点保持功能**
-   - 表单输入组件
-   - 需要保持用户输入焦点的场景
-   - 动态内容更新时保持交互状态
+3. **Focus Preservation**
+   - Form input components
+   - Scenarios requiring user input focus preservation
+   - Maintain interaction state during dynamic content updates
 
-4. **完全封装**
-   - 组件内部实现细节需要隐藏
-   - 防止外部样式和脚本干扰
-   - 提供稳定的组件 API
+4. **Complete Encapsulation**
+   - Component internal implementation details need to be hidden
+   - Prevent external styles and scripts from interfering
+   - Provide stable component API
 
-### 不适用场景
+### Not Suitable For
 
-- 需要与第三方库集成（EditorJS、Chart.js 等）→ 使用 `LightComponent`
-- 需要全局 DOM 访问 → 使用 `LightComponent`
-- 需要事件自然冒泡到文档级别 → 使用 `LightComponent`
+- Need to integrate with third-party libraries (EditorJS, Chart.js, etc.) → Use `LightComponent`
+- Need global DOM access → Use `LightComponent`
+- Need events to naturally bubble to document level → Use `LightComponent`
 
-## 快速开始
+## Quick Start
 
-### 基础用法
+### Basic Usage
 
-**方式 1: 自动 CSS 注入（推荐）**
+**Method 1: Automatic CSS Injection (Recommended)**
 
-如果组件文件 `MyButton.wsx` 存在对应的 `MyButton.css` 文件，Babel 插件会自动注入 CSS，无需手动导入：
+If a `MyButton.css` file exists for the component file `MyButton.wsx`, the Babel plugin will automatically inject CSS without manual import:
 
 ```tsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
-// CSS 自动注入：如果 MyButton.css 存在，会自动导入并注入为 _autoStyles
+// CSS auto-injection: If MyButton.css exists, it will be automatically imported and injected as _autoStyles
 
 @autoRegister('my-button')
 export class MyButton extends WebComponent {
-  // 无需 constructor，样式会自动应用
-  // 或者只需要指定 styleName（如果需要）
+  // No constructor needed, styles will be automatically applied
+  // Or just specify styleName (if needed)
   constructor() {
     super({ styleName: 'my-button' });
   }
@@ -69,9 +69,9 @@ export class MyButton extends WebComponent {
 }
 ```
 
-**方式 2: 手动导入 CSS（可选）**
+**Method 2: Manual CSS Import (Optional)**
 
-如果需要手动控制，也可以显式导入：
+If manual control is needed, you can also explicitly import:
 
 ```tsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
@@ -93,15 +93,15 @@ export class MyButton extends WebComponent {
 }
 ```
 
-**注意**：如果手动导入了 CSS，Babel 插件会检测到并跳过自动注入，避免重复。
+**Note**: If CSS is manually imported, the Babel plugin will detect it and skip auto-injection to avoid duplication.
 
-### 使用响应式状态
+### Using Reactive State
 
-`WebComponent` 完全支持响应式状态管理，提供了三种方式：
+`WebComponent` fully supports reactive state management, providing three approaches:
 
-#### 方式 1: 使用 @state 装饰器（推荐）
+#### Method 1: Using @state Decorator (Recommended)
 
-使用 `@state` 装饰器是最简洁的方式，Babel 插件会在编译时自动处理：
+Using the `@state` decorator is the most concise approach, and the Babel plugin will automatically process it at compile time:
 
 ```tsx
 import { WebComponent, autoRegister, state } from '@wsxjs/wsx-core';
@@ -112,7 +112,7 @@ export class Counter extends WebComponent {
     super({ styles });
   }
 
-  // ✅ 使用 @state 装饰器（必须有初始值）
+  // ✅ Using @state decorator (must have initial value)
   @state private count = 0;
   @state private name = "";
   @state private user = { name: "John", age: 30 };
@@ -134,30 +134,30 @@ export class Counter extends WebComponent {
 }
 ```
 
-**重要提示**：
-- ⚠️ `@state` 装饰器的属性**必须有初始值**
-- ✅ ESLint 规则 `wsx/state-requires-initial-value` 会在开发时检查
-- ✅ Babel 插件会在构建时验证，缺少初始值会导致构建失败
-- 📖 查看 [RFC-0013](./rfcs/completed/0013-state-initial-value-validation.md) 了解详细说明
+**Important Notes**:
+- ⚠️ Properties with the `@state` decorator **must have initial values**
+- ✅ ESLint rule `wsx/state-requires-initial-value` checks at development time
+- ✅ Babel plugin validates at build time, missing initial values will cause build failure
+- 📖 See [RFC-0013](./rfcs/completed/0013-state-initial-value-validation.md) for detailed explanation
 
-**有效示例**：
+**Valid Examples**:
 ```tsx
-@state private count = 0;           // ✅ 数字
-@state private name = "";           // ✅ 字符串
-@state private enabled = false;     // ✅ 布尔值
-@state private user = {};           // ✅ 对象
-@state private items = [];          // ✅ 数组
-@state private optional: string | undefined = undefined; // ✅ 可选类型（显式 undefined）
+@state private count = 0;           // ✅ Number
+@state private name = "";           // ✅ String
+@state private enabled = false;     // ✅ Boolean
+@state private user = {};           // ✅ Object
+@state private items = [];          // ✅ Array
+@state private optional: string | undefined = undefined; // ✅ Optional type (explicit undefined)
 ```
 
-**无效示例**（会被 ESLint 和 Babel 检测）：
+**Invalid Examples** (will be detected by ESLint and Babel):
 ```tsx
-@state private count;               // ❌ 缺少初始值
-@state private name;                 // ❌ 缺少初始值
-@state private user;                 // ❌ 缺少初始值
+@state private count;               // ❌ Missing initial value
+@state private name;                 // ❌ Missing initial value
+@state private user;                 // ❌ Missing initial value
 ```
 
-#### 方式 2: 使用 reactive() 方法
+#### Method 2: Using reactive() Method
 
 ```tsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
@@ -168,7 +168,7 @@ export class Counter extends WebComponent {
     super({ styles });
   }
 
-  // 使用 reactive() 创建响应式对象
+  // Use reactive() to create reactive object
   private state = this.reactive({ count: 0 });
 
   render() {
@@ -184,7 +184,7 @@ export class Counter extends WebComponent {
 }
 ```
 
-#### 方式 3: 使用 useState Hook
+#### Method 3: Using useState Hook
 
 ```tsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
@@ -195,7 +195,7 @@ export class TodoList extends WebComponent {
     super({ styles });
   }
 
-  // 使用 useState 创建响应式状态
+  // Use useState to create reactive state
   private [todos, setTodos] = this.useState('todos', []);
 
   addTodo(text: string) {
@@ -216,30 +216,30 @@ export class TodoList extends WebComponent {
 }
 ```
 
-## 核心特性
+## Core Features
 
-### 1. Shadow DOM 样式隔离
+### 1. Shadow DOM Style Isolation
 
-`WebComponent` 使用 Shadow DOM 提供完全的样式隔离。
+`WebComponent` uses Shadow DOM to provide complete style isolation.
 
-#### 自动 CSS 注入（推荐）
+#### Automatic CSS Injection (Recommended)
 
-WSXJS 提供了智能 CSS 自动注入功能。如果组件文件 `MyButton.wsx` 存在对应的 `MyButton.css` 文件，Babel 插件会自动：
+WSXJS provides intelligent CSS auto-injection. If a `MyButton.css` file exists for the component file `MyButton.wsx`, the Babel plugin will automatically:
 
-1. 自动导入 CSS 文件：`import styles from "./MyButton.css?inline";`
-2. 自动注入为类属性：`private _autoStyles = styles;`
-3. 自动应用样式：基类会自动检测并使用 `_autoStyles`
+1. Auto-import CSS file: `import styles from "./MyButton.css?inline";`
+2. Auto-inject as class property: `private _autoStyles = styles;`
+3. Auto-apply styles: The base class will automatically detect and use `_autoStyles`
 
-**无需手动导入**：
+**No Manual Import Needed**:
 
 ```tsx
 // MyButton.wsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
-// CSS 自动注入：如果 MyButton.css 存在，会自动处理
+// CSS auto-injection: If MyButton.css exists, it will be automatically processed
 
 @autoRegister('my-button')
 export class MyButton extends WebComponent {
-  // 无需 constructor，或者只需要指定 styleName
+  // No constructor needed, or just specify styleName
   constructor() {
     super({ styleName: 'my-button' });
   }
@@ -251,7 +251,7 @@ export class MyButton extends WebComponent {
 ```
 
 ```css
-/* MyButton.css - 自动注入 */
+/* MyButton.css - Auto-injected */
 .btn {
   padding: 10px 20px;
   background: blue;
@@ -259,18 +259,18 @@ export class MyButton extends WebComponent {
 }
 ```
 
-**手动导入 CSS（可选）**：
+**Manual CSS Import (Optional)**:
 
-如果需要手动控制，也可以显式导入。Babel 插件会检测到手动导入并跳过自动注入：
+If manual control is needed, you can also explicitly import. The Babel plugin will detect manual imports and skip auto-injection:
 
 ```tsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
-import styles from './MyButton.css?inline'; // 手动导入
+import styles from './MyButton.css?inline'; // Manual import
 
 @autoRegister('my-button')
 export class MyButton extends WebComponent {
   constructor() {
-    super({ styles }); // 手动传入
+    super({ styles }); // Manual pass
   }
 
   render() {
@@ -279,16 +279,16 @@ export class MyButton extends WebComponent {
 }
 ```
 
-**优势**：
-- ✅ 样式完全隔离，不会影响外部
-- ✅ 外部样式不会影响组件内部
-- ✅ 使用 Constructable StyleSheets 提升性能
-- ✅ 自动 CSS 注入减少样板代码
-- ✅ 统一的文件命名约定（`Component.wsx` → `Component.css`）
+**Advantages**:
+- ✅ Complete style isolation, won't affect external elements
+- ✅ External styles won't affect component internals
+- ✅ Uses Constructable StyleSheets for better performance
+- ✅ Automatic CSS injection reduces boilerplate code
+- ✅ Unified file naming convention (`Component.wsx` → `Component.css`)
 
-### 2. JSX 支持
+### 2. JSX Support
 
-`WebComponent` 完全支持 JSX 语法，编译为原生 DOM 操作：
+`WebComponent` fully supports JSX syntax, compiled to native DOM operations:
 
 ```tsx
 render() {
@@ -302,45 +302,45 @@ render() {
 }
 ```
 
-### 3. 响应式状态管理
+### 3. Reactive State Management
 
-#### @state 装饰器（推荐）
+#### @state Decorator (Recommended)
 
-使用 `@state` 装饰器是最简洁的方式，Babel 插件会在编译时自动处理：
+Using the `@state` decorator is the most concise approach, and the Babel plugin will automatically process it at compile time:
 
 ```tsx
 import { state } from '@wsxjs/wsx-core';
 
 export class MyComponent extends WebComponent {
-  // Primitive 类型：使用 useState
+  // Primitive types: use useState
   @state private count = 0;
   @state private name = "";
   
-  // Object/Array 类型：使用 reactive
+  // Object/Array types: use reactive
   @state private user = { name: "John", age: 30 };
   @state private items: string[] = [];
   
   render() {
-    // 直接使用，无需 this.state.xxx
+    // Use directly, no need for this.state.xxx
     return <div>{this.count} - {this.name}</div>;
   }
 }
 ```
 
-**关键要求**：
-- ⚠️ **必须有初始值**：`@state` 装饰器的属性必须提供初始值
-- ✅ **自动类型判断**：Babel 插件根据初始值自动选择 `useState`（primitive）或 `reactive`（object/array）
-- ✅ **编译时验证**：缺少初始值会导致构建失败
-- ✅ **开发时检查**：ESLint 规则会在编辑器中实时提示
+**Key Requirements**:
+- ⚠️ **Must have initial value**: Properties with the `@state` decorator must provide initial values
+- ✅ **Automatic type detection**: Babel plugin automatically chooses `useState` (primitive) or `reactive` (object/array) based on initial value
+- ✅ **Compile-time validation**: Missing initial values will cause build failure
+- ✅ **Development-time checks**: ESLint rules provide real-time hints in the editor
 
-**为什么需要初始值？**
-1. Babel 插件需要初始值来判断属性类型（primitive vs object/array）
-2. 需要从 AST 中提取初始值，生成构造函数中的初始化代码
-3. 确保状态有明确的类型，避免运行时错误
+**Why are initial values required?**
+1. Babel plugin needs initial values to determine property types (primitive vs object/array)
+2. Need to extract initial values from AST to generate initialization code in constructor
+3. Ensure state has explicit types to avoid runtime errors
 
-#### reactive() 方法
+#### reactive() Method
 
-创建响应式对象，属性变化时自动触发重渲染：
+Create reactive objects that automatically trigger re-renders when properties change:
 
 ```tsx
 private state = this.reactive({ 
@@ -348,43 +348,43 @@ private state = this.reactive({
   name: 'WSX'
 });
 
-// 修改属性会自动触发重渲染
+// Modifying properties automatically triggers re-render
 this.state.count++;
 this.state.name = 'New Name';
 ```
 
-#### useState() 方法
+#### useState() Method
 
-创建单个响应式状态值：
+Create a single reactive state value:
 
 ```tsx
 private [count, setCount] = this.useState('count', 0);
 
-// 使用
-count();        // 获取值
-setCount(10);   // 设置值
-setCount(prev => prev + 1); // 函数式更新
+// Usage
+count();        // Get value
+setCount(10);   // Set value
+setCount(prev => prev + 1); // Functional update
 ```
 
-### 4. 生命周期钩子
+### 4. Lifecycle Hooks
 
 ```tsx
 export class MyComponent extends WebComponent {
-  // 组件连接到 DOM 后调用
+  // Called after component is connected to DOM
   protected onConnected() {
     console.log('Component connected');
-    // 初始化逻辑
+    // Initialization logic
     this.init();
   }
 
-  // 组件从 DOM 断开后调用
+  // Called after component is disconnected from DOM
   protected onDisconnected() {
     console.log('Component disconnected');
-    // 清理资源
+    // Cleanup resources
     this.cleanup();
   }
 
-  // 属性变化时调用
+  // Called when attributes change
   protected onAttributeChanged(name: string, oldValue: string, newValue: string) {
     if (name === 'data') {
       this.handleDataChange(newValue);
@@ -393,9 +393,9 @@ export class MyComponent extends WebComponent {
 }
 ```
 
-### 5. 焦点保持
+### 5. Focus Preservation
 
-`WebComponent` 支持焦点保持功能，在重新渲染时保持用户输入焦点：
+`WebComponent` supports focus preservation, maintaining user input focus during re-renders:
 
 ```tsx
 export class FormInput extends WebComponent {
@@ -409,33 +409,33 @@ export class FormInput extends WebComponent {
         onInput={(e) => {
           this.value = (e.target as HTMLInputElement).value;
         }}
-        data-wsx-key="input" // 用于焦点保持
+        data-wsx-key="input" // For focus preservation
       />
     );
   }
 }
 ```
 
-当 `value` 变化触发重渲染时，输入框的焦点和光标位置会自动保持。
+When `value` changes trigger a re-render, the input's focus and cursor position are automatically preserved.
 
-### 6. 错误处理
+### 6. Error Handling
 
-`WebComponent` 内置错误处理机制：
+`WebComponent` has built-in error handling:
 
 ```tsx
 render() {
   try {
     return <div>{/* your content */}</div>;
   } catch (error) {
-    // 错误会被自动捕获并显示友好的错误信息
+    // Errors are automatically caught and display friendly error messages
     throw error;
   }
 }
 ```
 
-## 实际应用示例
+## Practical Examples
 
-### 示例 1: 按钮组件
+### Example 1: Button Component
 
 ```tsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
@@ -483,7 +483,7 @@ export class Button extends WebComponent {
 }
 ```
 
-### 示例 2: 表单输入组件
+### Example 2: Form Input Component
 
 ```tsx
 import { WebComponent, autoRegister, state } from '@wsxjs/wsx-core';
@@ -541,7 +541,7 @@ export class FormInput extends WebComponent {
 }
 ```
 
-### 示例 3: 卡片组件
+### Example 3: Card Component
 
 ```tsx
 import { WebComponent, autoRegister, state } from '@wsxjs/wsx-core';
@@ -579,16 +579,16 @@ export class Card extends WebComponent {
 }
 ```
 
-## 最佳实践
+## Best Practices
 
-### 1. 样式隔离
+### 1. Style Isolation
 
-利用 Shadow DOM 的样式隔离，无需担心样式冲突：
+Leverage Shadow DOM's style isolation without worrying about style conflicts:
 
 ```tsx
 super({
   styles: `
-    /* 样式完全隔离，不会影响外部 */
+    /* Styles are completely isolated, won't affect external */
     .btn {
       padding: 10px;
       background: blue;
@@ -597,35 +597,35 @@ super({
 });
 ```
 
-### 2. 事件转发
+### 2. Event Forwarding
 
-如果需要事件冒泡到外部，使用 `composed: true`：
+If events need to bubble to external, use `composed: true`:
 
 ```tsx
 private handleClick = () => {
   this.dispatchEvent(new CustomEvent('click', { 
-    bubbles: true,    // 允许冒泡
-    composed: true    // 允许跨越 Shadow DOM 边界
+    bubbles: true,    // Allow bubbling
+    composed: true    // Allow crossing Shadow DOM boundary
   }));
 };
 ```
 
-### 3. 响应式状态管理
+### 3. Reactive State Management
 
-合理使用响应式状态，避免过度使用：
+Use reactive state appropriately, avoid overuse:
 
 ```tsx
-// ✅ 好：只对需要触发重渲染的数据使用响应式
+// ✅ Good: Only use reactive for data that needs to trigger re-renders
 @state private uiState = { count: 0, visible: true };
-private staticConfig = { maxCount: 100 }; // 不需要响应式
+private staticConfig = { maxCount: 100 }; // No need for reactive
 
-// ❌ 避免：对静态数据使用响应式
+// ❌ Avoid: Using reactive for static data
 @state private staticData = { apiUrl: 'https://api.example.com' };
 ```
 
-### 4. 属性观察
+### 4. Attribute Observation
 
-使用 `observedAttributes` 观察属性变化：
+Use `observedAttributes` to observe attribute changes:
 
 ```tsx
 static observedAttributes = ['data', 'disabled', 'theme'];
@@ -642,9 +642,9 @@ protected onAttributeChanged(name: string, _old: string, newValue: string) {
 }
 ```
 
-### 5. 焦点保持
+### 5. Focus Preservation
 
-对于表单输入组件，使用 `data-wsx-key` 属性启用焦点保持：
+For form input components, use `data-wsx-key` attribute to enable focus preservation:
 
 ```tsx
 <input
@@ -656,165 +656,165 @@ protected onAttributeChanged(name: string, _old: string, newValue: string) {
 />
 ```
 
-## 组件对比：WebComponent vs LightComponent
+## Component Comparison: WebComponent vs LightComponent
 
-### 核心区别
+### Core Differences
 
-| 特性 | WebComponent | LightComponent |
-|------|---------------|---------------|
-| **继承关系** | `HTMLElement` | `HTMLElement` |
-| **DOM 类型** | Shadow DOM | Light DOM |
-| **样式隔离** | 完全隔离（Shadow DOM） | 作用域样式（data 属性） |
-| **响应式支持** | ✅ 完整支持 | ✅ 完整支持 |
-| **第三方库集成** | ⚠️ 有限支持 | ✅ 完美支持 |
-| **全局 DOM 访问** | ❌ 受限（Shadow DOM 边界） | ✅ 支持 |
-| **事件冒泡** | ⚠️ 需要手动转发 | ✅ 自然冒泡 |
-| **焦点保持** | ✅ 支持 | ❌ 不支持 |
-| **样式作用域** | 自动隔离 | 手动管理（BEM/命名规范） |
-| **性能** | 稍重（Shadow DOM 开销） | 更轻量 |
+| Feature | WebComponent | LightComponent |
+|---------|--------------|----------------|
+| **Inheritance** | `HTMLElement` | `HTMLElement` |
+| **DOM Type** | Shadow DOM | Light DOM |
+| **Style Isolation** | Complete isolation (Shadow DOM) | Scoped styles (data attributes) |
+| **Reactive Support** | ✅ Full support | ✅ Full support |
+| **Third-party Integration** | ⚠️ Limited support | ✅ Perfect support |
+| **Global DOM Access** | ❌ Restricted (Shadow DOM boundary) | ✅ Supported |
+| **Event Bubbling** | ⚠️ Manual forwarding needed | ✅ Natural bubbling |
+| **Focus Preservation** | ✅ Supported | ❌ Not supported |
+| **Style Scope** | Automatic isolation | Manual management (BEM/naming conventions) |
+| **Performance** | Slightly heavier (Shadow DOM overhead) | Lighter |
 
-### 详细对比
+### Detailed Comparison
 
-#### 1. DOM 渲染方式
+#### 1. DOM Rendering
 
 **WebComponent:**
 ```tsx
-// 渲染到 Shadow DOM
+// Render to Shadow DOM
 render() {
-  return <div>Content</div>; // 添加到 this.shadowRoot
+  return <div>Content</div>; // Added to this.shadowRoot
 }
-// DOM 结构: <my-component>#shadow-root<div>Content</div></my-component>
+// DOM structure: <my-component>#shadow-root<div>Content</div></my-component>
 ```
 
 **LightComponent:**
 ```tsx
-// 渲染到 Light DOM（直接到组件内部）
+// Render to Light DOM (directly to component internals)
 render() {
-  return <div>Content</div>; // 直接添加到 this
+  return <div>Content</div>; // Directly added to this
 }
-// DOM 结构: <my-component><div>Content</div></my-component>
+// DOM structure: <my-component><div>Content</div></my-component>
 ```
 
-#### 2. 样式处理
+#### 2. Style Handling
 
 **WebComponent:**
 ```tsx
-// 使用 Shadow DOM 自动隔离
+// Use Shadow DOM for automatic isolation
 super({
-  styles: 'div { color: red; }', // 自动隔离，不会影响外部
+  styles: 'div { color: red; }', // Automatically isolated, won't affect external
 });
-// 样式完全隔离，不会影响外部样式
+// Styles are completely isolated, won't affect external styles
 ```
 
 **LightComponent:**
 ```tsx
-// 使用作用域样式（通过 data 属性）
+// Use scoped styles (via data attributes)
 super({
   styles: '.my-component { color: red; }',
   styleName: 'my-component',
 });
-// 样式注入为: <style data-wsx-light-component="my-component">...</style>
-// 需要手动避免全局冲突
+// Styles injected as: <style data-wsx-light-component="my-component">...</style>
+// Need to manually avoid global conflicts
 ```
 
-#### 3. 第三方库集成
+#### 3. Third-party Library Integration
 
 **WebComponent:**
 ```tsx
-// ⚠️ EditorJS 可能无法正常工作
+// ⚠️ EditorJS may not work properly
 protected onConnected() {
   this.editor = new EditorJS({
-    holder: this.shadowRoot.querySelector('#editor'), // ⚠️ 在 Shadow DOM 中
-    // 但 EditorJS 的全局查询可能失败
+    holder: this.shadowRoot.querySelector('#editor'), // ⚠️ In Shadow DOM
+    // But EditorJS's global queries may fail
   });
 }
 ```
 
 **LightComponent:**
 ```tsx
-// ✅ EditorJS 可以正常工作
+// ✅ EditorJS works properly
 protected onConnected() {
   this.editor = new EditorJS({
-    holder: this.querySelector('#editor'), // ✅ 可以找到元素
+    holder: this.querySelector('#editor'), // ✅ Can find element
   });
 }
 ```
 
-#### 4. 响应式 API
+#### 4. Reactive API
 
-两者使用**完全相同的响应式 API**：
+Both use **exactly the same reactive API**:
 
 ```tsx
-// 两者都支持
+// Both support
 @state private count = 0;
 private state = this.reactive({ count: 0 });
 private [count, setCount] = this.useState('count', 0);
 ```
 
-#### 5. 元素查询
+#### 5. Element Queries
 
 **WebComponent:**
 ```tsx
-// 查询 Shadow DOM
-this.shadowRoot.querySelector('.item'); // 查询 Shadow DOM
-// document.querySelector 无法访问 Shadow DOM 内容
+// Query Shadow DOM
+this.shadowRoot.querySelector('.item'); // Query Shadow DOM
+// document.querySelector cannot access Shadow DOM content
 ```
 
 **LightComponent:**
 ```tsx
-// 直接查询，与标准 DOM 一致
-this.querySelector('.item'); // 查询组件内部
-document.querySelector('.item'); // 可以查询全局
+// Direct query, consistent with standard DOM
+this.querySelector('.item'); // Query component internals
+document.querySelector('.item'); // Can query globally
 ```
 
-#### 6. 事件处理
+#### 6. Event Handling
 
 **WebComponent:**
 ```tsx
-// 事件默认不冒泡到外部（Shadow DOM 边界）
+// Events don't bubble to external by default (Shadow DOM boundary)
 <button onClick={this.handleClick}>Click</button>
-// 需要手动转发事件到外部
+// Need to manually forward events to external
 this.dispatchEvent(new CustomEvent('click', { bubbles: true, composed: true }));
 ```
 
 **LightComponent:**
 ```tsx
-// 事件自然冒泡
+// Events naturally bubble
 <button onClick={this.handleClick}>Click</button>
-// 事件会自然冒泡到 document
+// Events naturally bubble to document
 ```
 
-### 选择指南
+### Selection Guide
 
-#### 使用 WebComponent 当：
+#### Use WebComponent when:
 
-- ✅ 构建可复用的 UI 组件（按钮、输入框等）
-- ✅ 需要完全的样式隔离
-- ✅ 需要焦点保持功能
-- ✅ 组件需要完全封装
-- ✅ 避免样式冲突是首要考虑
+- ✅ Building reusable UI components (buttons, inputs, etc.)
+- ✅ Need complete style isolation
+- ✅ Need focus preservation
+- ✅ Component needs complete encapsulation
+- ✅ Avoiding style conflicts is a primary concern
 
-#### 使用 LightComponent 当：
+#### Use LightComponent when:
 
-- ✅ 需要与第三方库集成（EditorJS、Chart.js 等）
-- ✅ 构建路由或布局容器组件
-- ✅ 需要全局 DOM 访问
-- ✅ 需要事件自然冒泡
-- ✅ 不需要严格的样式隔离
-- ✅ 追求更轻量的实现
+- ✅ Need to integrate with third-party libraries (EditorJS, Chart.js, etc.)
+- ✅ Building routing or layout container components
+- ✅ Need global DOM access
+- ✅ Need events to naturally bubble
+- ✅ Don't need strict style isolation
+- ✅ Pursuing lighter implementation
 
-### 代码示例对比
+### Code Example Comparison
 
-#### 相同点：响应式状态
+#### Same: Reactive State
 
 ```tsx
-// 两者使用相同的响应式 API
-export class Counter extends WebComponent { // 或 LightComponent
-  // ✅ @state 装饰器必须有初始值
+// Both use the same reactive API
+export class Counter extends WebComponent { // or LightComponent
+  // ✅ @state decorator must have initial value
   @state private count = 0;
   
   render() {
-    // 直接使用，无需 this.state.xxx
+    // Use directly, no need for this.state.xxx
     return (
       <div>
         <p>Count: {this.count}</p>
@@ -825,53 +825,53 @@ export class Counter extends WebComponent { // 或 LightComponent
 }
 ```
 
-**注意**：`@state` 装饰器的属性必须有初始值。ESLint 规则和 Babel 插件会验证这一点。
+**Note**: Properties with the `@state` decorator must have initial values. ESLint rules and Babel plugin will validate this.
 
-#### 不同点：DOM 访问
+#### Different: DOM Access
 
 ```tsx
-// WebComponent - Shadow DOM 隔离
+// WebComponent - Shadow DOM isolation
 export class EditorWrapper extends WebComponent {
   protected onConnected() {
-    // ⚠️ 只能访问 Shadow DOM 内部
+    // ⚠️ Can only access Shadow DOM internals
     const shadowElement = this.shadowRoot.querySelector('.shadow-class');
-    // document.querySelector 无法访问 Shadow DOM 内容
+    // document.querySelector cannot access Shadow DOM content
   }
 }
 
-// LightComponent - 可以访问全局 DOM
+// LightComponent - Can access global DOM
 export class EditorWrapper extends LightComponent {
   protected onConnected() {
-    // ✅ 可以访问全局 DOM
+    // ✅ Can access global DOM
     const globalElement = document.querySelector('.global-class');
     this.editor = new EditorJS({ holder: this.querySelector('#editor') });
   }
 }
 ```
 
-### 总结
+### Summary
 
-- **WebComponent**: 封装、隔离、适合 UI 组件，使用 Shadow DOM
-- **LightComponent**: 简单、轻量、适合集成，使用 Light DOM
-- **共同点**: 都支持完整的响应式状态管理（`@state` 装饰器、`reactive()` 和 `useState()` 方法）
-- **选择原则**: 根据是否需要样式隔离和第三方库集成来决定
+- **WebComponent**: Encapsulation, isolation, suitable for UI components, uses Shadow DOM
+- **LightComponent**: Simple, lightweight, suitable for integration, uses Light DOM
+- **Common**: Both support complete reactive state management (`@state` decorator, `reactive()` and `useState()` methods)
+- **Selection Principle**: Decide based on whether style isolation and third-party library integration are needed
 
-## 常见问题
+## FAQ
 
-### Q: WebComponent 支持 Light DOM 吗？
+### Q: Does WebComponent support Light DOM?
 
-A: 不支持。`WebComponent` 专门设计为使用 Shadow DOM，提供完全的样式隔离。如果需要 Light DOM，请使用 `LightComponent`。
+A: No. `WebComponent` is specifically designed to use Shadow DOM, providing complete style isolation. If you need Light DOM, please use `LightComponent`.
 
-### Q: Shadow DOM 会影响性能吗？
+### Q: Does Shadow DOM affect performance?
 
-A: Shadow DOM 有轻微的性能开销，但通常可以忽略。对于大多数 UI 组件，Shadow DOM 带来的样式隔离和封装优势远大于性能开销。
+A: Shadow DOM has slight performance overhead, but it's usually negligible. For most UI components, the style isolation and encapsulation benefits of Shadow DOM far outweigh the performance cost.
 
-### Q: 如何让外部样式影响 Shadow DOM？
+### Q: How to make external styles affect Shadow DOM?
 
-A: 默认情况下，外部样式无法影响 Shadow DOM 内部。如果需要外部样式，可以使用 CSS 变量（CSS Custom Properties）：
+A: By default, external styles cannot affect Shadow DOM internals. If external styles are needed, you can use CSS variables (CSS Custom Properties):
 
 ```tsx
-// 组件内部
+// Inside component
 super({
   styles: `
     .btn {
@@ -881,7 +881,7 @@ super({
   `
 });
 
-// 外部使用
+// External usage
 <style>
   my-button {
     --button-bg: red;
@@ -890,13 +890,13 @@ super({
 </style>
 ```
 
-### Q: 响应式状态会自动清理吗？
+### Q: Are reactive states automatically cleaned up?
 
-A: 是的。在 `disconnectedCallback` 中，所有响应式状态会自动清理。
+A: Yes. In `disconnectedCallback`, all reactive states are automatically cleaned up.
 
-### Q: 可以在 WebComponent 中使用 slot 吗？
+### Q: Can I use slots in WebComponent?
 
-A: 可以，Shadow DOM 完全支持 slot 机制：
+A: Yes, Shadow DOM fully supports the slot mechanism:
 
 ```tsx
 render() {
@@ -910,23 +910,23 @@ render() {
 }
 ```
 
-### Q: 如何自动注入 CSS 样式？
+### Q: How to automatically inject CSS styles?
 
-A: WSXJS 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
+A: WSXJS provides intelligent CSS auto-injection. If a `MyComponent.css` file exists for the component file `MyComponent.wsx`, the Babel plugin will automatically:
 
-1. **自动导入 CSS**：`import styles from "./MyComponent.css?inline";`
-2. **自动注入类属性**：`private _autoStyles = styles;`
-3. **自动应用样式**：基类会自动检测并使用 `_autoStyles`
+1. **Auto-import CSS**: `import styles from "./MyComponent.css?inline";`
+2. **Auto-inject class property**: `private _autoStyles = styles;`
+3. **Auto-apply styles**: Base class will automatically detect and use `_autoStyles`
 
-**使用方式**：
+**Usage**:
 
 ```tsx
-// MyComponent.wsx - 无需手动导入 CSS
+// MyComponent.wsx - No need to manually import CSS
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
 
 @autoRegister('my-component')
 export class MyComponent extends WebComponent {
-  // 无需 constructor，或者只需要指定 styleName
+  // No constructor needed, or just specify styleName
   constructor() {
     super({ styleName: 'my-component' });
   }
@@ -938,36 +938,36 @@ export class MyComponent extends WebComponent {
 ```
 
 ```css
-/* MyComponent.css - 自动注入 */
+/* MyComponent.css - Auto-injected */
 .my-component {
   padding: 1rem;
   background: white;
 }
 ```
 
-**注意事项**：
-- ✅ 文件命名约定：`Component.wsx` → `Component.css`（必须在同一目录）
-- ✅ 如果手动导入了 CSS，Babel 插件会检测到并跳过自动注入，避免重复
-- ✅ 支持 WebComponent 和 LightComponent
-- 📖 查看 [RFC-0008](../rfcs/0008-auto-style-injection.md) 了解详细说明
+**Notes**:
+- ✅ File naming convention: `Component.wsx` → `Component.css` (must be in same directory)
+- ✅ If CSS is manually imported, Babel plugin will detect and skip auto-injection to avoid duplication
+- ✅ Supports both WebComponent and LightComponent
+- 📖 See [RFC-0008](../rfcs/0008-auto-style-injection.md) for detailed explanation
 
-### Q: @state 装饰器为什么必须有初始值？
+### Q: Why must @state decorator have initial values?
 
-A: `@state` 装饰器必须有初始值，因为：
+A: The `@state` decorator must have initial values because:
 
-1. **类型判断**：Babel 插件需要初始值来判断属性类型（primitive vs object/array）
-   - Primitive（数字、字符串、布尔值）→ 使用 `useState`
-   - Object/Array → 使用 `reactive`
+1. **Type Detection**: Babel plugin needs initial values to determine property types (primitive vs object/array)
+   - Primitive (numbers, strings, booleans) → use `useState`
+   - Object/Array → use `reactive`
 
-2. **代码生成**：Babel 插件需要从 AST 中提取初始值，生成构造函数中的初始化代码
+2. **Code Generation**: Babel plugin needs to extract initial values from AST to generate initialization code in constructor
 
-3. **类型安全**：确保状态有明确的类型和初始值，避免运行时错误
+3. **Type Safety**: Ensure state has explicit types and initial values to avoid runtime errors
 
-**验证机制**：
-- ✅ **ESLint 规则**：`wsx/state-requires-initial-value` 在开发时检查
-- ✅ **Babel 插件**：在构建时验证，缺少初始值会导致构建失败
+**Validation Mechanisms**:
+- ✅ **ESLint Rule**: `wsx/state-requires-initial-value` checks at development time
+- ✅ **Babel Plugin**: Validates at build time, missing initial values will cause build failure
 
-**有效示例**：
+**Valid Examples**:
 ```tsx
 @state private count = 0;           // ✅
 @state private name = "";           // ✅
@@ -975,22 +975,21 @@ A: `@state` 装饰器必须有初始值，因为：
 @state private items = [];          // ✅
 ```
 
-**无效示例**：
+**Invalid Examples**:
 ```tsx
-@state private count;               // ❌ 缺少初始值
-@state private name;                 // ❌ 缺少初始值
+@state private count;               // ❌ Missing initial value
+@state private name;                 // ❌ Missing initial value
 ```
 
-查看 [RFC-0013](./rfcs/completed/0013-state-initial-value-validation.md) 了解详细说明。
+See [RFC-0013](./rfcs/completed/0013-state-initial-value-validation.md) for detailed explanation.
 
-## 总结
+## Summary
 
-`WebComponent` 提供了一个强大而封装的方式来创建自定义元素，特别适合：
+`WebComponent` provides a powerful and encapsulated way to create custom elements, especially suitable for:
 
-- 构建可复用的 UI 组件
-- 需要完全样式隔离的场景
-- 需要焦点保持功能的表单组件
-- 组件库开发
+- Building reusable UI components
+- Scenarios requiring complete style isolation
+- Form components requiring focus preservation
+- Component library development
 
-它提供了完整的响应式状态管理、JSX 支持、生命周期钩子和焦点保持功能，让编写自定义元素变得简单而高效。
-
+It provides complete reactive state management, JSX support, lifecycle hooks, and focus preservation, making writing custom elements simple and efficient.

@@ -36,11 +36,11 @@ importers:
         specifier: ^11.0.3
         version: 11.0.3(semantic-release@24.2.7(typescript@5.8.3))
       '@systembug/pangu':
-        specifier: ^0.0.8
-        version: 0.0.8(@types/node@20.19.9)
+        specifier: ^0.0.10
+        version: 0.0.10(@types/node@20.19.9)
       '@systembug/qingniao':
-        specifier: ^0.0.8
-        version: 0.0.8(@changesets/cli@2.29.5)(@types/node@20.19.9)(typescript@5.8.3)
+        specifier: ^0.0.10
+        version: 0.0.10(@changesets/cli@2.29.5)(@types/node@20.19.9)(typescript@5.8.3)
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.6.3
@@ -1996,16 +1996,16 @@ packages:
   '@sinonjs/fake-timers@13.0.5':
     resolution: {integrity: sha512-36/hTbH2uaWuGVERyC6da9YwGWnzUZXuPro/F2LfsdOsLnCojz/iSH8MxUt/FD2S5XBSVPhmArFUXcpCQ2Hkiw==}
 
-  '@systembug/diting@0.0.8':
-    resolution: {integrity: sha512-bBqy71awTwKq7ZR2thf5XdJOWB4kWJKs80xGFZ++eVtzQSTJzKoRaKcS4E0pqvHEKKTONsrm9MMGL7aopSInKA==}
+  '@systembug/diting@0.0.10':
+    resolution: {integrity: sha512-KDwF0ZZhlDHdUBLAWylZn1ZCIkdeLdcgaAcsgU7xYC0HUUGADFuzD7J7t27ozDRQ7cYMCtFVqlZMU4vHhrKAoA==}
     engines: {node: '>=16.0.0'}
 
-  '@systembug/pangu@0.0.8':
-    resolution: {integrity: sha512-xREwJATEvUhEVeI5lDpEmugIJmLJDWXEufD2ZEI2m6WBGSZmGczDent171Q7kavdCsp7PQVmoLkez4nCHiOlzA==}
+  '@systembug/pangu@0.0.10':
+    resolution: {integrity: sha512-/mzeIkSJ/4YO0+BmSben/QmfttqMO5GCUSvS+NqiMRHcVSZZmvbwAAZDk7KNQdScUnEnaZ2BpRLq28IxMyAq3Q==}
     hasBin: true
 
-  '@systembug/qingniao@0.0.8':
-    resolution: {integrity: sha512-Gx4WztFj/PVfpyul+qh0r7jh7fDAv+dKrBz1UZ8uw8k9+0eKmZFl/RHh75pHNPhFRFlTc5Qge68q6TxOlFWpFw==}
+  '@systembug/qingniao@0.0.10':
+    resolution: {integrity: sha512-qFLQWujIVHMck3vxGfPQWj9DFySYYvFGM0YU87FLLX+NwGVpoaXArWAdj27/92x+i0qjE7obftxZuJB1E608/g==}
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:
@@ -6853,7 +6853,7 @@ snapshots:
   '@commitlint/format@19.8.1':
     dependencies:
       '@commitlint/types': 19.8.1
-      chalk: 5.4.1
+      chalk: 5.6.2
 
   '@commitlint/is-ignored@19.8.1':
     dependencies:
@@ -6873,7 +6873,7 @@ snapshots:
       '@commitlint/execute-rule': 19.8.1
       '@commitlint/resolve-extends': 19.8.1
       '@commitlint/types': 19.8.1
-      chalk: 5.4.1
+      chalk: 5.6.2
       cosmiconfig: 9.0.0(typescript@5.8.3)
       cosmiconfig-typescript-loader: 6.1.0(@types/node@20.19.9)(cosmiconfig@9.0.0(typescript@5.8.3))(typescript@5.8.3)
       lodash.isplainobject: 4.0.6
@@ -6924,7 +6924,7 @@ snapshots:
   '@commitlint/types@19.8.1':
     dependencies:
       '@types/conventional-commits-parser': 5.0.1
-      chalk: 5.4.1
+      chalk: 5.6.2
 
   '@csstools/color-helpers@5.0.2': {}
 
@@ -8008,12 +8008,12 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
-  '@systembug/diting@0.0.8':
+  '@systembug/diting@0.0.10':
     dependencies:
-      chalk: 5.4.1
+      chalk: 5.6.2
       pino: 9.14.0
 
-  '@systembug/pangu@0.0.8(@types/node@20.19.9)':
+  '@systembug/pangu@0.0.10(@types/node@20.19.9)':
     dependencies:
       inquirer: 9.3.8(@types/node@20.19.9)
       js-yaml: 4.1.0
@@ -8021,10 +8021,10 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@systembug/qingniao@0.0.8(@changesets/cli@2.29.5)(@types/node@20.19.9)(typescript@5.8.3)':
+  '@systembug/qingniao@0.0.10(@changesets/cli@2.29.5)(@types/node@20.19.9)(typescript@5.8.3)':
     dependencies:
       '@changesets/cli': 2.29.5
-      '@systembug/diting': 0.0.8
+      '@systembug/diting': 0.0.10
       chalk: 4.1.2
       commander: 9.5.0
       inquirer: 13.1.0(@types/node@20.19.9)
@@ -11057,7 +11057,7 @@ snapshots:
 
   log-symbols@6.0.0:
     dependencies:
-      chalk: 5.4.1
+      chalk: 5.6.2
       is-unicode-supported: 1.3.0
 
   log-symbols@7.0.1:
@@ -11138,7 +11138,7 @@ snapshots:
     dependencies:
       ansi-escapes: 7.0.0
       ansi-regex: 6.1.0
-      chalk: 5.4.1
+      chalk: 5.6.2
       cli-highlight: 2.1.11
       cli-table3: 0.6.5
       marked: 15.0.12
@@ -12876,7 +12876,7 @@ snapshots:
     dependencies:
       ansi-styles: 6.2.1
       string-width: 7.2.0
-      strip-ansi: 7.1.0
+      strip-ansi: 7.1.2
 
   wrappy@1.0.2: {}
 

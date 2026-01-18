@@ -1,22 +1,22 @@
 ---
-title: 快速开始
+title: Getting Started
 order: 1
 category: guide/essentials
-description: "5分钟上手 WSXJS，从安装到创建第一个组件"
+description: "Get started with WSXJS in 5 minutes, from installation to creating your first component"
 ---
 
-## 安装
+## Installation
 
 ```bash
 npm install @wsxjs/wsx-core @wsxjs/wsx-vite-plugin @wsxjs/eslint-plugin-wsx
 npm install --save-dev @wsxjs/wsx-tsconfig
 ```
 
-## 配置
+## Configuration
 
-### 1. TypeScript 配置
+### 1. TypeScript Configuration
 
-**推荐方式**：使用 `@wsxjs/wsx-tsconfig` 包（包含所有必需的配置）：
+**Recommended**: Use the `@wsxjs/wsx-tsconfig` package (includes all required configurations):
 
 ```json
 {
@@ -28,7 +28,7 @@ npm install --save-dev @wsxjs/wsx-tsconfig
 }
 ```
 
-**手动配置**（如果不使用 `@wsxjs/wsx-tsconfig`）：
+**Manual Configuration** (if not using `@wsxjs/wsx-tsconfig`):
 
 ```json
 {
@@ -42,17 +42,17 @@ npm install --save-dev @wsxjs/wsx-tsconfig
 }
 ```
 
-> ⚠️ **重要**：如果使用 `@state` 装饰器，必须配置：
-> - `experimentalDecorators: true` - 启用装饰器语法
-> - `useDefineForClassFields: false` - 确保装饰器与类属性兼容
+> ⚠️ **Important**: If using the `@state` decorator, you must configure:
+> - `experimentalDecorators: true` - Enable decorator syntax
+> - `useDefineForClassFields: false` - Ensure decorators are compatible with class fields
 >
-> 同时，必须在 `vite.config.ts` 中配置 `@wsxjs/wsx-vite-plugin`，该插件包含处理 `@state` 装饰器的 Babel 插件。
+> Additionally, you must configure `@wsxjs/wsx-vite-plugin` in `vite.config.ts`, which includes the Babel plugin for processing the `@state` decorator.
 
-> 💡 **提示**：查看 [TypeScript 配置指南](./typescript-setup.md) 了解完整的配置说明、最佳实践和常见问题解决方案。
+> 💡 **Tip**: See the [TypeScript Setup Guide](./typescript-setup.md) for complete configuration instructions, best practices, and common issue solutions.
 
-### 2. Vite 配置
+### 2. Vite Configuration
 
-在 `vite.config.ts` 中添加：
+Add to `vite.config.ts`:
 
 ```typescript
 import { defineConfig } from 'vite';
@@ -63,11 +63,11 @@ export default defineConfig({
 });
 ```
 
-> ⚠️ **重要**：`@wsxjs/wsx-vite-plugin` 是使用 `@state` 装饰器的**必需**配置。该插件包含 Babel 插件，会在编译时处理 `@state` 装饰器。如果没有配置此插件，`@state` 装饰器将无法工作并会抛出错误。
+> ⚠️ **Important**: `@wsxjs/wsx-vite-plugin` is **required** for using the `@state` decorator. This plugin includes a Babel plugin that processes the `@state` decorator at compile time. Without this plugin, the `@state` decorator will not work and will throw an error.
 
-### 3. ESLint 配置
+### 3. ESLint Configuration
 
-在 `eslint.config.js` 中添加：
+Add to `eslint.config.js`:
 
 ```javascript
 import wsxPlugin from '@wsxjs/eslint-plugin-wsx';
@@ -79,29 +79,29 @@ export default [
     rules: {
       'wsx/no-react-imports': 'error',
       'wsx/render-method-required': 'error',
-      'wsx/state-requires-initial-value': 'error' // ✅ 验证 @state 必须有初始值
+      'wsx/state-requires-initial-value': 'error' // ✅ Validates @state must have initial value
     }
   }
 ];
 ```
 
-> ⚠️ **重要**：`wsx/state-requires-initial-value` 规则会在开发时检查 `@state` 装饰器的属性是否有初始值。这是强制性的，因为 Babel 插件需要初始值来判断属性类型并生成正确的响应式代码。
+> ⚠️ **Important**: The `wsx/state-requires-initial-value` rule checks at development time whether properties with the `@state` decorator have initial values. This is mandatory because the Babel plugin needs initial values to determine property types and generate correct reactive code.
 
-## 创建组件
+## Creating Components
 
-### 基础组件
+### Basic Component
 
-**自动 CSS 注入（推荐）**：
-如果存在 `MyButton.css` 文件，Babel 插件会自动注入样式，无需手动导入：
+**Automatic CSS Injection (Recommended)**:
+If a `MyButton.css` file exists, the Babel plugin will automatically inject styles without manual import:
 
 ```typescript
 // MyButton.wsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
-// CSS 自动注入：如果 MyButton.css 存在，会自动导入并注入为 _autoStyles
+// CSS auto-injection: If MyButton.css exists, it will be automatically imported and injected as _autoStyles
 
 @autoRegister('my-button')
 export class MyButton extends WebComponent {
-  // 无需 constructor，样式会自动应用
+  // No constructor needed, styles will be automatically applied
   render() {
     return (
       <button className="btn" onClick={(e) => this.handleClick(e)}>
@@ -116,36 +116,36 @@ export class MyButton extends WebComponent {
 }
 ```
 
-**手动导入样式（可选）**：
-如果你已经手动导入了样式，Babel 插件会跳过自动注入以避免重复：
+**Manual Style Import (Optional)**:
+If you've already manually imported styles, the Babel plugin will skip auto-injection to avoid duplication:
 
 ```typescript
 // MyButton.wsx
 import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
-import styles from './MyButton.css?inline'; // 手动导入
+import styles from './MyButton.css?inline'; // Manual import
 
 @autoRegister('my-button')
 export class MyButton extends WebComponent {
   constructor() {
-    super({ styles }); // 手动传递
+    super({ styles }); // Manual pass
   }
   // ...
 }
 ```
 
-### 使用 @state 装饰器（响应式状态）
+### Using @state Decorator (Reactive State)
 
 ```typescript
 // Counter.wsx
 import { WebComponent, autoRegister, state } from '@wsxjs/wsx-core';
-// CSS 自动注入：如果 Counter.css 存在，会自动导入并注入
+// CSS auto-injection: If Counter.css exists, it will be automatically imported and injected
 
 @autoRegister('wsx-counter')
 export class Counter extends WebComponent {
-  // 无需 constructor，样式会自动应用
+  // No constructor needed, styles will be automatically applied
   }
 
-  // ✅ @state 装饰器必须有初始值
+  // ✅ @state decorator must have initial value
   @state private count = 0;
   @state private name = "";
   @state private user = { name: "John", age: 30 };
@@ -164,28 +164,28 @@ export class Counter extends WebComponent {
 }
 ```
 
-**重要提示**：
-- ⚠️ `@state` 装饰器的属性**必须有初始值**
-- ✅ ESLint 规则会在开发时检查（`wsx/state-requires-initial-value`）
-- ✅ Babel 插件会在构建时验证，缺少初始值会导致构建失败
-- 📖 查看 [RFC-0013](./rfcs/completed/0013-state-initial-value-validation.md) 了解详细说明
+**Important Notes**:
+- ⚠️ Properties with the `@state` decorator **must have initial values**
+- ✅ ESLint rule checks at development time (`wsx/state-requires-initial-value`)
+- ✅ Babel plugin validates at build time, missing initial values will cause build failure
+- 📖 See [RFC-0013](./rfcs/completed/0013-state-initial-value-validation.md) for detailed explanation
 
-**有效示例**：
+**Valid Examples**:
 ```typescript
-@state private count = 0;           // ✅ 数字
-@state private name = "";           // ✅ 字符串
-@state private enabled = false;     // ✅ 布尔值
-@state private user = {};           // ✅ 对象
-@state private items = [];          // ✅ 数组
+@state private count = 0;           // ✅ Number
+@state private name = "";           // ✅ String
+@state private enabled = false;     // ✅ Boolean
+@state private user = {};           // ✅ Object
+@state private items = [];          // ✅ Array
 ```
 
-**无效示例**（会被 ESLint 和 Babel 检测）：
+**Invalid Examples** (will be detected by ESLint and Babel):
 ```typescript
-@state private count;               // ❌ 缺少初始值
-@state private name;                 // ❌ 缺少初始值
+@state private count;               // ❌ Missing initial value
+@state private name;                 // ❌ Missing initial value
 ```
 
-## 使用组件
+## Using Components
 
 ```html
 <!DOCTYPE html>
@@ -199,16 +199,16 @@ export class Counter extends WebComponent {
 </html>
 ```
 
-## 主要特性
+## Key Features
 
-- ✅ **零 React 依赖**：完全独立的 JSX 实现
-- ✅ **框架级支持**：无需额外配置
-- ✅ **TypeScript 支持**：完整的类型安全
-- ✅ **Web Components**：原生自定义元素
-- ✅ **CSS 封装**：Shadow DOM 样式隔离
+- ✅ **Zero React Dependencies**: Completely independent JSX implementation
+- ✅ **Framework-Level Support**: No additional configuration needed
+- ✅ **TypeScript Support**: Full type safety
+- ✅ **Web Components**: Native custom elements
+- ✅ **CSS Encapsulation**: Shadow DOM style isolation
 
-## 下一步
+## Next Steps
 
-- 查看 **[WebComponent 使用指南](../core-concepts/web-components.md)** 了解 Shadow DOM 组件开发
-- 查看 **[LightComponent 使用指南](../core-concepts/light-components.md)** 了解 Light DOM 组件开发
-- 查看 **[JSX 支持文档](../core-concepts/jsx-support.md)** 了解更多高级用法
+- Check out the **[WebComponent Guide](../core-concepts/web-components.md)** to learn about Shadow DOM component development
+- Check out the **[LightComponent Guide](../core-concepts/light-components.md)** to learn about Light DOM component development
+- Check out the **[JSX Support Documentation](../core-concepts/jsx-support.md)** for more advanced usage

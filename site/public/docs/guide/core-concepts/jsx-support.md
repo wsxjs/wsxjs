@@ -1,30 +1,30 @@
 ---
-title: WSXJS JSX 支持文档
+title: WSXJS JSX Support Documentation
 order: 3
 category: guide/core-concepts
-description: "WSXJS 提供了完整的 JSX 支持，无需依赖 React 或其他框架。通过框架级的配置，任何使用 WSX 的项目都能获得开箱即用的 JSX 体验。"
+description: "WSXJS provides complete JSX support without relying on React or other frameworks. Through framework-level configuration, any project using WSX can get out-of-the-box JSX experience."
 ---
 
-## 概述
+## Overview
 
-WSXJS 提供了完整的 JSX 支持，无需依赖 React 或其他框架。通过框架级的配置，任何使用 WSX 的项目都能获得开箱即用的 JSX 体验。
+WSXJS provides complete JSX support without relying on React or other frameworks. Through framework-level configuration, any project using WSX can get out-of-the-box JSX experience.
 
-## 核心特性
+## Core Features
 
-- ✅ **零 React 依赖**：完全独立的 JSX 实现
-- ✅ **框架级支持**：无需消费者项目额外配置
-- ✅ **TypeScript 原生支持**：符合 TypeScript 标准机制
-- ✅ **IDE 友好**：完整的类型提示和错误检查
-- ✅ **Web Components 集成**：完美配合自定义元素
+- ✅ **Zero React Dependency**: Completely independent JSX implementation
+- ✅ **Framework-level Support**: No additional configuration needed in consumer projects
+- ✅ **TypeScript Native Support**: Complies with TypeScript standard mechanisms
+- ✅ **IDE Friendly**: Complete type hints and error checking
+- ✅ **Web Components Integration**: Perfect integration with custom elements
 
-## 技术架构
+## Technical Architecture
 
-### JSX 工厂函数
+### JSX Factory Function
 
-WSXJS 使用纯原生的 JSX 工厂函数：
+WSXJS uses pure native JSX factory functions:
 
 ```typescript
-// JSX 工厂函数
+// JSX factory function
 export function h(
     tag: string | ((...args: unknown[]) => HTMLElement),
     props?: Record<string, unknown> | null,
@@ -35,12 +35,12 @@ export function h(
 export function Fragment(_props: unknown, children: JSXChildren[]): DocumentFragment
 ```
 
-### 类型系统
+### Type System
 
-框架提供了完整的 TypeScript 类型支持：
+The framework provides complete TypeScript type support:
 
 ```typescript
-// 全局 JSX 命名空间
+// Global JSX namespace
 declare global {
     namespace JSX {
         interface IntrinsicElements {
@@ -57,18 +57,18 @@ declare global {
             li: any;
             section: any;
             slot: any;
-            // 支持任意 HTML 元素
+            // Supports any HTML element
             [elemName: string]: any;
         }
     }
 }
 ```
 
-## 配置指南
+## Configuration Guide
 
-### 1. TypeScript 配置
+### 1. TypeScript Configuration
 
-在项目的 `tsconfig.json` 中添加以下配置：
+Add the following configuration to your project's `tsconfig.json`:
 
 ```json
 {
@@ -79,9 +79,9 @@ declare global {
 }
 ```
 
-### 2. Vite 配置
+### 2. Vite Configuration
 
-WSXJS 提供了专门的 Vite 插件：
+WSXJS provides a dedicated Vite plugin:
 
 ```typescript
 // vite.config.ts
@@ -99,9 +99,9 @@ export default defineConfig({
 });
 ```
 
-### 3. ESLint 配置
+### 3. ESLint Configuration
 
-使用 WSX 专用的 ESLint 插件：
+Use WSX-specific ESLint plugin:
 
 ```javascript
 // eslint.config.js
@@ -128,9 +128,9 @@ export default [
 ];
 ```
 
-## 使用方法
+## Usage
 
-### 基本 JSX 语法
+### Basic JSX Syntax
 
 ```typescript
 // Button.wsx
@@ -154,7 +154,7 @@ export default class Button extends WebComponent {
 }
 ```
 
-### 事件处理
+### Event Handling
 
 ```typescript
 render(): HTMLElement {
@@ -170,7 +170,7 @@ render(): HTMLElement {
 }
 ```
 
-### 引用回调
+### Ref Callbacks
 
 ```typescript
 render(): HTMLElement {
@@ -190,7 +190,7 @@ render(): HTMLElement {
 }
 ```
 
-### 条件渲染
+### Conditional Rendering
 
 ```typescript
 render(): HTMLElement {
@@ -209,7 +209,7 @@ render(): HTMLElement {
 }
 ```
 
-### 列表渲染
+### List Rendering
 
 ```typescript
 render(): HTMLElement {
@@ -227,18 +227,18 @@ render(): HTMLElement {
 }
 ```
 
-## 框架内部实现
+## Framework Internal Implementation
 
-### JSX 入口点
+### JSX Entry Point
 
-WSXJS 创建了专门的 JSX 入口点：
+WSXJS creates a dedicated JSX entry point:
 
 ```typescript
 // packages/core/src/jsx.ts
 declare global {
     namespace JSX {
         interface IntrinsicElements {
-            // HTML 元素类型定义
+            // HTML element type definitions
         }
     }
 }
@@ -246,7 +246,7 @@ declare global {
 export { h, Fragment } from './jsx-factory';
 ```
 
-### 包导出配置
+### Package Export Configuration
 
 ```json
 // packages/core/package.json
@@ -266,12 +266,12 @@ export { h, Fragment } from './jsx-factory';
 }
 ```
 
-## 最佳实践
+## Best Practices
 
-### 1. 类型安全
+### 1. Type Safety
 
 ```typescript
-// 使用具体的类型而不是 any
+// Use specific types instead of any
 render(): HTMLElement {
     return (
         <button
@@ -284,19 +284,19 @@ render(): HTMLElement {
 }
 ```
 
-### 2. 事件处理
+### 2. Event Handling
 
 ```typescript
-// 使用箭头函数绑定 this
+// Use arrow functions to bind this
 private handleClick = (event: MouseEvent): void => {
     console.log('Button clicked', event);
 };
 ```
 
-### 3. 组件组合
+### 3. Component Composition
 
 ```typescript
-// 使用 slot 进行组件组合
+// Use slot for component composition
 render(): HTMLElement {
     return (
         <div className="card">
@@ -314,27 +314,27 @@ render(): HTMLElement {
 }
 ```
 
-## 故障排除
+## Troubleshooting
 
-### 常见问题
+### Common Issues
 
-1. **"React in scope" 错误**
-   - 确保 `jsxImportSource` 配置正确
-   - 重启 TypeScript 语言服务器
-   - 检查包是否正确安装
+1. **"React in scope" Error**
+   - Ensure `jsxImportSource` is configured correctly
+   - Restart TypeScript language server
+   - Check if packages are correctly installed
 
-2. **类型错误**
-   - 确保使用正确的类型注解
-   - 检查 JSX 命名空间是否正确加载
+2. **Type Errors**
+   - Ensure correct type annotations are used
+   - Check if JSX namespace is correctly loaded
 
-3. **构建错误**
-   - 确保 Vite 插件配置正确
-   - 检查文件扩展名是否为 `.wsx`
+3. **Build Errors**
+   - Ensure Vite plugin is configured correctly
+   - Check if file extension is `.wsx`
 
-### 调试技巧
+### Debugging Tips
 
 ```typescript
-// 启用 Vite 插件调试
+// Enable Vite plugin debugging
 wsx({
     debug: true,
     jsxFactory: 'h',
@@ -342,30 +342,30 @@ wsx({
 })
 ```
 
-## 迁移指南
+## Migration Guide
 
-### 从 React 迁移
+### From React
 
-1. 移除 React 导入
-2. 将 `jsxImportSource` 改为 `"@wsxjs/wsx-core/jsx"`
-3. 使用 WSX 的 `h` 和 `Fragment` 函数
-4. 更新事件处理器类型
+1. Remove React imports
+2. Change `jsxImportSource` to `"@wsxjs/wsx-core/jsx"`
+3. Use WSX's `h` and `Fragment` functions
+4. Update event handler types
 
-### 从其他框架迁移
+### From Other Frameworks
 
-1. 配置 TypeScript JSX 设置
-2. 安装 WSX 相关包
-3. 配置构建工具
-4. 更新组件语法
+1. Configure TypeScript JSX settings
+2. Install WSX related packages
+3. Configure build tools
+4. Update component syntax
 
-## 总结
+## Summary
 
-WSXJS 的 JSX 支持提供了：
+WSXJS's JSX support provides:
 
-- **零配置体验**：开箱即用的 JSX 支持
-- **类型安全**：完整的 TypeScript 类型系统
-- **性能优化**：原生 DOM 操作，无虚拟 DOM 开销
-- **Web Components 集成**：完美配合自定义元素
-- **开发体验**：IDE 友好的类型提示和错误检查
+- **Zero-config Experience**: Out-of-the-box JSX support
+- **Type Safety**: Complete TypeScript type system
+- **Performance Optimization**: Native DOM operations, no virtual DOM overhead
+- **Web Components Integration**: Perfect integration with custom elements
+- **Developer Experience**: IDE-friendly type hints and error checking
 
-通过框架级的实现，开发者可以专注于业务逻辑，而不用担心 JSX 配置的复杂性。 
+Through framework-level implementation, developers can focus on business logic without worrying about the complexity of JSX configuration.

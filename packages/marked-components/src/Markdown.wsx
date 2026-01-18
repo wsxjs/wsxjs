@@ -16,7 +16,7 @@ import { createLogger } from "@wsxjs/wsx-logger";
 import { marked } from "marked";
 import type { Tokens } from "marked";
 
-import { renderInlineTokens } from "./marked-utils";
+import { renderInlineTokens, generateId } from "./marked-utils";
 // Import WSX components so they're registered as custom elements
 import "./Heading.wsx";
 import "./Code.wsx";
@@ -143,10 +143,14 @@ export default class Markdown extends LightComponent {
         switch (token.type) {
             case "heading": {
                 const headingToken = token as Tokens.Heading;
+                const text = renderInlineTokens(headingToken.tokens);
+                const id = generateId(text);
+
                 return (
                     <wsx-marked-heading
                         level={headingToken.depth.toString()}
-                        text={renderInlineTokens(headingToken.tokens)}
+                        text={text}
+                        anchor-id={id}
                     />
                 );
             }

@@ -1,47 +1,47 @@
 ---
-title: DOM 缓存与 Key 最佳实践
+title: DOM Cache and Key Best Practices
 order: 1
 category: guide/advanced
-description: "WSXJS 使用 DOM 缓存机制来优化渲染性能，避免不必要的 DOM 元素重建"
+description: "WSXJS uses DOM caching mechanism to optimize rendering performance and avoid unnecessary DOM element reconstruction"
 ---
 
-## 概述
+## Overview
 
-WSXJS 使用 DOM 缓存机制来优化渲染性能，避免不必要的 DOM 元素重建。理解如何正确使用 `key` 属性对于确保应用的正确性和性能至关重要。
+WSXJS uses DOM caching mechanism to optimize rendering performance and avoid unnecessary DOM element reconstruction. Understanding how to correctly use the `key` attribute is crucial for ensuring application correctness and performance.
 
-## 核心概念
+## Core Concepts
 
-### 什么是 DOM 缓存？
+### What is DOM Cache?
 
-DOM 缓存是一种性能优化技术，它会：
-- **复用现有的 DOM 元素**而不是销毁和重建
-- **只更新变化的属性和子元素**
-- **通过 cache key 识别和匹配元素**
+DOM cache is a performance optimization technique that:
+- **Reuses existing DOM elements** instead of destroying and rebuilding
+- **Only updates changed attributes and child elements**
+- **Identifies and matches elements through cache key**
 
-### Cache Key 的组成
+### Cache Key Composition
 
-WSXJS 自动生成的缓存键格式：
+WSXJS automatically generated cache key format:
 ```
 ${componentId}:${tag}:${identifier}
 ```
 
-其中 `identifier` 可以是：
-- 用户提供的 `key` 属性值
-- 数组索引 `index`
-- 自动生成的位置 ID
+Where `identifier` can be:
+- User-provided `key` attribute value
+- Array index `index`
+- Auto-generated position ID
 
-## ⚠️ 关键规则：避免重复 Key
+## ⚠️ Key Rule: Avoid Duplicate Keys
 
-**同一个 `key` 不能在不同的父容器中使用！**
+**The same `key` cannot be used in different parent containers!**
 
-### 为什么？
+### Why?
 
-当同一个 key 出现在不同父容器中时：
-1. DOM 元素会被**错误地共享**
-2. `appendChild` 会**自动移动元素**从旧父容器到新父容器
-3. 导致元素出现在**错误的位置**
+When the same key appears in different parent containers:
+1. DOM elements will be **incorrectly shared**
+2. `appendChild` will **automatically move elements** from old parent container to new parent container
+3. Causes elements to appear in **wrong positions**
 
-### 问题示例 ❌
+### Problem Example ❌
 
 ```tsx
 class BadExample extends BaseComponent {
@@ -52,19 +52,19 @@ class BadExample extends BaseComponent {
 
         return (
             <div>
-                {/* 导航菜单 */}
+                {/* Navigation menu */}
                 <nav class="nav-menu">
                     {visibleItems.map((item, index) => (
                         <wsx-link key={index}>Item {item}</wsx-link>
-                        {/* ❌ 错误：使用 key={index} */}
+                        {/* ❌ Wrong: Using key={index} */}
                     ))}
                 </nav>
 
-                {/* 溢出菜单 */}
+                {/* Overflow menu */}
                 <div class="overflow-menu">
                     {overflowItems.map((item, index) => (
                         <wsx-link key={index}>Item {item}</wsx-link>
-                        {/* ❌ 错误：使用 key={index}，与 nav-menu 冲突！*/}
+                        {/* ❌ Wrong: Using key={index}, conflicts with nav-menu! */}
                     ))}
                 </div>
             </div>
@@ -73,9 +73,9 @@ class BadExample extends BaseComponent {
 }
 ```
 
-**问题**：`overflow-menu` 中的 `key={0}` 与 `nav-menu` 中的 `key={0}` 冲突，导致元素被错误地移动。
+**Problem**: `key={0}` in `overflow-menu` conflicts with `key={0}` in `nav-menu`, causing elements to be incorrectly moved.
 
-### 正确的解决方案 ✅
+### Correct Solution ✅
 
 ```tsx
 class GoodExample extends BaseComponent {
@@ -86,19 +86,19 @@ class GoodExample extends BaseComponent {
 
         return (
             <div>
-                {/* 导航菜单 */}
+                {/* Navigation menu */}
                 <nav class="nav-menu">
                     {visibleItems.map((item, index) => (
                         <wsx-link key={`nav-${index}`}>Item {item}</wsx-link>
-                        {/* ✅ 正确：使用唯一前缀 "nav-" */}
+                        {/* ✅ Correct: Using unique prefix "nav-" */}
                     ))}
                 </nav>
 
-                {/* 溢出菜单 */}
+                {/* Overflow menu */}
                 <div class="overflow-menu">
                     {overflowItems.map((item, index) => (
                         <wsx-link key={`overflow-${index}`}>Item {item}</wsx-link>
-                        {/* ✅ 正确：使用唯一前缀 "overflow-" */}
+                        {/* ✅ Correct: Using unique prefix "overflow-" */}
                     ))}
                 </div>
             </div>
@@ -107,18 +107,18 @@ class GoodExample extends BaseComponent {
 }
 ```
 
-## 最佳实践
+## Best Practices
 
-### 1. 为不同位置使用不同的 key 前缀
+### 1. Use Different Key Prefixes for Different Locations
 
 ```tsx
-// ✅ 推荐
+// ✅ Recommended
 <wsx-link key={`nav-${index}`}>Navigation</wsx-link>
 <wsx-link key={`sidebar-${index}`}>Sidebar</wsx-link>
 <wsx-link key={`footer-${index}`}>Footer</wsx-link>
 ```
 
-### 2. 条件渲染时保持 key 一致性
+### 2. Keep Key Consistency in Conditional Rendering
 
 ```tsx
 class ConditionalRender extends BaseComponent {
@@ -131,7 +131,7 @@ class ConditionalRender extends BaseComponent {
                     <nav>
                         {items.map(item => (
                             <wsx-link key={`menu-${item.id}`}>
-                                {/* ✅ 使用稳定的 ID */}
+                                {/* ✅ Use stable ID */}
                                 {item.name}
                             </wsx-link>
                         ))}
@@ -143,7 +143,7 @@ class ConditionalRender extends BaseComponent {
 }
 ```
 
-### 3. 动态容器使用语义化前缀
+### 3. Use Semantic Prefixes for Dynamic Containers
 
 ```tsx
 class DynamicContainers extends BaseComponent {
@@ -154,7 +154,7 @@ class DynamicContainers extends BaseComponent {
                     <section key={category.id}>
                         {category.items.map(item => (
                             <wsx-link key={`${category.id}-${item.id}`}>
-                                {/* ✅ 结合父容器 ID */}
+                                {/* ✅ Combine parent container ID */}
                                 {item.name}
                             </wsx-link>
                         ))}
@@ -166,22 +166,22 @@ class DynamicContainers extends BaseComponent {
 }
 ```
 
-### 4. 列表项使用唯一标识符
+### 4. Use Unique Identifiers for List Items
 
 ```tsx
-// ✅ 推荐：使用唯一 ID
+// ✅ Recommended: Use unique ID
 items.map(item => <wsx-link key={item.id}>{item.name}</wsx-link>)
 
-// ⚠️ 可接受：如果确保不会在其他地方使用相同索引
+// ⚠️ Acceptable: If you ensure the same index won't be used elsewhere
 items.map((item, index) => <wsx-link key={`list-${index}`}>{item.name}</wsx-link>)
 
-// ❌ 避免：纯索引，容易在多个列表中冲突
+// ❌ Avoid: Pure index, easily conflicts in multiple lists
 items.map((item, index) => <wsx-link key={index}>{item.name}</wsx-link>)
 ```
 
-## 运行时警告
+## Runtime Warnings
 
-WSXJS 会自动检测重复 key 问题并在控制台输出警告：
+WSXJS automatically detects duplicate key issues and outputs warnings in the console:
 
 ```
 [DOMCacheManager] Duplicate key "0" detected in different parent containers!
@@ -196,16 +196,16 @@ Solution: Use unique key prefixes for different locations:
 See https://wsxjs.dev/docs/guide/DOM_CACHE_GUIDE for best practices.
 ```
 
-**重要**：
-- ⚠️ 此警告在**所有环境**（开发和生产）中都会出现
-- 🔧 必须立即修复，这是正确性问题，不仅仅是性能问题
-- 📝 使用唯一的 key 前缀来解决
+**Important**:
+- ⚠️ This warning appears in **all environments** (development and production)
+- 🔧 Must fix immediately, this is a correctness issue, not just a performance issue
+- 📝 Use unique key prefixes to resolve
 
-## 编译时检查
+## Compile-time Checking
 
-除了运行时警告，WSXJS 还提供 ESLint 规则来在编译时检测重复 key：
+In addition to runtime warnings, WSXJS also provides ESLint rules to detect duplicate keys at compile time:
 
-### 安装和配置
+### Installation and Configuration
 
 ```bash
 npm install --save-dev @wsxjs/eslint-plugin-wsx
@@ -221,58 +221,58 @@ module.exports = {
 };
 ```
 
-### ESLint 错误示例
+### ESLint Error Example
 
 ```tsx
-// ❌ ESLint 会报错
+// ❌ ESLint will report error
 render() {
     return (
         <div>
             <nav>{items.map((item, i) => <a key={i}>{item}</a>)}</nav>
             <div>{otherItems.map((item, i) => <a key={i}>{item}</a>)}</div>
-            {/* 错误：Duplicate key "i" in different parent containers */}
+            {/* Error: Duplicate key "i" in different parent containers */}
         </div>
     );
 }
 ```
 
-## 常见问题
+## FAQ
 
-### Q: 为什么不能在不同父容器中使用相同的 key？
+### Q: Why can't the same key be used in different parent containers?
 
-A: 因为 DOM 元素在 JavaScript 中只能有一个父节点。当你调用 `appendChild` 时，如果元素已经在 DOM 树的其他位置，它会被自动**移动**而不是复制。WSXJS 的缓存机制依赖于唯一的 cache key，重复的 key 会导致元素被错误地共享和移动。
+A: Because DOM elements in JavaScript can only have one parent node. When you call `appendChild`, if the element is already in another position in the DOM tree, it will be automatically **moved** instead of copied. WSXJS's caching mechanism relies on unique cache keys, and duplicate keys will cause elements to be incorrectly shared and moved.
 
-### Q: 我的应用中所有列表都使用 `key={index}`，会有问题吗？
+### Q: All lists in my application use `key={index}`, will there be a problem?
 
-A: 如果这些列表在不同的父容器中（例如不同的 `<nav>`、`<div>`、`<section>`），那么会有问题！解决方案是为每个列表添加唯一前缀，例如 `key={`nav-${index}`}` 和 `key={`sidebar-${index}`}`。
+A: If these lists are in different parent containers (e.g., different `<nav>`, `<div>`, `<section>`), then yes, there will be a problem! The solution is to add unique prefixes for each list, for example `key={`nav-${index}`}` and `key={`sidebar-${index}`}`.
 
-### Q: 条件渲染时需要更改 key 吗？
+### Q: Do I need to change the key in conditional rendering?
 
-A: 不需要。如果元素的 key 保持不变，DOM 元素会被正确地复用。只需确保同一个 key 不会出现在不同的父容器中即可。
+A: No. If the element's key remains unchanged, DOM elements will be correctly reused. Just ensure the same key doesn't appear in different parent containers.
 
-### Q: 如果我的数据项没有唯一 ID 怎么办？
+### Q: What if my data items don't have unique IDs?
 
-A: 有几个选择：
-1. **推荐**：为数据项生成唯一 ID（例如使用 UUID）
-2. 使用索引但添加语义化前缀：`key={`${containerName}-${index}`}`
-3. 使用数据项的组合属性创建唯一键：`key={`${item.name}-${item.type}`}`
+A: There are several options:
+1. **Recommended**: Generate unique IDs for data items (e.g., using UUID)
+2. Use index but add semantic prefix: `key={`${containerName}-${index}`}`
+3. Use combination of data item properties to create unique key: `key={`${item.name}-${item.type}`}`
 
-## 总结
+## Summary
 
-| 规则 | 说明 | 示例 |
+| Rule | Description | Example |
 |------|------|------|
-| ❌ 禁止重复 | 不要在不同父容器中使用相同的 key | `key={0}` 同时出现在 nav 和 div 中 |
-| ✅ 使用前缀 | 为不同位置的元素添加唯一前缀 | `key="nav-0"` vs `key="overflow-0"` |
-| ✅ 保持一致 | 条件渲染时保持 key 不变 | `key={item.id}` 在显示/隐藏时保持一致 |
-| ⚠️ 监听警告 | 重视运行时警告，立即修复 | 查看浏览器控制台的 DOMCacheManager 警告 |
+| ❌ Prohibit duplicates | Don't use the same key in different parent containers | `key={0}` appears in both nav and div |
+| ✅ Use prefixes | Add unique prefixes for elements in different locations | `key="nav-0"` vs `key="overflow-0"` |
+| ✅ Keep consistent | Keep key unchanged in conditional rendering | `key={item.id}` remains consistent when showing/hiding |
+| ⚠️ Monitor warnings | Pay attention to runtime warnings, fix immediately | Check browser console for DOMCacheManager warnings |
 
-## 相关资源
+## Related Resources
 
-- [快速开始指南](../essentials/getting-started.md)
-- [Web Component 指南](../core-concepts/web-components.md)
-- [Light Component 指南](../core-concepts/light-components.md)
-- [TypeScript 配置](../essentials/typescript-setup.md)
+- [Quick Start Guide](../essentials/getting-started.md)
+- [Web Component Guide](../core-concepts/web-components.md)
+- [Light Component Guide](../core-concepts/light-components.md)
+- [TypeScript Configuration](../essentials/typescript-setup.md)
 
 ---
 
-> 💡 **提示**：正确使用 key 不仅能避免 bug，还能充分发挥 DOM 缓存的性能优势！
+> 💡 **Tip**: Correctly using keys not only avoids bugs but also fully leverages the performance advantages of DOM caching!

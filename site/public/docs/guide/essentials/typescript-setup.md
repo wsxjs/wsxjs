@@ -1,25 +1,25 @@
 ---
-title: TypeScript 配置指南
+title: TypeScript Configuration Guide
 order: 2
 category: guide/essentials
-description: "本指南详细说明如何在项目中正确配置 TypeScript 以使用 WSXJS。"
+description: "This guide details how to correctly configure TypeScript in your project to use WSXJS."
 ---
 
-本指南详细说明如何在项目中正确配置 TypeScript 以使用 WSXJS。
+This guide details how to correctly configure TypeScript in your project to use WSXJS.
 
-## 📋 目录
+## 📋 Table of Contents
 
-- [基本配置](#基本配置)
-- [完整配置示例](#完整配置示例)
-- [类型引用机制](#类型引用机制)
-- [最佳实践](#最佳实践)
-- [常见问题](#常见问题)
+- [Basic Configuration](#basic-configuration)
+- [Complete Configuration Examples](#complete-configuration-examples)
+- [Type Reference Mechanism](#type-reference-mechanism)
+- [Best Practices](#best-practices)
+- [Common Issues](#common-issues)
 
-## 基本配置
+## Basic Configuration
 
-### 1. JSX 配置
+### 1. JSX Configuration
 
-在 `tsconfig.json` 中配置 JSX 支持：
+Configure JSX support in `tsconfig.json`:
 
 ```json
 {
@@ -30,13 +30,13 @@ description: "本指南详细说明如何在项目中正确配置 TypeScript 以
 }
 ```
 
-**配置说明**：
-- **`jsx: "react-jsx"`** - 使用新的 JSX 转换方式（React 17+ 引入）
-- **`jsxImportSource: "@wsxjs/wsx-core"`** - 指定 JSX 运行时来源为 WSXJS
+**Configuration Notes**:
+- **`jsx: "react-jsx"`** - Use the new JSX transform (introduced in React 17+)
+- **`jsxImportSource: "@wsxjs/wsx-core"`** - Specify JSX runtime source as WSXJS
 
-### 2. 类型引用配置
+### 2. Type Reference Configuration
 
-为了获得完整的类型支持，需要在 `compilerOptions.types` 中添加类型包：
+To get complete type support, add the type package to `compilerOptions.types`:
 
 ```json
 {
@@ -48,14 +48,14 @@ description: "本指南详细说明如何在项目中正确配置 TypeScript 以
 }
 ```
 
-**配置说明**：
-- **`types: ["@wsxjs/wsx-core"]`** - 显式引用 WSXJS 的类型定义
-- TypeScript 会自动加载 `@wsxjs/wsx-core/types/index.d.ts`
-- 这确保了 JSX 全局类型和组件类型正确加载
+**Configuration Notes**:
+- **`types: ["@wsxjs/wsx-core"]`** - Explicitly reference WSXJS type definitions
+- TypeScript will automatically load `@wsxjs/wsx-core/types/index.d.ts`
+- This ensures JSX global types and component types are correctly loaded
 
-### 3. 测试库类型（可选）
+### 3. Test Library Types (Optional)
 
-如果使用 `@testing-library/jest-dom` 进行测试，也需要添加到 `types` 数组：
+If using `@testing-library/jest-dom` for testing, also add it to the `types` array:
 
 ```json
 {
@@ -67,38 +67,38 @@ description: "本指南详细说明如何在项目中正确配置 TypeScript 以
 }
 ```
 
-## 完整配置示例
+## Complete Configuration Examples
 
-### 生产项目配置
+### Production Project Configuration
 
 ```json
 {
   "compilerOptions": {
-    // 输出配置
+    // Output configuration
     "target": "ES2020",
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "outDir": "./dist",
 
-    // JSX 配置
+    // JSX configuration
     "jsx": "react-jsx",
     "jsxImportSource": "@wsxjs/wsx-core",
 
-    // 类型引用
+    // Type references
     "types": ["@wsxjs/wsx-core"],
 
-    // 模块解析
+    // Module resolution
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
 
-    // 严格模式
+    // Strict mode
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    // 其他
+    // Other
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -109,7 +109,7 @@ description: "本指南详细说明如何在项目中正确配置 TypeScript 以
 }
 ```
 
-### 测试环境配置
+### Test Environment Configuration
 
 ```json
 {
@@ -130,9 +130,9 @@ description: "本指南详细说明如何在项目中正确配置 TypeScript 以
 }
 ```
 
-### Monorepo 工作区配置
+### Monorepo Workspace Configuration
 
-在 monorepo 中，避免使用相对路径引用类型文件：
+In a monorepo, avoid using relative paths to reference type files:
 
 ```json
 {
@@ -148,71 +148,71 @@ description: "本指南详细说明如何在项目中正确配置 TypeScript 以
 }
 ```
 
-**❌ 不要这样做**：
+**❌ Don't do this**:
 ```json
 {
   "include": [
     "src/**/*",
-    "../core/types/**/*.d.ts"  // ❌ 避免相对路径
+    "../core/types/**/*.d.ts"  // ❌ Avoid relative paths
   ]
 }
 ```
 
-**✅ 正确做法**：
-- 依赖 `compilerOptions.types` 配置
-- 让 TypeScript 通过 `node_modules` 自动解析类型
-- 这样配置在 monorepo 内部和外部项目中都能正常工作
+**✅ Correct approach**:
+- Rely on `compilerOptions.types` configuration
+- Let TypeScript automatically resolve types through `node_modules`
+- This configuration works in both monorepo internal and external projects
 
-## 类型引用机制
+## Type Reference Mechanism
 
-### TypeScript 如何加载类型
+### How TypeScript Loads Types
 
-当你在 `compilerOptions.types` 中配置 `@wsxjs/wsx-core` 时：
+When you configure `@wsxjs/wsx-core` in `compilerOptions.types`:
 
-1. TypeScript 查找 `node_modules/@wsxjs/wsx-core/package.json`
-2. 读取 `types` 字段的值：`"./types/index.d.ts"`
-3. 加载对应的类型定义文件
-4. 这个过程在 monorepo（通过 workspace 链接）和外部项目中都有效
+1. TypeScript looks for `node_modules/@wsxjs/wsx-core/package.json`
+2. Reads the `types` field value: `"./types/index.d.ts"`
+3. Loads the corresponding type definition file
+4. This process works in both monorepo (via workspace links) and external projects
 
-### 类型定义文件层次
+### Type Definition File Hierarchy
 
 ```
 @wsxjs/wsx-core/
 ├── package.json
 │   └── "types": "./types/index.d.ts"
 ├── types/
-│   ├── index.d.ts          # 主入口，导入所有类型
-│   ├── wsx-types.d.ts      # JSX 全局类型定义
-│   ├── global.d.ts         # 全局类型扩展
-│   └── css-inline.d.ts     # CSS 模块声明
+│   ├── index.d.ts          # Main entry, imports all types
+│   ├── wsx-types.d.ts      # JSX global type definitions
+│   ├── global.d.ts         # Global type extensions
+│   └── css-inline.d.ts     # CSS module declarations
 └── src/
     └── ...
 ```
 
-`types/index.d.ts` 内容示例：
+`types/index.d.ts` content example:
 ```typescript
-// 导入所有类型定义
+// Import all type definitions
 import "./css-inline.d.ts";
 import "./wsx-types";
 import "./global.d.ts";
 
-// 重新导出 JSX 工厂函数和类型
+// Re-export JSX factory functions and types
 export { h, Fragment } from "./wsx-types";
 export type { JSXChildren } from "../src/jsx-factory";
 
-// 导出其他核心类型...
+// Export other core types...
 ```
 
-### 为什么不需要三斜线指令
+### Why Triple-Slash Directives Are Not Needed
 
-**❌ 不推荐的做法**（使用三斜线指令）：
+**❌ Not recommended** (using triple-slash directives):
 ```typescript
 // global.d.ts
 /// <reference types="@wsxjs/wsx-core/types/wsx-types" />
 /// <reference types="@testing-library/jest-dom" />
 ```
 
-**✅ 推荐的做法**（使用 tsconfig.json）：
+**✅ Recommended approach** (using tsconfig.json):
 ```json
 {
   "compilerOptions": {
@@ -221,17 +221,17 @@ export type { JSXChildren } from "../src/jsx-factory";
 }
 ```
 
-**原因**：
-1. **集中管理**：所有类型配置在 `tsconfig.json` 中，易于维护
-2. **标准化**：符合 TypeScript 官方推荐的方式
-3. **避免冗余**：不需要在多个文件中重复声明
-4. **更好的 IDE 支持**：IDE 能更好地理解和解析配置
+**Reasons**:
+1. **Centralized management**: All type configuration in `tsconfig.json`, easy to maintain
+2. **Standardization**: Complies with TypeScript official recommendations
+3. **Avoid redundancy**: No need to repeat declarations in multiple files
+4. **Better IDE support**: IDE can better understand and parse configuration
 
-## 最佳实践
+## Best Practices
 
-### 1. 使用标准的 TypeScript 类型解析
+### 1. Use Standard TypeScript Type Resolution
 
-**✅ 推荐**：
+**✅ Recommended**:
 ```json
 {
   "compilerOptions": {
@@ -240,14 +240,14 @@ export type { JSXChildren } from "../src/jsx-factory";
 }
 ```
 
-**❌ 避免**：
-- 三斜线指令：`/// <reference types="..." />`
-- 相对路径引用：`"../core/types/**/*.d.ts"`
-- 手动导入类型：`import '@wsxjs/wsx-core/types/wsx-types'`
+**❌ Avoid**:
+- Triple-slash directives: `/// <reference types="..." />`
+- Relative path references: `"../core/types/**/*.d.ts"`
+- Manual type imports: `import '@wsxjs/wsx-core/types/wsx-types'`
 
-### 2. 分离生产和测试配置
+### 2. Separate Production and Test Configuration
 
-创建 `tsconfig.test.json` 用于测试环境：
+Create `tsconfig.test.json` for test environment:
 
 ```json
 {
@@ -266,16 +266,16 @@ export type { JSXChildren } from "../src/jsx-factory";
 }
 ```
 
-### 3. 保持 global.d.ts 简洁
+### 3. Keep global.d.ts Concise
 
-`global.d.ts` 应该只包含：
-- 模块声明（如 CSS、图片导入）
-- 项目特定的全局类型扩展
+`global.d.ts` should only contain:
+- Module declarations (such as CSS, image imports)
+- Project-specific global type extensions
 
 ```typescript
-// global.d.ts - 推荐的内容
+// global.d.ts - Recommended content
 
-// CSS 模块声明
+// CSS module declarations
 declare module "*.css" {
   const styles: string;
   export default styles;
@@ -286,13 +286,13 @@ declare module "*.css?inline" {
   export default styles;
 }
 
-// 图片模块声明
+// Image module declarations
 declare module "*.png" {
   const src: string;
   export default src;
 }
 
-// 项目特定的全局类型扩展
+// Project-specific global type extensions
 declare global {
   namespace Vi {
     type Assertion<T = any> = jest.Matchers<void, T>;
@@ -302,9 +302,9 @@ declare global {
 export {};
 ```
 
-### 4. 文件包含配置
+### 4. File Include Configuration
 
-**推荐的 `include` 配置**：
+**Recommended `include` configuration**:
 ```json
 {
   "include": [
@@ -315,18 +315,18 @@ export {};
 }
 ```
 
-**避免**：
-- 包含 `node_modules`
-- 包含构建输出目录
-- 使用 monorepo 特定的相对路径
+**Avoid**:
+- Including `node_modules`
+- Including build output directories
+- Using monorepo-specific relative paths
 
-## 常见问题
+## Common Issues
 
-### 1. IDE 报错："This JSX tag requires 'React' to be in scope"
+### 1. IDE Error: "This JSX tag requires 'React' to be in scope"
 
-**解决方案**：
+**Solution**:
 
-1. 确保 `jsxImportSource` 配置正确：
+1. Ensure `jsxImportSource` is configured correctly:
    ```json
    {
      "compilerOptions": {
@@ -336,28 +336,28 @@ export {};
    }
    ```
 
-2. 在 `.wsx` 文件顶部添加 JSX pragma 注释（可选）：
+2. Add JSX pragma comment at the top of `.wsx` files (optional):
    ```typescript
    /** @jsxImportSource @wsxjs/wsx-core */
    import { WebComponent, autoRegister } from '@wsxjs/wsx-core';
    ```
 
-3. 重启 TypeScript 语言服务器：
+3. Restart TypeScript language server:
    - VS Code: `Cmd+Shift+P` → "TypeScript: Restart TS Server"
-   - 或重启 IDE
+   - Or restart IDE
 
-### 2. 找不到 JSX 类型定义
+### 2. Cannot Find JSX Type Definitions
 
-**问题**：TypeScript 报错找不到 JSX 类型。
+**Issue**: TypeScript reports cannot find JSX types.
 
-**解决方案**：
+**Solution**:
 
-1. 确认 `@wsxjs/wsx-core` 已安装：
+1. Confirm `@wsxjs/wsx-core` is installed:
    ```bash
    npm list @wsxjs/wsx-core
    ```
 
-2. 确认 `types` 配置正确：
+2. Confirm `types` configuration is correct:
    ```json
    {
      "compilerOptions": {
@@ -366,24 +366,24 @@ export {};
    }
    ```
 
-3. 清理并重新安装依赖：
+3. Clean and reinstall dependencies:
    ```bash
    rm -rf node_modules package-lock.json
    npm install
    ```
 
-### 3. 测试文件中找不到 `@testing-library/jest-dom` 类型
+### 3. Cannot Find `@testing-library/jest-dom` Types in Test Files
 
-**问题**：测试断言方法（如 `toBeInTheDocument`）报类型错误。
+**Issue**: Test assertion methods (such as `toBeInTheDocument`) report type errors.
 
-**解决方案**：
+**Solution**:
 
-1. 确认包已安装：
+1. Confirm package is installed:
    ```bash
    npm install -D @testing-library/jest-dom
    ```
 
-2. 在 `tsconfig.json` 或 `tsconfig.test.json` 中添加类型：
+2. Add types in `tsconfig.json` or `tsconfig.test.json`:
    ```json
    {
      "compilerOptions": {
@@ -395,30 +395,30 @@ export {};
    }
    ```
 
-3. 不要使用三斜线指令，让 TypeScript 自动加载。
+3. Don't use triple-slash directives, let TypeScript automatically load.
 
-### 4. Monorepo 中类型找不到
+### 4. Types Not Found in Monorepo
 
-**问题**：在 monorepo workspace 中，TypeScript 找不到包的类型。
+**Issue**: In monorepo workspace, TypeScript cannot find package types.
 
-**解决方案**：
+**Solution**:
 
-1. 确认 workspace 链接正确：
+1. Confirm workspace links are correct:
    ```bash
-   pnpm install  # 或 npm install
+   pnpm install  # or npm install
    ```
 
-2. **避免**使用相对路径引用：
+2. **Avoid** using relative path references:
    ```json
-   // ❌ 错误
+   // ❌ Wrong
    {
      "include": ["../core/types/**/*.d.ts"]
    }
    ```
 
-3. **使用**标准的包引用：
+3. **Use** standard package references:
    ```json
-   // ✅ 正确
+   // ✅ Correct
    {
      "compilerOptions": {
        "types": ["@wsxjs/wsx-core"]
@@ -426,25 +426,25 @@ export {};
    }
    ```
 
-4. 如果使用 pnpm，确认 `.npmrc` 配置正确：
+4. If using pnpm, confirm `.npmrc` configuration is correct:
    ```ini
    shamefully-hoist=false
    strict-peer-dependencies=false
    ```
 
-### 5. `.wsx` 文件找不到类型声明
+### 5. Cannot Find Type Declarations for `.wsx` Files
 
-**问题**：导入 `.wsx` 文件时报错 "Cannot find module"。
+**Issue**: Error "Cannot find module" when importing `.wsx` files.
 
-**解决方案**：
+**Solution**:
 
-1. 确认 `global.d.ts` 中有 `.wsx` 模块声明：
+1. Confirm `global.d.ts` has `.wsx` module declaration:
    ```typescript
-   // 这个声明已经在 @wsxjs/wsx-core 中提供
-   // 通常不需要手动添加
+   // This declaration is already provided in @wsxjs/wsx-core
+   // Usually no need to manually add
    ```
 
-2. 确认 `include` 包含 `.wsx` 文件：
+2. Confirm `include` includes `.wsx` files:
    ```json
    {
      "include": [
@@ -454,7 +454,7 @@ export {};
    }
    ```
 
-3. 检查 Vite 插件配置是否正确：
+3. Check if Vite plugin configuration is correct:
    ```typescript
    // vite.config.ts
    import { wsx } from '@wsxjs/wsx-vite-plugin';
@@ -464,19 +464,19 @@ export {};
    });
    ```
 
-### 6. 外部项目集成 WSXJS
+### 6. External Project Integration with WSXJS
 
-**问题**：在新项目中集成 WSX，不知道如何配置。
+**Issue**: Integrating WSX in a new project, don't know how to configure.
 
-**完整步骤**：
+**Complete Steps**:
 
-1. **安装依赖**：
+1. **Install dependencies**:
    ```bash
    npm install @wsxjs/wsx-core
    npm install -D @wsxjs/wsx-vite-plugin typescript
    ```
 
-2. **配置 `tsconfig.json`**：
+2. **Configure `tsconfig.json`**:
    ```json
    {
      "compilerOptions": {
@@ -495,7 +495,7 @@ export {};
    }
    ```
 
-3. **配置 `vite.config.ts`**：
+3. **Configure `vite.config.ts`**:
    ```typescript
    import { defineConfig } from 'vite';
    import { wsx } from '@wsxjs/wsx-vite-plugin';
@@ -505,7 +505,7 @@ export {};
    });
    ```
 
-4. **创建组件**：
+4. **Create component**:
    ```typescript
    // src/components/MyButton.wsx
    /** @jsxImportSource @wsxjs/wsx-core */
@@ -519,64 +519,64 @@ export {};
    }
    ```
 
-5. **使用组件**：
+5. **Use component**:
    ```html
    <!-- index.html -->
    <my-button></my-button>
    <script type="module" src="/src/main.ts"></script>
    ```
 
-## 调试技巧
+## Debugging Tips
 
-### 查看 TypeScript 解析的类型路径
+### View TypeScript Resolved Type Paths
 
 ```bash
-# 使用 tsc 的 --showConfig 选项
+# Use tsc's --showConfig option
 npx tsc --showConfig
 
-# 查看类型解析详情
+# View type resolution details
 npx tsc --traceResolution > trace.log
 ```
 
-### 验证类型定义加载
+### Verify Type Definition Loading
 
-在 TypeScript 文件中：
+In TypeScript files:
 
 ```typescript
-// 测试 JSX 类型是否正确加载
+// Test if JSX types are correctly loaded
 const testJSX: JSX.Element = <div>Test</div>;
 
-// 测试 WebComponent 类型是否正确加载
+// Test if WebComponent types are correctly loaded
 import { WebComponent } from '@wsxjs/wsx-core';
 const testComponent: typeof WebComponent = WebComponent;
 ```
 
-如果没有类型错误，说明配置正确。
+If there are no type errors, the configuration is correct.
 
-## 总结
+## Summary
 
-### ✅ 推荐的配置方式
+### ✅ Recommended Configuration Approach
 
-1. 在 `tsconfig.json` 中配置 `jsx` 和 `jsxImportSource`
-2. 在 `compilerOptions.types` 中显式引用 `@wsxjs/wsx-core`
-3. 让 TypeScript 通过 `node_modules` 自动解析类型定义
-4. 保持 `global.d.ts` 简洁，只放模块声明和项目特定类型
-5. 避免使用三斜线指令和相对路径
+1. Configure `jsx` and `jsxImportSource` in `tsconfig.json`
+2. Explicitly reference `@wsxjs/wsx-core` in `compilerOptions.types`
+3. Let TypeScript automatically resolve type definitions through `node_modules`
+4. Keep `global.d.ts` concise, only put module declarations and project-specific types
+5. Avoid using triple-slash directives and relative paths
 
-### ❌ 避免的做法
+### ❌ Practices to Avoid
 
-1. 使用三斜线指令引用类型
-2. 在 `include` 中使用 monorepo 相对路径
-3. 手动导入类型定义文件
-4. 在多个地方重复声明类型引用
+1. Using triple-slash directives to reference types
+2. Using monorepo relative paths in `include`
+3. Manually importing type definition files
+4. Repeating type references in multiple places
 
-### 📚 相关文档
+### 📚 Related Documentation
 
-- [快速开始指南](./getting-started.md) - 5分钟上手 WSXJS
-- [JSX 支持详解](../core-concepts/jsx-support.md) - 完整的 JSX 语法和特性
-- [Vite 插件文档](../packages/vite-plugin/README.md) - Vite 集成配置
-- [ESLint 插件文档](../packages/eslint-plugin/README.md) - 代码质量检查
+- [Quick Start Guide](./getting-started.md) - Get started with WSXJS in 5 minutes
+- [JSX Support Details](../core-concepts/jsx-support.md) - Complete JSX syntax and features
+- [Vite Plugin Documentation](../packages/vite-plugin/README.md) - Vite integration configuration
+- [ESLint Plugin Documentation](../packages/eslint-plugin/README.md) - Code quality checking
 
 ---
 
-**需要帮助？** 如果遇到配置问题，请查看 [常见问题](#常见问题) 章节或在 [GitHub Issues](https://github.com/wsxjs/wsxjs/issues) 提问。
+**Need help?** If you encounter configuration issues, please check the [Common Issues](#common-issues) section or ask questions on [GitHub Issues](https://github.com/wsxjs/wsxjs/issues).

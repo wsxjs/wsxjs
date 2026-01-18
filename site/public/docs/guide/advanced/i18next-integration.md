@@ -1,23 +1,23 @@
 ---
-title: @wsxjs/wsx-i18next 使用指南
+title: @wsxjs/wsx-i18next Usage Guide
 order: 3
 category: guide/advanced
-description: "@wsxjs/wsx-i18next 为 WSXJS 组件提供 i18next 国际化支持，让您的应用轻松支持多语言"
+description: "@wsxjs/wsx-i18next provides i18next internationalization support for WSXJS components, making it easy for your application to support multiple languages"
 ---
 
-`@wsxjs/wsx-i18next` 为 WSXJS 组件提供 i18next 国际化支持，让您的应用轻松支持多语言。
+`@wsxjs/wsx-i18next` provides i18next internationalization support for WSXJS components, making it easy for your application to support multiple languages.
 
-## 安装
+## Installation
 
 ```bash
 npm install @wsxjs/wsx-i18next i18next
 ```
 
-## 前置要求
+## Prerequisites
 
-使用 `@i18n` 装饰器需要以下配置：
+Using the `@i18n` decorator requires the following configuration:
 
-### TypeScript 配置
+### TypeScript Configuration
 
 ```json
 {
@@ -28,7 +28,7 @@ npm install @wsxjs/wsx-i18next i18next
 }
 ```
 
-### Vite 配置（必需）
+### Vite Configuration (Required)
 
 ```typescript
 import { defineConfig } from 'vite';
@@ -39,21 +39,21 @@ export default defineConfig({
 });
 ```
 
-> ⚠️ **关键**：`@wsxjs/wsx-vite-plugin` 是**必需的**，它包含处理装饰器的 Babel 插件。
+> ⚠️ **Critical**: `@wsxjs/wsx-vite-plugin` is **required**, it contains the Babel plugin for processing decorators.
 > 
-> **为什么需要这个插件？**
+> **Why is this plugin needed?**
 > 
-> `@i18n` 装饰器返回一个新类（`I18nEnhanced`），而不是修改原类。Babel 的装饰器转换（`@babel/plugin-proposal-decorators`）必须正确配置才能处理这种情况。
+> The `@i18n` decorator returns a new class (`I18nEnhanced`), rather than modifying the original class. Babel's decorator transformation (`@babel/plugin-proposal-decorators`) must be correctly configured to handle this case.
 > 
-> `@wsxjs/wsx-vite-plugin` 内部配置了正确的 Babel 插件链，确保装饰器被正确转换。如果没有配置此插件，装饰器可能不会被正确应用，导致 `this.t is not a function` 错误。
+> `@wsxjs/wsx-vite-plugin` internally configures the correct Babel plugin chain, ensuring decorators are correctly transformed. Without configuring this plugin, decorators may not be correctly applied, causing `this.t is not a function` errors.
 > 
-> **参考**：WSXJS 官方 site（`site/vite.config.ts`）中正确配置了此插件，所以装饰器在那里可以正常工作。
+> **Reference**: WSXJS official site (`site/vite.config.ts`) correctly configures this plugin, so decorators work there.
 
-## 快速开始
+## Quick Start
 
-### 1. 初始化 i18n
+### 1. Initialize i18n
 
-在应用入口文件中初始化 i18next：
+Initialize i18next in the application entry file:
 
 ```typescript
 import { initI18n } from '@wsxjs/wsx-i18next';
@@ -77,9 +77,9 @@ initI18n({
 });
 ```
 
-### 2. 使用装饰器（推荐）
+### 2. Use Decorator (Recommended)
 
-最简单的方式是使用 `@i18n` 装饰器，它会自动为组件注入翻译功能：
+The simplest way is to use the `@i18n` decorator, which automatically injects translation functionality into components:
 
 ```tsx
 /** @jsxImportSource @wsxjs/wsx-core */
@@ -100,14 +100,14 @@ export class MyComponent extends WebComponent {
 }
 ```
 
-**特点**：
-- ✅ 自动订阅语言变化并触发重渲染
-- ✅ 自动清理订阅（组件断开时）
-- ✅ 类型安全（通过类型声明扩展）
+**Features**:
+- ✅ Automatically subscribes to language changes and triggers re-render
+- ✅ Automatically cleans up subscriptions (when component disconnects)
+- ✅ Type safe (through type declaration extensions)
 
-### 3. 使用 useTranslation + @state
+### 3. Use useTranslation + @state
 
-如果您需要更多控制，可以使用 `useTranslation` 配合 `@state`：
+If you need more control, you can use `useTranslation` with `@state`:
 
 ```tsx
 /** @jsxImportSource @wsxjs/wsx-core */
@@ -121,15 +121,15 @@ export class MyComponent extends LightComponent {
     private unsubscribe?: () => void;
 
     protected onConnected(): void {
-        // 订阅语言变化事件
+        // Subscribe to language change events
         this.unsubscribe = i18n.on('languageChanged', (lng) => {
             this.currentLang = lng;
-            this.rerender(); // 手动触发重渲染
+            this.rerender(); // Manually trigger re-render
         });
     }
 
     protected onDisconnected(): void {
-        // 清理订阅
+        // Clean up subscriptions
         if (this.unsubscribe) {
             this.unsubscribe();
         }
@@ -138,7 +138,7 @@ export class MyComponent extends LightComponent {
     render() {
         return (
             <div>
-                <p>当前语言: {this.currentLang}</p>
+                <p>Current language: {this.currentLang}</p>
                 <p>{this.translation.t('hello')}</p>
             </div>
         );
@@ -146,9 +146,9 @@ export class MyComponent extends LightComponent {
 }
 ```
 
-### 4. 使用 Mixin
+### 4. Use Mixin
 
-使用 `withI18n` mixin 为基类添加 i18n 支持：
+Use `withI18n` mixin to add i18n support to base class:
 
 ```tsx
 /** @jsxImportSource @wsxjs/wsx-core */
@@ -163,16 +163,16 @@ export class MyComponent extends withI18n(WebComponent, 'common') {
 }
 ```
 
-## 配置选项
+## Configuration Options
 
-### 基本配置
+### Basic Configuration
 
 ```typescript
 import { initI18n } from '@wsxjs/wsx-i18next';
 
 initI18n({
-    fallbackLng: 'en', // 回退语言
-    debug: false,      // 是否开启调试模式
+    fallbackLng: 'en', // Fallback language
+    debug: false,      // Whether to enable debug mode
     resources: {
         en: {
             common: { /* ... */ },
@@ -186,9 +186,9 @@ initI18n({
 });
 ```
 
-### 使用 HTTP Backend（推荐）
+### Using HTTP Backend (Recommended)
 
-从服务器加载翻译文件：
+Load translation files from server:
 
 ```typescript
 import { initI18n } from '@wsxjs/wsx-i18next';
@@ -198,12 +198,12 @@ initI18n({
     backend: {
         loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
-    ns: ['common', 'home', 'examples'], // 命名空间列表
+    ns: ['common', 'home', 'examples'], // Namespace list
     defaultNS: 'common',
 });
 ```
 
-**文件结构**：
+**File Structure**:
 ```
 public/
 └── locales/
@@ -217,30 +217,30 @@ public/
         └── examples.json
 ```
 
-### 语言检测
+### Language Detection
 
-`@wsxjs/wsx-i18next` 默认集成了 `i18next-browser-languagedetector`，会自动检测浏览器语言：
+`@wsxjs/wsx-i18next` integrates `i18next-browser-languagedetector` by default, automatically detects browser language:
 
 ```typescript
 initI18n({
     fallbackLng: 'en',
-    // 语言检测会自动启用
-    // 检测顺序：localStorage -> navigator -> cookie -> querystring -> htmlTag
+    // Language detection is automatically enabled
+    // Detection order: localStorage -> navigator -> cookie -> querystring -> htmlTag
 });
 ```
 
-## API 参考
+## API Reference
 
 ### initI18n(config?)
 
-初始化 i18next 实例。
+Initialize i18next instance.
 
-**参数**：
-- `config` (可选): i18next 配置选项
+**Parameters**:
+- `config` (optional): i18next configuration options
 
-**返回**：i18n 实例
+**Returns**: i18n instance
 
-**示例**：
+**Example**:
 ```typescript
 const i18n = initI18n({
     fallbackLng: 'en',
@@ -250,16 +250,16 @@ const i18n = initI18n({
 
 ### @i18n(namespace?)
 
-类装饰器，为组件自动注入翻译功能。
+Class decorator that automatically injects translation functionality into components.
 
-**参数**：
-- `namespace` (可选): 默认命名空间，默认为 `'common'`
+**Parameters**:
+- `namespace` (optional): Default namespace, defaults to `'common'`
 
-**注入的方法**：
-- `this.t(key, options?)`: 翻译函数
-- `this.i18n`: i18n 实例
+**Injected Methods**:
+- `this.t(key, options?)`: Translation function
+- `this.i18n`: i18n instance
 
-**示例**：
+**Example**:
 ```tsx
 @i18n('common')
 export class MyComponent extends WebComponent {
@@ -271,12 +271,12 @@ export class MyComponent extends WebComponent {
 
 ### useTranslation(namespace?)
 
-创建翻译对象，API 与 `react-i18next` 兼容。
+Create translation object, API compatible with `react-i18next`.
 
-**参数**：
-- `namespace` (可选): 命名空间，默认为 `'common'`
+**Parameters**:
+- `namespace` (optional): Namespace, defaults to `'common'`
 
-**返回**：
+**Returns**:
 ```typescript
 {
     t: (key: string, options?: object) => string;
@@ -285,7 +285,7 @@ export class MyComponent extends WebComponent {
 }
 ```
 
-**示例**：
+**Example**:
 ```typescript
 const translation = useTranslation('common');
 const text = translation.t('hello');
@@ -293,15 +293,15 @@ const text = translation.t('hello');
 
 ### withI18n(Base, defaultNamespace?)
 
-为基类添加 i18n 支持的 mixin。
+Mixin that adds i18n support to base class.
 
-**参数**：
-- `Base`: 基类（`WebComponent` 或 `LightComponent`）
-- `defaultNamespace` (可选): 默认命名空间，默认为 `'common'`
+**Parameters**:
+- `Base`: Base class (`WebComponent` or `LightComponent`)
+- `defaultNamespace` (optional): Default namespace, defaults to `'common'`
 
-**返回**：增强后的类
+**Returns**: Enhanced class
 
-**示例**：
+**Example**:
 ```tsx
 export class MyComponent extends withI18n(WebComponent, 'common') {
     render() {
@@ -310,57 +310,57 @@ export class MyComponent extends withI18n(WebComponent, 'common') {
 }
 ```
 
-## 响应式机制
+## Reactive Mechanism
 
-不同的使用方式有不同的响应式机制：
+Different usage methods have different reactive mechanisms:
 
-### @i18n 装饰器
+### @i18n Decorator
 
-- ✅ **自动订阅**：组件连接时自动订阅 `languageChanged` 事件
-- ✅ **自动重渲染**：语言变化时自动调用 `rerender()`
-- ✅ **自动清理**：组件断开时自动取消订阅
+- ✅ **Auto Subscribe**: Automatically subscribes to `languageChanged` event when component connects
+- ✅ **Auto Re-render**: Automatically calls `rerender()` when language changes
+- ✅ **Auto Cleanup**: Automatically cancels subscription when component disconnects
 
 ### useTranslation + @state
 
-- ⚠️ **手动订阅**：需要在 `onConnected()` 中手动订阅
-- ⚠️ **手动重渲染**：需要手动调用 `rerender()` 或更新 `@state` 属性
-- ⚠️ **手动清理**：需要在 `onDisconnected()` 中手动取消订阅
+- ⚠️ **Manual Subscribe**: Need to manually subscribe in `onConnected()`
+- ⚠️ **Manual Re-render**: Need to manually call `rerender()` or update `@state` property
+- ⚠️ **Manual Cleanup**: Need to manually cancel subscription in `onDisconnected()`
 
 ### withI18n Mixin
 
-- ✅ **自动订阅**：组件连接时自动订阅 `languageChanged` 事件
-- ✅ **自动重渲染**：语言变化时自动调用 `rerender()`
-- ✅ **自动清理**：组件断开时自动取消订阅
+- ✅ **Auto Subscribe**: Automatically subscribes to `languageChanged` event when component connects
+- ✅ **Auto Re-render**: Automatically calls `rerender()` when language changes
+- ✅ **Auto Cleanup**: Automatically cancels subscription when component disconnects
 
-## 切换语言
+## Switching Languages
 
 ```typescript
 import { i18n } from '@wsxjs/wsx-i18next';
 
-// 切换语言
+// Switch language
 i18n.changeLanguage('zh');
 
-// 获取当前语言
+// Get current language
 const currentLang = i18n.language;
 
-// 监听语言变化
+// Listen to language changes
 i18n.on('languageChanged', (lng) => {
     console.log('Language changed to:', lng);
 });
 ```
 
-## 插值（Interpolation）
+## Interpolation
 
-支持变量插值：
+Supports variable interpolation:
 
 ```typescript
-// 翻译资源
+// Translation resources
 {
     welcome: 'Welcome, {{name}}!',
     items: 'You have {{count}} items',
 }
 
-// 使用
+// Usage
 this.t('welcome', { name: 'World' });
 // => "Welcome, World!"
 
@@ -368,18 +368,18 @@ this.t('items', { count: 5 });
 // => "You have 5 items"
 ```
 
-## 复数形式
+## Plural Forms
 
-支持复数形式：
+Supports plural forms:
 
 ```typescript
-// 翻译资源
+// Translation resources
 {
     items: '{{count}} item',
     items_plural: '{{count}} items',
 }
 
-// 使用
+// Usage
 this.t('items', { count: 1 });
 // => "1 item"
 
@@ -387,32 +387,32 @@ this.t('items', { count: 5 });
 // => "5 items"
 ```
 
-## 命名空间
+## Namespaces
 
-使用命名空间组织翻译：
+Use namespaces to organize translations:
 
 ```typescript
-// 初始化时定义命名空间
+// Define namespaces during initialization
 initI18n({
     ns: ['common', 'home', 'examples'],
     defaultNS: 'common',
 });
 
-// 使用不同命名空间
+// Use different namespaces
 @i18n('home')
 export class HomeComponent extends WebComponent {
     render() {
-        return <div>{this.t('title')}</div>; // 使用 'home' 命名空间
+        return <div>{this.t('title')}</div>; // Uses 'home' namespace
     }
 }
 
-// 临时使用其他命名空间
+// Temporarily use other namespace
 this.t('title', { ns: 'examples' });
 ```
 
-## 类型安全
+## Type Safety
 
-为了获得完整的类型支持，需要添加类型声明：
+To get complete type support, add type declarations:
 
 ```typescript
 // types/i18n.d.ts
@@ -427,11 +427,11 @@ declare module '@wsxjs/wsx-core' {
 }
 ```
 
-## 最佳实践
+## Best Practices
 
-### 1. 使用装饰器（推荐）
+### 1. Use Decorator (Recommended)
 
-对于大多数场景，使用 `@i18n` 装饰器是最简单的方式：
+For most scenarios, using the `@i18n` decorator is the simplest way:
 
 ```tsx
 @i18n('common')
@@ -442,29 +442,29 @@ export class MyComponent extends WebComponent {
 }
 ```
 
-### 2. 组织翻译文件
+### 2. Organize Translation Files
 
-按功能模块组织翻译文件：
+Organize translation files by feature module:
 
 ```
 locales/
 ├── en/
-│   ├── common.json      # 通用翻译
-│   ├── home.json        # 首页翻译
-│   └── examples.json    # 示例翻译
+│   ├── common.json      # Common translations
+│   ├── home.json        # Home page translations
+│   └── examples.json    # Example translations
 └── zh/
     ├── common.json
     ├── home.json
     └── examples.json
 ```
 
-### 3. 使用 HTTP Backend
+### 3. Use HTTP Backend
 
-对于大型应用，使用 HTTP Backend 从服务器加载翻译文件，而不是内联在代码中。
+For large applications, use HTTP Backend to load translation files from server, rather than inlining in code.
 
-### 4. 语言切换组件
+### 4. Language Switcher Component
 
-创建一个语言切换组件：
+Create a language switcher component:
 
 ```tsx
 /** @jsxImportSource @wsxjs/wsx-core */
@@ -507,33 +507,33 @@ export class LanguageSwitcher extends LightComponent {
 }
 ```
 
-## 故障排查
+## Troubleshooting
 
-### `this.t is not a function` 运行时错误
+### `this.t is not a function` Runtime Error
 
-如果遇到 `TypeError: this.t is not a function` 错误，说明装饰器没有被正确应用。
+If you encounter `TypeError: this.t is not a function` error, it means the decorator was not correctly applied.
 
-**根本原因**：
+**Root Cause**:
 
-`@i18n` 装饰器返回一个新类（`I18nEnhanced`），而不是修改原类。Babel 的装饰器转换（`@babel/plugin-proposal-decorators`）必须正确配置才能处理这种情况。
+The `@i18n` decorator returns a new class (`I18nEnhanced`), rather than modifying the original class. Babel's decorator transformation (`@babel/plugin-proposal-decorators`) must be correctly configured to handle this case.
 
-**可能的原因和解决方案**：
+**Possible Causes and Solutions**:
 
-1. **缺少 Vite 插件配置（最常见）**：
-   - ⚠️ **这是最常见的原因**：`@i18n` 装饰器**必须**通过 `@wsxjs/wsx-vite-plugin` 中的 Babel 插件处理
-   - 确保在 `vite.config.ts` 中配置了 `@wsxjs/wsx-vite-plugin`：
+1. **Missing Vite Plugin Configuration (Most Common)**:
+   - ⚠️ **This is the most common cause**: The `@i18n` decorator **must** be processed through the Babel plugin in `@wsxjs/wsx-vite-plugin`
+   - Ensure `@wsxjs/wsx-vite-plugin` is configured in `vite.config.ts`:
      ```typescript
      import { defineConfig } from 'vite';
      import { wsx } from '@wsxjs/wsx-vite-plugin';
      
      export default defineConfig({
-       plugins: [wsx()] // 必需！否则装饰器不会工作
+       plugins: [wsx()] // Required! Otherwise decorators won't work
      });
      ```
-   - 如果没有配置此插件，Babel 的装饰器转换可能无法正确处理返回新类的装饰器
+   - Without configuring this plugin, Babel's decorator transformation may not correctly handle decorators that return new classes
 
-2. **缺少装饰器配置**：
-   - 确保 `tsconfig.json` 中启用了装饰器：
+2. **Missing Decorator Configuration**:
+   - Ensure decorators are enabled in `tsconfig.json`:
      ```json
      {
        "compilerOptions": {
@@ -543,25 +543,25 @@ export class LanguageSwitcher extends LightComponent {
      }
      ```
 
-3. **装饰器导入错误**：
-   - 确保正确导入装饰器：
+3. **Incorrect Decorator Import**:
+   - Ensure decorator is correctly imported:
      ```typescript
      import { i18n } from '@wsxjs/wsx-i18next';
-     // 不是 import { i18nDecorator } from '@wsxjs/wsx-i18next';
+     // Not import { i18nDecorator } from '@wsxjs/wsx-i18next';
      ```
 
-4. **检查装饰器是否被应用**：
-   - 在浏览器控制台中检查组件实例：
+4. **Check if Decorator is Applied**:
+   - Check component instance in browser console:
      ```javascript
      const component = document.querySelector('my-component');
-     console.log(component.t); // 应该是 function
-     console.log(component.constructor.name); // 应该是组件类名
+     console.log(component.t); // Should be function
+     console.log(component.constructor.name); // Should be component class name
      ```
-   - 如果 `component.t` 是 `undefined`，说明装饰器没有被应用
+   - If `component.t` is `undefined`, the decorator was not applied
 
-5. **验证 Babel 配置**：
-   - 检查构建输出，确认装饰器被正确转换
-   - 如果使用其他构建工具（如 Webpack），需要确保配置了相应的 Babel 插件：
+5. **Verify Babel Configuration**:
+   - Check build output, confirm decorators are correctly transformed
+   - If using other build tools (like Webpack), ensure corresponding Babel plugin is configured:
      ```javascript
      // babel.config.js
      {
@@ -574,8 +574,8 @@ export class LanguageSwitcher extends LightComponent {
      }
      ```
 
-6. **使用替代方案**：
-   - 如果装饰器仍然不工作，可以使用 `withI18n` mixin（不依赖装饰器转换）：
+6. **Use Alternative Solution**:
+   - If decorators still don't work, you can use `withI18n` mixin (doesn't depend on decorator transformation):
      ```tsx
      import { withI18n } from '@wsxjs/wsx-i18next';
      
@@ -585,21 +585,21 @@ export class LanguageSwitcher extends LightComponent {
          }
      }
      ```
-   - `withI18n` 使用类继承，不依赖装饰器转换，在所有环境中都能工作
+   - `withI18n` uses class inheritance, doesn't depend on decorator transformation, works in all environments
 
-### 翻译不更新
+### Translations Not Updating
 
-确保组件正确订阅了语言变化事件：
+Ensure components correctly subscribe to language change events:
 
-- 使用 `@i18n` 装饰器：自动处理
-- 使用 `useTranslation`：需要手动订阅 `languageChanged` 事件
-- 使用 `withI18n`：自动处理
+- Using `@i18n` decorator: Automatically handled
+- Using `useTranslation`: Need to manually subscribe to `languageChanged` event
+- Using `withI18n`: Automatically handled
 
-### 类型错误
+### Type Errors
 
-确保添加了类型声明文件（见"类型安全"部分）。
+Ensure type declaration file is added (see "Type Safety" section).
 
-如果类型声明不工作，可以手动创建：
+If type declarations don't work, you can manually create:
 
 ```typescript
 // types/i18n.d.ts
@@ -616,15 +616,14 @@ declare module '@wsxjs/wsx-core' {
 }
 ```
 
-### 翻译键不存在
+### Translation Key Not Found
 
-检查：
-1. 翻译资源是否正确加载
-2. 命名空间是否正确
-3. 翻译键是否正确
+Check:
+1. Are translation resources correctly loaded
+2. Is namespace correct
+3. Is translation key correct
 
-## 更多信息
+## More Information
 
-- [RFC-0029: i18next 国际化支持](../../../docs/rfcs/completed/0029-i18next-integration.md) - 完整的设计文档
-- [i18next 官方文档](https://www.i18next.com/) - i18next 的完整文档
-
+- [RFC-0029: i18next Internationalization Support](../../../docs/rfcs/completed/0029-i18next-integration.md) - Complete design documentation
+- [i18next Official Documentation](https://www.i18next.com/) - Complete i18next documentation

@@ -109,3 +109,17 @@ export function renderInlineTokens(tokens: Tokens.Generic[] | undefined): string
         })
         .join("");
 }
+
+/**
+ * Generate a clean ID from text
+ * Matches the logic in wsx-press TOC generation
+ * 保留中文等 Unicode 字符，只移除特殊符号
+ */
+export function generateId(text: string): string {
+    return text
+        .toLowerCase()
+        .replace(/\s+/g, "-") // 空格转连字符
+        .replace(/[^\p{L}\p{N}-]/gu, "") // 保留字母、数字、连字符（Unicode-aware）
+        .replace(/-+/g, "-") // 合并多个连字符
+        .replace(/^-+|-+$/g, ""); // 移除首尾连字符
+}

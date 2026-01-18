@@ -46,8 +46,8 @@
         "@semantic-release/exec": "^7.1.0",
         "@semantic-release/git": "^10.0.1",
         "@semantic-release/github": "^11.0.3",
-        "@systembug/pangu": "^0.0.8",
-        "@systembug/qingniao": "^0.0.8",
+        "@systembug/pangu": "^0.0.10",
+        "@systembug/qingniao": "^0.0.10",
         "@testing-library/jest-dom": "^6.6.3",
         "@types/jest": "^29.5.14",
         "@types/node": "^20.0.0",
@@ -98,6 +98,9 @@
     "pnpm": {
         "overrides": {
             "esbuild": "0.25.6"
-        }
+        },
+        "onlyBuiltDependencies": [
+            "esbuild"
+        ]
     }
 }

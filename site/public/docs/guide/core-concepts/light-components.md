@@ -1,53 +1,53 @@
 ---
-title: LightComponent 使用指南
+title: LightComponent Usage Guide
 order: 2
 category: guide/core-concepts
-description: "LightComponent 是 WSXJS 提供的轻量级自定义元素基类，专为需要与第三方库集成或使用 Light DOM 的场景设计"
+description: "LightComponent is a lightweight custom element base class provided by WSXJS, designed for scenarios that require integration with third-party libraries or use Light DOM"
 ---
 
-## 概述
+## Overview
 
-`LightComponent` 是 WSXJS 提供的轻量级自定义元素基类，专为需要与第三方库集成或使用 Light DOM 的场景设计。它直接继承 `HTMLElement`，不使用 Shadow DOM，同时提供了完整的响应式状态管理和 JSX 支持。
+`LightComponent` is a lightweight custom element base class provided by WSXJS, designed for scenarios that require integration with third-party libraries or use Light DOM. It directly inherits from `HTMLElement`, does not use Shadow DOM, and provides complete reactive state management and JSX support.
 
-## 为什么使用 LightComponent？
+## Why Use LightComponent?
 
-### 适用场景
+### Use Cases
 
-1. **第三方库集成**
-   - 需要与 EditorJS、Chart.js 等库集成
-   - 库需要直接访问 DOM 元素
-   - 库使用 `document.querySelector` 查找元素
+1. **Third-party Library Integration**
+   - Integration with libraries like EditorJS, Chart.js, etc.
+   - Libraries need direct access to DOM elements
+   - Libraries use `document.querySelector` to find elements
 
-2. **路由和布局组件**
-   - 容器组件需要全局 DOM 访问
-   - 需要事件冒泡到文档级别
-   - 需要与外部样式系统集成
+2. **Routing and Layout Components**
+   - Container components need global DOM access
+   - Need event bubbling to document level
+   - Need integration with external styling systems
 
-3. **简单组件**
-   - 不需要样式隔离的简单组件
-   - 需要更轻量级的实现
+3. **Simple Components**
+   - Simple components that don't need style isolation
+   - Need a more lightweight implementation
 
-### 不适用场景
+### Not Suitable For
 
-- 需要样式隔离的 UI 组件（使用 `WebComponent`）
+- UI components that need style isolation (use `WebComponent`)
 
-## 快速开始
+## Quick Start
 
-### 基础用法
+### Basic Usage
 
-**方式 1: 自动 CSS 注入（推荐）**
+**Method 1: Automatic CSS Injection (Recommended)**
 
-如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动注入 CSS，无需手动导入：
+If a component file `MyComponent.wsx` has a corresponding `MyComponent.css` file, the Babel plugin will automatically inject CSS without manual import:
 
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
-// CSS 自动注入：如果 MyComponent.css 存在，会自动导入并注入为 _autoStyles
+// CSS auto-injection: If MyComponent.css exists, it will be automatically imported and injected as _autoStyles
 
 @autoRegister()
 export class MyComponent extends LightComponent {
   constructor() {
     super({
-      styleName: 'my-component', // 只需要指定 styleName
+      styleName: 'my-component', // Only need to specify styleName
     });
   }
 
@@ -61,9 +61,9 @@ export class MyComponent extends LightComponent {
 }
 ```
 
-**方式 2: 手动导入 CSS（可选）**
+**Method 2: Manual CSS Import (Optional)**
 
-如果需要手动控制，也可以显式导入：
+If you need manual control, you can also explicitly import:
 
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
@@ -88,22 +88,22 @@ export class MyComponent extends LightComponent {
 }
 ```
 
-**注意**：如果手动导入了 CSS，Babel 插件会检测到并跳过自动注入，避免重复。
+**Note**: If CSS is manually imported, the Babel plugin will detect it and skip automatic injection to avoid duplication.
 
-### 使用响应式状态
+### Using Reactive State
 
-`LightComponent` 完全支持响应式状态管理，提供了三种方式：
+`LightComponent` fully supports reactive state management with three approaches:
 
-#### 方式 1: 使用 @state 装饰器（推荐）
+#### Method 1: Using @state Decorator (Recommended)
 
-使用 `@state` 装饰器是最简洁的方式，Babel 插件会在编译时自动处理：
+Using the `@state` decorator is the most concise way, and the Babel plugin will automatically handle it at compile time:
 
 ```tsx
 import { LightComponent, autoRegister, state } from '@wsxjs/wsx-core';
 
 @autoRegister()
 export class Counter extends LightComponent {
-  // ✅ 使用 @state 装饰器（必须有初始值）
+  // ✅ Using @state decorator (must have initial value)
   @state private count = 0;
   @state private name = "";
   @state private user = { name: "John", age: 30 };
@@ -125,37 +125,37 @@ export class Counter extends LightComponent {
 }
 ```
 
-**重要提示**：
-- ⚠️ `@state` 装饰器的属性**必须有初始值**
-- ✅ ESLint 规则 `wsx/state-requires-initial-value` 会在开发时检查
-- ✅ Babel 插件会在构建时验证，缺少初始值会导致构建失败
-- 📖 查看 [RFC-0013](../rfcs/completed/0013-state-initial-value-validation.md) 了解详细说明
+**Important Notes**:
+- ⚠️ Properties with `@state` decorator **must have initial values**
+- ✅ ESLint rule `wsx/state-requires-initial-value` will check during development
+- ✅ Babel plugin will validate at build time, missing initial values will cause build failure
+- 📖 See [RFC-0013](../rfcs/completed/0013-state-initial-value-validation.md) for detailed explanation
 
-**有效示例**：
+**Valid Examples**:
 ```tsx
-@state private count = 0;           // ✅ 数字
-@state private name = "";           // ✅ 字符串
-@state private enabled = false;     // ✅ 布尔值
-@state private user = {};           // ✅ 对象
-@state private items = [];          // ✅ 数组
-@state private optional: string | undefined = undefined; // ✅ 可选类型（显式 undefined）
+@state private count = 0;           // ✅ Number
+@state private name = "";           // ✅ String
+@state private enabled = false;     // ✅ Boolean
+@state private user = {};           // ✅ Object
+@state private items = [];          // ✅ Array
+@state private optional: string | undefined = undefined; // ✅ Optional type (explicit undefined)
 ```
 
-**无效示例**（会被 ESLint 和 Babel 检测）：
+**Invalid Examples** (will be detected by ESLint and Babel):
 ```tsx
-@state private count;               // ❌ 缺少初始值
-@state private name;                 // ❌ 缺少初始值
-@state private user;                 // ❌ 缺少初始值
+@state private count;               // ❌ Missing initial value
+@state private name;                 // ❌ Missing initial value
+@state private user;                 // ❌ Missing initial value
 ```
 
-#### 方式 2: 使用 reactive() 方法
+#### Method 2: Using reactive() Method
 
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
 
 @autoRegister()
 export class Counter extends LightComponent {
-  // 使用 reactive() 创建响应式对象
+  // Use reactive() to create reactive object
   private state = this.reactive({ count: 0 });
 
   render() {
@@ -171,14 +171,14 @@ export class Counter extends LightComponent {
 }
 ```
 
-#### 方式 3: 使用 useState Hook
+#### Method 3: Using useState Hook
 
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
 
 @autoRegister()
 export class TodoList extends LightComponent {
-  // 使用 useState 创建响应式状态
+  // Use useState to create reactive state
   private [todos, setTodos] = this.useState('todos', []);
 
   addTodo(text: string) {
@@ -199,11 +199,11 @@ export class TodoList extends LightComponent {
 }
 ```
 
-## 核心特性
+## Core Features
 
-### 1. JSX 支持
+### 1. JSX Support
 
-`LightComponent` 完全支持 JSX 语法，编译为原生 DOM 操作：
+`LightComponent` fully supports JSX syntax, compiled to native DOM operations:
 
 ```tsx
 render() {
@@ -217,47 +217,47 @@ render() {
 }
 ```
 
-### 2. 响应式状态管理
+### 2. Reactive State Management
 
-`LightComponent` 支持三种响应式状态管理方式：
+`LightComponent` supports three reactive state management approaches:
 
-#### @state 装饰器（推荐）
+#### @state Decorator (Recommended)
 
-使用 `@state` 装饰器是最简洁的方式，Babel 插件会在编译时自动处理：
+Using the `@state` decorator is the most concise way, and the Babel plugin will automatically handle it at compile time:
 
 ```tsx
 import { state } from '@wsxjs/wsx-core';
 
 export class MyComponent extends LightComponent {
-  // Primitive 类型：使用 useState
+  // Primitive types: use useState
   @state private count = 0;
   @state private name = "";
   
-  // Object/Array 类型：使用 reactive
+  // Object/Array types: use reactive
   @state private user = { name: "John", age: 30 };
   @state private items: string[] = [];
   
   render() {
-    // 直接使用，无需 this.state.xxx
+    // Use directly, no need for this.state.xxx
     return <div>{this.count} - {this.name}</div>;
   }
 }
 ```
 
-**关键要求**：
-- ⚠️ **必须有初始值**：`@state` 装饰器的属性必须提供初始值
-- ✅ **自动类型判断**：Babel 插件根据初始值自动选择 `useState`（primitive）或 `reactive`（object/array）
-- ✅ **编译时验证**：缺少初始值会导致构建失败
-- ✅ **开发时检查**：ESLint 规则会在编辑器中实时提示
+**Key Requirements**:
+- ⚠️ **Must have initial value**: Properties with `@state` decorator must provide initial values
+- ✅ **Automatic type detection**: Babel plugin automatically chooses `useState` (primitive) or `reactive` (object/array) based on initial value
+- ✅ **Compile-time validation**: Missing initial values will cause build failure
+- ✅ **Development-time checking**: ESLint rules will provide real-time hints in the editor
 
-**为什么需要初始值？**
-1. Babel 插件需要初始值来判断属性类型（primitive vs object/array）
-2. 需要从 AST 中提取初始值，生成构造函数中的初始化代码
-3. 确保状态有明确的类型，避免运行时错误
+**Why is an initial value required?**
+1. Babel plugin needs initial value to determine property type (primitive vs object/array)
+2. Need to extract initial value from AST to generate initialization code in constructor
+3. Ensure state has explicit type to avoid runtime errors
 
-#### reactive() 方法
+#### reactive() Method
 
-创建响应式对象，属性变化时自动触发重渲染：
+Create reactive object that automatically triggers re-render when properties change:
 
 ```tsx
 private state = this.reactive({ 
@@ -265,43 +265,43 @@ private state = this.reactive({
   name: 'WSX'
 });
 
-// 修改属性会自动触发重渲染
+// Modifying properties automatically triggers re-render
 this.state.count++;
 this.state.name = 'New Name';
 ```
 
-#### useState() 方法
+#### useState() Method
 
-创建单个响应式状态值：
+Create a single reactive state value:
 
 ```tsx
 private [count, setCount] = this.useState('count', 0);
 
-// 使用
-count();        // 获取值
-setCount(10);   // 设置值
-setCount(prev => prev + 1); // 函数式更新
+// Usage
+count();        // Get value
+setCount(10);   // Set value
+setCount(prev => prev + 1); // Functional update
 ```
 
-### 3. 生命周期钩子
+### 3. Lifecycle Hooks
 
 ```tsx
 export class MyComponent extends LightComponent {
-  // 组件连接到 DOM 后调用
+  // Called after component is connected to DOM
   protected onConnected() {
     console.log('Component connected');
-    // 初始化第三方库
+    // Initialize third-party library
     this.initEditor();
   }
 
-  // 组件从 DOM 断开后调用
+  // Called after component is disconnected from DOM
   protected onDisconnected() {
     console.log('Component disconnected');
-    // 清理资源
+    // Cleanup resources
     this.cleanup();
   }
 
-  // 属性变化时调用
+  // Called when attributes change
   protected onAttributeChanged(name: string, oldValue: string, newValue: string) {
     if (name === 'data') {
       this.handleDataChange(newValue);
@@ -310,28 +310,28 @@ export class MyComponent extends LightComponent {
 }
 ```
 
-### 4. 样式管理
+### 4. Style Management
 
-#### 自动 CSS 注入（推荐）
+#### Automatic CSS Injection (Recommended)
 
-WSXJS 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
+WSXJS provides intelligent CSS auto-injection. If a component file `MyComponent.wsx` has a corresponding `MyComponent.css` file, the Babel plugin will automatically:
 
-1. 自动导入 CSS 文件：`import styles from "./MyComponent.css?inline";`
-2. 自动注入为类属性：`private _autoStyles = styles;`
-3. 自动应用样式：基类会自动检测并使用 `_autoStyles`
+1. Auto-import CSS file: `import styles from "./MyComponent.css?inline";`
+2. Auto-inject as class property: `private _autoStyles = styles;`
+3. Auto-apply styles: Base class will automatically detect and use `_autoStyles`
 
-**无需手动导入**：
+**No manual import needed**:
 
 ```tsx
 // MyComponent.wsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
-// CSS 自动注入：如果 MyComponent.css 存在，会自动处理
+// CSS auto-injection: If MyComponent.css exists, it will be automatically handled
 
 @autoRegister()
 export class MyComponent extends LightComponent {
   constructor() {
     super({
-      styleName: 'my-component', // 只需要指定 styleName
+      styleName: 'my-component', // Only need to specify styleName
     });
   }
 
@@ -342,7 +342,7 @@ export class MyComponent extends LightComponent {
 ```
 
 ```css
-/* MyComponent.css - 自动注入 */
+/* MyComponent.css - Auto-injected */
 .my-component {
   padding: 20px;
   background: #f5f5f5;
@@ -352,19 +352,19 @@ export class MyComponent extends LightComponent {
 }
 ```
 
-**手动导入 CSS（可选）**：
+**Manual CSS Import (Optional)**:
 
-如果需要手动控制，也可以显式导入。Babel 插件会检测到手动导入并跳过自动注入：
+If you need manual control, you can also explicitly import. The Babel plugin will detect manual imports and skip auto-injection:
 
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
-import styles from './MyComponent.css?inline'; // 手动导入
+import styles from './MyComponent.css?inline'; // Manual import
 
 @autoRegister()
 export class MyComponent extends LightComponent {
   constructor() {
     super({
-      styles, // 手动传入
+      styles, // Manual pass
       styleName: 'my-component',
     });
   }
@@ -375,28 +375,28 @@ export class MyComponent extends LightComponent {
 }
 ```
 
-#### 作用域样式
+#### Scoped Styles
 
-`LightComponent` 使用作用域样式，通过 data 属性实现样式隔离。样式会被自动注入到组件内部，并使用 `data-wsx-light-component` 属性进行作用域化。
+`LightComponent` uses scoped styles, achieving style isolation through data attributes. Styles are automatically injected into the component and scoped using the `data-wsx-light-component` attribute.
 
-### 5. 错误处理
+### 5. Error Handling
 
-`LightComponent` 内置错误处理机制：
+`LightComponent` has built-in error handling:
 
 ```tsx
 render() {
   try {
     return <div>{/* your content */}</div>;
   } catch (error) {
-    // 错误会被自动捕获并显示友好的错误信息
+    // Errors will be automatically caught and display friendly error messages
     throw error;
   }
 }
 ```
 
-## 实际应用示例
+## Practical Examples
 
-### 示例 1: EditorJS 集成
+### Example 1: EditorJS Integration
 
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
@@ -407,15 +407,15 @@ export class EditorDemo extends LightComponent {
   private editor?: EditorJS;
 
   protected onConnected() {
-    // 在 Light DOM 中，EditorJS 可以正常访问 DOM
+    // In Light DOM, EditorJS can normally access DOM
     this.editor = new EditorJS({
       holder: this.querySelector('#editor'),
-      // EditorJS 配置
+      // EditorJS configuration
     });
   }
 
   protected onDisconnected() {
-    // 清理 EditorJS 实例
+    // Cleanup EditorJS instance
     this.editor?.destroy();
   }
 
@@ -429,7 +429,7 @@ export class EditorDemo extends LightComponent {
 }
 ```
 
-### 示例 2: 路由容器
+### Example 2: Route Container
 
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
@@ -449,7 +449,7 @@ export class WsxRoute extends LightComponent {
   private loadComponent() {
     const componentName = this.getAttribute('component');
     if (componentName) {
-      // 动态加载组件
+      // Dynamically load component
       this.currentComponent = document.createElement(componentName);
       this.rerender();
     }
@@ -465,7 +465,7 @@ export class WsxRoute extends LightComponent {
 }
 ```
 
-### 示例 3: 响应式表单
+### Example 3: Reactive Form
 
 ```tsx
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
@@ -513,11 +513,11 @@ export class FormComponent extends LightComponent {
 }
 ```
 
-## 最佳实践
+## Best Practices
 
-### 1. 样式作用域
+### 1. Style Scoping
 
-使用唯一的 `styleName` 避免样式冲突：
+Use unique `styleName` to avoid style conflicts:
 
 ```tsx
 super({
@@ -526,38 +526,38 @@ super({
 });
 ```
 
-### 2. 第三方库清理
+### 2. Third-party Library Cleanup
 
-在 `onDisconnected` 中清理第三方库资源：
+Clean up third-party library resources in `onDisconnected`:
 
 ```tsx
 protected onDisconnected() {
-  // 清理事件监听器
+  // Clean up event listeners
   this.removeEventListener('click', this.handleClick);
   
-  // 清理第三方库实例
+  // Clean up third-party library instances
   if (this.thirdPartyInstance) {
     this.thirdPartyInstance.destroy();
   }
 }
 ```
 
-### 3. 响应式状态管理
+### 3. Reactive State Management
 
-合理使用响应式状态，避免过度使用：
+Use reactive state appropriately, avoid overuse:
 
 ```tsx
-// ✅ 好：只对需要触发重渲染的数据使用响应式
+// ✅ Good: Only use reactive for data that needs to trigger re-render
 private uiState = this.reactive({ count: 0, visible: true });
-private staticConfig = { maxCount: 100 }; // 不需要响应式
+private staticConfig = { maxCount: 100 }; // No need for reactive
 
-// ❌ 避免：对静态数据使用响应式
+// ❌ Avoid: Using reactive for static data
 private staticData = this.reactive({ apiUrl: 'https://api.example.com' });
 ```
 
-### 4. 属性观察
+### 4. Attribute Observation
 
-使用 `observedAttributes` 观察属性变化：
+Use `observedAttributes` to observe attribute changes:
 
 ```tsx
 static observedAttributes = ['data', 'disabled', 'theme'];
@@ -574,164 +574,164 @@ protected onAttributeChanged(name: string, _old: string, newValue: string) {
 }
 ```
 
-## 组件对比：LightComponent vs WebComponent
+## Component Comparison: LightComponent vs WebComponent
 
-### 核心区别
+### Core Differences
 
-| 特性 | LightComponent | WebComponent |
+| Feature | LightComponent | WebComponent |
 |------|---------------|---------------|
-| **继承关系** | `HTMLElement` | `HTMLElement` |
-| **DOM 类型** | Light DOM | Shadow DOM |
-| **样式隔离** | 作用域样式（data 属性） | 完全隔离（Shadow DOM） |
-| **响应式支持** | ✅ 完整支持 | ✅ 完整支持 |
-| **第三方库集成** | ✅ 完美支持 | ⚠️ 有限支持 |
-| **全局 DOM 访问** | ✅ 支持 | ❌ 受限（Shadow DOM 边界） |
-| **事件冒泡** | ✅ 自然冒泡 | ⚠️ 需要手动转发 |
-| **焦点保持** | ❌ 不支持 | ✅ 支持 |
-| **样式作用域** | 手动管理（BEM/命名规范） | 自动隔离 |
-| **性能** | 更轻量 | 稍重（Shadow DOM 开销） |
+| **Inheritance** | `HTMLElement` | `HTMLElement` |
+| **DOM Type** | Light DOM | Shadow DOM |
+| **Style Isolation** | Scoped styles (data attributes) | Complete isolation (Shadow DOM) |
+| **Reactive Support** | ✅ Full support | ✅ Full support |
+| **Third-party Integration** | ✅ Perfect support | ⚠️ Limited support |
+| **Global DOM Access** | ✅ Supported | ❌ Restricted (Shadow DOM boundary) |
+| **Event Bubbling** | ✅ Natural bubbling | ⚠️ Need manual forwarding |
+| **Focus Retention** | ❌ Not supported | ✅ Supported |
+| **Style Scoping** | Manual management (BEM/naming conventions) | Automatic isolation |
+| **Performance** | Lighter | Slightly heavier (Shadow DOM overhead) |
 
-### 详细对比
+### Detailed Comparison
 
-#### 1. DOM 渲染方式
+#### 1. DOM Rendering
 
 **LightComponent:**
 ```tsx
-// 渲染到 Light DOM（直接到组件内部）
+// Render to Light DOM (directly to component interior)
 render() {
-  return <div>Content</div>; // 直接添加到 this
+  return <div>Content</div>; // Directly added to this
 }
-// DOM 结构: <my-component><div>Content</div></my-component>
+// DOM structure: <my-component><div>Content</div></my-component>
 ```
 
 **WebComponent:**
 ```tsx
-// 渲染到 Shadow DOM
+// Render to Shadow DOM
 render() {
-  return <div>Content</div>; // 添加到 this.shadowRoot
+  return <div>Content</div>; // Added to this.shadowRoot
 }
-// DOM 结构: <my-component>#shadow-root<div>Content</div></my-component>
+// DOM structure: <my-component>#shadow-root<div>Content</div></my-component>
 ```
 
-#### 2. 样式处理
+#### 2. Style Handling
 
 **LightComponent:**
 ```tsx
-// 使用作用域样式（通过 data 属性）
+// Use scoped styles (via data attributes)
 super({
   styles: '.my-component { color: red; }',
   styleName: 'my-component',
 });
-// 样式注入为: <style data-wsx-light-component="my-component">...</style>
-// 需要手动避免全局冲突
+// Styles injected as: <style data-wsx-light-component="my-component">...</style>
+// Need to manually avoid global conflicts
 ```
 
 **WebComponent:**
 ```tsx
-// 使用 Shadow DOM 自动隔离
+// Use Shadow DOM automatic isolation
 super({
-  styles: 'div { color: red; }', // 自动隔离，不会影响外部
+  styles: 'div { color: red; }', // Automatically isolated, won't affect external
 });
-// 样式完全隔离，不会影响外部样式
+// Styles completely isolated, won't affect external styles
 ```
 
-#### 3. 第三方库集成
+#### 3. Third-party Library Integration
 
 **LightComponent:**
 ```tsx
-// ✅ EditorJS 可以正常工作
+// ✅ EditorJS can work normally
 protected onConnected() {
   this.editor = new EditorJS({
-    holder: this.querySelector('#editor'), // ✅ 可以找到元素
+    holder: this.querySelector('#editor'), // ✅ Can find element
   });
 }
 ```
 
 **WebComponent:**
 ```tsx
-// ⚠️ EditorJS 可能无法正常工作
+// ⚠️ EditorJS may not work normally
 protected onConnected() {
   this.editor = new EditorJS({
-    holder: this.shadowRoot.querySelector('#editor'), // ⚠️ 在 Shadow DOM 中
-    // 但 EditorJS 的全局查询可能失败
+    holder: this.shadowRoot.querySelector('#editor'), // ⚠️ In Shadow DOM
+    // But EditorJS's global queries may fail
   });
 }
 ```
 
-#### 4. 响应式 API
+#### 4. Reactive API
 
-两者使用**完全相同的响应式 API**：
+Both use **exactly the same reactive API**:
 
 ```tsx
-// 两者都支持
+// Both support
 private state = this.reactive({ count: 0 });
 private [count, setCount] = this.useState('count', 0);
 ```
 
-#### 5. 元素查询
+#### 5. Element Queries
 
 **LightComponent:**
 ```tsx
-// 直接查询，与标准 DOM 一致
-this.querySelector('.item'); // 查询组件内部
-document.querySelector('.item'); // 可以查询全局
+// Direct query, consistent with standard DOM
+this.querySelector('.item'); // Query component interior
+document.querySelector('.item'); // Can query globally
 ```
 
 **WebComponent:**
 ```tsx
-// 查询 Shadow DOM
-this.shadowRoot.querySelector('.item'); // 查询 Shadow DOM
-// document.querySelector 无法访问 Shadow DOM 内容
+// Query Shadow DOM
+this.shadowRoot.querySelector('.item'); // Query Shadow DOM
+// document.querySelector cannot access Shadow DOM content
 ```
 
-#### 6. 事件处理
+#### 6. Event Handling
 
 **LightComponent:**
 ```tsx
-// 事件自然冒泡
+// Events naturally bubble
 <button onClick={this.handleClick}>Click</button>
-// 事件会自然冒泡到 document
+// Events will naturally bubble to document
 ```
 
 **WebComponent:**
 ```tsx
-// 事件默认不冒泡到外部（Shadow DOM 边界）
+// Events don't bubble to external by default (Shadow DOM boundary)
 <button onClick={this.handleClick}>Click</button>
-// 需要手动转发事件到外部
+// Need to manually forward events to external
 this.dispatchEvent(new CustomEvent('click', { bubbles: true, composed: true }));
 ```
 
-### 选择指南
+### Selection Guide
 
-#### 使用 LightComponent 当：
+#### Use LightComponent When:
 
-- ✅ 需要与第三方库集成（EditorJS、Chart.js 等）
-- ✅ 构建路由或布局容器组件
-- ✅ 需要全局 DOM 访问
-- ✅ 需要事件自然冒泡
-- ✅ 不需要严格的样式隔离
-- ✅ 追求更轻量的实现
+- ✅ Need integration with third-party libraries (EditorJS, Chart.js, etc.)
+- ✅ Building routing or layout container components
+- ✅ Need global DOM access
+- ✅ Need natural event bubbling
+- ✅ Don't need strict style isolation
+- ✅ Pursue lighter implementation
 
-#### 使用 WebComponent 当：
+#### Use WebComponent When:
 
-- ✅ 构建可复用的 UI 组件（按钮、输入框等）
-- ✅ 需要完全的样式隔离
-- ✅ 需要焦点保持功能
-- ✅ 组件需要完全封装
-- ✅ 避免样式冲突是首要考虑
+- ✅ Building reusable UI components (buttons, inputs, etc.)
+- ✅ Need complete style isolation
+- ✅ Need focus retention functionality
+- ✅ Components need complete encapsulation
+- ✅ Avoiding style conflicts is primary concern
 
-### 代码示例对比
+### Code Example Comparison
 
-#### 相同点：响应式状态
+#### Same: Reactive State
 
 ```tsx
-// 两者使用相同的响应式 API
-export class Counter extends LightComponent { // 或 WebComponent
-  // ✅ @state 装饰器必须有初始值
+// Both use the same reactive API
+export class Counter extends LightComponent { // or WebComponent
+  // ✅ @state decorator must have initial value
   @state private count = 0;
   
   render() {
-    // 直接使用，无需 this.state.xxx
+    // Use directly, no need for this.state.xxx
     return (
       <div>
         <p>Count: {this.count}</p>
@@ -742,54 +742,54 @@ export class Counter extends LightComponent { // 或 WebComponent
 }
 ```
 
-**注意**：`@state` 装饰器的属性必须有初始值。ESLint 规则和 Babel 插件会验证这一点。
+**Note**: Properties with `@state` decorator must have initial values. ESLint rules and Babel plugin will validate this.
 
-#### 不同点：DOM 访问
+#### Different: DOM Access
 
 ```tsx
-// LightComponent - 可以访问全局 DOM
+// LightComponent - Can access global DOM
 export class EditorWrapper extends LightComponent {
   protected onConnected() {
-    // ✅ 可以访问全局 DOM
+    // ✅ Can access global DOM
     const globalElement = document.querySelector('.global-class');
     this.editor = new EditorJS({ holder: this.querySelector('#editor') });
   }
 }
 
-// WebComponent - Shadow DOM 隔离
+// WebComponent - Shadow DOM isolation
 export class EditorWrapper extends WebComponent {
   protected onConnected() {
-    // ⚠️ 只能访问 Shadow DOM 内部
+    // ⚠️ Can only access Shadow DOM interior
     const shadowElement = this.shadowRoot.querySelector('.shadow-class');
-    // document.querySelector 无法访问 Shadow DOM 内容
+    // document.querySelector cannot access Shadow DOM content
   }
 }
 ```
 
-### 总结
+### Summary
 
-- **LightComponent**: 简单、轻量、适合集成，使用 Light DOM
-- **WebComponent**: 封装、隔离、适合 UI 组件，使用 Shadow DOM
-- **共同点**: 都支持完整的响应式状态管理（`reactive()` 和 `useState()` 方法）
-- **选择原则**: 根据是否需要样式隔离和第三方库集成来决定
+- **LightComponent**: Simple, lightweight, suitable for integration, uses Light DOM
+- **WebComponent**: Encapsulated, isolated, suitable for UI components, uses Shadow DOM
+- **Common**: Both support complete reactive state management (`reactive()` and `useState()` methods)
+- **Selection Principle**: Decide based on whether style isolation and third-party library integration are needed
 
-## 常见问题
+## FAQ
 
-### Q: LightComponent 支持 Shadow DOM 吗？
+### Q: Does LightComponent support Shadow DOM?
 
-A: 不支持。`LightComponent` 专门设计为不使用 Shadow DOM，以便与第三方库集成。如果需要 Shadow DOM，请使用 `WebComponent`。
+A: No. `LightComponent` is specifically designed not to use Shadow DOM to enable integration with third-party libraries. If you need Shadow DOM, use `WebComponent`.
 
-### Q: 样式会被全局污染吗？
+### Q: Will styles be globally polluted?
 
-A: `LightComponent` 使用作用域样式（通过 data 属性），但不如 Shadow DOM 的隔离性强。建议使用唯一的 `styleName` 和 BEM 命名规范来避免冲突。
+A: `LightComponent` uses scoped styles (via data attributes), but the isolation is not as strong as Shadow DOM. It's recommended to use unique `styleName` and BEM naming conventions to avoid conflicts.
 
-### Q: 响应式状态会自动清理吗？
+### Q: Will reactive state be automatically cleaned up?
 
-A: 是的。在 `disconnectedCallback` 中，所有响应式状态会自动清理。
+A: Yes. In `disconnectedCallback`, all reactive state will be automatically cleaned up.
 
-### Q: 可以在 LightComponent 中使用 slot 吗？
+### Q: Can I use slot in LightComponent?
 
-A: 可以，但需要使用原生 slot 语法，因为 Light DOM 不支持 Shadow DOM 的 slot 机制。
+A: Yes, but you need to use native slot syntax, because Light DOM doesn't support Shadow DOM's slot mechanism.
 
 ```tsx
 render() {
@@ -801,25 +801,25 @@ render() {
 }
 ```
 
-### Q: 如何自动注入 CSS 样式？
+### Q: How to automatically inject CSS styles?
 
-A: WSXJS 提供了智能 CSS 自动注入功能。如果组件文件 `MyComponent.wsx` 存在对应的 `MyComponent.css` 文件，Babel 插件会自动：
+A: WSXJS provides intelligent CSS auto-injection. If a component file `MyComponent.wsx` has a corresponding `MyComponent.css` file, the Babel plugin will automatically:
 
-1. **自动导入 CSS**：`import styles from "./MyComponent.css?inline";`
-2. **自动注入类属性**：`private _autoStyles = styles;`
-3. **自动应用样式**：基类会自动检测并使用 `_autoStyles`
+1. **Auto-import CSS**: `import styles from "./MyComponent.css?inline";`
+2. **Auto-inject as class property**: `private _autoStyles = styles;`
+3. **Auto-apply styles**: Base class will automatically detect and use `_autoStyles`
 
-**使用方式**：
+**Usage**:
 
 ```tsx
-// MyComponent.wsx - 无需手动导入 CSS
+// MyComponent.wsx - No need to manually import CSS
 import { LightComponent, autoRegister } from '@wsxjs/wsx-core';
 
 @autoRegister()
 export class MyComponent extends LightComponent {
   constructor() {
     super({
-      styleName: 'my-component', // 只需要指定 styleName
+      styleName: 'my-component', // Only need to specify styleName
     });
   }
 
@@ -830,36 +830,36 @@ export class MyComponent extends LightComponent {
 ```
 
 ```css
-/* MyComponent.css - 自动注入 */
+/* MyComponent.css - Auto-injected */
 .my-component {
   padding: 1rem;
   background: white;
 }
 ```
 
-**注意事项**：
-- ✅ 文件命名约定：`Component.wsx` → `Component.css`（必须在同一目录）
-- ✅ 如果手动导入了 CSS，Babel 插件会检测到并跳过自动注入，避免重复
-- ✅ 支持 WebComponent 和 LightComponent
-- 📖 查看 [RFC-0008](../rfcs/0008-auto-style-injection.md) 了解详细说明
+**Notes**:
+- ✅ File naming convention: `Component.wsx` → `Component.css` (must be in the same directory)
+- ✅ If CSS is manually imported, Babel plugin will detect and skip auto-injection to avoid duplication
+- ✅ Supports WebComponent and LightComponent
+- 📖 See [RFC-0008](../rfcs/0008-auto-style-injection.md) for detailed explanation
 
-### Q: @state 装饰器为什么必须有初始值？
+### Q: Why must @state decorator have initial values?
 
-A: `@state` 装饰器必须有初始值，因为：
+A: The `@state` decorator must have initial values because:
 
-1. **类型判断**：Babel 插件需要初始值来判断属性类型（primitive vs object/array）
-   - Primitive（数字、字符串、布尔值）→ 使用 `useState`
-   - Object/Array → 使用 `reactive`
+1. **Type detection**: Babel plugin needs initial value to determine property type (primitive vs object/array)
+   - Primitive (number, string, boolean) → use `useState`
+   - Object/Array → use `reactive`
 
-2. **代码生成**：Babel 插件需要从 AST 中提取初始值，生成构造函数中的初始化代码
+2. **Code generation**: Babel plugin needs to extract initial value from AST to generate initialization code in constructor
 
-3. **类型安全**：确保状态有明确的类型和初始值，避免运行时错误
+3. **Type safety**: Ensure state has explicit type and initial value to avoid runtime errors
 
-**验证机制**：
-- ✅ **ESLint 规则**：`wsx/state-requires-initial-value` 在开发时检查
-- ✅ **Babel 插件**：在构建时验证，缺少初始值会导致构建失败
+**Validation mechanism**:
+- ✅ **ESLint rule**: `wsx/state-requires-initial-value` checks during development
+- ✅ **Babel plugin**: Validates at build time, missing initial values will cause build failure
 
-**有效示例**：
+**Valid examples**:
 ```tsx
 @state private count = 0;           // ✅
 @state private name = "";           // ✅
@@ -867,21 +867,20 @@ A: `@state` 装饰器必须有初始值，因为：
 @state private items = [];          // ✅
 ```
 
-**无效示例**：
+**Invalid examples**:
 ```tsx
-@state private count;               // ❌ 缺少初始值
-@state private name;                 // ❌ 缺少初始值
+@state private count;               // ❌ Missing initial value
+@state private name;                 // ❌ Missing initial value
 ```
 
-查看 [RFC-0013](../rfcs/completed/0013-state-initial-value-validation.md) 了解详细说明。
+See [RFC-0013](../rfcs/completed/0013-state-initial-value-validation.md) for detailed explanation.
 
-## 总结
+## Summary
 
-`LightComponent` 提供了一个简单而强大的方式来创建自定义元素，特别适合：
+`LightComponent` provides a simple and powerful way to create custom elements, especially suitable for:
 
-- 需要与第三方库集成的场景
-- 路由和布局组件
-- 不需要样式隔离的简单组件
+- Scenarios requiring integration with third-party libraries
+- Routing and layout components
+- Simple components that don't need style isolation
 
-它提供了完整的响应式状态管理、JSX 支持和生命周期钩子，让编写自定义元素变得简单而高效。
-
+It provides complete reactive state management, JSX support, and lifecycle hooks, making it simple and efficient to write custom elements.

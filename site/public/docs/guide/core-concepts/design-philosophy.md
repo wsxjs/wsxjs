@@ -1,60 +1,60 @@
 ---
-title: WSXJS 设计理念
+title: WSXJS Design Philosophy
 order: 4
 category: guide/core-concepts
-description: "WSXJS 是一个原生优先的 Web Components 框架，致力于提供最接近原生 Web 开发的开发体验"
+description: "WSXJS is a native-first Web Components framework dedicated to providing the closest experience to native Web development"
 ---
 
-## 概述
+## Overview
 
-WSXJS 是一个**原生优先**的 Web Components 框架，致力于提供最接近原生 Web 开发的开发体验，同时保持现代框架的便利性。
+WSXJS is a **native-first** Web Components framework dedicated to providing the closest experience to native Web development while maintaining the convenience of modern frameworks.
 
-## 核心设计原则
+## Core Design Principles
 
-### 1. 原生优先 (Native-First)
+### 1. Native-First
 
-WSXJS 优先使用原生 Web 标准和 API，而不是创建抽象层。
+WSXJS prioritizes native Web standards and APIs over creating abstraction layers.
 
-#### 示例：class vs className
+#### Example: class vs className
 
 ```jsx
-// ✅ WSXJS - 使用原生HTML属性名
+// ✅ WSXJS - Uses native HTML attribute names
 <div class="container">
   <button class="btn btn-primary">Click me</button>
 </div>
 
-// ❌ React - 使用JavaScript化的属性名
+// ❌ React - Uses JavaScriptized attribute names
 <div className="container">
   <button className="btn btn-primary">Click me</button>
 </div>
 ```
 
-**设计理由**：
-- `class` 是标准 HTML 属性名
-- 避免 JavaScript 保留字冲突
-- 更符合原生 Web 开发习惯
-- 减少学习成本
+**Design Rationale**:
+- `class` is the standard HTML attribute name
+- Avoids JavaScript reserved word conflicts
+- More aligned with native Web development habits
+- Reduces learning curve
 
-**兼容性**：WSX 同时支持 `class` 和 `className`，确保 React 开发者的平滑迁移。
+**Compatibility**: WSX supports both `class` and `className` to ensure smooth migration for React developers.
 
-### 2. 零依赖 (Zero Dependencies)
+### 2. Zero Dependencies
 
-框架核心不依赖任何第三方库，确保：
-- 更小的包体积
-- 更快的加载速度
-- 更好的性能
-- 避免依赖冲突
+The framework core has no dependencies on third-party libraries, ensuring:
+- Smaller bundle size
+- Faster load times
+- Better performance
+- Avoids dependency conflicts
 
-### 3. 渐进增强 (Progressive Enhancement)
+### 3. Progressive Enhancement
 
 ```jsx
-// 从简单的HTML开始
+// Start with simple HTML
 <div>Hello World</div>
 
-// 逐步添加交互
+// Gradually add interactivity
 <div onClick={this.handleClick}>Click me</div>
 
-// 最终成为完整的Web Component
+// Finally become a complete Web Component
 class MyComponent extends WebComponent {
   render() {
     return <div onClick={this.handleClick}>Enhanced Component</div>
@@ -62,58 +62,58 @@ class MyComponent extends WebComponent {
 }
 ```
 
-### 4. 标准兼容 (Standards Compliant)
+### 4. Standards Compliant
 
-- 完全兼容 Web Components 标准
-- 支持 Shadow DOM
-- 支持 Custom Elements
-- 支持 HTML Templates
+- Fully compatible with Web Components standards
+- Supports Shadow DOM
+- Supports Custom Elements
+- Supports HTML Templates
 
-## 与React的对比
+## Comparison with React
 
-| 特性 | WSXJS | React |
-|------|---------------|-------|
-| 属性名 | `class` | `className` |
-| 事件处理 | `onClick` | `onClick` |
-| 组件定义 | 原生类 | 函数组件/类组件 |
-| 状态管理 | 原生属性 | useState/useReducer |
-| 生命周期 | 原生生命周期 | useEffect/useLayoutEffect |
-| 渲染 | 原生DOM | Virtual DOM |
+| Feature | WSXJS | React |
+|---------|-------|-------|
+| Attribute Names | `class` | `className` |
+| Event Handling | `onClick` | `onClick` |
+| Component Definition | Native Classes | Function/Class Components |
+| State Management | Native Properties | useState/useReducer |
+| Lifecycle | Native Lifecycle | useEffect/useLayoutEffect |
+| Rendering | Native DOM | Virtual DOM |
 
-## 性能优势
+## Performance Advantages
 
-### 1. 无Virtual DOM
+### 1. No Virtual DOM
 
 ```jsx
-// WSX - 直接操作DOM
+// WSX - Direct DOM manipulation
 render() {
   return <div class="container">Content</div>
 }
 
-// React - 通过Virtual DOM
+// React - Through Virtual DOM
 render() {
   return <div className="container">Content</div>
 }
 ```
 
-### 2. 更小的运行时
+### 2. Smaller Runtime
 
-- 无Virtual DOM diff算法
-- 无状态管理库
-- 无事件系统抽象
+- No Virtual DOM diff algorithm
+- No state management library
+- No event system abstraction
 
-### 3. 原生性能
+### 3. Native Performance
 
-- 直接使用浏览器优化
-- 无额外抽象层开销
-- 更少的内存占用
+- Direct use of browser optimizations
+- No additional abstraction layer overhead
+- Less memory usage
 
-## 开发体验
+## Developer Experience
 
-### 1. 熟悉的语法
+### 1. Familiar Syntax
 
 ```jsx
-// 使用标准JSX语法
+// Use standard JSX syntax
 class MyButton extends WebComponent {
   render() {
     return (
@@ -129,7 +129,7 @@ class MyButton extends WebComponent {
 }
 ```
 
-### 2. TypeScript支持
+### 2. TypeScript Support
 
 ```typescript
 interface ButtonProps {
@@ -139,21 +139,21 @@ interface ButtonProps {
 }
 
 class MyButton extends WebComponent<ButtonProps> {
-  // 完整的类型安全
+  // Full type safety
 }
 ```
 
-### 3. 工具链集成
+### 3. Toolchain Integration
 
-- ESLint 插件支持
-- Vite 插件支持
-- 自动类型生成
+- ESLint plugin support
+- Vite plugin support
+- Automatic type generation
 
-## 迁移指南
+## Migration Guide
 
-### 从React迁移
+### Migrating from React
 
-1. **属性名调整**
+1. **Attribute Name Adjustment**
    ```jsx
    // React
    <div className="container">
@@ -162,7 +162,7 @@ class MyButton extends WebComponent<ButtonProps> {
    <div class="container">
    ```
 
-2. **组件定义**
+2. **Component Definition**
    ```jsx
    // React
    function MyComponent(props) {
@@ -177,7 +177,7 @@ class MyButton extends WebComponent<ButtonProps> {
    }
    ```
 
-3. **状态管理**
+3. **State Management**
    ```jsx
    // React
    const [count, setCount] = useState(0)
@@ -193,41 +193,41 @@ class MyButton extends WebComponent<ButtonProps> {
    }
    ```
 
-## 最佳实践
+## Best Practices
 
-### 1. 使用原生属性名
+### 1. Use Native Attribute Names
 
 ```jsx
-// ✅ 推荐
+// ✅ Recommended
 <div class="container" tabindex="0">
   <input type="text" autocomplete="off" />
 </div>
 
-// ❌ 避免
+// ❌ Avoid
 <div className="container" tabIndex="0">
   <input type="text" autoComplete="off" />
 </div>
 ```
 
-### 2. 利用原生生命周期
+### 2. Leverage Native Lifecycle
 
 ```jsx
 class MyComponent extends WebComponent {
   connectedCallback() {
-    // 组件挂载时
+    // When component mounts
   }
   
   disconnectedCallback() {
-    // 组件卸载时
+    // When component unmounts
   }
   
   attributeChangedCallback() {
-    // 属性变化时
+    // When attributes change
   }
 }
 ```
 
-### 3. 使用Shadow DOM
+### 3. Use Shadow DOM
 
 ```jsx
 class MyComponent extends WebComponent {
@@ -242,13 +242,13 @@ class MyComponent extends WebComponent {
 }
 ```
 
-## 总结
+## Summary
 
-WSXJS 的设计理念是**回归原生，拥抱标准**。通过使用原生 Web 技术，我们获得了：
+WSXJS's design philosophy is **return to native, embrace standards**. By using native Web technologies, we gain:
 
-- **更好的性能** - 无抽象层开销
-- **更小的体积** - 零依赖
-- **更好的兼容性** - 标准Web API
-- **更简单的学习曲线** - 原生概念
+- **Better Performance** - No abstraction layer overhead
+- **Smaller Size** - Zero dependencies
+- **Better Compatibility** - Standard Web APIs
+- **Simpler Learning Curve** - Native concepts
 
-同时，我们保持了现代框架的便利性，让开发者能够高效地构建高质量的 Web Components。 
+At the same time, we maintain the convenience of modern frameworks, allowing developers to efficiently build high-quality Web Components.

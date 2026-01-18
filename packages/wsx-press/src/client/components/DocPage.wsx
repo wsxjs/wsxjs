@@ -187,6 +187,9 @@ export default class DocPage extends LightComponent {
                 this.loadDocument();
             });
         });
+
+        // Listen for hash changes
+        window.addEventListener("hashchange", this.onHashChange);
     }
 
     protected onDisconnected() {
@@ -203,9 +206,18 @@ export default class DocPage extends LightComponent {
             this.visibilityChangeHandler = null;
         }
 
+        window.removeEventListener("hashchange", this.onHashChange);
+
         // 取消正在进行的加载请求
         this.cancelLoading();
     }
+
+    /**
+     * Handle hash change event
+     */
+    private onHashChange = () => {
+        this.scrollToHash();
+    };
 
     /**
      * 取消正在进行的加载请求
@@ -445,6 +457,51 @@ export default class DocPage extends LightComponent {
                     }
                 });
             });
+        }
+    }
+
+    /**
+     * Scroll to the element matching the current hash
+     * 使用重试机制处理异步渲染的内容
+     */
+    private scrollToHash(retryCount: number = 0) {
+        const maxRetries = 5;
+        const retryDelay = 100; // ms
+
+        const hash = window.location.hash;
+        if (!hash) return;
+
+        // Remove the '#' character
+        const id = decodeURIComponent(hash.slice(1));
+        if (!id) return;
+
+        // Try to find the element
+        const element = document.getElementById(id);
+        if (element) {
+            // Scroll into view
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+            logger.debug(`Scrolled to anchor: ${id}`);
+        } else if (retryCount < maxRetries) {
+            // Element not found yet, retry after a short delay
+            // This handles the case where markdown content is still being rendered
+            setTimeout(() => {
+                this.scrollToHash(retryCount + 1);
+            }, retryDelay);
+        } else {
+            logger.warn(`Anchor element not found after ${maxRetries} retries: ${id}`);
+        }
+    }
+
+    protected updated() {
+        // Called after every render
+        if (this.loadingState === "success") {
+            // Attempt to scroll to hash if present
+            // specific check to avoid scrolling on every update if not needed,
+            // or we can rely on the fact that if user scrolled away, we shouldn't force it back?
+            // Actually, typically we only do this on initial load or hash change.
+            // But since content is loaded async, we need to do it once content is Ready.
+            // Let's use a small delay to ensure DOM is ready.
+            requestAnimationFrame(() => this.scrollToHash());
         }
     }
 
