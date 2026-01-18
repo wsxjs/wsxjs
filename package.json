@@ -31,7 +31,7 @@
         "changeset:version": "changeset version",
         "changeset:publish": "changeset publish",
         "changeset:status": "changeset status",
-        "release": "node scripts/publish.mjs",
+        "release": "qingniao",
         "release:dry-run": "pnpm build && pnpm changeset:publish --dry-run",
         "version": "pnpm changeset:version",
         "build:pages": "turbo build && pnpm --filter @wsxjs/wsx-site build:pages",
