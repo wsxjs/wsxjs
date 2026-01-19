@@ -16,8 +16,6 @@ import {
     findTextNode,
     updateOrCreateTextNode,
     removeNodeIfNotPreserved,
-    replaceOrInsertElement,
-    replaceOrInsertElementAtPosition,
     appendNewChild,
     buildNewChildrenMaps,
     deduplicateCacheKeys,
@@ -324,7 +322,8 @@ export function updateChildren(
 
     // 更新现有子节点
     const minLength = Math.min(flatOld.length, flatNew.length);
-    const domIndex = { value: 0 }; // 使用对象包装，使其可在函数间传递
+    const domIndex = { value: 0 }; // 搜索旧节点的索引
+    const insertionIndex = { value: 0 }; // 逻辑插入位置的索引
     // 跟踪已处理的节点，用于确定正确的位置
     const processedNodes = new Set<Node>();
 
@@ -347,86 +346,79 @@ export function updateChildren(
                 }
             }
         } else if (typeof oldChild === "string" || typeof oldChild === "number") {
-            oldNode = findTextNode(element, domIndex);
-            // RFC-0044 修复：fallback 搜索必须验证文本内容
-            // 在缓存元素复用场景下，不能盲目返回第一个找到的文本节点
-            // 必须确保内容匹配，否则会导致错误的更新
-            if (!oldNode && element.childNodes.length > 0) {
-                const oldText = String(oldChild);
-                for (let j = domIndex.value; j < element.childNodes.length; j++) {
-                    const node = element.childNodes[j];
-                    // 关键修复：只检查直接子文本节点，确保 node.parentNode === element
-                    // 并且必须验证文本内容是否匹配
-                    if (
-                        node.nodeType === Node.TEXT_NODE &&
-                        node.parentNode === element &&
-                        node.textContent === oldText
-                    ) {
-                        oldNode = node;
-                        // 更新 domIndex 到找到的文本节点之后
-                        domIndex.value = j + 1;
-                        break;
+            // RFC 0048 & RFC 0053 关键修复：如果 element 是保留元素（第三方组件），跳过文本节点查找
+            // 防止框架错误地管理第三方组件内部的文本节点
+            if (shouldPreserveElement(element)) {
+                // 对于保留元素，不查找文本节点，直接设置为 null
+                oldNode = null;
+            } else {
+                oldNode = findTextNode(element, domIndex, processedNodes);
+                if (oldNode) {
+                    const nodeIndex = Array.from(element.childNodes).indexOf(oldNode as ChildNode);
+                    if (nodeIndex !== -1 && nodeIndex >= domIndex.value) {
+                        domIndex.value = nodeIndex + 1;
                     }
                 }
+                // RFC 0048 & RFC 0053 关键修复：移除 fallback 内容匹配搜索
+                // ...
             }
         }
 
         // 处理文本节点（oldChild 是字符串/数字）
         if (typeof oldChild === "string" || typeof oldChild === "number") {
             if (typeof newChild === "string" || typeof newChild === "number") {
-                const oldText = String(oldChild);
                 const newText = String(newChild);
 
-                // Bug 2 修复：只有当文本内容确实需要更新时才调用 updateOrCreateTextNode
-                // 如果 oldText === newText 且 oldNode 为 null，说明文本节点可能已经存在且内容正确
-                // 或者不需要创建，因此不应该调用 updateOrCreateTextNode
-                const needsUpdate =
-                    oldText !== newText ||
-                    (oldNode &&
-                        oldNode.nodeType === Node.TEXT_NODE &&
-                        oldNode.textContent !== newText);
+                // RFC 0048 & RFC 0053 关键修复：在调用 updateOrCreateTextNode 之前，检查 element 是否是保留元素
+                if (shouldPreserveElement(element)) {
+                    // 跳过保留元素的文本节点处理
+                    continue;
+                }
 
-                if (needsUpdate) {
-                    // RFC-0044 修复：使用返回的节点引用直接标记
-                    // updateOrCreateTextNode 现在返回更新/创建的节点
-                    // 这样可以准确标记，避免搜索失败导致的重复创建
-                    const updatedNode = updateOrCreateTextNode(element, oldNode, newText);
-                    if (updatedNode && !processedNodes.has(updatedNode)) {
-                        processedNodes.add(updatedNode);
-                    }
-                } else {
-                    // 即使不需要更新，也要标记为已处理（文本节点已存在且内容正确）
-                    if (oldNode && oldNode.parentNode === element) {
-                        processedNodes.add(oldNode);
-                    } else if (!oldNode && oldText === newText) {
-                        // 关键修复：如果 oldNode 为 null 但 oldText === newText，
-                        // 说明 DOM 中可能已经存在一个匹配的文本节点，只是没有被 findTextNode 找到
-                        // 我们需要查找并标记它，避免在清理阶段被误删
-                        // 这种情况可能发生在文本节点和元素节点混合排列时，domIndex 位置不准确
-                        // 从 domIndex.value 开始搜索，因为这是 findTextNode 停止的位置
-                        // 这样可以更准确地找到对应的文本节点
-                        for (let j = domIndex.value; j < element.childNodes.length; j++) {
-                            const node = element.childNodes[j];
-                            if (
-                                node.nodeType === Node.TEXT_NODE &&
-                                node.parentNode === element &&
-                                node.textContent === newText &&
-                                !processedNodes.has(node)
-                            ) {
-                                // 找到匹配的文本节点，标记为已处理
-                                processedNodes.add(node);
-                                break; // 只标记第一个匹配的节点
-                            }
-                        }
-                    }
+                // 计算插入位置
+                const insertBeforeNode =
+                    insertionIndex.value < element.childNodes.length
+                        ? element.childNodes[insertionIndex.value]
+                        : null;
+
+                const updatedNode = updateOrCreateTextNode(
+                    element,
+                    oldNode,
+                    newText,
+                    insertBeforeNode
+                );
+                if (updatedNode) {
+                    processedNodes.add(updatedNode);
+                    // 无论是否复用旧节点，逻辑上我们都占据了一个位置
+                    insertionIndex.value++;
                 }
             } else {
                 // 类型变化：文本 -> 元素/Fragment
-                removeNodeIfNotPreserved(element, oldNode);
+                const targetNode =
+                    insertionIndex.value < element.childNodes.length
+                        ? element.childNodes[insertionIndex.value]
+                        : null;
+
                 if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
-                    replaceOrInsertElement(element, newChild, oldNode);
+                    // 如果 oldNode 就在当前位置，直接替换
+                    if (oldNode && oldNode === targetNode && oldNode.parentNode === element) {
+                        element.replaceChild(newChild, oldNode);
+                    } else {
+                        // 否则在目标位置插入，然后移除旧节点（如果需要）
+                        element.insertBefore(newChild, targetNode);
+                        removeNodeIfNotPreserved(element, oldNode);
+                    }
+                    processedNodes.add(newChild);
+                    insertionIndex.value++;
                 } else if (newChild instanceof DocumentFragment) {
-                    element.insertBefore(newChild, oldNode || null);
+                    // 关键修复：跟踪 Fragment 中的所有子节点
+                    if (processedNodes) {
+                        for (let i = 0; i < newChild.childNodes.length; i++) {
+                            processedNodes.add(newChild.childNodes[i]);
+                        }
+                    }
+                    element.insertBefore(newChild, targetNode);
+                    removeNodeIfNotPreserved(element, oldNode);
                 }
             }
         }
@@ -437,75 +429,56 @@ export function updateChildren(
             }
 
             if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
-                // 关键修复：确定正确的位置
-                // 策略：基于 flatNew 数组的顺序来确定位置，而不是 DOM 中的实际顺序
-                // 因为某些元素可能被隐藏（position: absolute），导致 DOM 顺序与数组顺序不同
+                // 计算目标插入位置 (insertBeforeNode)
+                const insertBeforeNode =
+                    insertionIndex.value < element.childNodes.length
+                        ? element.childNodes[insertionIndex.value]
+                        : null;
 
-                // 找到索引 i 之前的所有元素，确定 newChild 应该在这些元素之后
-                let targetNextSibling: Node | null = null;
-                let foundPreviousElement = false;
-
-                // 从后往前查找，找到最后一个在 DOM 中的前一个元素
-                for (let j = i - 1; j >= 0; j--) {
-                    const prevChild = flatNew[j];
-                    if (prevChild instanceof HTMLElement || prevChild instanceof SVGElement) {
-                        if (prevChild.parentNode === element) {
-                            // 找到前一个元素，newChild 应该在它之后
-                            targetNextSibling = prevChild.nextSibling;
-                            foundPreviousElement = true;
-                            break;
-                        }
+                // 即使 newChild === oldNode，如果位置不对也需要移动
+                // 使用 insertBeforeNode 确保它在正确的位置
+                if (newChild === oldNode) {
+                    if (newChild.nextSibling !== insertBeforeNode) {
+                        element.insertBefore(newChild, insertBeforeNode);
                     }
+                } else {
+                    // RFC 0053 关键修复：直接使用 insertBefore 确保插入到正确位置
+                    // replaceOrInsertElement 会尝试基于 oldNode (此处为 insertBeforeNode) 的 nextSibling 插入，
+                    // 这对于旨在基于位置插入的场景会导致 Off-By-One 错误（插入到了后面）
+                    element.insertBefore(newChild, insertBeforeNode);
                 }
 
-                // 如果没有找到前一个元素，newChild 应该在开头
-                if (!foundPreviousElement) {
-                    // 找到第一个非保留、未处理的子节点
-                    const firstChild = Array.from(element.childNodes).find(
-                        (node) => !shouldPreserveElement(node) && !processedNodes.has(node)
-                    );
-                    targetNextSibling = firstChild || null;
-                }
-
-                // 检查 newChild 是否已经在正确位置
-                const isInCorrectPosition =
-                    newChild.parentNode === element && newChild.nextSibling === targetNextSibling;
-
-                // 如果 newChild === oldChild 且位置正确，说明是同一个元素且位置正确
-                if (newChild === oldChild && isInCorrectPosition) {
-                    // 标记为已处理
-                    if (oldNode) processedNodes.add(oldNode);
-                    processedNodes.add(newChild);
-                    continue; // 元素已经在正确位置，不需要更新
-                }
-
-                // 如果 newChild 是从缓存复用的（与 oldChild 不同），或者位置不对，需要调整
-                // 使用 oldNode 作为参考（如果存在），但目标位置基于数组顺序
-                const referenceNode = oldNode && oldNode.parentNode === element ? oldNode : null;
-                replaceOrInsertElementAtPosition(
-                    element,
-                    newChild,
-                    referenceNode,
-                    targetNextSibling
-                );
-
-                // 关键修复：在替换元素后，从 processedNodes 中移除旧的元素引用
-                // 这样可以防止旧的 span 元素内部的文本节点被误判为不应该移除
-                if (oldNode && oldNode !== newChild) {
-                    processedNodes.delete(oldNode);
-                }
                 // 标记新元素为已处理
                 processedNodes.add(newChild);
+                insertionIndex.value++;
             } else {
                 // 类型变化：元素 -> 文本/Fragment
-                removeNodeIfNotPreserved(element, oldNode);
+                const targetNode =
+                    insertionIndex.value < element.childNodes.length
+                        ? element.childNodes[insertionIndex.value]
+                        : null;
+
                 if (typeof newChild === "string" || typeof newChild === "number") {
                     const newTextNode = document.createTextNode(String(newChild));
-                    element.insertBefore(newTextNode, oldNode?.nextSibling || null);
-                    // 关键修复：标记新创建的文本节点为已处理，防止在移除阶段被误删
+                    (newTextNode as any).__wsxManaged = true; // 标记为框架管理
+                    // 优先替换或插入
+                    if (oldNode && oldNode === targetNode && oldNode.parentNode === element) {
+                        element.replaceChild(newTextNode, oldNode);
+                    } else {
+                        element.insertBefore(newTextNode, targetNode);
+                        removeNodeIfNotPreserved(element, oldNode);
+                    }
                     processedNodes.add(newTextNode);
+                    insertionIndex.value++;
                 } else if (newChild instanceof DocumentFragment) {
-                    element.insertBefore(newChild, oldNode?.nextSibling || null);
+                    // 关键修复：跟踪 Fragment 中的所有子节点，防止被误删
+                    if (processedNodes) {
+                        for (let i = 0; i < newChild.childNodes.length; i++) {
+                            processedNodes.add(newChild.childNodes[i]);
+                        }
+                    }
+                    element.insertBefore(newChild, targetNode);
+                    removeNodeIfNotPreserved(element, oldNode);
                 }
             }
         }

@@ -225,9 +225,10 @@ export abstract class WebComponent extends BaseComponent {
                 this.shadowRoot.appendChild(content);
             }
 
-            // 移除旧内容（保留样式元素和未标记元素）
-            // 关键修复：使用 shouldPreserveElement() 来保护第三方库注入的元素
-            const oldChildren = Array.from(this.shadowRoot.children).filter((child) => {
+            // 移除旧内容（保留样式元素、未标记元素和新渲染的内容）
+            // 关键修复 (RFC-0042): 使用 childNodes 而不是 children，确保文本节点也被清理
+            // 否则，在 Shadow DOM 根部的文本节点会发生泄漏
+            const oldNodes = Array.from(this.shadowRoot.childNodes).filter((child) => {
                 // 保留新添加的内容（或已经在 shadowRoot 中的 content）
                 if (child === content) {
                     return false;
@@ -237,13 +238,13 @@ export abstract class WebComponent extends BaseComponent {
                     return false;
                 }
                 // 保留未标记的元素（第三方库注入的元素、自定义元素）
-                // 这是 RFC 0037 Phase 5 的核心：保护未标记元素
+                // 对于文本节点，shouldPreserveElement 逻辑已在 element-marking.ts 中优化
                 if (shouldPreserveElement(child)) {
                     return false;
                 }
                 return true;
             });
-            oldChildren.forEach((child) => child.remove());
+            oldNodes.forEach((node) => node.remove());
 
             // 7. 恢复 adopted stylesheets（在 DOM 操作之后，确保样式不被意外移除）
             // 关键修复：在 DOM 操作之后恢复样式，防止样式在 DOM 操作过程中被意外清空

@@ -158,6 +158,25 @@ export function flattenChildren(
             } else {
                 result.push(child);
             }
+        } else if (child instanceof DocumentFragment) {
+            // 递归处理 DocumentFragment 中的子节点
+            // 注意：Array.from 会创建子节点的引用副本，
+            // 这样即使 Fragment 在后续过程中被 appendChild 清空，
+            // 我们的 flat children 列表仍然持有正确的节点引用。
+            // 关键：不能递归调用 flattenChildren(Array.from(child.childNodes))，
+            // 因为 DocumentFragment 本身不支持 skipHTMLDetection。
+            // 我们直接将其子节点展平到当前结果中。
+            const fragmentChildren = Array.from(child.childNodes);
+            for (const fragChild of fragmentChildren) {
+                if (fragChild instanceof HTMLElement || fragChild instanceof SVGElement) {
+                    result.push(fragChild);
+                } else if (fragChild.nodeType === Node.TEXT_NODE) {
+                    result.push(fragChild.textContent || "");
+                } else if (fragChild instanceof DocumentFragment) {
+                    // 处理嵌套 Fragment（防御性编程）
+                    result.push(...flattenChildren([fragChild], skipHTMLDetection, depth + 1));
+                }
+            }
         } else {
             result.push(child);
         }

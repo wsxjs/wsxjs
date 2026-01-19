@@ -110,17 +110,12 @@ export default class UseCaseSection extends WebComponent {
                         </div>
 
                         {/* SlideJS Use Case */}
-                        <div
-                            class="use-case-card"
-                            onClick={() => this.handleCardClick("/slidejs")}
-                        >
+                        <div class="use-case-card" onClick={() => this.handleCardClick("/slidejs")}>
                             <div class="use-case-icon">📊</div>
                             <div class="use-case-content">
                                 <h3 class="use-case-title">{t("cases.slidejs.title")}</h3>
                                 <span class="use-case-badge">{t("cases.slidejs.badge")}</span>
-                                <p class="use-case-description">
-                                    {t("cases.slidejs.description")}
-                                </p>
+                                <p class="use-case-description">{t("cases.slidejs.description")}</p>
 
                                 <div class="use-case-why">
                                     <h4 class="why-title">{t("cases.slidejs.why.title")}</h4>
@@ -144,9 +139,7 @@ export default class UseCaseSection extends WebComponent {
                                 </div>
 
                                 <div class="use-case-action">
-                                    <span class="use-case-link">
-                                        {t("cases.slidejs.action")} →
-                                    </span>
+                                    <span class="use-case-link">{t("cases.slidejs.action")} →</span>
                                 </div>
                             </div>
                         </div>

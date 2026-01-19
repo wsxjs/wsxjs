@@ -15,6 +15,14 @@ export function collectPreservedElements(element: HTMLElement | SVGElement): Nod
     const preserved: Node[] = [];
     for (let i = 0; i < element.childNodes.length; i++) {
         const child = element.childNodes[i];
+
+        // RFC 0048 & RFC 0053 关键修复：文本节点通常不应该被 collectPreservedElements 捕获
+        // 因为它们会通过 updateChildren 的主循环进行 reconcile
+        // 只有当父元素本身是保留元素时，文本节点才应该被保留（但在 updateChildren 中，这种情况会跳过处理）
+        if (child.nodeType === Node.TEXT_NODE) {
+            continue;
+        }
+
         if (shouldPreserveElement(child)) {
             preserved.push(child);
         }
@@ -77,20 +85,20 @@ export function findElementNode(
  */
 export function findTextNode(
     parent: HTMLElement | SVGElement,
-    domIndex: { value: number }
+    domIndex: { value: number },
+    processedNodes: Set<Node>
 ): Node | null {
-    while (domIndex.value < parent.childNodes.length) {
-        const node = parent.childNodes[domIndex.value];
-        // 关键修复：只检查直接子文本节点，确保 node.parentNode === parent
-        // 这样可以防止将元素内部的文本节点（如 span 内部的文本节点）误判为独立的文本节点
-        if (node.nodeType === Node.TEXT_NODE && node.parentNode === parent) {
-            const textNode = node;
-            domIndex.value++;
-            return textNode;
+    // RFC 0053: 从当前索引开始查找第一个未被处理的、框架管理的文本节点
+    for (let i = domIndex.value; i < parent.childNodes.length; i++) {
+        const node = parent.childNodes[i];
+        if (
+            node.nodeType === Node.TEXT_NODE &&
+            (node as any).__wsxManaged === true &&
+            !processedNodes.has(node)
+        ) {
+            domIndex.value = i + 1;
+            return node;
         }
-        // 跳过元素节点和其他类型的节点（它们会在自己的迭代中处理）
-        // 关键：必须递增 domIndex，否则会无限循环
-        domIndex.value++;
     }
     return null;
 }
@@ -117,45 +125,52 @@ export function shouldUpdateTextNode(
 export function updateOrCreateTextNode(
     parent: HTMLElement | SVGElement,
     oldNode: Node | null,
-    newText: string
+    newText: string,
+    insertBeforeNode?: Node | null
 ): Node {
+    // RFC 0048 & RFC 0053 关键修复：如果 parent 是保留元素（第三方组件），跳过处理
+    // 防止框架错误地管理第三方组件内部的文本节点
+    if (shouldPreserveElement(parent)) {
+        // 如果 parent 是保留元素，直接返回 oldNode（如果存在）或创建新节点但不插入
+        // 注意：这种情况下，文本节点应该由第三方组件自己管理
+        if (oldNode && oldNode.nodeType === Node.TEXT_NODE) {
+            return oldNode;
+        }
+        // 对于保留元素，我们不应该插入文本节点，但为了兼容性，返回一个虚拟节点
+        // 实际上，这种情况不应该发生，因为保留元素的子节点不应该被框架处理
+        return document.createTextNode(newText);
+    }
+
     if (oldNode && oldNode.nodeType === Node.TEXT_NODE) {
         // 只有当文本内容不同时才更新
         if (oldNode.textContent !== newText) {
             oldNode.textContent = newText;
         }
-        return oldNode;
-    } else {
-        // RFC 0048 关键修复：如果 oldNode 为 null，先检查是否已经存在相同内容的直接子文本节点
-        // 这样可以防止重复创建文本节点
-        // 只检查直接子文本节点，不检查元素内部的文本节点
-        if (!oldNode) {
-            for (let i = 0; i < parent.childNodes.length; i++) {
-                const node = parent.childNodes[i];
-                // 关键修复：只检查直接子文本节点，确保 node.parentNode === parent
-                // 这样可以防止将元素内部的文本节点（如 span 内部的文本节点）误判为独立的文本节点
-                if (
-                    node.nodeType === Node.TEXT_NODE &&
-                    node.parentNode === parent &&
-                    node.textContent === newText
-                ) {
-                    // 找到相同内容的直接子文本节点，返回它而不是创建新节点
-                    return node;
-                }
+        // RFC 0053 扩展：确保节点在正确的位置
+        // 如果指定了插入位置且当前节点不在该位置，则移动它
+        if (insertBeforeNode !== undefined) {
+            if (oldNode !== insertBeforeNode && oldNode.nextSibling !== insertBeforeNode) {
+                parent.insertBefore(oldNode, insertBeforeNode);
             }
         }
+        return oldNode;
+    } else {
+        // RFC 0048 & RFC 0053 关键修复：文本节点应该基于位置匹配，而不是内容匹配
+        // 当 oldNode 为 null 时，直接创建新节点，不进行内容匹配搜索
+        // 这防止了日历等场景中相同内容在不同位置被错误匹配的问题
+        // 例如：3 月的 "30" 在底部行，4 月的第一个日期是 "1"，不应该将 "30" 错误匹配到 "1" 的位置
+        // 如果 oldNode 为 null，说明在当前位置没有找到对应的文本节点，应该创建新节点
 
-        // 如果没有找到相同内容的文本节点，创建新节点
         const newTextNode = document.createTextNode(newText);
+        (newTextNode as any).__wsxManaged = true; // 标记为框架管理
         if (oldNode && !shouldPreserveElement(oldNode)) {
             parent.replaceChild(newTextNode, oldNode);
         } else {
-            parent.insertBefore(newTextNode, oldNode || null);
+            parent.insertBefore(newTextNode, insertBeforeNode ?? null);
         }
         return newTextNode;
     }
 }
-
 /**
  * 移除节点（如果不应该保留）
  */
@@ -281,6 +296,7 @@ export function appendNewChild(
 
     if (typeof child === "string" || typeof child === "number") {
         const newTextNode = document.createTextNode(String(child));
+        (newTextNode as any).__wsxManaged = true; // 标记为框架管理
         parent.appendChild(newTextNode);
         // 关键修复：标记新创建的文本节点为已处理，防止在移除阶段被误删
         if (processedNodes) {
@@ -305,6 +321,13 @@ export function appendNewChild(
             processedNodes.add(child);
         }
     } else if (child instanceof DocumentFragment) {
+        // 关键修复：记录 Fragment 中的所有子节点为已处理
+        // 否则它们会被后续的 collectNodesToRemove 误删
+        if (processedNodes) {
+            for (let i = 0; i < child.childNodes.length; i++) {
+                processedNodes.add(child.childNodes[i]);
+            }
+        }
         parent.appendChild(child);
     }
 }
@@ -347,32 +370,49 @@ export function shouldRemoveNode(
     cacheKeyMap: Map<string, HTMLElement | SVGElement>,
     processedNodes?: Set<Node>
 ): boolean {
-    // 保留的元素不移除
+    // RFC 0048 & RFC 0053 关键修复：文本节点应该由框架管理，不应该被 shouldPreserveElement 保留
+    // 文本节点本身不是元素，shouldPreserveElement 对文本节点总是返回 true
+    // 但是，如果文本节点的父元素是由框架管理的，文本节点也应该由框架管理
+    // 只有当文本节点的父元素是保留元素时，文本节点才应该被保留
+    if (node.nodeType === Node.TEXT_NODE) {
+        // 如果是框架管理的文本节点
+        if ((node as any).__wsxManaged === true) {
+            // 如果已被处理过，保留
+            if (processedNodes && processedNodes.has(node)) {
+                return false;
+            }
+            // 否则移除
+            return true;
+        }
+
+        // 如果是非框架管理的文本节点（第三方注入）
+        // 检查其父元素是否被保留
+        const parent = node.parentNode;
+        if (parent && (parent instanceof HTMLElement || parent instanceof SVGElement)) {
+            if (shouldPreserveElement(parent)) {
+                // 如果父元素是保留元素，文本节点也应该被保留
+                return false;
+            }
+        }
+        // 对于未标记且父元素未保留的文本，默认移除以防止泄漏
+        return true;
+    } else {
+        // 对于元素节点，使用原有的逻辑
+        if (shouldPreserveElement(node)) {
+            return false;
+        }
+    }
+
+    const isProcessed = processedNodes && processedNodes.has(node);
+
     if (shouldPreserveElement(node)) {
         return false;
     }
 
-    // 关键修复：如果文本节点已被处理，不应该移除
-    if (node.nodeType === Node.TEXT_NODE && processedNodes && processedNodes.has(node)) {
+    if (node.nodeType === Node.TEXT_NODE && isProcessed) {
         return false;
     }
 
-    // 关键修复：如果文本节点在已处理的元素内部，不应该移除
-    // 这样可以防止在元素被替换时，元素内部的文本节点被误删
-    // 但是，只有当父元素还在当前 parent 的子树中时才检查
-    if (node.nodeType === Node.TEXT_NODE && processedNodes) {
-        let parent = node.parentNode;
-        while (parent) {
-            // 关键修复：只有当父元素还在 DOM 中并且在当前 parent 的子树中时才检查
-            // 因为如果父元素被 replaceChild 移除了，它就不在 DOM 中了
-            if (processedNodes.has(parent) && parent.parentNode) {
-                return false; // 文本节点在已处理的元素内部，不应该移除
-            }
-            parent = parent.parentNode;
-        }
-    }
-
-    // 检查是否在新子元素集合中（通过引用）
     if (
         node instanceof HTMLElement ||
         node instanceof SVGElement ||
@@ -382,7 +422,6 @@ export function shouldRemoveNode(
             return false;
         }
 
-        // 检查是否通过 cache key 匹配
         if (node instanceof HTMLElement || node instanceof SVGElement) {
             const cacheKey = getElementCacheKey(node);
             if (cacheKey && cacheKeyMap.has(cacheKey)) {
@@ -446,7 +485,8 @@ export function collectNodesToRemove(
 
     for (let i = 0; i < parent.childNodes.length; i++) {
         const node = parent.childNodes[i];
-        if (shouldRemoveNode(node, elementSet, cacheKeyMap, processedNodes)) {
+        const removed = shouldRemoveNode(node, elementSet, cacheKeyMap, processedNodes);
+        if (removed) {
             nodesToRemove.push(node);
         }
     }

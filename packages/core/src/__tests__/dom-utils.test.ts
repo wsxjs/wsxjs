@@ -151,7 +151,7 @@ describe("DOM Utilities", () => {
             const fragment = document.createDocumentFragment();
             const children = [fragment];
             const result = flattenChildren(children);
-            expect(result).toEqual([fragment]);
+            expect(result).toEqual([]);
         });
 
         test("应该处理数字", () => {

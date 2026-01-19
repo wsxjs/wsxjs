@@ -200,7 +200,9 @@ export function Fragment(_props: unknown, children: JSXChildren[]): DocumentFrag
         }
 
         if (typeof child === "string" || typeof child === "number") {
-            fragment.appendChild(document.createTextNode(String(child)));
+            const textNode = document.createTextNode(String(child));
+            (textNode as any).__wsxManaged = true;
+            fragment.appendChild(textNode);
         } else if (child instanceof HTMLElement || child instanceof SVGElement) {
             fragment.appendChild(child);
         } else if (child instanceof DocumentFragment) {

@@ -58,35 +58,21 @@ export default defineConfig({
                 : "/wsxjs/"
             : "/",
     plugins: [
-        UnoCSS(),
+        UnoCSS() as any,
         wsx({
             debug: false, // Enable debug to see generated code
             jsxFactory: "h",
             jsxFragment: "Fragment",
-        }),
+        }) as any,
         // WSX-Press 文档系统插件
         wsxPress({
             docsRoot: path.resolve(__dirname, "public/docs"),
             outputDir: path.resolve(__dirname, ".wsx-press"),
-            // API 文档生成暂时禁用，因为 TypeDoc 版本不兼容
-            // api: {
-            //     entryPoints: [
-            //         path.resolve(__dirname, "../packages/core/src/index.ts"),
-            //         path.resolve(__dirname, "../packages/router/src/index.ts"),
-            //         path.resolve(__dirname, "../packages/base-components/src/index.ts"),
-            //     ],
-            //     tsconfig: path.resolve(__dirname, "../tsconfig.json"),
-            //     outputDir: path.resolve(__dirname, "public/docs/api"),
-            //     excludePrivate: true,
-            //     excludeProtected: false,
-            //     excludeInternal: true,
-            //     publicPath: "/docs/api/",
-            // },
-        }),
+        }) as any,
         // 构建后自动复制 index.html 为 404.html（用于 GitHub Pages SPA 路由）
-        copy404Plugin(),
+        copy404Plugin() as any,
         // 构建后复制 .wsx-press 目录到 dist
-        copyWsxPressPlugin(),
+        copyWsxPressPlugin() as any,
     ],
     build: {
         outDir: "dist",

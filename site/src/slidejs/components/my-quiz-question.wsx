@@ -1,72 +1,72 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 
-import { LightComponent, autoRegister, state } from '@wsxjs/wsx-core';
+import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
 
 /**
  * 自定义 Web Component 示例
  * 展示如何在 reveal.js 幻灯片中使用自定义组件
  */
-@autoRegister({ tagName: 'my-quiz-question' })
+@autoRegister({ tagName: "my-quiz-question" })
 export class MyQuizQuestion extends LightComponent {
-  @state private selectedOption: number | null = null;
+    @state private selectedOption: number | null = null;
 
-  static get observedAttributes() {
-    return ['question', 'options'];
-  }
-
-  protected onAttributeChanged(name: string, _oldValue: string, newValue: string) {
-    if (name === 'question' || name === 'options') {
-      // 属性变化时重置选择
-      this.selectedOption = null;
+    static get observedAttributes() {
+        return ["question", "options"];
     }
-  }
 
-  private getQuestion(): string {
-    return this.getAttribute('question') || 'No question provided';
-  }
-
-  private getOptions(): string[] {
-    const optionsAttr = this.getAttribute('options') || '[]';
-    try {
-      return JSON.parse(optionsAttr);
-    } catch (e) {
-      console.error('Failed to parse options:', e);
-      return [];
+    protected onAttributeChanged(name: string, _oldValue: string, newValue: string) {
+        if (name === "question" || name === "options") {
+            // 属性变化时重置选择
+            this.selectedOption = null;
+        }
     }
-  }
 
-  private handleOptionClick = (index: number, option: string) => {
-    this.selectedOption = index;
-    console.log(`Selected option ${index}: ${option}`);
+    private getQuestion(): string {
+        return this.getAttribute("question") || "No question provided";
+    }
 
-    // 触发自定义事件
-    this.dispatchEvent(
-      new CustomEvent('option-selected', {
-        detail: { index, option },
-        bubbles: true,
-      })
-    );
-  };
+    private getOptions(): string[] {
+        const optionsAttr = this.getAttribute("options") || "[]";
+        try {
+            return JSON.parse(optionsAttr);
+        } catch (e) {
+            console.error("Failed to parse options:", e);
+            return [];
+        }
+    }
 
-  render() {
-    const question = this.getQuestion();
-    const options = this.getOptions();
+    private handleOptionClick = (index: number, option: string) => {
+        this.selectedOption = index;
+        console.log(`Selected option ${index}: ${option}`);
 
-    return (
-      <div className="my-quiz-question">
-        <h3 className="my-quiz-question-title">{question}</h3>
-        <div className="my-quiz-question-options">
-          {options.map((opt: string, i: number) => (
-            <button
-              key={i}
-              className={`my-quiz-question-option ${this.selectedOption === i ? 'selected' : ''}`}
-              onClick={() => this.handleOptionClick(i, opt)}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  }
+        // 触发自定义事件
+        this.dispatchEvent(
+            new CustomEvent("option-selected", {
+                detail: { index, option },
+                bubbles: true,
+            })
+        );
+    };
+
+    render() {
+        const question = this.getQuestion();
+        const options = this.getOptions();
+
+        return (
+            <div className="my-quiz-question">
+                <h3 className="my-quiz-question-title">{question}</h3>
+                <div className="my-quiz-question-options">
+                    {options.map((opt: string, i: number) => (
+                        <button
+                            key={i}
+                            className={`my-quiz-question-option ${this.selectedOption === i ? "selected" : ""}`}
+                            onClick={() => this.handleOptionClick(i, opt)}
+                        >
+                            {opt}
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 }

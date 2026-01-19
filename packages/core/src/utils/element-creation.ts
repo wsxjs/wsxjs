@@ -152,7 +152,9 @@ export function appendChildrenToElement(
         }
 
         if (typeof child === "string" || typeof child === "number") {
-            element.appendChild(document.createTextNode(String(child)));
+            const textNode = document.createTextNode(String(child));
+            (textNode as any).__wsxManaged = true;
+            element.appendChild(textNode);
         } else if (child instanceof HTMLElement || child instanceof SVGElement) {
             element.appendChild(child);
         } else if (child instanceof DocumentFragment) {

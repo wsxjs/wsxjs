@@ -25,6 +25,7 @@ import { h } from "../jsx-factory";
 describe("collectPreservedElements", () => {
     test("应该收集所有应该保留的元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const preserved1 = document.createElement("div");
         preserved1.setAttribute("data-wsx-preserve", "");
         const preserved2 = document.createElement("div"); // 没有标记，应该被保留
@@ -43,6 +44,7 @@ describe("collectPreservedElements", () => {
 
     test("应该返回空数组如果没有保留元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const frameworkElement = h("div", { id: "framework" }, "Framework");
         parent.appendChild(frameworkElement);
 
@@ -54,6 +56,7 @@ describe("collectPreservedElements", () => {
 describe("findElementNode", () => {
     test("应该通过元素引用找到节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const element = h("div", { id: "test" }, "Test");
         parent.appendChild(element);
 
@@ -63,6 +66,7 @@ describe("findElementNode", () => {
 
     test("应该通过 cache key 找到节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const element1 = h("div", { id: "test", key: "test-key" }, "Test");
         parent.appendChild(element1);
         // Cache key is used implicitly by findElementNode
@@ -77,6 +81,7 @@ describe("findElementNode", () => {
 
     test("应该返回 null 如果元素不在 DOM 中且没有匹配的 cache key", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const element = h("div", { id: "test" }, "Test");
 
         const found = findElementNode(element, parent);
@@ -85,6 +90,7 @@ describe("findElementNode", () => {
 
     test("应该跳过保留的元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const preserved = document.createElement("div");
         preserved.setAttribute("data-wsx-preserve", "");
         parent.appendChild(preserved);
@@ -98,44 +104,51 @@ describe("findElementNode", () => {
 describe("findTextNode", () => {
     test("应该找到第一个文本节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const textNode = document.createTextNode("Text");
+        (textNode as any).__wsxManaged = true;
         parent.appendChild(textNode);
 
         const domIndex = { value: 0 };
-        const found = findTextNode(parent, domIndex);
+        const found = findTextNode(parent, domIndex, new Set<Node>());
         expect(found).toBe(textNode);
         expect(domIndex.value).toBe(1);
     });
 
     test("应该跳过元素节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const element = h("div", { id: "test" }, "Test");
         const textNode = document.createTextNode("Text");
+        (textNode as any).__wsxManaged = true;
         parent.appendChild(element);
         parent.appendChild(textNode);
 
         const domIndex = { value: 0 };
-        const found = findTextNode(parent, domIndex);
+        const found = findTextNode(parent, domIndex, new Set<Node>());
         expect(found).toBe(textNode);
         expect(domIndex.value).toBe(2);
     });
 
     test("应该返回 null 如果没有找到文本节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const element = h("div", { id: "test" }, "Test");
         parent.appendChild(element);
 
         const domIndex = { value: 0 };
-        const found = findTextNode(parent, domIndex);
+        const found = findTextNode(parent, domIndex, new Set<Node>());
         expect(found).toBeNull();
-        expect(domIndex.value).toBe(1);
+        expect(domIndex.value).toBe(0);
     });
 });
 
 describe("updateOrCreateTextNode", () => {
     test("应该更新现有文本节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const textNode = document.createTextNode("Old");
+        (textNode as any).__wsxManaged = true;
         parent.appendChild(textNode);
 
         updateOrCreateTextNode(parent, textNode, "New");
@@ -145,38 +158,43 @@ describe("updateOrCreateTextNode", () => {
 
     test("应该创建新文本节点如果 oldNode 不存在", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
 
         updateOrCreateTextNode(parent, null, "New");
         expect(parent.childNodes.length).toBe(1);
-        expect(parent.firstChild!.textContent).toBe("New");
+        expect(parent.firstChild?.textContent).toBe("New");
     });
 
     test("应该替换 oldNode 如果它不是文本节点且不应该保留", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const element = h("div", { id: "test" }, "Test");
         parent.appendChild(element);
 
         updateOrCreateTextNode(parent, element, "New");
         expect(parent.childNodes.length).toBe(1);
-        expect(parent.firstChild!.nodeType).toBe(Node.TEXT_NODE);
-        expect(parent.firstChild!.textContent).toBe("New");
+        expect(parent.firstChild?.nodeType).toBe(Node.TEXT_NODE);
+        expect(parent.firstChild?.textContent).toBe("New");
     });
 
     test("应该在保留元素之前插入新文本节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const preserved = document.createElement("div");
         preserved.setAttribute("data-wsx-preserve", "");
         parent.appendChild(preserved);
 
-        updateOrCreateTextNode(parent, preserved, "New");
+        updateOrCreateTextNode(parent, preserved, "New", preserved);
         expect(parent.childNodes.length).toBe(2);
-        expect(parent.firstChild!.textContent).toBe("New");
+        expect(parent.firstChild?.textContent).toBe("New");
         expect(parent.lastChild).toBe(preserved);
     });
 
     test("当 oldNode 存在且内容相同时不应该更新", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const textNode = document.createTextNode("Same");
+        (textNode as any).__wsxManaged = true;
         parent.appendChild(textNode);
 
         updateOrCreateTextNode(parent, textNode, "Same");
@@ -186,6 +204,7 @@ describe("updateOrCreateTextNode", () => {
 
     test("当 oldNode 为 null 时，应该创建新的文本节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const textNode1 = document.createTextNode("First");
         const textNode2 = document.createTextNode("Second");
         parent.appendChild(textNode1);
@@ -203,16 +222,50 @@ describe("updateOrCreateTextNode", () => {
 
     test("当 oldNode 为 null 且没有现有文本节点时，应该创建新节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
 
         updateOrCreateTextNode(parent, null, "New");
         expect(parent.childNodes.length).toBe(1);
         expect(parent.firstChild?.textContent).toBe("New");
+    });
+
+    test("应该使用 insertBeforeNode 指定插入位置", () => {
+        const parent = document.createElement("div");
+        markElement(parent, "pk");
+        const node1 = document.createElement("div");
+        const node2 = document.createElement("div");
+        parent.appendChild(node1);
+        parent.appendChild(node2);
+
+        // 插入文本到 node1 和 node2 之间
+        updateOrCreateTextNode(parent, null, "Inserted", node2);
+
+        expect(parent.childNodes.length).toBe(3);
+        expect(parent.childNodes[1].textContent).toBe("Inserted");
+        expect(parent.childNodes[1].nextSibling).toBe(node2);
+    });
+
+    test("当 oldNode 为 null 但存在相同内容的节点时，仍应创建新节点（无内容匹配搜索）", () => {
+        const parent = document.createElement("div");
+        markElement(parent, "pk");
+        const existingText = document.createTextNode("Existing");
+        parent.appendChild(existingText);
+
+        // 旧逻辑可能会找到 existingText 并返回它
+        // 新逻辑应该忽略它并创建新节点
+        const newNode = updateOrCreateTextNode(parent, null, "Existing");
+
+        expect(newNode).not.toBe(existingText);
+        expect(parent.childNodes.length).toBe(2);
+        expect(parent.lastChild).toBe(newNode);
+        expect(parent.lastChild?.textContent).toBe("Existing");
     });
 });
 
 describe("removeNodeIfNotPreserved", () => {
     test("应该移除不应该保留的节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const element = h("div", { id: "test" }, "Test");
         parent.appendChild(element);
 
@@ -222,6 +275,7 @@ describe("removeNodeIfNotPreserved", () => {
 
     test("不应该移除应该保留的节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const preserved = document.createElement("div");
         preserved.setAttribute("data-wsx-preserve", "");
         parent.appendChild(preserved);
@@ -232,6 +286,7 @@ describe("removeNodeIfNotPreserved", () => {
 
     test("应该处理 null 节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         expect(() => removeNodeIfNotPreserved(parent, null)).not.toThrow();
     });
 });
@@ -239,6 +294,7 @@ describe("removeNodeIfNotPreserved", () => {
 describe("replaceOrInsertElement", () => {
     test("应该替换现有元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const oldElement = h("div", { id: "old" }, "Old");
         const newElement = h("div", { id: "new" }, "New");
         parent.appendChild(oldElement);
@@ -250,6 +306,7 @@ describe("replaceOrInsertElement", () => {
 
     test("应该插入新元素如果 oldNode 不存在", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const newElement = h("div", { id: "new" }, "New");
 
         replaceOrInsertElement(parent, newElement, null);
@@ -271,6 +328,7 @@ describe("replaceOrInsertElement", () => {
 
     test("不应该替换如果 oldNode 是保留元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const preserved = document.createElement("div");
         preserved.setAttribute("data-wsx-preserve", "");
         const newElement = h("div", { id: "new" }, "New");
@@ -286,13 +344,15 @@ describe("replaceOrInsertElement", () => {
 describe("appendNewChild", () => {
     test("应该添加文本节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         appendNewChild(parent, "Text");
         expect(parent.childNodes.length).toBe(1);
-        expect(parent.firstChild!.textContent).toBe("Text");
+        expect(parent.firstChild?.textContent).toBe("Text");
     });
 
     test("应该添加元素节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const element = h("div", { id: "test" }, "Test");
         appendNewChild(parent, element);
         expect(parent.childNodes.length).toBe(1);
@@ -301,6 +361,7 @@ describe("appendNewChild", () => {
 
     test("应该跳过 null/undefined/false", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         appendNewChild(parent, null);
         appendNewChild(parent, undefined);
         appendNewChild(parent, false);
@@ -333,10 +394,10 @@ describe("buildNewChildrenMaps", () => {
 
         const key1 = getElementCacheKey(element1);
         const key2 = getElementCacheKey(element2);
-        expect(cacheKeyMap.has(key1!)).toBe(true);
-        expect(cacheKeyMap.has(key2!)).toBe(true);
-        expect(cacheKeyMap.get(key1!)).toBe(element1);
-        expect(cacheKeyMap.get(key2!)).toBe(element2);
+        expect(cacheKeyMap.has(key1 || "")).toBe(true);
+        expect(cacheKeyMap.has(key2 || "")).toBe(true);
+        expect(cacheKeyMap.get(key1 || "")).toBe(element1);
+        expect(cacheKeyMap.get(key2 || "")).toBe(element2);
     });
 
     test("应该跳过文本节点", () => {
@@ -366,7 +427,7 @@ describe("shouldRemoveNode", () => {
 
     test("应该返回 false 对于通过 cache key 匹配的元素", () => {
         const element = h("div", { id: "test", key: "test-key" }, "Test");
-        const cacheKey = getElementCacheKey(element)!;
+        const cacheKey = getElementCacheKey(element) || "";
         const elementSet = new Set<HTMLElement | SVGElement | DocumentFragment>();
         const cacheKeyMap = new Map<string, HTMLElement | SVGElement>([[cacheKey, element]]);
 
@@ -385,11 +446,12 @@ describe("shouldRemoveNode", () => {
 describe("deduplicateCacheKeys", () => {
     test("应该替换具有相同 cache key 的旧元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const oldElement = h("div", { id: "test", key: "test-key" }, "Old");
         const newElement = h("div", { id: "test", key: "test-key" }, "New");
         parent.appendChild(oldElement);
 
-        const cacheKey = getElementCacheKey(newElement)!;
+        const cacheKey = getElementCacheKey(newElement) || "";
         const cacheKeyMap = new Map([[cacheKey, newElement]]);
 
         // 关键修复：在 deduplicateCacheKeys 中，只有当 newElement 已经在 DOM 中时才会替换
@@ -403,6 +465,7 @@ describe("deduplicateCacheKeys", () => {
 
     test("应该跳过保留的元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const preserved = document.createElement("div");
         preserved.setAttribute("data-wsx-preserve", "");
         const cacheKey = "preserved-key";
@@ -421,6 +484,7 @@ describe("deduplicateCacheKeys", () => {
 describe("collectNodesToRemove", () => {
     test("应该收集应该移除的节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const element1 = h("div", { id: "test1" }, "Test1");
         const element2 = h("div", { id: "test2" }, "Test2");
         parent.appendChild(element1);
@@ -436,6 +500,7 @@ describe("collectNodesToRemove", () => {
 
     test("不应该收集保留的元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const preserved = document.createElement("div");
         preserved.setAttribute("data-wsx-preserve", "");
         parent.appendChild(preserved);
@@ -451,6 +516,7 @@ describe("collectNodesToRemove", () => {
 describe("removeNodes", () => {
     test("应该批量移除节点", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const element1 = h("div", { id: "test1" }, "Test1");
         const element2 = h("div", { id: "test2" }, "Test2");
         parent.appendChild(element1);
@@ -462,6 +528,7 @@ describe("removeNodes", () => {
 
     test("应该从后往前移除避免索引问题", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const elements = Array.from({ length: 5 }, (_, i) => {
             const el = h("div", { id: `test${i}` }, `Test${i}`);
             parent.appendChild(el);
@@ -476,6 +543,7 @@ describe("removeNodes", () => {
 describe("reinsertPreservedElements", () => {
     test("应该重新插入不在 DOM 中的保留元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const preserved = document.createElement("div");
         preserved.setAttribute("data-wsx-preserve", "");
         preserved.textContent = "Preserved";
@@ -487,6 +555,7 @@ describe("reinsertPreservedElements", () => {
 
     test("不应该移动已经在 DOM 中的保留元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const preserved = document.createElement("div");
         preserved.setAttribute("data-wsx-preserve", "");
         preserved.textContent = "Preserved";
@@ -500,6 +569,7 @@ describe("reinsertPreservedElements", () => {
 
     test("应该处理多个保留元素", () => {
         const parent = document.createElement("div");
+        markElement(parent, "pk");
         const preserved1 = document.createElement("div");
         preserved1.setAttribute("data-wsx-preserve", "");
         const preserved2 = document.createElement("div");

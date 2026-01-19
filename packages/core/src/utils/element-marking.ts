@@ -60,9 +60,11 @@ export function isCreatedByH(element: Node): boolean {
  * @returns True if element should be preserved
  */
 export function shouldPreserveElement(element: Node): boolean {
-    // 规则 1: 非元素节点保留
+    // 规则 1: 非元素节点（如文本节点）不再默认保留
+    // 它们应该通过 updateChildren 的 processedNodes 机制由框架管理
+    // 只有当它们的父元素是保留元素时，它们才会被保留（在 shouldRemoveNode 中处理）
     if (!(element instanceof HTMLElement || element instanceof SVGElement)) {
-        return true;
+        return false;
     }
 
     // 规则 2: 没有标记的元素保留（自定义元素、第三方库注入）
