@@ -1,0 +1,206 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * CalendarJS Demo - Calendar Integration with WSX
+ *
+ * This demo shows how to integrate calendar libraries
+ * into WSX components
+ */
+
+import { LightComponent, autoRegister, createLogger, state } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+import styles from "./CalendarJSDemo.css?inline";
+const logger = createLogger("CalendarJSDemo");
+import "@calenderjs/calendar";
+
+interface CalendarEvent {
+    id: string;
+    title: string;
+    date: Date;
+    color: string;
+}
+
+@autoRegister({ tagName: "calendarjs-demo" })
+@i18n("calendarjs")
+export default class CalendarJSDemo extends LightComponent {
+    @state private currentDate: Date = new Date();
+    @state private selectedDate: Date | null = null;
+    @state private events: CalendarEvent[] = [
+        {
+            id: "1",
+            title: "Meeting",
+            date: new Date(new Date().setDate(new Date().getDate() + 2)),
+            color: "#4a90e2",
+        },
+        {
+            id: "2",
+            title: "Conference",
+            date: new Date(new Date().setDate(new Date().getDate() + 5)),
+            color: "#50c878",
+        },
+        {
+            id: "3",
+            title: "Workshop",
+            date: new Date(new Date().setDate(new Date().getDate() + 10)),
+            color: "#ff6b6b",
+        },
+    ];
+
+    constructor() {
+        super({
+            styles,
+            styleName: "calendarjs-demo",
+            lightDOM: true,
+        });
+        logger.info("CalendarJS Demo initialized");
+    }
+
+    private getDaysInMonth = (date: Date): number => {
+        return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    };
+
+    private getFirstDayOfMonth = (date: Date): number => {
+        return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+    };
+
+    private getMonthName = (date: Date): string => {
+        return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    };
+
+    private prevMonth = () => {
+        this.currentDate = new Date(
+            this.currentDate.getFullYear(),
+            this.currentDate.getMonth() - 1,
+            1
+        );
+    };
+
+    private nextMonth = () => {
+        this.currentDate = new Date(
+            this.currentDate.getFullYear(),
+            this.currentDate.getMonth() + 1,
+            1
+        );
+    };
+
+    private selectDate = (day: number) => {
+        const newDate = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), day);
+        this.selectedDate = newDate;
+    };
+
+    private getEventsForDate = (day: number): CalendarEvent[] => {
+        const date = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), day);
+        return this.events.filter((event) => {
+            return (
+                event.date.getDate() === date.getDate() &&
+                event.date.getMonth() === date.getMonth() &&
+                event.date.getFullYear() === date.getFullYear()
+            );
+        });
+    };
+
+    private isToday = (day: number): boolean => {
+        const today = new Date();
+        const date = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), day);
+        return (
+            date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth() &&
+            date.getFullYear() === today.getFullYear()
+        );
+    };
+
+    private isSelected = (day: number): boolean => {
+        if (!this.selectedDate) return false;
+        const date = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), day);
+        return (
+            date.getDate() === this.selectedDate.getDate() &&
+            date.getMonth() === this.selectedDate.getMonth() &&
+            date.getFullYear() === this.selectedDate.getFullYear()
+        );
+    };
+
+    render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        const daysInMonth = this.getDaysInMonth(this.currentDate);
+        const firstDay = this.getFirstDayOfMonth(this.currentDate);
+        const days: (number | null)[] = [];
+
+        // Add empty cells for days before the first day of the month
+        for (let i = 0; i < firstDay; i++) {
+            days.push(null);
+        }
+
+        // Add days of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+            days.push(day);
+        }
+
+        const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+        return (
+            <div class="calendarjs-demo-container">
+                <h1 class="demo-title">{t("title")}</h1>
+                <p class="demo-description">{t("description")}</p>
+
+                {/* Interactive Calendar Demo */}
+                <div class="demo-section">
+                    <h2 class="section-title">{t("demo.title")}</h2>
+                    <div class="calendar-container">
+                        <wsx-calendar />
+                    </div>
+                </div>
+
+                {/* Code Examples */}
+                <div class="explanation-section">
+                    <h2 class="section-title">{t("explanation.title")}</h2>
+
+                    <div class="code-examples">
+                        <div class="code-example-card">
+                            <h3 class="card-title">{t("explanation.basic.title")}</h3>
+                            <p>{t("explanation.basic.description")}</p>
+                            <pre class="code-block">
+                                <code>{t("explanation.basic.code")}</code>
+                            </pre>
+                        </div>
+
+                        <div class="code-example-card">
+                            <h3 class="card-title">{t("explanation.events.title")}</h3>
+                            <p>{t("explanation.events.description")}</p>
+                            <pre class="code-block">
+                                <code>{t("explanation.events.code")}</code>
+                            </pre>
+                        </div>
+
+                        <div class="code-example-card">
+                            <h3 class="card-title">{t("explanation.reactive.title")}</h3>
+                            <p>{t("explanation.reactive.description")}</p>
+                            <pre class="code-block">
+                                <code>{t("explanation.reactive.code")}</code>
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Benefits */}
+                <div class="benefits-section">
+                    <h2 class="section-title">{t("benefits.title")}</h2>
+                    <div class="benefits-grid">
+                        <div class="benefit-card">
+                            <h3>{t("benefits.benefit1.title")}</h3>
+                            <p>{t("benefits.benefit1.description")}</p>
+                        </div>
+                        <div class="benefit-card">
+                            <h3>{t("benefits.benefit2.title")}</h3>
+                            <p>{t("benefits.benefit2.description")}</p>
+                        </div>
+                        <div class="benefit-card">
+                            <h3>{t("benefits.benefit3.title")}</h3>
+                            <p>{t("benefits.benefit3.description")}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}

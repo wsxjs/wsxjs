@@ -39,6 +39,17 @@ declare module "*.css?inline" {
     export default styles;
 }
 
+// Raw file imports for Vite
+declare module "*?raw" {
+    const content: string;
+    export default content;
+}
+
+declare module "*.slide?raw" {
+    const content: string;
+    export default content;
+}
+
 // WSX component module declarations
 // Types from @wsxjs/wsx-core and @testing-library/jest-dom
 // are automatically loaded via tsconfig.json types configuration

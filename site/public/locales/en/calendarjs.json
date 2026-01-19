@@ -1,0 +1,41 @@
+{
+    "title": "CalendarJS Integration Demo",
+    "description": "Learn how to integrate calendar libraries with WSXJS components for creating interactive calendars.",
+    "demo": {
+        "title": "Interactive Calendar Demo",
+        "selectedDate": "Selected Date"
+    },
+    "explanation": {
+        "title": "How It Works",
+        "basic": {
+            "title": "Basic Integration",
+            "description": "Create a calendar component with reactive state management for date selection.",
+            "code": "@state private currentDate: Date = new Date();\n@state private selectedDate: Date | null = null;"
+        },
+        "events": {
+            "title": "Event Management",
+            "description": "Manage calendar events with reactive state and component methods.",
+            "code": "private getEventsForDate = (day: number): CalendarEvent[] => {\n  return this.events.filter(event => {\n    return event.date.getDate() === day;\n  });\n};"
+        },
+        "reactive": {
+            "title": "Reactive Updates",
+            "description": "Use @state decorator for automatic calendar updates when dates change.",
+            "code": "private nextMonth = () => {\n  this.currentDate = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth() + 1,\n    1\n  );\n};"
+        }
+    },
+    "benefits": {
+        "title": "Benefits",
+        "benefit1": {
+            "title": "Reactive State",
+            "description": "Use @state decorator for automatic calendar updates and re-rendering."
+        },
+        "benefit2": {
+            "title": "Event Handling",
+            "description": "Easily handle date selection and event management with WSX component methods."
+        },
+        "benefit3": {
+            "title": "Type Safety",
+            "description": "Full TypeScript support ensures type-safe calendar operations."
+        }
+    }
+}

@@ -1,0 +1,284 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * SlideJS Demo - Slide Presentation Integration with WSX
+ *
+ * This demo shows how to integrate slide presentation libraries
+ * into WSX components
+ */
+
+import { LightComponent, autoRegister, createLogger, state } from "@wsxjs/wsx-core";
+import { i18n } from "@wsxjs/wsx-i18next";
+import styles from "./SlideJSDemo.css?inline";
+import { createSlideRunner as createSwiperRunner } from "@slidejs/runner-swiper";
+import { createSlideRunner as createSplideRunner } from "@slidejs/runner-splide";
+import type { SlideContext } from "@slidejs/context";
+import type { SlideRunner } from "@slidejs/runner";
+import { setTheme, Preset } from "@slidejs/theme";
+// 导入自定义 Web Component（必须在使用前注册）
+import "./components/my-quiz-question.wsx";
+// @ts-expect-error - Vite raw import
+import dslSource from "./demo.slide?raw";
+
+const logger = createLogger("SlideJSDemo");
+
+@autoRegister({ tagName: "slidejs-demo" })
+@i18n("slidejs")
+export default class SlideJSDemo extends LightComponent {
+    @state private dslContent: string = dslSource;
+    @state private activePlayer: "swiper" | "splide" = "swiper";
+    @state private currentTheme: "dark" | "light" = "dark";
+
+    private swiperRunner: SlideRunner<SlideContext> | null = null;
+    private splideRunner: SlideRunner<SlideContext> | null = null;
+
+    private context: SlideContext = {
+        sourceType: "quiz",
+        sourceId: "demo",
+        metadata: {
+            title: "Demo Quiz",
+        },
+        items: [],
+    };
+
+    constructor() {
+        super({
+            styles,
+            styleName: "slidejs-demo",
+            lightDOM: true,
+        });
+        logger.info("SlideJS Demo initialized");
+    }
+
+    protected onConnected(): void {
+        super.onConnected?.();
+        // 等待 DOM 渲染完成后再初始化
+        requestAnimationFrame(() => {
+            this.initPlayers();
+            this.initThemeSwitcher();
+        });
+    }
+
+    protected onDisconnected(): void {
+        super.onDisconnected?.();
+        this.destroyRunners();
+    }
+
+    private async initPlayers(): Promise<void> {
+        await this.updatePlayer(this.dslContent);
+    }
+
+    private async updatePlayer(dsl: string): Promise<void> {
+        // 等待 DOM 更新完成
+        await new Promise<void>((resolve) => {
+            requestAnimationFrame(() => {
+                setTimeout(resolve, 0);
+            });
+        });
+
+        const swiperContainer = this.querySelector("#player-swiper") as HTMLElement;
+        const splideContainer = this.querySelector("#player-splide") as HTMLElement;
+
+        if (!swiperContainer || !splideContainer) {
+            logger.warn("Player containers not found, retrying...");
+            setTimeout(() => this.updatePlayer(dsl), 100);
+            return;
+        }
+
+        try {
+            // 销毁旧的 runners
+            await this.destroyRunners();
+
+            // 创建 Swiper runner
+            this.swiperRunner = await createSwiperRunner(dsl, this.context, {
+                container: swiperContainer,
+                swiperOptions: {
+                    direction: "horizontal",
+                    loop: false,
+                    speed: 300,
+                    spaceBetween: 30,
+                    slidesPerView: 1,
+                    keyboard: {
+                        enabled: true,
+                        onlyInViewport: true,
+                    },
+                },
+            });
+            if (this.swiperRunner) {
+                this.swiperRunner.play();
+            }
+
+            // 创建 Splide runner
+            this.splideRunner = await createSplideRunner(dsl, this.context, {
+                container: splideContainer,
+                splideOptions: {
+                    type: "slide",
+                    perPage: 1,
+                    perMove: 1,
+                    gap: "1rem",
+                    keyboard: "global",
+                    arrows: true,
+                    pagination: true,
+                },
+            });
+            if (this.splideRunner) {
+                this.splideRunner.play();
+            }
+
+            logger.info("✅ Presentation updated!");
+        } catch (error) {
+            logger.error("❌ Error:", error);
+            const errorMsg = error instanceof Error ? error.message : String(error);
+
+            const createErrorDiv = (msg: string): HTMLDivElement => {
+                const errorDiv = document.createElement("div");
+                errorDiv.style.padding = "2em";
+                errorDiv.style.color = "red";
+                errorDiv.style.fontFamily = "monospace";
+                errorDiv.style.whiteSpace = "pre-wrap";
+                errorDiv.textContent = `Error: ${msg}`;
+                return errorDiv;
+            };
+
+            if (swiperContainer) {
+                swiperContainer.textContent = "";
+                swiperContainer.appendChild(createErrorDiv(errorMsg));
+            }
+            if (splideContainer) {
+                splideContainer.textContent = "";
+                splideContainer.appendChild(createErrorDiv(errorMsg));
+            }
+        }
+    }
+
+    private async destroyRunners(): Promise<void> {
+        if (this.swiperRunner) {
+            await this.swiperRunner.destroy();
+            this.swiperRunner = null;
+        }
+        if (this.splideRunner) {
+            await this.splideRunner.destroy();
+            this.splideRunner = null;
+        }
+    }
+
+    private initThemeSwitcher(): void {
+        // 默认使用 Solarized Dark 主题
+        setTheme(Preset.SolarizedDark);
+    }
+
+    private handleThemeChange = (theme: "dark" | "light"): void => {
+        this.currentTheme = theme;
+        if (theme === "dark") {
+            setTheme(Preset.SolarizedDark);
+        } else {
+            setTheme(Preset.SolarizedLight);
+        }
+    };
+
+    private handlePlayerChange = (player: "swiper" | "splide"): void => {
+        this.activePlayer = player;
+    };
+
+    render() {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        return (
+            <div class="slidejs-demo-container">
+                <h1 class="demo-title">{t("title")}</h1>
+                <p class="demo-description">{t("description")}</p>
+
+                {/* Interactive Slide Demo */}
+                <div class="demo-section">
+                    <h2 class="section-title">{t("demo.title")}</h2>
+
+                    {/* Theme Switcher */}
+                    <div class="theme-switcher">
+                        <button
+                            class={`theme-button ${this.currentTheme === "dark" ? "active" : ""}`}
+                            onClick={() => this.handleThemeChange("dark")}
+                        >
+                            {t("demo.theme.dark")}
+                        </button>
+                        <button
+                            class={`theme-button ${this.currentTheme === "light" ? "active" : ""}`}
+                            onClick={() => this.handleThemeChange("light")}
+                        >
+                            {t("demo.theme.light")}
+                        </button>
+                    </div>
+
+                    {/* Player Tabs */}
+                    <div class="player-tabs">
+                        <button
+                            class={`player-tab ${this.activePlayer === "swiper" ? "active" : ""}`}
+                            onClick={() => this.handlePlayerChange("swiper")}
+                        >
+                            Swiper
+                        </button>
+                        <button
+                            class={`player-tab ${this.activePlayer === "splide" ? "active" : ""}`}
+                            onClick={() => this.handlePlayerChange("splide")}
+                        >
+                            Splide
+                        </button>
+                    </div>
+
+                    {/* Player Container */}
+                    <div class="player-layout">
+                        <div
+                            id="player-swiper"
+                            class={`player-view ${this.activePlayer === "swiper" ? "active" : ""}`}
+                        ></div>
+                        <div
+                            id="player-splide"
+                            class={`player-view ${this.activePlayer === "splide" ? "active" : ""}`}
+                        ></div>
+                    </div>
+                </div>
+
+                {/* Code Examples */}
+                <div class="explanation-section">
+                    <h2 class="section-title">{t("explanation.title")}</h2>
+
+                    <div class="code-examples">
+                        <div class="code-example-card">
+                            <h3 class="card-title">{t("explanation.basic.title")}</h3>
+                            <p>{t("explanation.basic.description")}</p>
+                            <pre class="code-block">
+                                <code>{t("explanation.basic.code")}</code>
+                            </pre>
+                        </div>
+
+                        <div class="code-example-card">
+                            <h3 class="card-title">{t("explanation.features.title")}</h3>
+                            <p>{t("explanation.features.description")}</p>
+                            <pre class="code-block">
+                                <code>{t("explanation.features.code")}</code>
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Benefits */}
+                <div class="benefits-section">
+                    <h2 class="section-title">{t("benefits.title")}</h2>
+                    <div class="benefits-grid">
+                        <div class="benefit-card">
+                            <h3>{t("benefits.benefit1.title")}</h3>
+                            <p>{t("benefits.benefit1.description")}</p>
+                        </div>
+                        <div class="benefit-card">
+                            <h3>{t("benefits.benefit2.title")}</h3>
+                            <p>{t("benefits.benefit2.description")}</p>
+                        </div>
+                        <div class="benefit-card">
+                            <h3>{t("benefits.benefit3.title")}</h3>
+                            <p>{t("benefits.benefit3.description")}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}

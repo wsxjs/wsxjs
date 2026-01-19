@@ -40,6 +40,44 @@
             },
             "action": "查看 Marked Builder 演示"
         },
+        "slidejs": {
+            "title": "SlideJS 集成",
+            "badge": "演示文稿",
+            "description": "将幻灯片演示库与 WSXJS 组件集成，使用响应式状态管理创建交互式演示文稿。",
+            "why": {
+                "title": "为什么选择 SlideJS 作为用例？",
+                "reason1": "幻灯片演示需要响应式状态管理来实现导航和内容更新",
+                "reason2": "WSXJS @state 装饰器在幻灯片状态更改时提供自动重新渲染",
+                "reason3": "组件生命周期钩子支持幻灯片库的正确初始化和清理",
+                "reason4": "类型安全确保可靠的幻灯片管理并防止运行时错误"
+            },
+            "features": {
+                "title": "主要特性",
+                "feature1": "使用 @state 装饰器的响应式幻灯片导航",
+                "feature2": "用于幻灯片库初始化的组件生命周期集成",
+                "feature3": "使用 TypeScript 进行类型安全的幻灯片状态管理"
+            },
+            "action": "查看 SlideJS 演示"
+        },
+        "calendarjs": {
+            "title": "CalendarJS 集成",
+            "badge": "日历",
+            "description": "将日历库与 WSXJS 组件集成，创建具有日期选择和事件管理的交互式日历。",
+            "why": {
+                "title": "为什么选择 CalendarJS 作为用例？",
+                "reason1": "日历需要响应式状态管理来实现日期选择和月份导航",
+                "reason2": "WSXJS @state 装饰器在日期更改时提供自动日历更新",
+                "reason3": "组件方法支持轻松的事件处理和日期计算",
+                "reason4": "类型安全确保可靠的日历操作并防止日期相关的错误"
+            },
+            "features": {
+                "title": "主要特性",
+                "feature1": "使用 @state 装饰器的响应式日期选择",
+                "feature2": "使用组件方法进行事件管理",
+                "feature3": "使用 TypeScript 进行类型安全的日历操作"
+            },
+            "action": "查看 CalendarJS 演示"
+        },
         "cms": {
             "title": "内容管理系统",
             "badge": "企业级",

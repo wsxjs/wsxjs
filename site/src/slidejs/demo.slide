@@ -1,0 +1,72 @@
+present quiz "revealjs-demo" {
+  rules {
+    rule start "intro" {
+      slide {
+        content text {
+          "# Slide DSL + Reveal.js"
+          "## 使用 Reveal.js 渲染幻灯片"
+          ""
+          "这是一个演示如何使用 Slide DSL 和 Reveal.js 适配器创建交互式幻灯片。"
+        }
+        behavior {
+          transition fade {}
+        }
+      }
+    }
+
+    rule content "quiz-slides" {
+      slide {
+        content dynamic {
+          name: "my-quiz-question"
+          attrs {
+            question: "What is 2 + 2?"
+            options: "[\"2\", \"3\", \"4\", \"5\"]"
+          }
+        }
+        behavior {
+          transition slide {}
+        }
+      }
+
+      slide {
+        content dynamic {
+          name: "my-quiz-question"
+          attrs {
+            question: "Which is a JavaScript framework?"
+            options: "[\"React\", \"Python\", \"Java\", \"C++\"]"
+          }
+        }
+        behavior {
+          transition slide {}
+        }
+      }
+
+      slide {
+        content text {
+          "# Features"
+          ""
+          "- 支持 Web Components"
+          "- 支持 WSX 组件"
+          "- 流畅的过渡效果"
+          "- 键盘和鼠标导航"
+        }
+        behavior {
+          transition slide {}
+        }
+      }
+    }
+
+    rule end "thanks" {
+      slide {
+        content text {
+          "# Thank You!"
+          ""
+          "## 使用 Reveal.js 创建精美的幻灯片演示"
+        }
+        behavior {
+          transition fade {}
+        }
+      }
+    }
+  }
+}

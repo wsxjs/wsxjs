@@ -51,6 +51,9 @@ import "./components/SlotExamples.wsx";
 import "./components/PrivacyPolicy.wsx";
 import "./components/TermsOfService.wsx";
 import "./marked/MarkedBuilder.wsx";
+// Import new use case components
+import "./slidejs/SlideJSDemo.wsx";
+import "./calendarjs/CalendarJSDemo.wsx";
 // Import LanguageSwitcher component
 import "./components/LanguageSwitcher.wsx";
 // Import NotFound component
@@ -100,6 +103,8 @@ export default class App extends LightComponent {
                         <wsx-view route="/slot-examples" component="slot-examples"></wsx-view>
                         <wsx-view route="/editorjs" component="editorjs-demo"></wsx-view>
                         <wsx-view route="/marked" component="marked-builder"></wsx-view>
+                        <wsx-view route="/slidejs" component="slidejs-demo"></wsx-view>
+                        <wsx-view route="/calendarjs" component="calendarjs-demo"></wsx-view>
                         <wsx-view route="/ecosystem" component="ecosystem-section"></wsx-view>
                         <wsx-view route="/privacy" component="privacy-policy"></wsx-view>
                         <wsx-view route="/terms" component="terms-of-service"></wsx-view>

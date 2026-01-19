@@ -1,0 +1,41 @@
+{
+    "title": "SlideJS 集成演示",
+    "description": "了解如何将幻灯片演示库与 WSXJS 组件集成，创建交互式演示文稿。",
+    "demo": {
+        "title": "交互式幻灯片演示",
+        "prev": "上一张",
+        "next": "下一张",
+        "theme": {
+            "dark": "深色主题",
+            "light": "浅色主题"
+        }
+    },
+    "explanation": {
+        "title": "工作原理",
+        "basic": {
+            "title": "基本集成",
+            "description": "使用响应式状态管理将幻灯片库与 WSX 组件集成。",
+            "code": "@state private currentSlide: number = 0;\n\nprivate nextSlide = () => {\n  this.currentSlide++;\n};"
+        },
+        "features": {
+            "title": "主要特性",
+            "description": "利用 WSX 响应式状态和组件生命周期进行幻灯片管理。",
+            "code": "render() {\n  return <div class=\"slide\">\n    {this.slides[this.currentSlide]}\n  </div>;\n}"
+        }
+    },
+    "benefits": {
+        "title": "优势",
+        "benefit1": {
+            "title": "响应式状态",
+            "description": "使用 @state 装饰器实现自动幻灯片更新和重新渲染。"
+        },
+        "benefit2": {
+            "title": "组件生命周期",
+            "description": "利用 WSX 组件生命周期钩子进行幻灯片初始化和清理。"
+        },
+        "benefit3": {
+            "title": "类型安全",
+            "description": "完整的 TypeScript 支持确保类型安全的幻灯片管理。"
+        }
+    }
+}

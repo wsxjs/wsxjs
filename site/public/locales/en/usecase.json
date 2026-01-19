@@ -40,6 +40,44 @@
             },
             "action": "View Marked Builder Demo"
         },
+        "slidejs": {
+            "title": "SlideJS Integration",
+            "badge": "Presentation",
+            "description": "Integrate slide presentation libraries with WSXJS components to create interactive presentations with reactive state management.",
+            "why": {
+                "title": "Why SlideJS as a Use Case?",
+                "reason1": "Slide presentations need reactive state management for navigation and content updates",
+                "reason2": "WSXJS @state decorator provides automatic re-rendering when slide state changes",
+                "reason3": "Component lifecycle hooks enable proper initialization and cleanup of slide libraries",
+                "reason4": "Type safety ensures reliable slide management and prevents runtime errors"
+            },
+            "features": {
+                "title": "Key Features",
+                "feature1": "Reactive slide navigation with @state decorator",
+                "feature2": "Component lifecycle integration for slide library initialization",
+                "feature3": "Type-safe slide state management with TypeScript"
+            },
+            "action": "View SlideJS Demo"
+        },
+        "calendarjs": {
+            "title": "CalendarJS Integration",
+            "badge": "Calendar",
+            "description": "Integrate calendar libraries with WSXJS components to create interactive calendars with date selection and event management.",
+            "why": {
+                "title": "Why CalendarJS as a Use Case?",
+                "reason1": "Calendars require reactive state management for date selection and month navigation",
+                "reason2": "WSXJS @state decorator provides automatic calendar updates when dates change",
+                "reason3": "Component methods enable easy event handling and date calculations",
+                "reason4": "Type safety ensures reliable calendar operations and prevents date-related bugs"
+            },
+            "features": {
+                "title": "Key Features",
+                "feature1": "Reactive date selection with @state decorator",
+                "feature2": "Event management with component methods",
+                "feature3": "Type-safe calendar operations with TypeScript"
+            },
+            "action": "View CalendarJS Demo"
+        },
         "cms": {
             "title": "Content Management Systems",
             "badge": "Enterprise",

@@ -108,6 +108,90 @@ export default class UseCaseSection extends WebComponent {
                                 </div>
                             </div>
                         </div>
+
+                        {/* SlideJS Use Case */}
+                        <div
+                            class="use-case-card"
+                            onClick={() => this.handleCardClick("/slidejs")}
+                        >
+                            <div class="use-case-icon">📊</div>
+                            <div class="use-case-content">
+                                <h3 class="use-case-title">{t("cases.slidejs.title")}</h3>
+                                <span class="use-case-badge">{t("cases.slidejs.badge")}</span>
+                                <p class="use-case-description">
+                                    {t("cases.slidejs.description")}
+                                </p>
+
+                                <div class="use-case-why">
+                                    <h4 class="why-title">{t("cases.slidejs.why.title")}</h4>
+                                    <ul class="why-list">
+                                        <li>{t("cases.slidejs.why.reason1")}</li>
+                                        <li>{t("cases.slidejs.why.reason2")}</li>
+                                        <li>{t("cases.slidejs.why.reason3")}</li>
+                                        <li>{t("cases.slidejs.why.reason4")}</li>
+                                    </ul>
+                                </div>
+
+                                <div class="use-case-features">
+                                    <h4 class="features-title">
+                                        {t("cases.slidejs.features.title")}
+                                    </h4>
+                                    <ul class="features-list">
+                                        <li>{t("cases.slidejs.features.feature1")}</li>
+                                        <li>{t("cases.slidejs.features.feature2")}</li>
+                                        <li>{t("cases.slidejs.features.feature3")}</li>
+                                    </ul>
+                                </div>
+
+                                <div class="use-case-action">
+                                    <span class="use-case-link">
+                                        {t("cases.slidejs.action")} →
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* CalendarJS Use Case */}
+                        <div
+                            class="use-case-card"
+                            onClick={() => this.handleCardClick("/calendarjs")}
+                        >
+                            <div class="use-case-icon">📅</div>
+                            <div class="use-case-content">
+                                <h3 class="use-case-title">{t("cases.calendarjs.title")}</h3>
+                                <span class="use-case-badge">{t("cases.calendarjs.badge")}</span>
+                                <p class="use-case-description">
+                                    {t("cases.calendarjs.description")}
+                                </p>
+
+                                <div class="use-case-why">
+                                    <h4 class="why-title">{t("cases.calendarjs.why.title")}</h4>
+                                    <ul class="why-list">
+                                        <li>{t("cases.calendarjs.why.reason1")}</li>
+                                        <li>{t("cases.calendarjs.why.reason2")}</li>
+                                        <li>{t("cases.calendarjs.why.reason3")}</li>
+                                        <li>{t("cases.calendarjs.why.reason4")}</li>
+                                    </ul>
+                                </div>
+
+                                <div class="use-case-features">
+                                    <h4 class="features-title">
+                                        {t("cases.calendarjs.features.title")}
+                                    </h4>
+                                    <ul class="features-list">
+                                        <li>{t("cases.calendarjs.features.feature1")}</li>
+                                        <li>{t("cases.calendarjs.features.feature2")}</li>
+                                        <li>{t("cases.calendarjs.features.feature3")}</li>
+                                    </ul>
+                                </div>
+
+                                <div class="use-case-action">
+                                    <span class="use-case-link">
+                                        {t("cases.calendarjs.action")} →
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

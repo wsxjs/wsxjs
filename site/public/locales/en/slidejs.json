@@ -1,0 +1,41 @@
+{
+    "title": "SlideJS Integration Demo",
+    "description": "Learn how to integrate slide presentation libraries with WSXJS components for creating interactive presentations.",
+    "demo": {
+        "title": "Interactive Slide Demo",
+        "prev": "Previous",
+        "next": "Next",
+        "theme": {
+            "dark": "Dark Theme",
+            "light": "Light Theme"
+        }
+    },
+    "explanation": {
+        "title": "How It Works",
+        "basic": {
+            "title": "Basic Integration",
+            "description": "Integrate slide libraries with WSX components using reactive state management.",
+            "code": "@state private currentSlide: number = 0;\n\nprivate nextSlide = () => {\n  this.currentSlide++;\n};"
+        },
+        "features": {
+            "title": "Key Features",
+            "description": "Leverage WSX reactive state and component lifecycle for slide management.",
+            "code": "render() {\n  return <div class=\"slide\">\n    {this.slides[this.currentSlide]}\n  </div>;\n}"
+        }
+    },
+    "benefits": {
+        "title": "Benefits",
+        "benefit1": {
+            "title": "Reactive State",
+            "description": "Use @state decorator for automatic slide updates and re-rendering."
+        },
+        "benefit2": {
+            "title": "Component Lifecycle",
+            "description": "Leverage WSX component lifecycle hooks for slide initialization and cleanup."
+        },
+        "benefit3": {
+            "title": "Type Safety",
+            "description": "Full TypeScript support ensures type-safe slide management."
+        }
+    }
+}
