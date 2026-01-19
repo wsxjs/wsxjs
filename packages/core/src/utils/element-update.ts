@@ -435,21 +435,16 @@ export function updateChildren(
                         ? element.childNodes[insertionIndex.value]
                         : null;
 
-                // 即使 newChild === oldNode，如果位置不对也需要移动
-                // 使用 insertBeforeNode 确保它在正确的位置
-                if (newChild === oldNode) {
-                    if (newChild.nextSibling !== insertBeforeNode) {
-                        element.insertBefore(newChild, insertBeforeNode);
-                    }
-                } else {
-                    // RFC 0053 关键修复：直接使用 insertBefore 确保插入到正确位置
-                    // replaceOrInsertElement 会尝试基于 oldNode (此处为 insertBeforeNode) 的 nextSibling 插入，
-                    // 这对于旨在基于位置插入的场景会导致 Off-By-One 错误（插入到了后面）
-                    element.insertBefore(newChild, insertBeforeNode);
-                }
+                // 甚至 newChild === oldNode，如果位置不对也需要移动
+                // 使用 helper 处理元素替换和插入，支持 HTML 解析内容的自动等价性匹配
+                replaceOrInsertElementAtPosition(
+                    element,
+                    newChild as HTMLElement | SVGElement,
+                    oldNode,
+                    insertBeforeNode,
+                    processedNodes
+                );
 
-                // 标记新元素为已处理
-                processedNodes.add(newChild);
                 insertionIndex.value++;
             } else {
                 // 类型变化：元素 -> 文本/Fragment

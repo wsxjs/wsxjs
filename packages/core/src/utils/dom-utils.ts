@@ -51,9 +51,15 @@ export function parseHTMLToNodes(html: string): (HTMLElement | SVGElement | stri
     // Text nodes are converted to strings, elements are kept as-is
     return Array.from(temp.childNodes).map((node) => {
         if (node instanceof HTMLElement || node instanceof SVGElement) {
+            // 关键修复：标记解析出的元素为框架管理
+            // 这确保了 shouldPreserveElement 不会错误地保留这些元素
+            // 从而防止了在频繁重渲染（如 Markdown 输入）时的元素堆积
+            (node as any).__wsxManaged = true;
             return node;
         } else {
             // Convert text nodes and other node types to strings
+            // Note: When these strings are processed by appendChildrenToElement,
+            // they will be wraped in managed text nodes.
             return node.textContent || "";
         }
     });

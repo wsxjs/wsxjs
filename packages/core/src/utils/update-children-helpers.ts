@@ -207,7 +207,8 @@ export function replaceOrInsertElementAtPosition(
     parent: HTMLElement | SVGElement,
     newChild: HTMLElement | SVGElement,
     oldNode: Node | null,
-    targetNextSibling: Node | null
+    targetNextSibling: Node | null,
+    processedNodes?: Set<Node>
 ): void {
     // 如果新元素已经在其他父元素中，先移除
     if (newChild.parentNode && newChild.parentNode !== parent) {
@@ -220,6 +221,7 @@ export function replaceOrInsertElementAtPosition(
 
     if (isInCorrectPosition) {
         // 已经在正确位置，不需要移动
+        if (processedNodes) processedNodes.add(newChild);
         return;
     }
 
@@ -227,25 +229,40 @@ export function replaceOrInsertElementAtPosition(
     if (newChild.parentNode === parent) {
         // insertBefore 会自动处理：如果元素已经在 DOM 中，会先移除再插入到新位置
         parent.insertBefore(newChild, targetNextSibling);
+        if (processedNodes) processedNodes.add(newChild);
         return;
     }
 
-    // 元素不在 parent 中，需要插入或替换
+    // 元素不在 parent 中，或者需要替换
     if (oldNode && oldNode.parentNode === parent && !shouldPreserveElement(oldNode)) {
         if (oldNode !== newChild) {
+            // RFC 0048 & RFC 0053 关键修正：特殊处理从 HTML 字符串解析出的元素
+            // 如果旧节点和新节点都没有 cache key (说明是 HTML 解析出的) 且内容相同
+            // 则保留旧节点，不进行替换。这解决了 Markdown 渲染中的 DOM 抖动。
+            const oldCacheKey = getElementCacheKey(oldNode as HTMLElement | SVGElement);
+            const newCacheKey = getElementCacheKey(newChild);
+
+            if (!oldCacheKey && !newCacheKey && (oldNode as any).__wsxManaged === true) {
+                const oldTag = (oldNode as HTMLElement | SVGElement).tagName.toLowerCase();
+                const newTag = newChild.tagName.toLowerCase();
+                if (oldTag === newTag && oldNode.textContent === newChild.textContent) {
+                    // 内容相同，逻辑上旧节点已经“处理”过了
+                    if (processedNodes) processedNodes.add(oldNode);
+                    return;
+                }
+            }
+
             // 关键修复：在替换元素之前，标记旧元素内的所有文本节点为已处理
-            // 这样可以防止在移除阶段被误删
-            // 注意：这里只标记直接子文本节点，不递归处理嵌套元素内的文本节点
-            // 因为 replaceChild 会一起处理元素及其所有子节点
             parent.replaceChild(newChild, oldNode);
+            if (processedNodes) processedNodes.add(newChild);
+        } else {
+            // 已经是同一个节点
+            if (processedNodes) processedNodes.add(newChild);
         }
     } else {
-        // RFC 0048 关键修复：在插入元素之前，检查是否已经存在相同内容的元素
-        // 如果 newChild 已经在 parent 中，不应该再次插入
-        // 如果 parent 中已经存在相同标签名和内容的元素，也不应该插入
-        // 这样可以防止重复插入相同的元素（特别是从 HTML 字符串解析而来的元素）
+        // ... 继续原有的插入逻辑 ...
         if (newChild.parentNode === parent) {
-            // 元素已经在 parent 中，不需要再次插入
+            // 已经在正确位置，不需要再次插入
             return;
         }
         // RFC 0048 关键修复：检查是否已经存在相同内容的元素

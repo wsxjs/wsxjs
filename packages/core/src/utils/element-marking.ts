@@ -68,15 +68,17 @@ export function shouldPreserveElement(element: Node): boolean {
     }
 
     // 规则 2: 没有标记的元素保留（自定义元素、第三方库注入）
-    if (!isCreatedByH(element)) {
+    // 关键修正：除了检查是否由 h() 创建，还要检查是否被框架显式标记为托管 (__wsxManaged)
+    // 这主要用于处理从 HTML 字符串解析出的元素 (parseHTMLToNodes)
+    if (!isCreatedByH(element) && (element as any).__wsxManaged !== true) {
         return true;
     }
 
     // 规则 3: 显式标记保留
-    if (element.hasAttribute("data-wsx-preserve")) {
+    if (element instanceof HTMLElement && element.hasAttribute("data-wsx-preserve")) {
         return true;
     }
 
-    // 规则 4: 由 h() 创建的元素 → 不保留（由框架管理）
+    // 规则 4: 由 h() 创建或被标记为托管的元素 → 不保留（由框架管理）
     return false;
 }

@@ -11,7 +11,13 @@
  * ```
  */
 
-import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import {
+    LightComponent,
+    autoRegister,
+    state,
+    type JSXChildren,
+    parseHTMLToNodes,
+} from "@wsxjs/wsx-core";
 import { createLogger } from "@wsxjs/wsx-logger";
 import { marked } from "marked";
 import type { Tokens } from "marked";
@@ -111,21 +117,19 @@ export default class Markdown extends LightComponent {
     /**
      * Convert marked tokens to WSX JSX elements
      */
-    private renderTokens(tokens: Tokens.Generic[]): (HTMLElement | null)[] {
-        return tokens
-            .map((token) => this.renderToken(token))
-            .filter((el): el is HTMLElement => el !== null);
+    private renderTokens(tokens: Tokens.Generic[]): JSXChildren[] {
+        return tokens.map((token) => this.renderToken(token)).filter((el) => el !== null);
     }
 
     /**
      * Render a single token to WSX JSX element
      * Supports custom renderers for extensibility
      */
-    private renderToken(token: Tokens.Generic): HTMLElement | null {
+    private renderToken(token: Tokens.Generic): JSXChildren {
         // Check for custom renderer first
         const customRenderer = this.customRenderers[token.type];
         if (customRenderer) {
-            const result = customRenderer(token, () => this.defaultRenderToken(token));
+            const result = customRenderer(token, () => this.defaultRenderToken(token) as any);
             if (result !== null) {
                 return result;
             }
@@ -139,7 +143,7 @@ export default class Markdown extends LightComponent {
      * Default token rendering logic
      * This is the core rendering implementation
      */
-    private defaultRenderToken(token: Tokens.Generic): HTMLElement | null {
+    private defaultRenderToken(token: Tokens.Generic): JSXChildren {
         switch (token.type) {
             case "heading": {
                 const headingToken = token as Tokens.Heading;
@@ -195,7 +199,13 @@ export default class Markdown extends LightComponent {
                     const tempContainer = document.createElement("div");
                     renderedElements.forEach((el) => {
                         if (el) {
-                            tempContainer.appendChild(el);
+                            if (typeof el === "string" || typeof el === "number") {
+                                tempContainer.appendChild(document.createTextNode(String(el)));
+                            } else if (el instanceof HTMLElement || el instanceof SVGElement) {
+                                tempContainer.appendChild(el.cloneNode(true));
+                            } else if (el instanceof DocumentFragment) {
+                                tempContainer.appendChild(el.cloneNode(true));
+                            }
                         }
                     });
                     const html = tempContainer.innerHTML;
@@ -215,7 +225,8 @@ export default class Markdown extends LightComponent {
 
             case "html": {
                 const htmlToken = token as Tokens.HTML;
-                return <div>{htmlToken.text}</div>;
+                // 使用 Fragment 包裹解析后的节点，支持 Raw HTML
+                return <>{parseHTMLToNodes(htmlToken.text)}</>;
             }
 
             case "hr": {
@@ -228,23 +239,25 @@ export default class Markdown extends LightComponent {
             }
 
             case "text": {
-                // Text tokens are inline tokens, but if they appear as top-level tokens,
-                // render them directly as text nodes wrapped in a span
+                // Text tokens are inline tokens
                 const textToken = token as Tokens.Text;
-                return <span>{textToken.text || ""}</span>;
+                if (textToken.tokens && textToken.tokens.length > 0) {
+                    return <>{this.renderTokens(textToken.tokens)}</>;
+                }
+                return textToken.text || "";
             }
 
             default: {
                 // For other types, use default marked renderer
-                // Note: marked.Renderer() only handles block-level tokens, not inline tokens
                 const renderer = new marked.Renderer();
                 const renderMethod = (
                     renderer as unknown as Record<string, (token: unknown) => string>
                 )[token.type];
                 const html = renderMethod?.(token) || "";
                 if (html) {
-                    return <div>{html}</div>;
+                    return <>{parseHTMLToNodes(html)}</>;
                 }
+                logger.warn(`[WSX-Markdown] Unknown token type: ${token.type}`);
                 return null;
             }
         }

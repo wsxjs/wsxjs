@@ -16,3 +16,5 @@ export type { WebComponentConfig } from "./web-component";
 export type { LightComponentConfig } from "./light-component";
 export type { JSXChildren } from "./jsx-factory";
 export type { ReactiveCallback } from "./utils/reactive";
+// Utility exports
+export { parseHTMLToNodes } from "./utils/dom-utils";
