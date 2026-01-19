@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-core",
-    "version": "0.0.27",
+    "version": "0.0.28",
     "description": "Core WSXJS - Web Components with JSX syntax",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
