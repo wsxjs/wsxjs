@@ -1,0 +1,46 @@
+{
+    "title": "SlideJS 統合デモ",
+    "description": "WSXJSコンポーネントとスライドプレゼンテーションライブラリを統合して、インタラクティブなプレゼンテーションを作成する方法を学びます。このデモは、@slidejs/runner-swiperと@slidejs/runner-splideとWSXコンポーネントの統合を示し、DSLベースのスライド作成とテーマ管理を実演します。",
+    "demo": {
+        "title": "インタラクティブスライドデモ",
+        "prev": "前へ",
+        "next": "次へ",
+        "description": "SwiperとSplideプレーヤーを切り替え、ダークテーマとライトテーマを切り替えます。キーボードの矢印キーを使用してスライドをナビゲートします。",
+        "theme": {
+            "dark": "ダークテーマ",
+            "light": "ライトテーマ"
+        },
+        "player": {
+            "swiper": "Swiperプレーヤー",
+            "splide": "Splideプレーヤー"
+        }
+    },
+    "explanation": {
+        "title": "動作方法",
+        "basic": {
+            "title": "基本的な統合",
+            "description": "SlideJSランナーをインポートし、コンポーネントのライフサイクルフックで初期化します。DSL（ドメイン固有言語）を使用してスライドを定義します。",
+            "code": "import { createSlideRunner as createSwiperRunner } from '@slidejs/runner-swiper';\nimport { createSlideRunner as createSplideRunner } from '@slidejs/runner-splide';\nimport dslSource from './demo.slide?raw';\n\nprotected onConnected(): void {\n  requestAnimationFrame(() => {\n    this.initPlayers();\n  });\n}\n\nprivate async initPlayers(): Promise<void> {\n  this.swiperRunner = await createSwiperRunner(dslSource, context, {\n    container: '#player-swiper',\n    swiperOptions: { /* ... */ }\n  });\n}"
+        },
+        "features": {
+            "title": "主な機能",
+            "description": "スライドの初期化とクリーンアップのためにWSXコンポーネントのライフサイクルフックを活用します。テーマ切り替えとプレーヤー選択にリアクティブな状態を使用します。",
+            "code": "@state private activePlayer: 'swiper' | 'splide' = 'swiper';\n@state private currentTheme: 'dark' | 'light' = 'dark';\n\nprotected onDisconnected(): void {\n  this.destroyRunners();\n}\n\nprivate handleThemeChange = (theme: 'dark' | 'light'): void => {\n  this.currentTheme = theme;\n  setTheme(theme === 'dark' ? Preset.SolarizedDark : Preset.SolarizedLight);\n};"
+        }
+    },
+    "benefits": {
+        "title": "利点",
+        "benefit1": {
+            "title": "DSLベースのスライド作成",
+            "description": "シンプルなDSL構文を使用してスライドを定義します。同じDSLソースで複数のランナー（Swiper、Splide）をサポートします。"
+        },
+        "benefit2": {
+            "title": "コンポーネントライフサイクル統合",
+            "description": "適切なスライドランナーの初期化とクリーンアップのためにWSXコンポーネントのライフサイクルフック（onConnected、onDisconnected）を活用します。"
+        },
+        "benefit3": {
+            "title": "リアクティブなテーマとプレーヤー管理",
+            "description": "テーマやプレーヤーを切り替える際の自動UI更新には@stateデコレータを使用します。完全なTypeScriptサポートにより型安全性が保証されます。"
+        }
+    }
+}

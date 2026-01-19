@@ -1,41 +1,42 @@
 {
     "title": "CalendarJS Integration Demo",
-    "description": "Learn how to integrate calendar libraries with WSXJS components for creating interactive calendars.",
+    "description": "Learn how to integrate calendar libraries with WSXJS components for creating interactive calendars. This demo showcases the seamless integration of @calenderjs/calendar with WSX components, demonstrating reactive state management and event handling.",
     "demo": {
         "title": "Interactive Calendar Demo",
-        "selectedDate": "Selected Date"
+        "selectedDate": "Selected Date",
+        "description": "Click on any date to select it. Navigate between months using the navigation controls."
     },
     "explanation": {
         "title": "How It Works",
         "basic": {
             "title": "Basic Integration",
-            "description": "Create a calendar component with reactive state management for date selection.",
-            "code": "@state private currentDate: Date = new Date();\n@state private selectedDate: Date | null = null;"
+            "description": "Import the calendar library and use it within your WSX component. The wsx-calendar component handles all calendar rendering logic.",
+            "code": "import '@calenderjs/calendar';\n\nrender() {\n  return (\n    <div class=\"calendar-container\">\n      <wsx-calendar />\n    </div>\n  );\n}"
         },
         "events": {
             "title": "Event Management",
-            "description": "Manage calendar events with reactive state and component methods.",
-            "code": "private getEventsForDate = (day: number): CalendarEvent[] => {\n  return this.events.filter(event => {\n    return event.date.getDate() === day;\n  });\n};"
+            "description": "Manage calendar events with reactive state. Use @state decorator to track selected dates and events, ensuring automatic UI updates.",
+            "code": "@state private selectedDate: Date | null = null;\n@state private events: CalendarEvent[] = [];\n\nprivate selectDate = (day: number) => {\n  const date = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth(),\n    day\n  );\n  this.selectedDate = date;\n};"
         },
         "reactive": {
             "title": "Reactive Updates",
-            "description": "Use @state decorator for automatic calendar updates when dates change.",
-            "code": "private nextMonth = () => {\n  this.currentDate = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth() + 1,\n    1\n  );\n};"
+            "description": "Use @state decorator for automatic calendar updates when dates change. The component automatically re-renders when state changes.",
+            "code": "@state private currentDate: Date = new Date();\n\nprivate nextMonth = () => {\n  this.currentDate = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth() + 1,\n    1\n  );\n};\n\n// Component automatically re-renders when currentDate changes"
         }
     },
     "benefits": {
         "title": "Benefits",
         "benefit1": {
-            "title": "Reactive State",
-            "description": "Use @state decorator for automatic calendar updates and re-rendering."
+            "title": "Reactive State Management",
+            "description": "Use @state decorator for automatic calendar updates and re-rendering. No manual DOM manipulation needed."
         },
         "benefit2": {
-            "title": "Event Handling",
-            "description": "Easily handle date selection and event management with WSX component methods."
+            "title": "Seamless Integration",
+            "description": "Easily integrate third-party calendar libraries with WSX components. The framework handles DOM reconciliation automatically."
         },
         "benefit3": {
-            "title": "Type Safety",
-            "description": "Full TypeScript support ensures type-safe calendar operations."
+            "title": "Type Safety & Developer Experience",
+            "description": "Full TypeScript support ensures type-safe calendar operations. Enjoy IntelliSense and compile-time error checking."
         }
     }
 }

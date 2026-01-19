@@ -1,0 +1,42 @@
+{
+    "title": "CalendarJS 統合デモ",
+    "description": "WSXJSコンポーネントとカレンダーライブラリを統合して、インタラクティブなカレンダーを作成する方法を学びます。このデモは、@calenderjs/calendarとWSXコンポーネントのシームレスな統合を示し、リアクティブな状態管理とイベント処理を実演します。",
+    "demo": {
+        "title": "インタラクティブカレンダーデモ",
+        "selectedDate": "選択された日付",
+        "description": "任意の日付をクリックして選択します。ナビゲーションコントロールを使用して月間を移動します。"
+    },
+    "explanation": {
+        "title": "動作方法",
+        "basic": {
+            "title": "基本的な統合",
+            "description": "カレンダーライブラリをインポートし、WSXコンポーネント内で使用します。wsx-calendarコンポーネントがすべてのカレンダーレンダリングロジックを処理します。",
+            "code": "import '@calenderjs/calendar';\n\nrender() {\n  return (\n    <div class=\"calendar-container\">\n      <wsx-calendar />\n    </div>\n  );\n}"
+        },
+        "events": {
+            "title": "イベント管理",
+            "description": "リアクティブな状態でカレンダーイベントを管理します。@stateデコレータを使用して選択された日付とイベントを追跡し、自動UI更新を保証します。",
+            "code": "@state private selectedDate: Date | null = null;\n@state private events: CalendarEvent[] = [];\n\nprivate selectDate = (day: number) => {\n  const date = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth(),\n    day\n  );\n  this.selectedDate = date;\n};"
+        },
+        "reactive": {
+            "title": "リアクティブな更新",
+            "description": "日付が変更されたときに自動的にカレンダーを更新するには、@stateデコレータを使用します。状態が変更されると、コンポーネントは自動的に再レンダリングされます。",
+            "code": "@state private currentDate: Date = new Date();\n\nprivate nextMonth = () => {\n  this.currentDate = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth() + 1,\n    1\n  );\n};\n\n// currentDateが変更されると、コンポーネントは自動的に再レンダリングされます"
+        }
+    },
+    "benefits": {
+        "title": "利点",
+        "benefit1": {
+            "title": "リアクティブな状態管理",
+            "description": "自動的なカレンダー更新と再レンダリングには@stateデコレータを使用します。手動のDOM操作は不要です。"
+        },
+        "benefit2": {
+            "title": "シームレスな統合",
+            "description": "サードパーティのカレンダーライブラリをWSXコンポーネントと簡単に統合できます。フレームワークがDOMの調整を自動的に処理します。"
+        },
+        "benefit3": {
+            "title": "型安全性と開発者体験",
+            "description": "完全なTypeScriptサポートにより、型安全なカレンダー操作が保証されます。IntelliSenseとコンパイル時エラーチェックをお楽しみください。"
+        }
+    }
+}

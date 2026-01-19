@@ -24,6 +24,8 @@ export const i18n = initI18n({
         "editorjs",
         "marked",
         "ecosystem",
+        "slidejs",
+        "calendarjs",
     ],
     defaultNS: "common",
 });

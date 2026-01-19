@@ -1,41 +1,46 @@
 {
     "title": "SlideJS Integration Demo",
-    "description": "Learn how to integrate slide presentation libraries with WSXJS components for creating interactive presentations.",
+    "description": "Learn how to integrate slide presentation libraries with WSXJS components for creating interactive presentations. This demo showcases the integration of @slidejs/runner-swiper and @slidejs/runner-splide with WSX components, demonstrating DSL-based slide creation and theme management.",
     "demo": {
         "title": "Interactive Slide Demo",
         "prev": "Previous",
         "next": "Next",
+        "description": "Switch between Swiper and Splide players, and toggle between dark and light themes. Use keyboard arrows to navigate slides.",
         "theme": {
             "dark": "Dark Theme",
             "light": "Light Theme"
+        },
+        "player": {
+            "swiper": "Swiper Player",
+            "splide": "Splide Player"
         }
     },
     "explanation": {
         "title": "How It Works",
         "basic": {
             "title": "Basic Integration",
-            "description": "Integrate slide libraries with WSX components using reactive state management.",
-            "code": "@state private currentSlide: number = 0;\n\nprivate nextSlide = () => {\n  this.currentSlide++;\n};"
+            "description": "Import SlideJS runners and initialize them in component lifecycle hooks. Use DSL (Domain Specific Language) to define slides.",
+            "code": "import { createSlideRunner as createSwiperRunner } from '@slidejs/runner-swiper';\nimport { createSlideRunner as createSplideRunner } from '@slidejs/runner-splide';\nimport dslSource from './demo.slide?raw';\n\nprotected onConnected(): void {\n  requestAnimationFrame(() => {\n    this.initPlayers();\n  });\n}\n\nprivate async initPlayers(): Promise<void> {\n  this.swiperRunner = await createSwiperRunner(dslSource, context, {\n    container: '#player-swiper',\n    swiperOptions: { /* ... */ }\n  });\n}"
         },
         "features": {
             "title": "Key Features",
-            "description": "Leverage WSX reactive state and component lifecycle for slide management.",
-            "code": "render() {\n  return <div class=\"slide\">\n    {this.slides[this.currentSlide]}\n  </div>;\n}"
+            "description": "Leverage WSX component lifecycle hooks for slide initialization and cleanup. Use reactive state for theme switching and player selection.",
+            "code": "@state private activePlayer: 'swiper' | 'splide' = 'swiper';\n@state private currentTheme: 'dark' | 'light' = 'dark';\n\nprotected onDisconnected(): void {\n  this.destroyRunners();\n}\n\nprivate handleThemeChange = (theme: 'dark' | 'light'): void => {\n  this.currentTheme = theme;\n  setTheme(theme === 'dark' ? Preset.SolarizedDark : Preset.SolarizedLight);\n};"
         }
     },
     "benefits": {
         "title": "Benefits",
         "benefit1": {
-            "title": "Reactive State",
-            "description": "Use @state decorator for automatic slide updates and re-rendering."
+            "title": "DSL-Based Slide Creation",
+            "description": "Define slides using a simple DSL syntax. Support for multiple runners (Swiper, Splide) with the same DSL source."
         },
         "benefit2": {
-            "title": "Component Lifecycle",
-            "description": "Leverage WSX component lifecycle hooks for slide initialization and cleanup."
+            "title": "Component Lifecycle Integration",
+            "description": "Leverage WSX component lifecycle hooks (onConnected, onDisconnected) for proper slide runner initialization and cleanup."
         },
         "benefit3": {
-            "title": "Type Safety",
-            "description": "Full TypeScript support ensures type-safe slide management."
+            "title": "Reactive Theme & Player Management",
+            "description": "Use @state decorator for automatic UI updates when switching themes or players. Full TypeScript support ensures type safety."
         }
     }
 }

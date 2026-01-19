@@ -226,6 +226,30 @@ export function shouldRemoveNode(
 }
 ```
 
+### 4.7 修复 6: 引入 `__wsxManaged` 标记
+
+**位置**：`packages/core/src/utils/dom-utils.ts` (概念) 及 `element-creation.ts` / `update-children-helpers.ts` (实施)
+
+**问题**：
+浏览器扩展或第三方脚本可能会向 DOM 中注入额外的文本节点。如果框架尝试协调这些节点，可能会导致错误移除或内容覆盖。
+
+**修复**：
+- 在框架创建的所有文本节点上添加 `__wsxManaged = true` 标记。
+- 在协调过程中，检查此标记以确定节点是否归框架所有。
+
+```typescript
+// 创建时标记
+const newTextNode = document.createTextNode(newText);
+(newTextNode as any).__wsxManaged = true;
+
+// 协调时检查
+if ((node as any).__wsxManaged === true) {
+    // 是框架管理的节点，可以安全更新或移动
+} else {
+    // 是外部节点，应该跳过或保留（更新 index 但不触碰 DOM）
+}
+```
+
 ## 5. 实施细节
 
 ### 5.1 修改的文件
@@ -311,3 +335,18 @@ element.insertBefore(newChild, insertBeforeNode);
 ```
 
 这一修改消除了基于旧节点位置推导的歧义，严格遵循 `insertionIndex` 确定的逻辑位置。
+
+**图解修复前后的行为**：
+
+*场景：在 [N1, N2] 之前插入 New*
+
+**修复前 (Off-By-One)**：
+- `insertBeforeNode` 是 N1
+- 调用 `replaceOrInsertElement(parent, New, N1)`
+- 函数内部逻辑：`parent.insertBefore(New, N1.nextSibling)` (试图“替换”或“追加”)
+- 结果：`[N1, New, N2]` ❌ (New 被插入到了 N1 后面)
+
+**修复后 (Correct)**：
+- `insertBeforeNode` 是 N1
+- 调用 `parent.insertBefore(New, N1)`
+- 结果：`[New, N1, N2]` ✅ (正确插入到了 N1 前面)

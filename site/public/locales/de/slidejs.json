@@ -1,0 +1,46 @@
+{
+    "title": "SlideJS Integrations-Demo",
+    "description": "Erfahren Sie, wie Sie Präsentationsbibliotheken für Folien mit WSXJS-Komponenten integrieren, um interaktive Präsentationen zu erstellen. Diese Demo zeigt die Integration von @slidejs/runner-swiper und @slidejs/runner-splide mit WSX-Komponenten und demonstriert DSL-basierte Folien-Erstellung und Theme-Verwaltung.",
+    "demo": {
+        "title": "Interaktive Folien-Demo",
+        "prev": "Vorherige",
+        "next": "Nächste",
+        "description": "Wechseln Sie zwischen Swiper- und Splide-Playern und schalten Sie zwischen dunklen und hellen Themes um. Verwenden Sie die Pfeiltasten, um durch die Folien zu navigieren.",
+        "theme": {
+            "dark": "Dunkles Theme",
+            "light": "Helles Theme"
+        },
+        "player": {
+            "swiper": "Swiper Player",
+            "splide": "Splide Player"
+        }
+    },
+    "explanation": {
+        "title": "Wie Es Funktioniert",
+        "basic": {
+            "title": "Grundlegende Integration",
+            "description": "Importieren Sie SlideJS-Runner und initialisieren Sie sie in Component-Lifecycle-Hooks. Verwenden Sie DSL (Domain Specific Language), um Folien zu definieren.",
+            "code": "import { createSlideRunner as createSwiperRunner } from '@slidejs/runner-swiper';\nimport { createSlideRunner as createSplideRunner } from '@slidejs/runner-splide';\nimport dslSource from './demo.slide?raw';\n\nprotected onConnected(): void {\n  requestAnimationFrame(() => {\n    this.initPlayers();\n  });\n}\n\nprivate async initPlayers(): Promise<void> {\n  this.swiperRunner = await createSwiperRunner(dslSource, context, {\n    container: '#player-swiper',\n    swiperOptions: { /* ... */ }\n  });\n}"
+        },
+        "features": {
+            "title": "Hauptfunktionen",
+            "description": "Nutzen Sie WSX-Component-Lifecycle-Hooks für die Initialisierung und Bereinigung von Folien. Verwenden Sie reaktiven State für Theme-Wechsel und Player-Auswahl.",
+            "code": "@state private activePlayer: 'swiper' | 'splide' = 'swiper';\n@state private currentTheme: 'dark' | 'light' = 'dark';\n\nprotected onDisconnected(): void {\n  this.destroyRunners();\n}\n\nprivate handleThemeChange = (theme: 'dark' | 'light'): void => {\n  this.currentTheme = theme;\n  setTheme(theme === 'dark' ? Preset.SolarizedDark : Preset.SolarizedLight);\n};"
+        }
+    },
+    "benefits": {
+        "title": "Vorteile",
+        "benefit1": {
+            "title": "DSL-basierte Folien-Erstellung",
+            "description": "Definieren Sie Folien mit einer einfachen DSL-Syntax. Unterstützung für mehrere Runner (Swiper, Splide) mit derselben DSL-Quelle."
+        },
+        "benefit2": {
+            "title": "Component-Lifecycle-Integration",
+            "description": "Nutzen Sie WSX-Component-Lifecycle-Hooks (onConnected, onDisconnected) für die ordnungsgemäße Initialisierung und Bereinigung von Folien-Runnern."
+        },
+        "benefit3": {
+            "title": "Reaktive Theme- und Player-Verwaltung",
+            "description": "Verwenden Sie den @state-Decorator für automatische UI-Updates beim Wechseln von Themes oder Playern. Vollständige TypeScript-Unterstützung gewährleistet Typsicherheit."
+        }
+    }
+}

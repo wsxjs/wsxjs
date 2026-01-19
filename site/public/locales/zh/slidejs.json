@@ -1,41 +1,46 @@
 {
     "title": "SlideJS 集成演示",
-    "description": "了解如何将幻灯片演示库与 WSXJS 组件集成，创建交互式演示文稿。",
+    "description": "了解如何将幻灯片演示库与 WSXJS 组件集成，创建交互式演示文稿。本演示展示了 @slidejs/runner-swiper 和 @slidejs/runner-splide 与 WSX 组件的集成，演示了基于 DSL 的幻灯片创建和主题管理。",
     "demo": {
         "title": "交互式幻灯片演示",
         "prev": "上一张",
         "next": "下一张",
+        "description": "在 Swiper 和 Splide 播放器之间切换，并在深色和浅色主题之间切换。使用键盘方向键导航幻灯片。",
         "theme": {
             "dark": "深色主题",
             "light": "浅色主题"
+        },
+        "player": {
+            "swiper": "Swiper 播放器",
+            "splide": "Splide 播放器"
         }
     },
     "explanation": {
         "title": "工作原理",
         "basic": {
             "title": "基本集成",
-            "description": "使用响应式状态管理将幻灯片库与 WSX 组件集成。",
-            "code": "@state private currentSlide: number = 0;\n\nprivate nextSlide = () => {\n  this.currentSlide++;\n};"
+            "description": "导入 SlideJS runners 并在组件生命周期钩子中初始化它们。使用 DSL（领域特定语言）定义幻灯片。",
+            "code": "import { createSlideRunner as createSwiperRunner } from '@slidejs/runner-swiper';\nimport { createSlideRunner as createSplideRunner } from '@slidejs/runner-splide';\nimport dslSource from './demo.slide?raw';\n\nprotected onConnected(): void {\n  requestAnimationFrame(() => {\n    this.initPlayers();\n  });\n}\n\nprivate async initPlayers(): Promise<void> {\n  this.swiperRunner = await createSwiperRunner(dslSource, context, {\n    container: '#player-swiper',\n    swiperOptions: { /* ... */ }\n  });\n}"
         },
         "features": {
             "title": "主要特性",
-            "description": "利用 WSX 响应式状态和组件生命周期进行幻灯片管理。",
-            "code": "render() {\n  return <div class=\"slide\">\n    {this.slides[this.currentSlide]}\n  </div>;\n}"
+            "description": "利用 WSX 组件生命周期钩子进行幻灯片初始化和清理。使用响应式状态进行主题切换和播放器选择。",
+            "code": "@state private activePlayer: 'swiper' | 'splide' = 'swiper';\n@state private currentTheme: 'dark' | 'light' = 'dark';\n\nprotected onDisconnected(): void {\n  this.destroyRunners();\n}\n\nprivate handleThemeChange = (theme: 'dark' | 'light'): void => {\n  this.currentTheme = theme;\n  setTheme(theme === 'dark' ? Preset.SolarizedDark : Preset.SolarizedLight);\n};"
         }
     },
     "benefits": {
         "title": "优势",
         "benefit1": {
-            "title": "响应式状态",
-            "description": "使用 @state 装饰器实现自动幻灯片更新和重新渲染。"
+            "title": "基于 DSL 的幻灯片创建",
+            "description": "使用简单的 DSL 语法定义幻灯片。支持多个 runners（Swiper、Splide）使用相同的 DSL 源。"
         },
         "benefit2": {
-            "title": "组件生命周期",
-            "description": "利用 WSX 组件生命周期钩子进行幻灯片初始化和清理。"
+            "title": "组件生命周期集成",
+            "description": "利用 WSX 组件生命周期钩子（onConnected、onDisconnected）进行正确的幻灯片 runner 初始化和清理。"
         },
         "benefit3": {
-            "title": "类型安全",
-            "description": "完整的 TypeScript 支持确保类型安全的幻灯片管理。"
+            "title": "响应式主题和播放器管理",
+            "description": "使用 @state 装饰器在切换主题或播放器时自动更新 UI。完整的 TypeScript 支持确保类型安全。"
         }
     }
 }

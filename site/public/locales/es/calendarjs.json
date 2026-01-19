@@ -1,0 +1,42 @@
+{
+    "title": "Demo de Integración CalendarJS",
+    "description": "Aprende cómo integrar bibliotecas de calendario con componentes WSXJS para crear calendarios interactivos. Esta demostración muestra la integración perfecta de @calenderjs/calendar con componentes WSX, demostrando la gestión de estado reactivo y el manejo de eventos.",
+    "demo": {
+        "title": "Demo de Calendario Interactivo",
+        "selectedDate": "Fecha Seleccionada",
+        "description": "Haz clic en cualquier fecha para seleccionarla. Navega entre meses usando los controles de navegación."
+    },
+    "explanation": {
+        "title": "Cómo Funciona",
+        "basic": {
+            "title": "Integración Básica",
+            "description": "Importa la biblioteca de calendario y úsala dentro de tu componente WSX. El componente wsx-calendar maneja toda la lógica de renderizado del calendario.",
+            "code": "import '@calenderjs/calendar';\n\nrender() {\n  return (\n    <div class=\"calendar-container\">\n      <wsx-calendar />\n    </div>\n  );\n}"
+        },
+        "events": {
+            "title": "Gestión de Eventos",
+            "description": "Gestiona eventos del calendario con estado reactivo. Usa el decorador @state para rastrear fechas seleccionadas y eventos, asegurando actualizaciones automáticas de la UI.",
+            "code": "@state private selectedDate: Date | null = null;\n@state private events: CalendarEvent[] = [];\n\nprivate selectDate = (day: number) => {\n  const date = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth(),\n    day\n  );\n  this.selectedDate = date;\n};"
+        },
+        "reactive": {
+            "title": "Actualizaciones Reactivas",
+            "description": "Usa el decorador @state para actualizaciones automáticas del calendario cuando cambian las fechas. El componente se vuelve a renderizar automáticamente cuando cambia el estado.",
+            "code": "@state private currentDate: Date = new Date();\n\nprivate nextMonth = () => {\n  this.currentDate = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth() + 1,\n    1\n  );\n};\n\n// El componente se vuelve a renderizar automáticamente cuando cambia currentDate"
+        }
+    },
+    "benefits": {
+        "title": "Beneficios",
+        "benefit1": {
+            "title": "Gestión de Estado Reactivo",
+            "description": "Usa el decorador @state para actualizaciones automáticas del calendario y re-renderizado. No se necesita manipulación manual del DOM."
+        },
+        "benefit2": {
+            "title": "Integración Perfecta",
+            "description": "Integra fácilmente bibliotecas de calendario de terceros con componentes WSX. El framework maneja la reconciliación del DOM automáticamente."
+        },
+        "benefit3": {
+            "title": "Seguridad de Tipos y Experiencia del Desarrollador",
+            "description": "El soporte completo de TypeScript asegura operaciones de calendario con seguridad de tipos. Disfruta de IntelliSense y verificación de errores en tiempo de compilación."
+        }
+    }
+}

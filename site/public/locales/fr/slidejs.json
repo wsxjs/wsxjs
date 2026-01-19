@@ -1,0 +1,46 @@
+{
+    "title": "Démo d'Intégration SlideJS",
+    "description": "Apprenez comment intégrer des bibliothèques de présentation de diapositives avec les composants WSXJS pour créer des présentations interactives. Cette démo présente l'intégration de @slidejs/runner-swiper et @slidejs/runner-splide avec les composants WSX, démontrant la création de diapositives basée sur DSL et la gestion des thèmes.",
+    "demo": {
+        "title": "Démo de Diapositives Interactives",
+        "prev": "Précédent",
+        "next": "Suivant",
+        "description": "Basculez entre les lecteurs Swiper et Splide, et alternez entre les thèmes sombres et clairs. Utilisez les flèches du clavier pour naviguer dans les diapositives.",
+        "theme": {
+            "dark": "Thème Sombre",
+            "light": "Thème Clair"
+        },
+        "player": {
+            "swiper": "Lecteur Swiper",
+            "splide": "Lecteur Splide"
+        }
+    },
+    "explanation": {
+        "title": "Comment Ça Marche",
+        "basic": {
+            "title": "Intégration de Base",
+            "description": "Importez les runners SlideJS et initialisez-les dans les hooks du cycle de vie du composant. Utilisez DSL (Langage Spécifique au Domaine) pour définir les diapositives.",
+            "code": "import { createSlideRunner as createSwiperRunner } from '@slidejs/runner-swiper';\nimport { createSlideRunner as createSplideRunner } from '@slidejs/runner-splide';\nimport dslSource from './demo.slide?raw';\n\nprotected onConnected(): void {\n  requestAnimationFrame(() => {\n    this.initPlayers();\n  });\n}\n\nprivate async initPlayers(): Promise<void> {\n  this.swiperRunner = await createSwiperRunner(dslSource, context, {\n    container: '#player-swiper',\n    swiperOptions: { /* ... */ }\n  });\n}"
+        },
+        "features": {
+            "title": "Caractéristiques Clés",
+            "description": "Tirez parti des hooks du cycle de vie des composants WSX pour l'initialisation et le nettoyage des diapositives. Utilisez un état réactif pour changer les thèmes et sélectionner les lecteurs.",
+            "code": "@state private activePlayer: 'swiper' | 'splide' = 'swiper';\n@state private currentTheme: 'dark' | 'light' = 'dark';\n\nprotected onDisconnected(): void {\n  this.destroyRunners();\n}\n\nprivate handleThemeChange = (theme: 'dark' | 'light'): void => {\n  this.currentTheme = theme;\n  setTheme(theme === 'dark' ? Preset.SolarizedDark : Preset.SolarizedLight);\n};"
+        }
+    },
+    "benefits": {
+        "title": "Avantages",
+        "benefit1": {
+            "title": "Création de Diapositives Basée sur DSL",
+            "description": "Définissez des diapositives en utilisant une syntaxe DSL simple. Support pour plusieurs runners (Swiper, Splide) avec la même source DSL."
+        },
+        "benefit2": {
+            "title": "Intégration du Cycle de Vie du Composant",
+            "description": "Tirez parti des hooks du cycle de vie WSX (onConnected, onDisconnected) pour une initialisation et un nettoyage appropriés des runners de diapositives."
+        },
+        "benefit3": {
+            "title": "Gestion Réactive des Thèmes et Lecteurs",
+            "description": "Utilisez le décorateur @state pour des mises à jour automatiques de l'interface utilisateur lors du changement de thèmes ou de lecteurs. Le support complet de TypeScript assure la sécurité de type."
+        }
+    }
+}

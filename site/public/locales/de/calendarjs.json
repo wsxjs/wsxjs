@@ -1,0 +1,42 @@
+{
+    "title": "CalendarJS Integrations-Demo",
+    "description": "Erfahren Sie, wie Sie Kalenderbibliotheken mit WSXJS-Komponenten integrieren, um interaktive Kalender zu erstellen. Diese Demo zeigt die nahtlose Integration von @calenderjs/calendar mit WSX-Komponenten und demonstriert reaktives State-Management und Event-Handling.",
+    "demo": {
+        "title": "Interaktive Kalender-Demo",
+        "selectedDate": "Ausgewähltes Datum",
+        "description": "Klicken Sie auf ein beliebiges Datum, um es auszuwählen. Navigieren Sie zwischen Monaten mit den Navigationssteuerelementen."
+    },
+    "explanation": {
+        "title": "Wie Es Funktioniert",
+        "basic": {
+            "title": "Grundlegende Integration",
+            "description": "Importieren Sie die Kalenderbibliothek und verwenden Sie sie in Ihrer WSX-Komponente. Die wsx-calendar-Komponente verwaltet die gesamte Kalender-Rendering-Logik.",
+            "code": "import '@calenderjs/calendar';\n\nrender() {\n  return (\n    <div class=\"calendar-container\">\n      <wsx-calendar />\n    </div>\n  );\n}"
+        },
+        "events": {
+            "title": "Event-Verwaltung",
+            "description": "Verwalten Sie Kalenderereignisse mit reaktivem State. Verwenden Sie den @state-Decorator, um ausgewählte Daten und Ereignisse zu verfolgen und automatische UI-Updates sicherzustellen.",
+            "code": "@state private selectedDate: Date | null = null;\n@state private events: CalendarEvent[] = [];\n\nprivate selectDate = (day: number) => {\n  const date = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth(),\n    day\n  );\n  this.selectedDate = date;\n};"
+        },
+        "reactive": {
+            "title": "Reaktive Updates",
+            "description": "Verwenden Sie den @state-Decorator für automatische Kalender-Updates, wenn sich Daten ändern. Die Komponente wird automatisch neu gerendert, wenn sich der State ändert.",
+            "code": "@state private currentDate: Date = new Date();\n\nprivate nextMonth = () => {\n  this.currentDate = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth() + 1,\n    1\n  );\n};\n\n// Die Komponente wird automatisch neu gerendert, wenn sich currentDate ändert"
+        }
+    },
+    "benefits": {
+        "title": "Vorteile",
+        "benefit1": {
+            "title": "Reaktives State-Management",
+            "description": "Verwenden Sie den @state-Decorator für automatische Kalender-Updates und Neu-Rendering. Keine manuelle DOM-Manipulation erforderlich."
+        },
+        "benefit2": {
+            "title": "Nahtlose Integration",
+            "description": "Integrieren Sie problemlos Drittanbieter-Kalenderbibliotheken mit WSX-Komponenten. Das Framework verwaltet die DOM-Reconciliation automatisch."
+        },
+        "benefit3": {
+            "title": "Typsicherheit & Entwicklererfahrung",
+            "description": "Vollständige TypeScript-Unterstützung gewährleistet typsichere Kalenderoperationen. Genießen Sie IntelliSense und Compile-Zeit-Fehlerprüfung."
+        }
+    }
+}

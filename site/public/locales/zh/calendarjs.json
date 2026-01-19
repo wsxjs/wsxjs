@@ -1,41 +1,42 @@
 {
     "title": "CalendarJS 集成演示",
-    "description": "了解如何将日历库与 WSXJS 组件集成，创建交互式日历。",
+    "description": "了解如何将日历库与 WSXJS 组件集成，创建交互式日历。本演示展示了 @calenderjs/calendar 与 WSX 组件的无缝集成，演示了响应式状态管理和事件处理。",
     "demo": {
         "title": "交互式日历演示",
-        "selectedDate": "选中日期"
+        "selectedDate": "选中日期",
+        "description": "点击任意日期进行选择。使用导航控件在月份之间切换。"
     },
     "explanation": {
         "title": "工作原理",
         "basic": {
             "title": "基本集成",
-            "description": "使用响应式状态管理创建日期选择日历组件。",
-            "code": "@state private currentDate: Date = new Date();\n@state private selectedDate: Date | null = null;"
+            "description": "导入日历库并在 WSX 组件中使用。wsx-calendar 组件处理所有日历渲染逻辑。",
+            "code": "import '@calenderjs/calendar';\n\nrender() {\n  return (\n    <div class=\"calendar-container\">\n      <wsx-calendar />\n    </div>\n  );\n}"
         },
         "events": {
             "title": "事件管理",
-            "description": "使用响应式状态和组件方法管理日历事件。",
-            "code": "private getEventsForDate = (day: number): CalendarEvent[] => {\n  return this.events.filter(event => {\n    return event.date.getDate() === day;\n  });\n};"
+            "description": "使用响应式状态管理日历事件。使用 @state 装饰器跟踪选中的日期和事件，确保自动更新 UI。",
+            "code": "@state private selectedDate: Date | null = null;\n@state private events: CalendarEvent[] = [];\n\nprivate selectDate = (day: number) => {\n  const date = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth(),\n    day\n  );\n  this.selectedDate = date;\n};"
         },
         "reactive": {
             "title": "响应式更新",
-            "description": "使用 @state 装饰器在日期更改时自动更新日历。",
-            "code": "private nextMonth = () => {\n  this.currentDate = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth() + 1,\n    1\n  );\n};"
+            "description": "使用 @state 装饰器在日期更改时自动更新日历。状态变化时组件会自动重新渲染。",
+            "code": "@state private currentDate: Date = new Date();\n\nprivate nextMonth = () => {\n  this.currentDate = new Date(\n    this.currentDate.getFullYear(),\n    this.currentDate.getMonth() + 1,\n    1\n  );\n};\n\n// 当 currentDate 变化时，组件自动重新渲染"
         }
     },
     "benefits": {
         "title": "优势",
         "benefit1": {
-            "title": "响应式状态",
-            "description": "使用 @state 装饰器实现自动日历更新和重新渲染。"
+            "title": "响应式状态管理",
+            "description": "使用 @state 装饰器实现自动日历更新和重新渲染。无需手动操作 DOM。"
         },
         "benefit2": {
-            "title": "事件处理",
-            "description": "使用 WSX 组件方法轻松处理日期选择和事件管理。"
+            "title": "无缝集成",
+            "description": "轻松将第三方日历库与 WSX 组件集成。框架自动处理 DOM 协调。"
         },
         "benefit3": {
-            "title": "类型安全",
-            "description": "完整的 TypeScript 支持确保类型安全的日历操作。"
+            "title": "类型安全与开发体验",
+            "description": "完整的 TypeScript 支持确保类型安全的日历操作。享受 IntelliSense 和编译时错误检查。"
         }
     }
 }
