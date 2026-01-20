@@ -216,8 +216,11 @@ export function replaceOrInsertElementAtPosition(
     }
 
     // 检查元素是否已经在正确位置
+    // 1. 如果 newChild.nextSibling === targetNextSibling，说明在正确位置的前面
+    // 2. 关键修复：如果 targetNextSibling === newChild，说明 newChild 就在目标位置（它本身就是下一个节点）
     const isInCorrectPosition =
-        newChild.parentNode === parent && newChild.nextSibling === targetNextSibling;
+        newChild.parentNode === parent &&
+        (newChild.nextSibling === targetNextSibling || targetNextSibling === newChild);
 
     if (isInCorrectPosition) {
         // 已经在正确位置，不需要移动

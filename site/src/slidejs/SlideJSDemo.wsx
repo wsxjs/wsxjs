@@ -227,10 +227,12 @@ export default class SlideJSDemo extends LightComponent {
                     {/* Player Container */}
                     <div class="player-layout">
                         <div
+                            key="swiper"
                             id="player-swiper"
                             class={`player-view ${this.activePlayer === "swiper" ? "active" : ""}`}
                         ></div>
                         <div
+                            key="splide"
                             id="player-splide"
                             class={`player-view ${this.activePlayer === "splide" ? "active" : ""}`}
                         ></div>

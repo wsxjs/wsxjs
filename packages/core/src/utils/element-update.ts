@@ -23,6 +23,7 @@ import {
     removeNodes,
     reinsertPreservedElements,
     flattenChildrenSafe,
+    replaceOrInsertElementAtPosition,
 } from "./update-children-helpers";
 
 /**
