@@ -1,6 +1,6 @@
 # RFC 0005: WSX Router Enhancements
 
-- **Status**: Draft
+- **Status**: Completed
 - **Type**: Enhancement
 - **Start Date**: 2025-01-25
 - **Author**: WSX Team

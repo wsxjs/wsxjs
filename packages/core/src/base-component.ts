@@ -335,17 +335,10 @@ export abstract class BaseComponent extends HTMLElement {
         // 使用 requestAnimationFrame 而不是 queueMicrotask，确保在渲染帧中执行
         // 这样可以避免在 render() 执行期间触发的 scheduleRerender() 立即执行
         requestAnimationFrame(() => {
-            console.warn("[scheduleRerender] RAF callback:", {
-                component: this.constructor.name,
-                connected: this.connected,
-                isRendering: this._isRendering,
-            });
-
             // 重置调度标志（允许后续的状态变化调度新的渲染）
             this._hasScheduledRender = false;
 
             if (this.connected && !this._isRendering) {
-                console.warn("[scheduleRerender] calling _rerender()");
                 // 设置渲染标志，防止在 _rerender() 执行期间再次触发
                 // 注意：_isRendering 标志会在 _rerender() 的 onRendered() 调用完成后清除
                 this._isRendering = true;
@@ -393,7 +386,9 @@ export abstract class BaseComponent extends HTMLElement {
         }
 
         // 移除 blur 事件监听器
-        document.removeEventListener("blur", this.handleGlobalBlur, true);
+        const root = this.getActiveRoot();
+        // 注意：在 disconnectedCallback 中，shadowRoot 仍然可用
+        root.removeEventListener("blur", this.handleGlobalBlur as EventListener, true);
 
         // 清除待处理的重渲染标志
         this._pendingRerender = false;
@@ -405,7 +400,12 @@ export abstract class BaseComponent extends HTMLElement {
      */
     protected initializeEventListeners(): void {
         // 添加 blur 事件监听器，在用户停止输入时执行待处理的重渲染
-        document.addEventListener("blur", this.handleGlobalBlur, true);
+        // 关键修复：将监听器在这个组件的根节点上注册（ShadowRoot 或 Host Element）
+        // 而不是 document。因为 blur 事件在 Shadow DOM 中默认是不冒泡且不跨越边界的 (composed: false)
+        // 如果监听器在 document 上，它无法捕获到 Shadow DOM 内部元素的 blur 事件
+        // 使用 capture: true 确保我们在事件到达目标之前捕获它（对于 blur 主要是为了捕获）
+        const root = this.getActiveRoot();
+        root.addEventListener("blur", this.handleGlobalBlur as EventListener, true);
     }
 
     /**

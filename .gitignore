@@ -58,3 +58,7 @@ Thumbs.db
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+.claude/settings.local.json
+
+# Claude
+.claude/settings.local.json

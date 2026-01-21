@@ -1,6 +1,6 @@
 # RFC 0007: Reactive Decorator for TypeScript
 
-## Summary
+- **Status**: Completed
 
 Add a `@state` property decorator to automatically generate reactive code for `WebComponent` and `LightComponent`. `WebComponent` and `LightComponent` already have `reactive()` and `useState()` methods built-in. The `@state` decorator is processed by a Babel plugin at compile time, eliminating the need for manual `this.reactive()` and `this.useState()` calls.
 

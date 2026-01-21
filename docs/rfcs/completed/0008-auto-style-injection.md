@@ -1,6 +1,6 @@
 # RFC 0008: Automatic Style Injection for WSX Components
 
-## Summary
+- **Status**: Completed
 
 Add automatic CSS style injection for WSX components. When a component file `A.wsx` exists, automatically detect and inject the corresponding `A.css` file, eliminating the need for manual `import styles from "./A.css?inline"` and constructor boilerplate. Styles are injected as a class property `private _autoStyles = styles;`, and base classes automatically detect and use it.
 

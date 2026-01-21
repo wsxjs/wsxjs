@@ -59,8 +59,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 
 | RFC | 标题 | 状态 | 提议人 |
 |-----|------|------|--------|
-| [RFC-0007](./0007-reactive-decorator.md) | 响应式装饰器 | Active | Claude |
-| [RFC-0008](./0008-auto-style-injection.md) | 自动样式注入 | Active | Claude |
+
 
 ### 已实现的RFCs
 
@@ -68,6 +67,9 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 |-----|------|------|--------|
 | [RFC-0001](./completed/0001-wsx-router.md) | WSX Router | Implemented | Claude |
 | [RFC-0004](./completed/0004-reactive-state-system.md) | 响应式状态系统 | Implemented | Claude |
+| [RFC-0005](./completed/0005-wsx-router-enhancements.md) | WSX Router 增强 | Completed | Claude |
+| [RFC-0007](./completed/0007-reactive-decorator.md) | 响应式装饰器 | Completed | Claude |
+| [RFC-0008](./completed/0008-auto-style-injection.md) | 自动样式注入 | Completed | Claude |
 | [RFC-0006](./completed/0006-light-dom-components.md) | Light DOM 组件 | Implemented | Claude |
 | [RFC-0011](./completed/0011-focus-preservation.md) | 焦点保持机制 | Implemented | Claude |
 | [RFC-0012](./completed/0012-babel-transform-error-handling.md) | Babel Transform 错误处理策略 | Implemented | Claude |
@@ -87,8 +89,11 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 | [RFC-0039](./0039-enforce-super-lifecycle-calls.md) | 强制生命周期方法调用 super 的 ESLint 规则 | Implemented | WSX Team |
 | [RFC-0042](./0042-language-switcher-immediate-ui-update.md) | LanguageSwitcher 立即 UI 更新修复 | Implemented | WSX Team |
 | [RFC-0043](./0043-style-injection-verification-and-fixes.md) | Web Component 样式注入验证与修复 | Proposed | WSX Team |
+| [RFC-0049](./completed/0049-key-based-reconciliation-implementation.md) | Key-based Reconciliation 算法实施 | Completed | WSX Team |
 | [RFC-0050](./completed/0050-toc-anchor-scrolling-fix.md) | TOC Anchor Scrolling Fix | Completed | Claude |
-| [RFC-0052](./0052-marked-code-theme-and-toc-scrolling.md) | Marked Code Component Theme Support and TOC Scrolling Enhancement | Completed | Claude |
+| [RFC-0051](./completed/0051-wsx-press-internationalized-docs.md) | WSX-Press 国际化文档支持 | Completed | WSX Team |
+| [RFC-0052](./completed/0052-marked-code-theme-and-toc-scrolling.md) | Marked Code Component Theme Support and TOC Scrolling Enhancement | Completed | Claude |
+| [RFC-0056](./completed/0056-shadow-dom-event-handling.md) | Shadow DOM 事件处理标准 | Completed | WSX Team |
 
 ### 提议中的RFCs
 
@@ -116,7 +121,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 |-----|------|------|--------|
 | [RFC-0002](./0002-component-composition.md) | 组件组合和Slot增强 | Draft | Claude |
 | [RFC-0003](./0003-development-tooling.md) | 开发工具链增强 | Draft | Claude |
-| [RFC-0005](./0005-wsx-router-enhancements.md) | WSX Router 增强 | Draft | Claude |
+
 | [RFC-0009](./0009-scss-sass-preprocessing.md) | SCSS/SASS 预处理支持 | Draft (Future) | Claude |
 | [RFC-0010](./0010-eslint-rules-enhancement.md) | ESLint 规则增强 | Draft | Claude |
 | [RFC-0042](./0042-calendar-appointment-management.md) | 预约管理日历组件 | Draft | WSX Team |
