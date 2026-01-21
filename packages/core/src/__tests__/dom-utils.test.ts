@@ -214,10 +214,11 @@ describe("DOM Utilities", () => {
         });
 
         test("应该正确识别并解析混合中文和 HTML 的字符串 (Reproduction Case)", () => {
-            // "这是一个**演示**，展示如何使用 `marked` 与自定义 WSX 渲染器。"
-            // Rendered: "这是一个<strong>演示</strong>，展示如何使用 <code>marked</code> 与自定义 WSX 渲染器。"
+            // This test verifies that HTML strings (as rendered from markdown) are correctly detected and parsed
+            // Original markdown: "这是一个**演示**，展示如何使用 `marked` 与自定义 WSX 渲染器。"
+            // After markdown rendering, it becomes HTML with <strong> and <code> tags
             const input =
-                "这是一个**演示**，展示如何使用 `marked` 与自定义 WSX 渲染器。\n\n### 链接和图片\n\n查看 [WSXJS](https://wsxjs.dev) 了解更多信息。\n\n---\n\n**粗体文本** 和 *斜体文本* 也受支持。";
+                '这是一个<strong>演示</strong>，展示如何使用 <code>marked</code> 与自定义 WSX 渲染器。\n\n<h3>链接和图片</h3>\n\n查看 <a href="https://wsxjs.dev">WSXJS</a> 了解更多信息。\n\n<hr>\n\n<strong>粗体文本</strong> 和 <em>斜体文本</em> 也受支持。';
 
             // 1. Check isHTMLString directly
             expect(isHTMLString(input)).toBe(true);
