@@ -141,6 +141,28 @@
     max-height: 600px;
 }
 
+.renderer-output strong {
+    font-weight: 700;
+}
+
+.renderer-output em {
+    font-style: italic;
+}
+
+.renderer-output a {
+    color: var(--primary-red, #dc2626);
+    text-decoration: underline;
+}
+
+.renderer-output code {
+    background: var(--bg-secondary, #f5f5f5);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: "Courier New", monospace;
+    font-size: 0.85rem;
+    color: var(--text-primary, #2c3e50);
+}
+
 .explanation-section {
     margin: 3rem 0;
     padding: 2rem;

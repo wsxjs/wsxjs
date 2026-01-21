@@ -41,6 +41,7 @@ export function extractInlineTokens(tokens: Tokens.Generic[] | undefined): Token
             token.type === "em" ||
             token.type === "link" ||
             token.type === "code" ||
+            token.type === "codespan" ||
             token.type === "br"
         ) {
             // If it's already an inline token, add it directly
@@ -96,6 +97,10 @@ export function renderInlineTokens(tokens: Tokens.Generic[] | undefined): string
                 }
                 case "code": {
                     const codeToken = token as Tokens.Code;
+                    return `<code>${escapeHtml(codeToken.text || "")}</code>`;
+                }
+                case "codespan": {
+                    const codeToken = token as Tokens.Codespan;
                     return `<code>${escapeHtml(codeToken.text || "")}</code>`;
                 }
                 case "br": {

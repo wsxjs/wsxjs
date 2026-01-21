@@ -292,6 +292,13 @@ export function replaceOrInsertElementAtPosition(
                     ) {
                         // 找到相同内容的元素（且都没有 cache key），不需要插入 newChild
                         // 这是从 HTML 字符串解析而来的重复元素
+                        // 关键修复：必须将其标记为已处理，否则会被 shouldRemoveNode 移除
+                        console.log(
+                            "[WSX Debug] Found duplicate content, keeping existing:",
+                            existingNode.tagName,
+                            existingNode.textContent
+                        );
+                        if (processedNodes) processedNodes.add(existingNode);
                         return;
                     }
                 }
@@ -425,11 +432,11 @@ export function shouldRemoveNode(
 
     const isProcessed = processedNodes && processedNodes.has(node);
 
-    if (shouldPreserveElement(node)) {
+    if (isProcessed) {
         return false;
     }
 
-    if (node.nodeType === Node.TEXT_NODE && isProcessed) {
+    if (shouldPreserveElement(node)) {
         return false;
     }
 

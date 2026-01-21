@@ -85,7 +85,13 @@ export function isHTMLString(str: string): boolean {
     const looksLikeMath = /^[^<]*<[^>]*>[^>]*$/.test(trimmed) && !htmlTagPattern.test(trimmed);
     if (looksLikeMath) return false;
 
-    return htmlTagPattern.test(trimmed);
+    const result = htmlTagPattern.test(trimmed);
+    if (result) {
+        console.log(`[WSX Debug] isHTMLString("${trimmed.substring(0, 50)}..."): ${result}`, {
+            looksLikeMath,
+        });
+    }
+    return result;
 }
 
 /**

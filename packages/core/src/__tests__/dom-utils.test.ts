@@ -212,5 +212,28 @@ describe("DOM Utilities", () => {
             const result = flattenChildren(children);
             expect(result.length).toBeGreaterThan(2);
         });
+
+        test("应该正确识别并解析混合中文和 HTML 的字符串 (Reproduction Case)", () => {
+            // "这是一个**演示**，展示如何使用 `marked` 与自定义 WSX 渲染器。"
+            // Rendered: "这是一个<strong>演示</strong>，展示如何使用 <code>marked</code> 与自定义 WSX 渲染器。"
+            const input =
+                "这是一个**演示**，展示如何使用 `marked` 与自定义 WSX 渲染器。\n\n### 链接和图片\n\n查看 [WSXJS](https://wsxjs.dev) 了解更多信息。\n\n---\n\n**粗体文本** 和 *斜体文本* 也受支持。";
+
+            // 1. Check isHTMLString directly
+            expect(isHTMLString(input)).toBe(true);
+
+            // 2. Check flattenChildren parsing
+            const result = flattenChildren([input]);
+
+            // Should be parsed into nodes, not returned as a single string
+            expect(result.length).toBeGreaterThan(1);
+
+            // Find the strong element
+            const strong = result.find(
+                (n) => n instanceof HTMLElement && n.tagName === "STRONG"
+            ) as HTMLElement;
+            expect(strong).toBeDefined();
+            expect(strong.textContent).toBe("演示");
+        });
     });
 });
