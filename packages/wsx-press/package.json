@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-press",
-    "version": "0.0.29",
+    "version": "0.0.30",
     "description": "A VitePress-like documentation system built with WSXJS",
     "type": "module",
     "main": "./dist/index.cjs",
