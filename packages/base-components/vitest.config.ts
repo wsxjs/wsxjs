@@ -1,5 +1,9 @@
 import { defineConfig } from "vitest/config";
 import { wsx } from "@wsxjs/wsx-vite-plugin";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
     plugins: [
@@ -36,7 +40,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            "@wsxjs/wsx-core": new URL("../core/src", import.meta.url).pathname,
+            "@wsxjs/wsx-core": path.resolve(__dirname, "../core/src"),
         },
     },
 });

@@ -47,6 +47,8 @@ lerna-debug.log*
 *.temp
 .tmp/
 .temp/
+# Vite/Vitest temporary timestamp files
+*.timestamp-*.mjs
 
 # OS files
 Thumbs.db
