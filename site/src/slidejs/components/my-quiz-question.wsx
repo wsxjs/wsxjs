@@ -1,71 +1,347 @@
 /** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * Quiz Question 组件
+ * 用于在 Slide 中显示单个问题
+ * 支持所有题型：单选题、多选题、文本输入题、判断题
+ */
 
 import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
+import styles from "./my-quiz-question.css?inline";
 
-/**
- * 自定义 Web Component 示例
- * 展示如何在 reveal.js 幻灯片中使用自定义组件
- */
+// 简化的类型定义（从 @quizerjs/dsl 提取）
+enum QuestionTypes {
+    SINGLE_CHOICE = "single_choice",
+    MULTIPLE_CHOICE = "multiple_choice",
+    TEXT_INPUT = "text_input",
+    TRUE_FALSE = "true_false",
+}
+
+interface QuestionOption {
+    id: string;
+    text: string;
+}
+
+interface Question {
+    id: string;
+    type: QuestionTypes;
+    text: string;
+    points?: number;
+    options?: QuestionOption[];
+    explanation?: string;
+}
+
 @autoRegister({ tagName: "my-quiz-question" })
 export class MyQuizQuestion extends LightComponent {
-    @state private selectedOption: number | null = null;
+    // 响应式状态 - 关键：使用正确的初始值类型
+    @state private question: Question | null = null;
+    @state private answer: string | string[] | boolean | null = ""; // ✅ 使用字符串初始值
+    @state private disabled = false;
+    @state private showResult = false;
+    @state private isCorrect: boolean | null = null;
+    @state private correctAnswer: any = null;
+
+    constructor() {
+        super({
+            styles,
+            styleName: "my-quiz-question",
+        });
+        console.log("[MyQuizQuestion] Constructor called, initial answer:", this.answer);
+    }
 
     static get observedAttributes() {
-        return ["question", "options"];
+        return ["question", "answer", "disabled", "show-result", "is-correct", "correct-answer"];
     }
 
     protected onAttributeChanged(name: string, _oldValue: string, newValue: string) {
-        if (name === "question" || name === "options") {
-            // 属性变化时重置选择
-            this.selectedOption = null;
+        console.log("[MyQuizQuestion] onAttributeChanged:", name, newValue);
+        switch (name) {
+            case "question":
+                try {
+                    this.question = newValue ? JSON.parse(newValue) : null;
+                    console.log("[MyQuizQuestion] Question set:", this.question);
+                } catch {
+                    this.question = null;
+                }
+                break;
+            case "answer":
+                try {
+                    this.answer = newValue ? JSON.parse(newValue) : "";
+                } catch {
+                    this.answer = "";
+                }
+                break;
+            case "disabled":
+                this.disabled = newValue === "true";
+                break;
+            case "show-result":
+                this.showResult = newValue === "true";
+                break;
+            case "is-correct":
+                this.isCorrect = newValue === "true" ? true : newValue === "false" ? false : null;
+                break;
+            case "correct-answer":
+                try {
+                    this.correctAnswer = newValue ? JSON.parse(newValue) : null;
+                } catch {
+                    this.correctAnswer = null;
+                }
+                break;
         }
     }
 
-    private getQuestion(): string {
-        return this.getAttribute("question") || "No question provided";
-    }
-
-    private getOptions(): string[] {
-        const optionsAttr = this.getAttribute("options") || "[]";
-        try {
-            return JSON.parse(optionsAttr);
-        } catch (e) {
-            console.error("Failed to parse options:", e);
-            return [];
-        }
-    }
-
-    private handleOptionClick = (index: number, option: string) => {
-        this.selectedOption = index;
-        console.log(`Selected option ${index}: ${option}`);
+    /**
+     * 设置答案并触发事件
+     */
+    private setAnswer(value: any): void {
+        if (this.disabled || !this.question) return;
+        console.log("[MyQuizQuestion] setAnswer called:", {
+            oldValue: this.answer,
+            newValue: value,
+            questionId: this.question?.id,
+        });
+        this.answer = value;
+        console.log("[MyQuizQuestion] after setAnswer, this.answer =", this.answer);
 
         // 触发自定义事件
         this.dispatchEvent(
-            new CustomEvent("option-selected", {
-                detail: { index, option },
+            new CustomEvent("answer-change", {
+                detail: { questionId: this.question.id, answer: value },
                 bubbles: true,
             })
         );
+    }
+
+    /**
+     * 处理单选题
+     */
+    private handleSingleChoice = (optionId: string) => {
+        console.log("[MyQuizQuestion] handleSingleChoice:", optionId);
+        this.setAnswer(optionId);
     };
 
+    /**
+     * 处理多选题
+     */
+    private handleMultipleChoice = (optionId: string, checked: boolean) => {
+        const current = (this.answer as string[]) || [];
+        if (checked) {
+            this.setAnswer([...current, optionId]);
+        } else {
+            this.setAnswer(current.filter((id: string) => id !== optionId));
+        }
+    };
+
+    /**
+     * 处理文本输入
+     */
+    private handleTextInput = (value: string) => {
+        this.setAnswer(value);
+    };
+
+    /**
+     * 处理判断题
+     */
+    private handleTrueFalse = (answer: boolean) => {
+        this.setAnswer(answer);
+    };
+
+    /**
+     * 检查选项是否为正确答案
+     */
+    private isOptionCorrect(optionId: string): boolean {
+        if (!this.showResult || !this.question) return false;
+        if (this.question.type === QuestionTypes.SINGLE_CHOICE) {
+            return this.correctAnswer === optionId;
+        }
+        if (this.question.type === QuestionTypes.MULTIPLE_CHOICE) {
+            return Array.isArray(this.correctAnswer) && this.correctAnswer.includes(optionId);
+        }
+        return false;
+    }
+
+    /**
+     * 检查选项是否被选中
+     */
+    private isOptionSelected(optionId: string): boolean {
+        const result =
+            this.question?.type === QuestionTypes.SINGLE_CHOICE
+                ? this.answer === optionId
+                : this.question?.type === QuestionTypes.MULTIPLE_CHOICE
+                  ? Array.isArray(this.answer) && this.answer.includes(optionId)
+                  : false;
+        console.log("[MyQuizQuestion] isOptionSelected:", {
+            optionId,
+            answer: this.answer,
+            result,
+        });
+        return result;
+    }
+
     render() {
-        const question = this.getQuestion();
-        const options = this.getOptions();
+        console.log("[MyQuizQuestion] render called, answer:", this.answer);
+
+        if (!this.question) {
+            return (
+                <div className="quiz-question-loading">
+                    <p>加载中...</p>
+                </div>
+            );
+        }
+
+        const isDisabled = this.disabled;
 
         return (
-            <div className="my-quiz-question">
-                <h3 className="my-quiz-question-title">{question}</h3>
-                <div className="my-quiz-question-options">
-                    {options.map((opt: string, i: number) => (
-                        <button
-                            key={i}
-                            className={`my-quiz-question-option ${this.selectedOption === i ? "selected" : ""}`}
-                            onClick={() => this.handleOptionClick(i, opt)}
+            <div className="quiz-question">
+                {/* 问题标题 */}
+                <h3 className="quiz-question-title">
+                    {this.question.text}
+                    {this.question.points && (
+                        <span className="quiz-question-points">({this.question.points} 分)</span>
+                    )}
+                </h3>
+
+                {/* 单选题 */}
+                {this.question.type === QuestionTypes.SINGLE_CHOICE && this.question.options && (
+                    <div className="quiz-question-options">
+                        {this.question.options.map((option) => {
+                            const isSelected = this.isOptionSelected(option.id);
+                            const isCorrect = this.isOptionCorrect(option.id);
+                            const showResult = this.showResult && isCorrect;
+                            console.log("[MyQuizQuestion] Rendering option:", {
+                                optionId: option.id,
+                                isSelected,
+                                currentAnswer: this.answer,
+                            });
+                            return (
+                                <label
+                                    key={option.id}
+                                    className={`quiz-question-option ${isSelected ? "selected" : ""} ${isDisabled ? "disabled" : ""} ${showResult ? "correct" : ""}`}
+                                >
+                                    <input
+                                        type="radio"
+                                        name={this.question!.id}
+                                        value={option.id}
+                                        checked={isSelected}
+                                        disabled={isDisabled}
+                                        onChange={() => this.handleSingleChoice(option.id)}
+                                    />
+                                    <span className="quiz-question-option-text">{option.text}</span>
+                                    {showResult && (
+                                        <span className="quiz-question-correct-mark">✅</span>
+                                    )}
+                                </label>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* 多选题 */}
+                {this.question.type === QuestionTypes.MULTIPLE_CHOICE && this.question.options && (
+                    <div className="quiz-question-options">
+                        {this.question.options.map((option) => {
+                            const isSelected = this.isOptionSelected(option.id);
+                            const isCorrect = this.isOptionCorrect(option.id);
+                            const showResult = this.showResult && isCorrect;
+                            return (
+                                <label
+                                    key={option.id}
+                                    className={`quiz-question-option ${isSelected ? "selected" : ""} ${isDisabled ? "disabled" : ""} ${showResult ? "correct" : ""}`}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        disabled={isDisabled}
+                                        onChange={(e) =>
+                                            this.handleMultipleChoice(
+                                                option.id,
+                                                (e.target as HTMLInputElement).checked
+                                            )
+                                        }
+                                    />
+                                    <span className="quiz-question-option-text">{option.text}</span>
+                                    {showResult && (
+                                        <span className="quiz-question-correct-mark">✅</span>
+                                    )}
+                                </label>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* 文本输入 */}
+                {this.question.type === QuestionTypes.TEXT_INPUT && (
+                    <div className="quiz-question-text-input-wrapper">
+                        <input
+                            type="text"
+                            className="quiz-question-text-input"
+                            value={(this.answer as string) || ""}
+                            disabled={isDisabled}
+                            placeholder="请输入答案"
+                            onInput={(e) =>
+                                this.handleTextInput((e.target as HTMLInputElement).value)
+                            }
+                        />
+                        {this.showResult && this.correctAnswer && (
+                            <div className="quiz-question-answer-feedback">
+                                <span
+                                    className={`quiz-question-feedback ${this.isCorrect ? "correct" : "incorrect"}`}
+                                >
+                                    {this.isCorrect ? "✅ 正确" : "❌ 错误"}
+                                </span>
+                                <span className="quiz-question-correct-answer">
+                                    正确答案: {this.correctAnswer}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* 判断题 */}
+                {this.question.type === QuestionTypes.TRUE_FALSE && (
+                    <div className="quiz-question-options">
+                        <label
+                            className={`quiz-question-option ${this.answer === true ? "selected" : ""} ${isDisabled ? "disabled" : ""}`}
                         >
-                            {opt}
-                        </button>
-                    ))}
-                </div>
+                            <input
+                                type="radio"
+                                name={this.question.id}
+                                checked={this.answer === true}
+                                disabled={isDisabled}
+                                onChange={() => this.handleTrueFalse(true)}
+                            />
+                            <span className="quiz-question-option-text">正确</span>
+                        </label>
+                        <label
+                            className={`quiz-question-option ${this.answer === false ? "selected" : ""} ${isDisabled ? "disabled" : ""}`}
+                        >
+                            <input
+                                type="radio"
+                                name={this.question.id}
+                                checked={this.answer === false}
+                                disabled={isDisabled}
+                                onChange={() => this.handleTrueFalse(false)}
+                            />
+                            <span className="quiz-question-option-text">错误</span>
+                        </label>
+                        {this.showResult && this.isCorrect !== null && (
+                            <div className="quiz-question-answer-feedback">
+                                <span
+                                    className={`quiz-question-feedback ${this.isCorrect ? "correct" : "incorrect"}`}
+                                >
+                                    {this.isCorrect ? "✅ 正确" : "❌ 错误"}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* 答案解析 */}
+                {this.showResult && this.question.explanation && (
+                    <div className="quiz-question-explanation">
+                        <strong>解析：</strong>
+                        {this.question.explanation}
+                    </div>
+                )}
             </div>
         );
     }

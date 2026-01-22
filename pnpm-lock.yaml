@@ -11,6 +11,24 @@ importers:
 
   .:
     devDependencies:
+      '@babel/core':
+        specifier: ^7.28.0
+        version: 7.28.0
+      '@babel/plugin-proposal-class-properties':
+        specifier: ^7.18.6
+        version: 7.18.6(@babel/core@7.28.0)
+      '@babel/plugin-proposal-decorators':
+        specifier: ^7.28.0
+        version: 7.28.0(@babel/core@7.28.0)
+      '@babel/plugin-transform-class-static-block':
+        specifier: ^7.28.0
+        version: 7.28.3(@babel/core@7.28.0)
+      '@babel/preset-typescript':
+        specifier: ^7.28.5
+        version: 7.28.5(@babel/core@7.28.0)
+      '@babel/types':
+        specifier: ^7.28.1
+        version: 7.28.5
       '@changesets/cli':
         specifier: ^2.29.5
         version: 2.29.5
@@ -6461,7 +6479,7 @@ snapshots:
       '@babel/parser': 7.28.0
       '@babel/template': 7.27.2
       '@babel/traverse': 7.28.5
-      '@babel/types': 7.28.1
+      '@babel/types': 7.28.5
       convert-source-map: 2.0.0
       debug: 4.4.1
       gensync: 1.0.0-beta.2
@@ -6473,7 +6491,7 @@ snapshots:
   '@babel/generator@7.28.0':
     dependencies:
       '@babel/parser': 7.28.0
-      '@babel/types': 7.28.1
+      '@babel/types': 7.28.5
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
       jsesc: 3.1.0
@@ -6531,7 +6549,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.0
       '@babel/helper-module-imports': 7.27.1
-      '@babel/helper-validator-identifier': 7.27.1
+      '@babel/helper-validator-identifier': 7.28.5
       '@babel/traverse': 7.28.5
     transitivePeerDependencies:
       - supports-color
@@ -6569,11 +6587,11 @@ snapshots:
   '@babel/helpers@7.27.6':
     dependencies:
       '@babel/template': 7.27.2
-      '@babel/types': 7.28.1
+      '@babel/types': 7.28.5
 
   '@babel/parser@7.28.0':
     dependencies:
-      '@babel/types': 7.28.1
+      '@babel/types': 7.28.5
 
   '@babel/parser@7.28.5':
     dependencies:
@@ -6730,7 +6748,7 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.27.1
       '@babel/parser': 7.28.0
-      '@babel/types': 7.28.1
+      '@babel/types': 7.28.5
 
   '@babel/traverse@7.28.5':
     dependencies:

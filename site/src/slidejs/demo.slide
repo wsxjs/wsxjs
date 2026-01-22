@@ -19,8 +19,7 @@ present quiz "revealjs-demo" {
         content dynamic {
           name: "my-quiz-question"
           attrs {
-            question: "What is 2 + 2?"
-            options: "[\"2\", \"3\", \"4\", \"5\"]"
+            question: "{\"id\":\"q1\",\"type\":\"single_choice\",\"text\":\"Which is correct?\",\"options\":[{\"id\":\"opt1\",\"text\":\"restaraunt\"},{\"id\":\"opt2\",\"text\":\"restaurant\"},{\"id\":\"opt3\",\"text\":\"restaraunt\"},{\"id\":\"opt4\",\"text\":\"restarant\"}]}"
           }
         }
         behavior {
@@ -32,8 +31,31 @@ present quiz "revealjs-demo" {
         content dynamic {
           name: "my-quiz-question"
           attrs {
-            question: "Which is a JavaScript framework?"
-            options: "[\"React\", \"Python\", \"Java\", \"C++\"]"
+            question: "{\"id\":\"q2\",\"type\":\"single_choice\",\"text\":\"What is 2 + 2?\",\"options\":[{\"id\":\"opt1\",\"text\":\"2\"},{\"id\":\"opt2\",\"text\":\"3\"},{\"id\":\"opt3\",\"text\":\"4\"},{\"id\":\"opt4\",\"text\":\"5\"}]}"
+          }
+        }
+        behavior {
+          transition slide {}
+        }
+      }
+
+      slide {
+        content dynamic {
+          name: "my-quiz-question"
+          attrs {
+            question: "{\"id\":\"q3\",\"type\":\"multiple_choice\",\"text\":\"Select all programming languages:\",\"options\":[{\"id\":\"opt1\",\"text\":\"JavaScript\"},{\"id\":\"opt2\",\"text\":\"Python\"},{\"id\":\"opt3\",\"text\":\"HTML\"},{\"id\":\"opt4\",\"text\":\"Java\"}]}"
+          }
+        }
+        behavior {
+          transition slide {}
+        }
+      }
+
+      slide {
+        content dynamic {
+          name: "my-quiz-question"
+          attrs {
+            question: "{\"id\":\"q4\",\"type\":\"true_false\",\"text\":\"JavaScript is a compiled language.\"}"
           }
         }
         behavior {

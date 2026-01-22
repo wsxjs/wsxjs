@@ -297,8 +297,12 @@ export abstract class BaseComponent extends HTMLElement {
         // 按钮等其他元素应该立即重渲染
         // 如果元素有 data-wsx-force-render 属性，即使是要持续输入的元素也强制重渲染
         if (activeElement) {
+            // 检查是否是需要持续输入的元素
+            // 注意：radio 和 checkbox 不需要持续输入，应该立即重渲染
             const isInputElement =
-                activeElement instanceof HTMLInputElement ||
+                (activeElement instanceof HTMLInputElement &&
+                    activeElement.type !== "radio" &&
+                    activeElement.type !== "checkbox") ||
                 activeElement instanceof HTMLTextAreaElement ||
                 activeElement instanceof HTMLSelectElement ||
                 activeElement.hasAttribute("contenteditable");

@@ -10,8 +10,8 @@
 import { h, type JSXChildren } from "./jsx-factory";
 import { BaseComponent, type BaseComponentConfig } from "./base-component";
 import { RenderContext } from "./render-context";
-import { shouldPreserveElement } from "./utils/element-marking";
 import { createLogger } from "@wsxjs/wsx-logger";
+import { reconcileElement } from "./utils/element-update";
 
 const logger = createLogger("LightComponent");
 
@@ -157,6 +157,10 @@ export abstract class LightComponent extends BaseComponent {
     }
 
     /**
+     * 递归协调子元素
+     * 更新现有子元素的属性和内容，而不是替换整个子树
+     */
+    /**
      * 内部重渲染实现
      * 包含从 rerender() 方法迁移的实际渲染逻辑
      * 处理 JSX children 的保留（Light DOM 特有）
@@ -180,11 +184,11 @@ export abstract class LightComponent extends BaseComponent {
 
         try {
             // 3. 重新渲染JSX内容
-            const content = RenderContext.runInContext(this, () => this.render());
+            const newContent = RenderContext.runInContext(this, () => this.render());
 
             // 4. 在添加到 DOM 之前恢复值，避免浏览器渲染状态值
             if (focusState && focusState.key && focusState.value !== undefined) {
-                const target = content.querySelector(
+                const target = newContent.querySelector(
                     `[data-wsx-key="${focusState.key}"]`
                 ) as HTMLElement;
 
@@ -220,17 +224,9 @@ export abstract class LightComponent extends BaseComponent {
 
             // 6. 使用 requestAnimationFrame 批量执行 DOM 操作
             requestAnimationFrame(() => {
-                // 先添加新内容
-                this.appendChild(content);
-
-                // 移除旧内容（保留 JSX children、样式元素和未标记元素）
-                // 关键修复：使用 shouldPreserveElement() 来保护手动创建的元素（如第三方库注入的元素）
+                // 获取当前的 children（排除样式元素和 JSX children）
                 const oldChildren = Array.from(this.children).filter((child) => {
-                    // 保留新添加的内容
-                    if (child === content) {
-                        return false;
-                    }
-                    // 保留样式元素
+                    // 排除样式元素
                     if (
                         stylesToApply &&
                         child instanceof HTMLStyleElement &&
@@ -238,38 +234,72 @@ export abstract class LightComponent extends BaseComponent {
                     ) {
                         return false;
                     }
-                    // 保留 JSX children（通过 JSX factory 直接添加的 children）
+                    // 排除 JSX children
                     if (child instanceof HTMLElement && jsxChildren.includes(child)) {
-                        return false;
-                    }
-                    // 保留未标记的元素（手动创建的元素、第三方库注入的元素）
-                    // 这是 RFC 0037 Phase 5 的核心：保护未标记元素
-                    if (shouldPreserveElement(child)) {
                         return false;
                     }
                     return true;
                 });
-                oldChildren.forEach((child) => child.remove());
+
+                // 🔥 关键修复：实现真正的 DOM reconciliation
+                // 而不是简单的删除+添加，我们需要：
+                // 1. 如果新旧内容是相同类型的元素，更新其属性
+                // 2. 如果类型不同，才替换元素
+
+                if (oldChildren.length === 1 && newContent instanceof HTMLElement) {
+                    const oldElement = oldChildren[0];
+
+                    // 如果旧元素和新元素是相同类型的标签，更新属性而不是替换
+                    if (
+                        oldElement instanceof HTMLElement &&
+                        oldElement.tagName === newContent.tagName
+                    ) {
+                        // 更新属性
+                        // 1. 移除旧属性
+                        Array.from(oldElement.attributes).forEach((attr) => {
+                            if (!newContent.hasAttribute(attr.name)) {
+                                oldElement.removeAttribute(attr.name);
+                            }
+                        });
+
+                        // 2. 设置/更新新属性
+                        Array.from(newContent.attributes).forEach((attr) => {
+                            if (oldElement.getAttribute(attr.name) !== attr.value) {
+                                oldElement.setAttribute(attr.name, attr.value);
+                            }
+                        });
+
+                        // 3. 递归更新子元素
+                        reconcileElement(oldElement, newContent);
+                    } else {
+                        // 类型不同，直接替换
+                        oldElement.remove();
+                        this.appendChild(newContent);
+                    }
+                } else {
+                    // 数量不匹配或者不是单个元素，使用简单替换
+                    oldChildren.forEach((child) => child.remove());
+                    this.appendChild(newContent);
+                }
 
                 // 确保样式元素存在并在第一个位置
-                // 关键修复：在元素复用场景中，如果 _autoStyles 存在但样式元素被意外移除，需要重新创建
                 if (stylesToApply) {
-                    let styleElement = this.querySelector(
+                    let styleEl = this.querySelector(
                         `style[data-wsx-light-component="${styleName}"]`
                     ) as HTMLStyleElement | null;
 
-                    if (!styleElement) {
+                    if (!styleEl) {
                         // 样式元素被意外移除，重新创建
-                        styleElement = document.createElement("style");
-                        styleElement.setAttribute("data-wsx-light-component", styleName);
-                        styleElement.textContent = stylesToApply;
-                        this.insertBefore(styleElement, this.firstChild);
-                    } else if (styleElement.textContent !== stylesToApply) {
+                        styleEl = document.createElement("style");
+                        styleEl.setAttribute("data-wsx-light-component", styleName);
+                        styleEl.textContent = stylesToApply;
+                        this.insertBefore(styleEl, this.firstChild);
+                    } else if (styleEl.textContent !== stylesToApply) {
                         // 样式内容已变化，更新
-                        styleElement.textContent = stylesToApply;
-                    } else if (styleElement !== this.firstChild) {
+                        styleEl.textContent = stylesToApply;
+                    } else if (styleEl !== this.firstChild) {
                         // 样式元素存在但不在第一个位置，移动到第一个位置
-                        this.insertBefore(styleElement, this.firstChild);
+                        this.insertBefore(styleEl, this.firstChild);
                     }
                 }
 

@@ -534,3 +534,85 @@ export function updateElement(
     // 更新 children
     updateChildren(element, oldChildren, newChildren, cacheManager);
 }
+
+/**
+ * Recursively reconciles an old element to match a new element's structure.
+ * This is a pure function that updates the oldParent in-place to match newParent.
+ *
+ * Used by LightComponent to update DOM without full replacement, preserving:
+ * - Element references (important for event listeners, focus state)
+ * - User-added JSX children
+ * - Third-party library injected elements
+ *
+ * @param oldParent - The existing DOM element to update
+ * @param newParent - The new element structure to match
+ */
+export function reconcileElement(oldParent: HTMLElement, newParent: HTMLElement): void {
+    const oldChildren = Array.from(oldParent.childNodes);
+    const newChildren = Array.from(newParent.childNodes);
+
+    const maxLength = Math.max(oldChildren.length, newChildren.length);
+
+    for (let i = 0; i < maxLength; i++) {
+        const oldChild = oldChildren[i];
+        const newChild = newChildren[i];
+
+        if (!newChild) {
+            // 新的子节点不存在，删除旧的
+            oldChild?.remove();
+        } else if (!oldChild) {
+            // 旧的子节点不存在，添加新的
+            oldParent.appendChild(newChild.cloneNode(true));
+        } else if (oldChild.nodeType !== newChild.nodeType) {
+            // 节点类型不同，替换
+            oldParent.replaceChild(newChild.cloneNode(true), oldChild);
+        } else if (oldChild.nodeType === Node.TEXT_NODE) {
+            // 文本节点，更新内容
+            if (oldChild.textContent !== newChild.textContent) {
+                oldChild.textContent = newChild.textContent;
+            }
+        } else if (oldChild.nodeType === Node.ELEMENT_NODE) {
+            const oldEl = oldChild as HTMLElement;
+            const newEl = newChild as HTMLElement;
+
+            // 元素节点
+            if (oldEl.tagName !== newEl.tagName) {
+                // 标签不同，替换
+                oldParent.replaceChild(newEl.cloneNode(true), oldEl);
+            } else {
+                // 标签相同，更新属性
+                // 1. 移除旧属性
+                Array.from(oldEl.attributes).forEach((attr) => {
+                    if (!newEl.hasAttribute(attr.name)) {
+                        oldEl.removeAttribute(attr.name);
+                    }
+                });
+
+                // 2. 设置/更新新属性
+                Array.from(newEl.attributes).forEach((attr) => {
+                    if (oldEl.getAttribute(attr.name) !== attr.value) {
+                        oldEl.setAttribute(attr.name, attr.value);
+                    }
+                });
+
+                // 3. 特殊处理：className 是 property，不是 attribute
+                if (oldEl.className !== newEl.className) {
+                    oldEl.className = newEl.className;
+                }
+
+                // 4. 特殊处理：对于 input 元素，更新 checked 和 value 属性
+                if (oldEl instanceof HTMLInputElement && newEl instanceof HTMLInputElement) {
+                    if (oldEl.checked !== newEl.checked) {
+                        oldEl.checked = newEl.checked;
+                    }
+                    if (oldEl.value !== newEl.value) {
+                        oldEl.value = newEl.value;
+                    }
+                }
+
+                // 5. 递归更新子元素
+                reconcileElement(oldEl, newEl);
+            }
+        }
+    }
+}
