@@ -5,7 +5,12 @@
 - **完成日期**: 2025-01-21
 - **RFC PR**: [待提交]
 - **WSX Issue**: [待创建]
-- **状态**: Implemented
+- **状态**: Deprecated (Superceded by RFC 0058)
+
+> [!WARNING]
+> **Deprecated**: 此 RFC 提出的"全量替换 + 焦点恢复"策略已被 RFC 0058 "真实 DOM 协调"取代。
+> 新的协调机制能够自然地保持焦点，不再需要本 RFC 中的复杂补救措施。
+
 
 ## 摘要
 

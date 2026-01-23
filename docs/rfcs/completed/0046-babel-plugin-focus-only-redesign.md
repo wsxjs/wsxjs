@@ -1,7 +1,12 @@
 # RFC 0046: Babel Plugin Focus-Only 重新设计
 
 ## 状态
-**Accepted** (已实施)
+**Deprecated** (Superceded by RFC 0058)
+
+> [!WARNING]
+> **Deprecated**: 此 RFC 描述的 Babel 插件用于生成 `data-wsx-key` 以辅助焦点恢复。
+> 随着 RFC 0058 引入真实 DOM 协调，焦点将自然保留，不再需要此插件生成的 Key 进行手动恢复。
+
 
 ## 作者
 AI Assistant
