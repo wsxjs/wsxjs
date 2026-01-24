@@ -54,11 +54,11 @@ importers:
         specifier: ^11.0.3
         version: 11.0.3(semantic-release@24.2.7(typescript@5.8.3))
       '@systembug/pangu':
-        specifier: ^0.0.10
-        version: 0.0.10(@types/node@20.19.9)
+        specifier: ^0.0.12
+        version: 0.0.12(@types/node@20.19.9)
       '@systembug/qingniao':
-        specifier: ^0.0.10
-        version: 0.0.10(@changesets/cli@2.29.5)(@types/node@20.19.9)(typescript@5.8.3)
+        specifier: ^0.0.12
+        version: 0.0.12(@changesets/cli@2.29.5)(@types/node@20.19.9)(typescript@5.8.3)
       '@testing-library/jest-dom':
         specifier: ^6.6.3
         version: 6.6.3
@@ -2105,16 +2105,16 @@ packages:
   '@splidejs/splide@4.1.4':
     resolution: {integrity: sha512-5I30evTJcAJQXt6vJ26g2xEkG+l1nXcpEw4xpKh0/FWQ8ozmAeTbtniVtVmz2sH1Es3vgfC4SS8B2X4o5JMptA==}
 
-  '@systembug/diting@0.0.10':
-    resolution: {integrity: sha512-KDwF0ZZhlDHdUBLAWylZn1ZCIkdeLdcgaAcsgU7xYC0HUUGADFuzD7J7t27ozDRQ7cYMCtFVqlZMU4vHhrKAoA==}
+  '@systembug/diting@0.0.12':
+    resolution: {integrity: sha512-Hvmxsykcexr8sQ5Rr0Ix9LgMSBGFVqL1WPSMfMQ/lsqTy/3yVVEEgP6jd1je9FG78oX1NpgdROTaDFahzmW5ag==}
     engines: {node: '>=16.0.0'}
 
-  '@systembug/pangu@0.0.10':
-    resolution: {integrity: sha512-/mzeIkSJ/4YO0+BmSben/QmfttqMO5GCUSvS+NqiMRHcVSZZmvbwAAZDk7KNQdScUnEnaZ2BpRLq28IxMyAq3Q==}
+  '@systembug/pangu@0.0.12':
+    resolution: {integrity: sha512-i/MUjyYPr+MRZq59yRQDrcBs+zGjWGnqowCPvb7pqlbmihUaSmU+UC+p8HR7C2viPFsXwJj16A0hq9v4Oogl6Q==}
     hasBin: true
 
-  '@systembug/qingniao@0.0.10':
-    resolution: {integrity: sha512-qFLQWujIVHMck3vxGfPQWj9DFySYYvFGM0YU87FLLX+NwGVpoaXArWAdj27/92x+i0qjE7obftxZuJB1E608/g==}
+  '@systembug/qingniao@0.0.12':
+    resolution: {integrity: sha512-/IbNsuPP7zBWuIC/a3JNdhbIi4hiLUN0Mz1zOwZVTLZXhnmVs+G88La+xzi2vlpvPj3quPLoRs7IT87AoHw7gw==}
     engines: {node: '>=16.0.0'}
     hasBin: true
     peerDependencies:
@@ -7513,7 +7513,7 @@ snapshots:
     dependencies:
       string-width: 5.1.2
       string-width-cjs: string-width@4.2.3
-      strip-ansi: 7.1.0
+      strip-ansi: 7.1.2
       strip-ansi-cjs: strip-ansi@6.0.1
       wrap-ansi: 8.1.0
       wrap-ansi-cjs: wrap-ansi@7.0.0
@@ -8186,12 +8186,12 @@ snapshots:
 
   '@splidejs/splide@4.1.4': {}
 
-  '@systembug/diting@0.0.10':
+  '@systembug/diting@0.0.12':
     dependencies:
       chalk: 5.6.2
       pino: 9.14.0
 
-  '@systembug/pangu@0.0.10(@types/node@20.19.9)':
+  '@systembug/pangu@0.0.12(@types/node@20.19.9)':
     dependencies:
       inquirer: 9.3.8(@types/node@20.19.9)
       js-yaml: 4.1.0
@@ -8199,10 +8199,10 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@systembug/qingniao@0.0.10(@changesets/cli@2.29.5)(@types/node@20.19.9)(typescript@5.8.3)':
+  '@systembug/qingniao@0.0.12(@changesets/cli@2.29.5)(@types/node@20.19.9)(typescript@5.8.3)':
     dependencies:
       '@changesets/cli': 2.29.5
-      '@systembug/diting': 0.0.10
+      '@systembug/diting': 0.0.12
       chalk: 4.1.2
       commander: 9.5.0
       inquirer: 13.1.0(@types/node@20.19.9)
@@ -11244,7 +11244,7 @@ snapshots:
       ansi-escapes: 7.0.0
       cli-cursor: 5.0.0
       slice-ansi: 7.1.0
-      strip-ansi: 7.1.0
+      strip-ansi: 7.1.2
       wrap-ansi: 9.0.0
 
   loose-envify@1.4.0:
@@ -13038,7 +13038,7 @@ snapshots:
     dependencies:
       ansi-styles: 6.2.1
       string-width: 7.2.0
-      strip-ansi: 7.1.0
+      strip-ansi: 7.1.2
 
   wrap-ansi@9.0.2:
     dependencies:
