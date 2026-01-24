@@ -1,9 +1,10 @@
 import { LightComponent } from "../light-component";
-import { autoRegister } from "../index";
+// import { autoRegister } from "../index";
 import { h } from "../jsx-factory";
 
 // Define a component that updates on every input
-@autoRegister({ tagName: "test-focus-stress" })
+// @autoRegister removed to avoid Jest Babel config issues
+// @autoRegister({ tagName: "test-focus-stress" })
 class TestFocusComponent extends LightComponent {
     public value: string = "";
     public renderCount: number = 0;
@@ -22,7 +23,7 @@ class TestFocusComponent extends LightComponent {
                 id: "test-input",
                 value: this.value,
                 "data-wsx-key": "input-1", // Key is crucial for current focus logic
-                onInput: (e: any) => this.setValue(e.target.value),
+                onInput: (e: Event) => this.setValue((e.target as HTMLInputElement).value),
             }),
             h("div", { id: "count" }, `Rendered: ${this.renderCount}`),
         ]);
@@ -30,6 +31,11 @@ class TestFocusComponent extends LightComponent {
 }
 
 describe("Focus Management Stress Test", () => {
+    // Manually register if not already defined
+    if (!customElements.get("test-focus-stress")) {
+        customElements.define("test-focus-stress", TestFocusComponent);
+    }
+
     let el: TestFocusComponent;
 
     beforeEach(() => {
@@ -53,12 +59,6 @@ describe("Focus Management Stress Test", () => {
         expect(document.activeElement).toBe(input);
 
         // Simulate typing "Hello"
-        // Steps:
-        // 1. Set cursor
-        // 2. Update value
-        // 3. Dispatch input event (which triggers rerender)
-        // 4. Wait for rerender
-        // 5. Check focus and cursor
 
         // Type 'H'
         input.setSelectionRange(0, 0); // Start
@@ -74,9 +74,7 @@ describe("Focus Management Stress Test", () => {
         // Verify Value
         expect(input.value).toBe("H");
 
-        // Verify Cursor (This is the hardest part for JSDOM/Reconciliation)
-        // If the node was replaced, cursor is likely lost (reset to 0 or end depending on browser)
-        // If the node was reused, cursor should persist if logic handles it.
+        // Verify Cursor
         expect(input.selectionStart).toBe(1);
         expect(input.selectionEnd).toBe(1);
 
@@ -94,13 +92,13 @@ describe("Focus Management Stress Test", () => {
 
     test("should verify that the node is reused (sanity check for reconciliation)", async () => {
         await new Promise((resolve) => setTimeout(resolve, 50));
-        const inputBefore = el.querySelector("input") as HTMLInputElement;
+        const inputBefore = el.querySelector("input");
 
         // Update
         el.setValue("Updated");
         await new Promise((resolve) => setTimeout(resolve, 50));
 
-        const inputAfter = el.querySelector("input") as HTMLInputElement;
+        const inputAfter = el.querySelector("input");
 
         // CRITICAL: The node reference must be the same for natural focus preservation
         expect(inputAfter).toBe(inputBefore);

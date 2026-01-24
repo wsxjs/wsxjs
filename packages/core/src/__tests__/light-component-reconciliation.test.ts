@@ -1,8 +1,8 @@
 import { LightComponent } from "../light-component";
-import { autoRegister } from "../index";
+// import { autoRegister } from "../index";
 import { h } from "../jsx-factory";
 
-@autoRegister({ tagName: "test-light-reconcile" })
+// @autoRegister({ tagName: "test-light-reconcile" })
 class TestLightReconcile extends LightComponent {
     private stage: number = 0;
 
@@ -29,6 +29,10 @@ class TestLightReconcile extends LightComponent {
 }
 
 describe("LightComponent Reconciliation - Text Node Leakage", () => {
+    // Manually register
+    if (!customElements.get("test-light-reconcile")) {
+        customElements.define("test-light-reconcile", TestLightReconcile);
+    }
     let el: TestLightReconcile;
 
     beforeEach(() => {
@@ -81,5 +85,89 @@ describe("LightComponent Reconciliation - Text Node Leakage", () => {
         expect(restoredContainer.childNodes.length).toBe(2);
         expect(restoredContainer.children.length).toBe(2);
         expect(restoredContainer.childNodes[0].nodeType).not.toBe(Node.TEXT_NODE);
+    });
+});
+
+// @autoRegister({ tagName: "test-focus-stress" })
+class TestFocusStress extends LightComponent {
+    public value: string = "";
+    public renderCount: number = 0;
+
+    setValue(val: string) {
+        this.value = val;
+        this.scheduleRerender();
+    }
+
+    render() {
+        this.renderCount++;
+        return h("div", { class: "container" }, [
+            h("h1", {}, "Focus Stress Test"),
+            h("input", {
+                type: "text",
+                id: "test-input",
+                value: this.value,
+                "data-wsx-key": "input-1",
+                onInput: (e: Event) => this.setValue((e.target as HTMLInputElement).value),
+            }),
+            h("div", { id: "count" }, `Rendered: ${this.renderCount}`),
+        ]);
+    }
+}
+
+describe("Focus Management Stress Test", () => {
+    if (!customElements.get("test-focus-stress")) {
+        customElements.define("test-focus-stress", TestFocusStress);
+    }
+    let el: TestFocusStress;
+
+    beforeEach(() => {
+        el = document.createElement("test-focus-stress") as TestFocusStress;
+        document.body.appendChild(el);
+    });
+
+    afterEach(() => {
+        document.body.removeChild(el);
+    });
+
+    test("should maintain focus and cursor position during rapid updates", async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        const input = el.querySelector("input")! as HTMLInputElement;
+
+        input.focus();
+        expect(document.activeElement).toBe(input);
+
+        // Type 'H'
+        input.setSelectionRange(0, 0);
+        input.value = "H";
+        input.setSelectionRange(1, 1);
+        el.setValue("H");
+
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        expect(document.activeElement).toBe(input);
+        expect(input.value).toBe("H");
+        expect(input.selectionStart).toBe(1);
+
+        // Type 'e' -> "He"
+        input.value = "He";
+        input.setSelectionRange(2, 2);
+        el.setValue("He");
+
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        expect(document.activeElement).toBe(input);
+        expect(input.value).toBe("He");
+        expect(input.selectionStart).toBe(2);
+    });
+
+    test("should verify that the node is reused", async () => {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        const inputBefore = el.querySelector("input")! as HTMLInputElement;
+
+        el.setValue("Updated");
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
+        const inputAfter = el.querySelector("input")! as HTMLInputElement;
+        expect(inputAfter).toBe(inputBefore);
     });
 });

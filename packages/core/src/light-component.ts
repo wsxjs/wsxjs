@@ -176,8 +176,9 @@ export abstract class LightComponent extends BaseComponent {
         }
 
         // 1. 捕获焦点状态（在 DOM 替换之前）
-        const focusState = this.captureFocusState();
-        this._pendingFocusState = focusState;
+        // const focusState = this.captureFocusState();
+        // this._pendingFocusState = focusState;
+        const focusState: any = null; // RFC 0061 Evaluation: Disable focus capture
 
         // 2. 保存 JSX children（通过 JSX factory 直接添加的 children）
         // 这些 children 不是 render() 返回的内容，应该保留

@@ -53,4 +53,22 @@
 
 ## 需要的决策
 
-通过在功能分支中禁用焦点逻辑并运行回归套件 + 新的手动压力测试来启动评估过程。
+通过在功能分支中禁用焦点逻辑并运行回归套件 + 新的手动压力测试来启动评估过程。（已完成，见下文）
+
+## 评估结果 (2026-01-24)
+
+### 测试执行
+我们在 `light-component-reconciliation.test.ts` 中添加了压力测试 `Stress Test`，该测试模拟了受控输入框的高频更新。即使在 `LightComponent` 和 `WebComponent` 中禁用了 `captureFocusState` 调用（强制返回 `null`），测试依然**通过**。
+
+### 结论
+假设成立：**核心协调引擎 (RFC 0058/0059) 已经足够强大，能够通过复用 DOM 节点来自然保持焦点**。
+
+### 决策
+1.  **正式弃用** 手动焦点管理工具。
+2.  代码库中的 `captureFocusState` 和 `restoreFocusState` 调用已被注释禁用，建议在后续清理任务中完全删除相关代码。
+3.  保留压力测试作为回归测试，防止未来协调逻辑倒退。
+
+## 下一步
+- [x] 禁用焦点逻辑进行验证 (已完成)
+- [ ] 创建清理任务：删除 `BaseComponent` 中的死代码 (`captureFocusState`, `restoreFocusState`, `_pendingFocusState`)
+- [ ] 监控生产环境反馈（如有）

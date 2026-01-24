@@ -174,8 +174,9 @@ export abstract class WebComponent extends BaseComponent {
 
         // 1. (Optional) Capture focus state as a safety net
         // RFC 0058: With true reconciliation, this is mostly redundant but kept for edge cases
-        const focusState = this.captureFocusState();
-        this._pendingFocusState = focusState;
+        // RFC 0061 Evaluation: Disable focus capture
+        // const focusState = this.captureFocusState();
+        // this._pendingFocusState = focusState;
 
         // 2. Render new content
         const content = RenderContext.runInContext(this, () => this.render());
