@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-site",
-    "version": "0.0.30",
+    "version": "0.1.0",
     "description": "WSXJS official website and examples",
     "type": "module",
     "private": true,
