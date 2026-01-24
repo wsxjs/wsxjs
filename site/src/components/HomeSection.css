@@ -501,53 +501,71 @@ wsx-link[active]::part(link)::after {
     flex-wrap: wrap;
 }
 
-/* 按钮样式 */
+/* 按钮样式 - 使用统一的 CSS 变量 */
 .btn-primary,
 .btn-secondary,
 .btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    font-weight: 600;
+    display: var(--wsx-theme-btn-display, inline-flex);
+    align-items: var(--wsx-theme-btn-align-items, center);
+    gap: var(--wsx-theme-btn-gap, 0.5rem);
+    padding: var(--wsx-theme-btn-padding, 1rem 2rem);
+    border-radius: var(--wsx-theme-btn-border-radius, 8px);
+    font-weight: var(--wsx-theme-btn-font-weight, 600);
     text-decoration: none;
     transition: all 0.3s ease;
     border: none;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: var(--wsx-theme-btn-font-size, 1rem);
     font-family: inherit;
+    min-width: var(--wsx-theme-btn-min-width, fit-content);
+    white-space: var(--wsx-theme-btn-white-space, nowrap);
+    box-sizing: var(--wsx-theme-btn-box-sizing, border-box);
+    line-height: var(--wsx-theme-btn-line-height, 1.5);
+    margin: var(--wsx-theme-btn-margin, 0);
+    vertical-align: var(--wsx-theme-btn-vertical-align, middle);
 }
 
-/* Specific fix for wsx-link acting as a button */
+/* Specific fix for wsx-link acting as a button - 使用统一的 CSS 变量 */
 wsx-link.btn-primary {
     padding: 0;
     border: none;
     background: none;
     box-shadow: none;
+    display: var(--wsx-theme-btn-display, inline-flex);
+    align-items: var(--wsx-theme-btn-align-items, center);
+    margin: var(--wsx-theme-btn-margin, 0);
+    vertical-align: var(--wsx-theme-btn-vertical-align, middle);
+    line-height: 0;
 }
 
 wsx-link.btn-primary::part(link) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem 2rem;
-    gap: 0.5rem;
+    display: var(--wsx-theme-btn-display, inline-flex);
+    align-items: var(--wsx-theme-btn-align-items, center);
+    justify-content: var(--wsx-theme-btn-justify-content, center);
+    padding: var(--wsx-theme-btn-padding, 1rem 2rem);
+    gap: var(--wsx-theme-btn-gap, 0.5rem);
     color: white;
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: var(--wsx-theme-btn-border-radius, 8px);
     box-shadow: 0 4px 15px var(--btn-primary-shadow);
     transition: all 0.3s ease;
-    width: 100%;
-    height: 100%;
     text-decoration: none;
+    min-width: var(--wsx-theme-btn-min-width, fit-content);
+    box-sizing: var(--wsx-theme-btn-box-sizing, border-box);
+    line-height: var(--wsx-theme-btn-line-height, 1.5);
+    font-size: var(--wsx-theme-btn-font-size, 1rem);
+    font-weight: var(--wsx-theme-btn-font-weight, 600);
+    font-family: inherit;
+    margin: var(--wsx-theme-btn-margin, 0);
+    vertical-align: var(--wsx-theme-btn-vertical-align, middle);
 }
 
 wsx-link.btn-primary:hover::part(link) {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px var(--btn-primary-shadow-hover);
     background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
-    width: 100%; /* Ensure width stays 100% on hover */
+    border-color: rgba(255, 255, 255, 0.7);
 }
 
 /* WSX Link override preventing underline on button */
@@ -555,19 +573,23 @@ wsx-link.btn-primary::part(link)::after {
     display: none;
 }
 
-/* Keep native button styles for secondary/ghost */
+/* Keep native button styles for secondary/ghost - 使用统一的 CSS 变量 */
 .btn-secondary,
 .btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem 2rem;
+    display: var(--wsx-theme-btn-display, inline-flex);
+    align-items: var(--wsx-theme-btn-align-items, center);
+    gap: var(--wsx-theme-btn-gap, 0.5rem);
+    padding: var(--wsx-theme-btn-padding, 1rem 2rem);
     /* ... rest of shared styles ... */
     background: rgba(255, 255, 255, 0.1);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
+    box-sizing: var(--wsx-theme-btn-box-sizing, border-box);
+    line-height: var(--wsx-theme-btn-line-height, 1.5);
+    margin: var(--wsx-theme-btn-margin, 0);
+    vertical-align: var(--wsx-theme-btn-vertical-align, middle);
 }
 
 .btn-secondary:hover {

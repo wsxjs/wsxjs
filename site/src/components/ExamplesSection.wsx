@@ -41,10 +41,12 @@ export default class ExamplesSection extends WebComponent {
                                 to="/webcomponent-examples"
                                 class="core-feature-card web-component-card"
                             >
-                                <div class="core-feature-icon">🔷</div>
                                 <div class="core-feature-content">
                                     <h3 class="core-feature-title">
-                                        {this.t("examplesSection.examples.webComponent.title")}
+                                        <span class="core-feature-icon">◆</span>
+                                        {this.t(
+                                            "examplesSection.examples.webComponent.title"
+                                        ).replace(/^[🔷🔶🔸🌐💡🎯]\s*/u, "")}
                                     </h3>
                                     <span class="core-feature-badge">
                                         {this.t("examplesSection.examples.webComponent.badge")}
@@ -55,7 +57,10 @@ export default class ExamplesSection extends WebComponent {
                                         )}
                                     </p>
                                     <div class="core-feature-link">
-                                        {this.t("examplesSection.examples.webComponent.link")} →
+                                        {this.t(
+                                            "examplesSection.examples.webComponent.link"
+                                        ).replace(/^→\s*/, "")}{" "}
+                                        →
                                     </div>
                                 </div>
                             </wsx-link>
@@ -64,10 +69,12 @@ export default class ExamplesSection extends WebComponent {
                                 to="/lightcomponent-examples"
                                 class="core-feature-card light-component-card"
                             >
-                                <div class="core-feature-icon">🔶</div>
                                 <div class="core-feature-content">
                                     <h3 class="core-feature-title">
-                                        {this.t("examplesSection.examples.lightComponent.title")}
+                                        <span class="core-feature-icon">◆</span>
+                                        {this.t(
+                                            "examplesSection.examples.lightComponent.title"
+                                        ).replace(/^[🔷🔶🔸🌐💡🎯]\s*/u, "")}
                                     </h3>
                                     <span class="core-feature-badge">
                                         {this.t("examplesSection.examples.lightComponent.badge")}
@@ -78,16 +85,22 @@ export default class ExamplesSection extends WebComponent {
                                         )}
                                     </p>
                                     <div class="core-feature-link">
-                                        {this.t("examplesSection.examples.lightComponent.link")} →
+                                        {this.t(
+                                            "examplesSection.examples.lightComponent.link"
+                                        ).replace(/^→\s*/, "")}{" "}
+                                        →
                                     </div>
                                 </div>
                             </wsx-link>
 
                             <wsx-link to="/slot-examples" class="core-feature-card slot-card">
-                                <div class="core-feature-icon">🔸</div>
                                 <div class="core-feature-content">
                                     <h3 class="core-feature-title">
-                                        {this.t("examplesSection.examples.slots.title")}
+                                        <span class="core-feature-icon">◆</span>
+                                        {this.t("examplesSection.examples.slots.title").replace(
+                                            /^[🔷🔶🔸🌐💡🎯]\s*/u,
+                                            ""
+                                        )}
                                     </h3>
                                     <span class="core-feature-badge">
                                         {this.t("examplesSection.examples.slots.badge")}
@@ -96,7 +109,11 @@ export default class ExamplesSection extends WebComponent {
                                         {this.t("examplesSection.examples.slots.description")}
                                     </p>
                                     <div class="core-feature-link">
-                                        {this.t("examplesSection.examples.slots.link")} →
+                                        {this.t("examplesSection.examples.slots.link").replace(
+                                            /^→\s*/,
+                                            ""
+                                        )}{" "}
+                                        →
                                     </div>
                                 </div>
                             </wsx-link>

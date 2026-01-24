@@ -27,12 +27,12 @@
     --card-shadow-hover: rgba(220, 38, 38, 0.15);
 
     /* 焦点颜色变量 - 使用主题颜色 */
-    --focus-color: var(--primary-red);
-    --link-focus-color: var(--primary-red);
-    --dropdown-focus-color: var(--primary-red);
-    --language-switcher-focus-color: var(--primary-red);
-    --combobox-focus-border: var(--primary-red);
-    --combobox-focus-outline: rgba(220, 38, 38, 0.2);
+    --wsx-theme-focus-color: var(--primary-red);
+    --wsx-theme-link-focus-color: var(--primary-red);
+    --wsx-theme-dropdown-focus-color: var(--primary-red);
+    --wsx-theme-language-switcher-focus-color: var(--primary-red);
+    --wsx-theme-combobox-focus-border: var(--primary-red);
+    --wsx-theme-combobox-focus-outline: rgba(220, 38, 38, 0.2);
 
     /* 布局间距变量 */
     --nav-height: 70px;
@@ -42,6 +42,42 @@
     --doc-layout-main-padding-x: 2rem;
     --doc-page-padding-y: 1rem;
     --doc-page-padding-x: 2rem;
+
+    /* 按钮对齐变量 - 统一管理所有按钮组件的对齐属性 */
+    --wsx-theme-btn-display: inline-flex;
+    --wsx-theme-btn-align-items: center;
+    --wsx-theme-btn-justify-content: center;
+    --wsx-theme-btn-gap: 0.5rem;
+    --wsx-theme-btn-padding-y: 1rem;
+    --wsx-theme-btn-padding-x: 2rem;
+    --wsx-theme-btn-padding: var(--wsx-theme-btn-padding-y) var(--wsx-theme-btn-padding-x);
+    --wsx-theme-btn-border-radius: 8px;
+    --wsx-theme-btn-font-size: 1rem;
+    --wsx-theme-btn-font-weight: 600;
+    --wsx-theme-btn-line-height: 1.5;
+    --wsx-theme-btn-box-sizing: border-box;
+    --wsx-theme-btn-margin: 0;
+    --wsx-theme-btn-vertical-align: middle;
+    --wsx-theme-btn-white-space: nowrap;
+    --wsx-theme-btn-min-width: fit-content;
+
+    /* 卡片组件变量 - 统一管理卡片样式 */
+    --wsx-theme-card-padding: 1.5rem 1.25rem;
+    --wsx-theme-card-padding-y: 1.5rem;
+    --wsx-theme-card-padding-x: 1.25rem;
+    --wsx-theme-card-border-radius: 12px;
+    --wsx-theme-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --wsx-theme-card-shadow-hover:
+        0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --wsx-theme-card-border: 1px solid var(--border-color);
+    --wsx-theme-card-gap: 0.75rem;
+    --wsx-theme-card-icon-size: 1.25rem;
+    --wsx-theme-card-icon-gap: 0.5rem;
+    --wsx-theme-card-title-size: 1.25rem;
+    --wsx-theme-card-title-line-height: 1.4;
+    --wsx-theme-card-badge-margin-top: 0;
+    --wsx-theme-card-description-size: 0.875rem;
+    --wsx-theme-card-link-size: 0.875rem;
 }
 
 /* 深色主题变量 */

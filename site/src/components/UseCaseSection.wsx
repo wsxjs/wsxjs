@@ -1,5 +1,5 @@
 /** @jsxImportSource @wsxjs/wsx-core */
-import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import { WebComponent, autoRegister, state } from "@wsxjs/wsx-core";
 import { i18n } from "@wsxjs/wsx-i18next";
 import { RouterUtils } from "@wsxjs/wsx-router";
 import styles from "./UseCaseSection.css?inline";
@@ -8,6 +8,8 @@ import "@wsxjs/wsx-base-components";
 @autoRegister({ tagName: "use-case-section" })
 @i18n("usecase")
 export default class UseCaseSection extends WebComponent {
+    @state private activeCase: string = "";
+
     constructor() {
         super({
             styles,
@@ -15,13 +17,134 @@ export default class UseCaseSection extends WebComponent {
         });
     }
 
+    protected onConnected() {
+        super.onConnected?.();
+        this.setupScrollObserver();
+    }
+
+    protected onDisconnected() {
+        super.onDisconnected?.();
+        // Cleanup will be handled by WebComponent base class
+    }
+
+    private setupScrollObserver = () => {
+        // Use setTimeout to ensure DOM is fully rendered
+        setTimeout(() => {
+            if (!this.shadowRoot) {
+                console.warn("Shadow root not available for scroll observer");
+                return;
+            }
+
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+                            this.activeCase = entry.target.id;
+                            this.updateNavActiveState();
+                        }
+                    });
+                },
+                {
+                    rootMargin: "-20% 0px -60% 0px",
+                    threshold: [0, 0.3, 0.6, 1],
+                }
+            );
+
+            const cases = ["editorjs", "marked", "slidejs", "calendarjs"];
+            cases.forEach((id) => {
+                // Find element in shadow root (WebComponent uses Shadow DOM)
+                const element = this.shadowRoot?.getElementById(id);
+
+                if (element) {
+                    observer.observe(element);
+                } else {
+                    console.warn(
+                        `Could not find element with id "${id}" in shadow root for scroll observer`
+                    );
+                }
+            });
+        }, 200);
+    };
+
+    private updateNavActiveState = () => {
+        // Try to find nav items in shadow root or light DOM
+        let navItems: NodeListOf<Element>;
+
+        if (this.shadowRoot) {
+            navItems = this.shadowRoot.querySelectorAll(".nav-item");
+        } else {
+            navItems = this.querySelectorAll(".nav-item");
+        }
+
+        navItems.forEach((item) => {
+            const button = item as HTMLButtonElement;
+            const caseId = button.dataset.caseId;
+            if (caseId === this.activeCase) {
+                button.classList.add("active");
+            } else {
+                button.classList.remove("active");
+            }
+        });
+    };
+
     private handleCardClick = (path: string) => {
         RouterUtils.navigate(path);
+    };
+
+    private scrollToCase = (id: string, event?: Event) => {
+        // Prevent default and stop propagation
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        // Find element in shadow root (WebComponent uses Shadow DOM)
+        const element = this.shadowRoot?.getElementById(id);
+
+        if (!element) {
+            console.warn(`[UseCaseSection] Element with id "${id}" not found in shadow root`);
+            console.debug(
+                `[UseCaseSection] Available elements:`,
+                Array.from(this.shadowRoot?.querySelectorAll("[id]") || []).map((el) => el.id)
+            );
+            return;
+        }
+
+        // Get the component's position in the document
+        const componentRect = this.getBoundingClientRect();
+        const componentTop = componentRect.top + window.pageYOffset;
+
+        // Get element position relative to the component
+        const elementRect = element.getBoundingClientRect();
+        const elementTopRelative = elementRect.top - componentRect.top;
+
+        // Calculate absolute position in document
+        const elementPosition = componentTop + elementTopRelative;
+
+        // Calculate offset for sticky nav
+        const navHeight = 70; // Main navigation bar height
+        const stickyNavHeight = 60; // Sticky nav approximate height
+        const offset = navHeight + stickyNavHeight + 20; // Extra padding
+
+        const offsetPosition = elementPosition - offset;
+
+        // Smooth scroll to element
+        window.scrollTo({
+            top: Math.max(0, offsetPosition),
+            behavior: "smooth",
+        });
     };
 
     render() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const t = ((this as any).t as (key: string, options?: object) => string).bind(this);
+
+        const cases = [
+            { id: "editorjs", key: "editorjs" },
+            { id: "marked", key: "marked" },
+            { id: "slidejs", key: "slidejs" },
+            { id: "calendarjs", key: "calendarjs" },
+        ];
 
         return (
             <section id="use-cases" class="use-case-section">
@@ -31,16 +154,34 @@ export default class UseCaseSection extends WebComponent {
                         <p class="section-description">{t("description")}</p>
                     </div>
 
+                    {/* Sticky Navigation */}
+                    <nav class="use-cases-nav">
+                        {cases.map((caseItem) => (
+                            <button
+                                key={caseItem.id}
+                                type="button"
+                                class={`nav-item ${this.activeCase === caseItem.id ? "active" : ""}`}
+                                data-case-id={caseItem.id}
+                                onClick={(e) => this.scrollToCase(caseItem.id, e)}
+                            >
+                                {t(`cases.${caseItem.key}.title`)}
+                            </button>
+                        ))}
+                    </nav>
+
                     <div class="use-cases-grid">
                         {/* EditorJS Use Case */}
                         <div
+                            id="editorjs"
                             class="use-case-card"
                             onClick={() => this.handleCardClick("/editorjs")}
                         >
-                            <div class="use-case-icon">📝</div>
                             <div class="use-case-content">
-                                <h3 class="use-case-title">{t("cases.editorjs.title")}</h3>
-                                <span class="use-case-badge">{t("cases.editorjs.badge")}</span>
+                                <h3 class="use-case-title">
+                                    <span class="use-case-icon">📝</span>
+                                    {t("cases.editorjs.title")}
+                                    <span class="use-case-badge">{t("cases.editorjs.badge")}</span>
+                                </h3>
                                 <p class="use-case-description">
                                     {t("cases.editorjs.description")}
                                 </p>
@@ -75,11 +216,17 @@ export default class UseCaseSection extends WebComponent {
                         </div>
 
                         {/* Marked Use Case */}
-                        <div class="use-case-card" onClick={() => this.handleCardClick("/marked")}>
-                            <div class="use-case-icon">📄</div>
+                        <div
+                            id="marked"
+                            class="use-case-card"
+                            onClick={() => this.handleCardClick("/marked")}
+                        >
                             <div class="use-case-content">
-                                <h3 class="use-case-title">{t("cases.marked.title")}</h3>
-                                <span class="use-case-badge">{t("cases.marked.badge")}</span>
+                                <h3 class="use-case-title">
+                                    <span class="use-case-icon">📄</span>
+                                    {t("cases.marked.title")}
+                                    <span class="use-case-badge">{t("cases.marked.badge")}</span>
+                                </h3>
                                 <p class="use-case-description">{t("cases.marked.description")}</p>
 
                                 <div class="use-case-why">
@@ -110,11 +257,17 @@ export default class UseCaseSection extends WebComponent {
                         </div>
 
                         {/* SlideJS Use Case */}
-                        <div class="use-case-card" onClick={() => this.handleCardClick("/slidejs")}>
-                            <div class="use-case-icon">📊</div>
+                        <div
+                            id="slidejs"
+                            class="use-case-card"
+                            onClick={() => this.handleCardClick("/slidejs")}
+                        >
                             <div class="use-case-content">
-                                <h3 class="use-case-title">{t("cases.slidejs.title")}</h3>
-                                <span class="use-case-badge">{t("cases.slidejs.badge")}</span>
+                                <h3 class="use-case-title">
+                                    <span class="use-case-icon">📊</span>
+                                    {t("cases.slidejs.title")}
+                                    <span class="use-case-badge">{t("cases.slidejs.badge")}</span>
+                                </h3>
                                 <p class="use-case-description">{t("cases.slidejs.description")}</p>
 
                                 <div class="use-case-why">
@@ -146,13 +299,18 @@ export default class UseCaseSection extends WebComponent {
 
                         {/* CalendarJS Use Case */}
                         <div
+                            id="calendarjs"
                             class="use-case-card"
                             onClick={() => this.handleCardClick("/calendarjs")}
                         >
-                            <div class="use-case-icon">📅</div>
                             <div class="use-case-content">
-                                <h3 class="use-case-title">{t("cases.calendarjs.title")}</h3>
-                                <span class="use-case-badge">{t("cases.calendarjs.badge")}</span>
+                                <h3 class="use-case-title">
+                                    <span class="use-case-icon">📅</span>
+                                    {t("cases.calendarjs.title")}
+                                    <span class="use-case-badge">
+                                        {t("cases.calendarjs.badge")}
+                                    </span>
+                                </h3>
                                 <p class="use-case-description">
                                     {t("cases.calendarjs.description")}
                                 </p>

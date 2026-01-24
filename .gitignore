@@ -64,3 +64,6 @@ Thumbs.db
 
 # Claude
 .claude/settings.local.json
+site/src/components/ExamplesSection.css
+.gitignore
+__pycache__/
