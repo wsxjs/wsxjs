@@ -18,6 +18,19 @@ export default defineConfig({
         globals: true,
         setupFiles: [],
         include: ["src/**/*.{test,spec}.{js,ts,wsx}", "src/__tests__/**/*.{js,ts,wsx}"],
+        // 限制并发数以避免 worker 崩溃
+        pool: "threads",
+        poolOptions: {
+            threads: {
+                singleThread: false,
+                maxThreads: 2,
+                minThreads: 1,
+            },
+        },
+        // 增加超时时间
+        testTimeout: 10000,
+        hookTimeout: 10000,
+        teardownTimeout: 10000,
         coverage: {
             provider: "v8",
             reporter: ["text", "json", "html", "lcov"],
