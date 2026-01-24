@@ -433,6 +433,7 @@ wsx-link[active]::part(link)::after {
     border-radius: 20px;
     padding: 0.5rem 1rem;
     margin-bottom: 2rem;
+    margin-right: 1rem;
 }
 
 .badge-text {
@@ -518,19 +519,50 @@ wsx-link[active]::part(link)::after {
     font-family: inherit;
 }
 
-.btn-primary {
-    background: var(--btn-primary-bg);
-    color: white;
-    box-shadow: 0 4px 15px var(--btn-primary-shadow);
+/* Specific fix for wsx-link acting as a button */
+wsx-link.btn-primary {
+    padding: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
 }
 
-.btn-primary:hover {
-    background: var(--btn-primary-hover);
+wsx-link.btn-primary::part(link) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2rem;
+    gap: 0.5rem;
+    color: white;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px var(--btn-primary-shadow);
+    transition: all 0.3s ease;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+
+wsx-link.btn-primary:hover::part(link) {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px var(--btn-primary-shadow-hover);
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    width: 100%; /* Ensure width stays 100% on hover */
 }
 
-.btn-secondary {
+/* WSX Link override preventing underline on button */
+wsx-link.btn-primary::part(link)::after {
+    display: none;
+}
+
+/* Keep native button styles for secondary/ghost */
+.btn-secondary,
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+/* ... rest of shared styles ... */
     background: rgba(255, 255, 255, 0.1);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);

@@ -201,11 +201,13 @@ export function Fragment(_props: unknown, children: JSXChildren[]): DocumentFrag
 
         if (typeof child === "string" || typeof child === "number") {
             const textNode = document.createTextNode(String(child));
-            (textNode as any).__wsxManaged = true;
+            (textNode as Text & { __wsxManaged?: boolean }).__wsxManaged = true;
             fragment.appendChild(textNode);
         } else if (child instanceof HTMLElement || child instanceof SVGElement) {
             fragment.appendChild(child);
         } else if (child instanceof DocumentFragment) {
+            fragment.appendChild(child);
+        } else if (child instanceof Node) {
             fragment.appendChild(child);
         }
     });

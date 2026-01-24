@@ -1,4 +1,5 @@
 // Core exports
+export * from "./base-component";
 export { WebComponent } from "./web-component";
 export { LightComponent } from "./light-component";
 export { autoRegister, registerComponent } from "./auto-register";

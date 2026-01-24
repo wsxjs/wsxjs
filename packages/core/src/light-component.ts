@@ -11,7 +11,8 @@ import { h, type JSXChildren } from "./jsx-factory";
 import { BaseComponent, type BaseComponentConfig } from "./base-component";
 import { RenderContext } from "./render-context";
 import { createLogger } from "@wsxjs/wsx-logger";
-import { reconcileElement } from "./utils/element-update";
+import { updateProps, updateChildren } from "./utils/element-update";
+import { shouldPreserveElement } from "./utils/element-marking";
 
 const logger = createLogger("LightComponent");
 
@@ -94,10 +95,10 @@ export abstract class LightComponent extends BaseComponent {
             } else {
                 // 没有内容，需要渲染
                 // 清空旧内容（保留样式元素）
-                const childrenToRemove = Array.from(this.children).filter(
-                    (child) => child !== styleElement
+                const childrenToRemove = Array.from(this.childNodes).filter(
+                    (node) => node !== styleElement
                 );
-                childrenToRemove.forEach((child) => child.remove());
+                childrenToRemove.forEach((node) => node.remove());
 
                 // 渲染JSX内容到Light DOM
                 const content = RenderContext.runInContext(this, () => this.render());
@@ -222,97 +223,97 @@ export abstract class LightComponent extends BaseComponent {
                 }
             }
 
-            // 6. 使用 requestAnimationFrame 批量执行 DOM 操作
-            requestAnimationFrame(() => {
-                // 获取当前的 children（排除样式元素和 JSX children）
-                const oldChildren = Array.from(this.children).filter((child) => {
-                    // 排除样式元素
-                    if (
-                        stylesToApply &&
-                        child instanceof HTMLStyleElement &&
-                        child.getAttribute("data-wsx-light-component") === styleName
-                    ) {
-                        return false;
-                    }
-                    // 排除 JSX children
-                    if (child instanceof HTMLElement && jsxChildren.includes(child)) {
-                        return false;
-                    }
-                    return true;
-                });
-
-                // 🔥 关键修复：实现真正的 DOM reconciliation
-                // 而不是简单的删除+添加，我们需要：
-                // 1. 如果新旧内容是相同类型的元素，更新其属性
-                // 2. 如果类型不同，才替换元素
-
-                if (oldChildren.length === 1 && newContent instanceof HTMLElement) {
-                    const oldElement = oldChildren[0];
-
-                    // 如果旧元素和新元素是相同类型的标签，更新属性而不是替换
-                    if (
-                        oldElement instanceof HTMLElement &&
-                        oldElement.tagName === newContent.tagName
-                    ) {
-                        // 更新属性
-                        // 1. 移除旧属性
-                        Array.from(oldElement.attributes).forEach((attr) => {
-                            if (!newContent.hasAttribute(attr.name)) {
-                                oldElement.removeAttribute(attr.name);
-                            }
-                        });
-
-                        // 2. 设置/更新新属性
-                        Array.from(newContent.attributes).forEach((attr) => {
-                            if (oldElement.getAttribute(attr.name) !== attr.value) {
-                                oldElement.setAttribute(attr.name, attr.value);
-                            }
-                        });
-
-                        // 3. 递归更新子元素
-                        reconcileElement(oldElement, newContent);
-                    } else {
-                        // 类型不同，直接替换
-                        oldElement.remove();
-                        this.appendChild(newContent);
-                    }
-                } else {
-                    // 数量不匹配或者不是单个元素，使用简单替换
-                    oldChildren.forEach((child) => child.remove());
-                    this.appendChild(newContent);
+            // 6. 执行 DOM 操作
+            // 获取当前的 childNodes（包括文本节点，排除样式元素和 JSX children）
+            const allShadowChildren = Array.from(this.childNodes);
+            const oldChildren = allShadowChildren.filter((child) => {
+                // 排除样式元素
+                if (
+                    stylesToApply &&
+                    child instanceof HTMLStyleElement &&
+                    child.getAttribute("data-wsx-light-component") === styleName
+                ) {
+                    return false;
                 }
-
-                // 确保样式元素存在并在第一个位置
-                if (stylesToApply) {
-                    let styleEl = this.querySelector(
-                        `style[data-wsx-light-component="${styleName}"]`
-                    ) as HTMLStyleElement | null;
-
-                    if (!styleEl) {
-                        // 样式元素被意外移除，重新创建
-                        styleEl = document.createElement("style");
-                        styleEl.setAttribute("data-wsx-light-component", styleName);
-                        styleEl.textContent = stylesToApply;
-                        this.insertBefore(styleEl, this.firstChild);
-                    } else if (styleEl.textContent !== stylesToApply) {
-                        // 样式内容已变化，更新
-                        styleEl.textContent = stylesToApply;
-                    } else if (styleEl !== this.firstChild) {
-                        // 样式元素存在但不在第一个位置，移动到第一个位置
-                        this.insertBefore(styleEl, this.firstChild);
-                    }
+                // 排除 JSX children (RFC: 这里的 jsxChildren 现在包含 Text 节点)
+                if (jsxChildren.includes(child as any)) {
+                    return false;
                 }
-
-                // 恢复焦点状态
-                requestAnimationFrame(() => {
-                    this.restoreFocusState(focusState);
-                    this._pendingFocusState = null;
-                    // 调用 onRendered 生命周期钩子
-                    this.onRendered?.();
-                    // 在 onRendered() 完成后清除渲染标志，允许后续的 scheduleRerender()
-                    this._isRendering = false;
-                });
+                // 排除保留元素 (RFC 0058)
+                if (shouldPreserveElement(child)) {
+                    return false;
+                }
+                return true;
             });
+
+            // 7. True DOM Reconciliation (RFC 0058) for Light DOM
+            // Similar to WebComponent but handling list of children directly
+
+            // Case 1: Single Root => Single Root
+            if (
+                oldChildren.length === 1 &&
+                newContent instanceof HTMLElement &&
+                oldChildren[0] instanceof HTMLElement &&
+                oldChildren[0].tagName === newContent.tagName
+            ) {
+                const oldRoot = oldChildren[0] as HTMLElement;
+                const newRoot = newContent;
+
+                if (oldRoot !== newRoot) {
+                    const cacheManager = RenderContext.getDOMCache();
+                    if (cacheManager) {
+                        const oldMetadata = cacheManager.getMetadata(oldRoot);
+                        const newMetadata = cacheManager.getMetadata(newRoot);
+                        if (oldMetadata && newMetadata) {
+                            updateProps(
+                                oldRoot,
+                                oldMetadata.props as Record<string, unknown>,
+                                newMetadata.props as Record<string, unknown>,
+                                oldRoot.tagName
+                            );
+                            updateChildren(
+                                oldRoot,
+                                oldMetadata.children as JSXChildren[],
+                                newMetadata.children as JSXChildren[],
+                                cacheManager
+                            );
+                        } else {
+                            oldRoot.replaceWith(newRoot);
+                        }
+                    } else {
+                        oldRoot.replaceWith(newRoot);
+                    }
+                }
+            } else {
+                // Case 2: Multi-root or mismatch
+                // For now, doing smart replacement
+                oldChildren.forEach((child) => child.remove());
+                this.appendChild(newContent);
+            }
+
+            // 确保样式元素存在并在第一个位置 (re-verify)
+            if (stylesToApply) {
+                let styleEl = this.querySelector(
+                    `style[data-wsx-light-component="${styleName}"]`
+                ) as HTMLStyleElement | null;
+
+                if (!styleEl) {
+                    styleEl = document.createElement("style");
+                    styleEl.setAttribute("data-wsx-light-component", styleName);
+                    styleEl.textContent = stylesToApply;
+                    this.insertBefore(styleEl, this.firstChild);
+                } else if (styleEl !== this.firstChild) {
+                    this.insertBefore(styleEl, this.firstChild);
+                }
+            }
+
+            // 恢复焦点状态
+            this.restoreFocusState(focusState);
+            this._pendingFocusState = null;
+            // 调用 onRendered 生命周期钩子
+            this.onRendered?.();
+            // 在 onRendered() 完成后清除渲染标志，允许后续的 scheduleRerender()
+            this._isRendering = false;
         } catch (error) {
             logger.error(`[${this.constructor.name}] Error in _rerender:`, error);
             this.renderError(error);
@@ -327,16 +328,18 @@ export abstract class LightComponent extends BaseComponent {
      * 在 Light DOM 中，JSX children 是通过 JSX factory 直接添加到组件元素的
      * 这些 children 不是 render() 返回的内容，应该保留
      */
-    private getJSXChildren(): HTMLElement[] {
+    private getJSXChildren(): Node[] {
         // 在 connectedCallback 中标记的 JSX children
-        // 使用 data 属性标记：data-wsx-jsx-child="true"
-        const jsxChildren = Array.from(this.children)
-            .filter(
-                (child) =>
-                    child instanceof HTMLElement &&
-                    child.getAttribute("data-wsx-jsx-child") === "true"
-            )
-            .map((child) => child as HTMLElement);
+        // 使用 data 属性或内部属性标记
+        const jsxChildren = Array.from(this.childNodes).filter((node) => {
+            if (node instanceof HTMLElement) {
+                return node.getAttribute("data-wsx-jsx-child") === "true";
+            }
+            if (node.nodeType === Node.TEXT_NODE) {
+                return (node as Text & { __wsxJsxChild?: boolean }).__wsxJsxChild === true;
+            }
+            return false;
+        });
 
         return jsxChildren;
     }
@@ -353,13 +356,15 @@ export abstract class LightComponent extends BaseComponent {
             `style[data-wsx-light-component="${styleName}"]`
         ) as HTMLStyleElement | null;
 
-        Array.from(this.children).forEach((child) => {
-            if (
-                child instanceof HTMLElement &&
-                child !== styleElement &&
-                !(child instanceof HTMLSlotElement)
-            ) {
-                child.setAttribute("data-wsx-jsx-child", "true");
+        Array.from(this.childNodes).forEach((node) => {
+            if (node !== styleElement && !(node instanceof HTMLSlotElement)) {
+                if (node instanceof HTMLElement) {
+                    node.setAttribute("data-wsx-jsx-child", "true");
+                } else if (node.nodeType === Node.TEXT_NODE) {
+                    (node as Text & { __wsxManaged?: boolean }).__wsxManaged = true;
+                    // For text nodes, we also use a custom property to identify them as JSX children
+                    (node as Text & { __wsxJsxChild?: boolean }).__wsxJsxChild = true;
+                }
             }
         });
     }

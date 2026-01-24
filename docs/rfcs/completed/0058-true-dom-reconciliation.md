@@ -77,6 +77,41 @@ protected _rerender(): void {
 }
 ```
 
+### 修改 `LightComponent._rerender`
+
+`LightComponent` 也需要升级以支持真实协调，特别是对于 JSX Children 的保留和列表更新。
+
+```typescript
+protected _rerender(): void {
+    // ... 前置处理 ...
+
+    // True DOM Reconciliation
+    if (oldChildren.length === 1 && newContent instanceof HTMLElement && ...) {
+        // 单根节点优化：原地更新
+        reconcileElement(oldRoot, newContent);
+    } else {
+        // 多节点场景：目前作为回退，进行智能替换
+        // 注意：保留 JSX children 和 样式元素
+        // ...
+    }
+}
+```
+
+### 修复 `element-update.ts`
+
+在实施过程中发现 `reconcileElement` 有一个 Bug，它会无意中移除应该被保留的元素（如第三方库注入的元素）。
+修复方案：在移除节点前调用 `shouldPreserveElement` 检查。
+
+```typescript
+// packages/core/src/utils/element-update.ts
+if (!newChild) {
+    // 关键修复：检查是否应该保留
+    if (oldChild && !shouldPreserveElement(oldChild)) {
+        oldChild.remove();
+    }
+}
+```
+
 ### 废弃旧机制
 
 一旦实现了上述逻辑，我们可以：

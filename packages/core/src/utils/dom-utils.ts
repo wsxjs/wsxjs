@@ -11,6 +11,7 @@ export type JSXChildren =
     | HTMLElement
     | SVGElement
     | DocumentFragment
+    | Node
     | JSXChildren[]
     | null
     | undefined
@@ -54,7 +55,7 @@ export function parseHTMLToNodes(html: string): (HTMLElement | SVGElement | stri
             // 关键修复：标记解析出的元素为框架管理
             // 这确保了 shouldPreserveElement 不会错误地保留这些元素
             // 从而防止了在频繁重渲染（如 Markdown 输入）时的元素堆积
-            (node as any).__wsxManaged = true;
+            (node as HTMLElement & { __wsxManaged?: boolean }).__wsxManaged = true;
             return node;
         } else {
             // Convert text nodes and other node types to strings
@@ -86,11 +87,6 @@ export function isHTMLString(str: string): boolean {
     if (looksLikeMath) return false;
 
     const result = htmlTagPattern.test(trimmed);
-    if (result) {
-        console.log(`[WSX Debug] isHTMLString("${trimmed.substring(0, 50)}..."): ${result}`, {
-            looksLikeMath,
-        });
-    }
     return result;
 }
 
@@ -106,7 +102,7 @@ export function flattenChildren(
     children: JSXChildren[],
     skipHTMLDetection: boolean = false,
     depth: number = 0
-): (string | number | HTMLElement | SVGElement | DocumentFragment | boolean | null | undefined)[] {
+): JSXChildren[] {
     // 防止无限递归：如果深度超过 10，停止处理
     if (depth > 10) {
         console.warn(
@@ -117,16 +113,7 @@ export function flattenChildren(
                 typeof child === "string" || typeof child === "number"
         );
     }
-    const result: (
-        | string
-        | number
-        | HTMLElement
-        | SVGElement
-        | DocumentFragment
-        | boolean
-        | null
-        | undefined
-    )[] = [];
+    const result: JSXChildren[] = [];
 
     for (const child of children) {
         if (child === null || child === undefined || child === false) {
@@ -140,30 +127,17 @@ export function flattenChildren(
                 result.push(child);
             } else if (isHTMLString(child)) {
                 // 自动检测HTML字符串并转换为DOM节点
-                // 使用 try-catch 防止解析失败导致崩溃
                 try {
                     const nodes = parseHTMLToNodes(child);
-                    // 递归处理转换后的节点数组，标记为已解析，避免再次检测HTML
-                    // parseHTMLToNodes 返回的字符串是纯文本节点，不应该再次被检测为HTML
-                    // 但是为了安全，我们仍然设置 skipHTMLDetection = true
                     if (nodes.length > 0) {
                         // 直接添加解析后的节点，不再递归处理（避免无限递归）
-                        // parseHTMLToNodes 已经完成了所有解析工作
                         for (const node of nodes) {
-                            if (typeof node === "string") {
-                                // 文本节点直接添加，不再检测 HTML（已解析）
-                                result.push(node);
-                            } else {
-                                // DOM 元素直接添加
-                                result.push(node);
-                            }
+                            result.push(node);
                         }
                     } else {
-                        // 如果解析失败，回退到纯文本
                         result.push(child);
                     }
                 } catch (error) {
-                    // 如果解析失败，回退到纯文本，避免崩溃
                     console.warn("[WSX] Failed to parse HTML string, treating as text:", error);
                     result.push(child);
                 }
@@ -172,24 +146,10 @@ export function flattenChildren(
             }
         } else if (child instanceof DocumentFragment) {
             // 递归处理 DocumentFragment 中的子节点
-            // 注意：Array.from 会创建子节点的引用副本，
-            // 这样即使 Fragment 在后续过程中被 appendChild 清空，
-            // 我们的 flat children 列表仍然持有正确的节点引用。
-            // 关键：不能递归调用 flattenChildren(Array.from(child.childNodes))，
-            // 因为 DocumentFragment 本身不支持 skipHTMLDetection。
-            // 我们直接将其子节点展平到当前结果中。
             const fragmentChildren = Array.from(child.childNodes);
-            for (const fragChild of fragmentChildren) {
-                if (fragChild instanceof HTMLElement || fragChild instanceof SVGElement) {
-                    result.push(fragChild);
-                } else if (fragChild.nodeType === Node.TEXT_NODE) {
-                    result.push(fragChild.textContent || "");
-                } else if (fragChild instanceof DocumentFragment) {
-                    // 处理嵌套 Fragment（防御性编程）
-                    result.push(...flattenChildren([fragChild], skipHTMLDetection, depth + 1));
-                }
-            }
+            result.push(...flattenChildren(fragmentChildren, skipHTMLDetection, depth + 1));
         } else {
+            // 保持 Node 引用
             result.push(child);
         }
     }

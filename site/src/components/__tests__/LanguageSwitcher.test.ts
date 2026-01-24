@@ -6,11 +6,23 @@
 import { describe, test, expect, beforeEach, afterEach } from "vitest";
 // Import to register the component
 import "../LanguageSwitcher.wsx";
+import { i18nInstance } from "@wsxjs/wsx-i18next";
 
 describe("LanguageSwitcher - 语言切换立即更新修复", () => {
     let component: HTMLElement;
 
     beforeEach(async () => {
+        // Initialize i18n keys if needed for tests
+        if (!i18nInstance.isInitialized) {
+            await i18nInstance.init({
+                lng: "en",
+                resources: {
+                    en: { translation: {} },
+                    zh: { translation: {} },
+                },
+            });
+        }
+
         // 清理 DOM
         while (document.body.firstChild) {
             document.body.removeChild(document.body.firstChild);
@@ -25,20 +37,17 @@ describe("LanguageSwitcher - 语言切换立即更新修复", () => {
         }
         // 等待组件连接和渲染
         await new Promise((resolve) => {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setTimeout(() => resolve(undefined), 100);
-                });
-            });
+            setTimeout(resolve, 100);
         });
     });
 
     afterEach(() => {
         component.remove();
+        i18nInstance.changeLanguage("en");
     });
 
     // 移除不稳定的测试，将重新构建
-    test.skip("选择新语言后，按钮标签应该立即更新", async () => {
+    test("选择新语言后，按钮标签应该立即更新", async () => {
         // 等待组件连接和渲染
         await new Promise((resolve) => {
             requestAnimationFrame(() => {
@@ -104,7 +113,7 @@ describe("LanguageSwitcher - 语言切换立即更新修复", () => {
     });
 
     // 移除不稳定的测试，将重新构建
-    test.skip("render 方法应该使用响应式状态 currentLanguage 而不是 i18nInstance.language", async () => {
+    test("render 方法应该使用响应式状态 currentLanguage 而不是 i18nInstance.language", async () => {
         // 等待组件连接和渲染
         await new Promise((resolve) => {
             requestAnimationFrame(() => {

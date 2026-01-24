@@ -155,8 +155,7 @@ describe("Cache Key Generation", () => {
 
         test("应该从 RenderContext 获取组件 ID", () => {
             const component = new MockComponent();
-            // @ts-expect-error - 测试需要设置内部属性
-            component._instanceId = "abc123";
+            component._wsxInstanceId = "abc123";
 
             RenderContext.runInContext(component, () => {
                 const componentId = getComponentId();
@@ -164,22 +163,21 @@ describe("Cache Key Generation", () => {
             });
         });
 
-        test("应该使用默认 instance ID（当没有 _instanceId 时）", () => {
+        test("应该使用默认 instance ID（当没有 _wsxInstanceId 时）", () => {
             const component = new MockComponent();
 
             RenderContext.runInContext(component, () => {
                 const componentId = getComponentId();
-                expect(componentId).toBe("MockComponent:default");
+                // 现在是用 auto-incremental ID，格式为 MockComponent:inst-<number>
+                expect(componentId).toMatch(/^MockComponent:inst-\d+/);
             });
         });
 
         test("应该处理嵌套上下文", () => {
             const component1 = new MockComponent();
             const component2 = new MockComponent();
-            // @ts-expect-error - 测试需要设置内部属性
-            component1._instanceId = "comp1";
-            // @ts-expect-error - 测试需要设置内部属性
-            component2._instanceId = "comp2";
+            component1._wsxInstanceId = "comp1";
+            component2._wsxInstanceId = "comp2";
 
             RenderContext.runInContext(component1, () => {
                 const id1 = getComponentId();
@@ -199,7 +197,7 @@ describe("Cache Key Generation", () => {
             const component = new MockComponent();
 
             RenderContext.runInContext(component, () => {
-                expect(getComponentId()).toBe("MockComponent:default");
+                expect(getComponentId()).toMatch(/^MockComponent:inst-\d+/);
             });
 
             expect(getComponentId()).toBe("unknown");

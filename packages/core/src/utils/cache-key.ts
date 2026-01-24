@@ -22,9 +22,15 @@ const componentElementCounters = new WeakMap<BaseComponent, number>();
 
 /**
  * Component ID cache (using WeakMap to avoid memory leaks)
- * Caches component IDs to avoid recomputing them on every render.
+ * Caches component IDs to avoid recomputing them on every call.
  */
 const componentIdCache = new WeakMap<BaseComponent, string>();
+
+/**
+ * Auto-incremental instance counter for components without a manual ID.
+ */
+const instanceAutoIds = new WeakMap<BaseComponent, number>();
+let globalAutoId = 0;
 
 /**
  * Generates a cache key for a DOM element.
@@ -111,7 +117,16 @@ export function getComponentId(): string {
 
         // Compute and cache
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const instanceId = (component as any)._instanceId || "default";
+        let instanceId = (component as any)._wsxInstanceId;
+
+        // 如果没有显示 ID，分配一个唯一的自动 ID (RFC 0037 增强)
+        if (instanceId === undefined || instanceId === null) {
+            if (!instanceAutoIds.has(component)) {
+                instanceAutoIds.set(component, ++globalAutoId);
+            }
+            instanceId = String(instanceAutoIds.get(component));
+        }
+
         cachedId = `${component.constructor.name}:${instanceId}`;
         componentIdCache.set(component, cachedId);
         return cachedId;

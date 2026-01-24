@@ -13,6 +13,7 @@ import { StyleManager } from "./styles/style-manager";
 import { BaseComponent, type BaseComponentConfig } from "./base-component";
 import { RenderContext } from "./render-context";
 import { shouldPreserveElement } from "./utils/element-marking";
+import { updateProps, updateChildren } from "./utils/element-update";
 import { createLogger } from "@wsxjs/wsx-logger";
 
 const logger = createLogger("WebComponent");
@@ -157,130 +158,142 @@ export abstract class WebComponent extends BaseComponent {
 
     /**
      * 内部重渲染实现
-     * 包含从 rerender() 方法迁移的实际渲染逻辑
-     * WebComponent 使用 Shadow DOM，不存在 JSX children 问题
+     * 使用真实 DOM 协调 (RFC 0058) 替代全量替换
+     *
+     * 策略：
+     * 1. 尝试原地更新 (Reconciliation)
+     * 2. 只有在结构完全不匹配时才回退到替更新
      *
      * @override
      */
     protected _rerender(): void {
         if (!this.connected) {
-            // 如果组件未连接，清除渲染标志
             this._isRendering = false;
             return;
         }
 
-        // 1. 捕获焦点状态（在 DOM 替换之前）
+        // 1. (Optional) Capture focus state as a safety net
+        // RFC 0058: With true reconciliation, this is mostly redundant but kept for edge cases
         const focusState = this.captureFocusState();
         this._pendingFocusState = focusState;
 
-        // 2. 保存当前的 adopted stylesheets 并检测实际的样式状态
-        const adoptedStyleSheets = this.shadowRoot.adoptedStyleSheets || [];
-        // 自动检测模式：检查实际的 ShadowRoot 样式状态，而不仅仅是保存的数组
-        // 这样可以更准确地检测样式是否真的已应用
-        const hasActualAdoptedStyles =
-            this.shadowRoot.adoptedStyleSheets && this.shadowRoot.adoptedStyleSheets.length > 0;
-        // 检查 fallback 模式的样式元素
-        const hasFallbackStyleElement = Array.from(this.shadowRoot.children).some(
-            (child) => child instanceof HTMLStyleElement
-        );
+        // 2. Render new content
+        const content = RenderContext.runInContext(this, () => this.render());
 
         try {
-            // 3. 自动检测模式：只有在没有实际样式时才重新应用样式
-            // 检查 adoptedStyleSheets 和 fallback 样式元素
-            if (!hasActualAdoptedStyles && !hasFallbackStyleElement) {
-                const stylesToApply = this._autoStyles || this.config.styles;
-                if (stylesToApply) {
-                    const styleName = this.config.styleName || this.constructor.name;
-                    StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
+            // 3. Get existing content (excluding styles and preserved elements)
+            const allChildren = Array.from(this.shadowRoot.childNodes);
+            const oldChildren = allChildren.filter((child) => {
+                if (child instanceof HTMLStyleElement) return false;
+                if (shouldPreserveElement(child)) return false;
+                return true;
+            });
+
+            // 4. Try Reconciliation (Single Root Optimization)
+            // Most components render a single root element
+            if (
+                oldChildren.length === 1 &&
+                oldChildren[0] instanceof HTMLElement &&
+                content instanceof HTMLElement &&
+                oldChildren[0].tagName === content.tagName
+            ) {
+                const oldRoot = oldChildren[0] as HTMLElement;
+                const newRoot = content as HTMLElement;
+
+                // 4.1 Check Instance Equality
+                // If h() returned the same instance (cached), it already updated it!
+                if (oldRoot === newRoot) {
+                    // h() in render() already called updateElement, which updated props and children.
+                    // We only need to ensure styles are correct.
+                } else {
+                    // 4.2 Different Instance, Same Tag -> Sync intelligently
+                    // We use the framework's update logic to sync the oldRoot to the newRoot's state
+                    // This preserves the oldRoot's identity (focus, scroll) while giving it the new state
+
+                    const cacheManager = RenderContext.getDOMCache();
+                    if (cacheManager) {
+                        const oldMetadata = cacheManager.getMetadata(oldRoot);
+                        const newMetadata = cacheManager.getMetadata(newRoot);
+
+                        if (oldMetadata && newMetadata) {
+                            // Use framework core update logic
+                            updateProps(
+                                oldRoot,
+                                oldMetadata.props as any,
+                                newMetadata.props as any,
+                                oldRoot.tagName
+                            );
+                            updateChildren(
+                                oldRoot,
+                                oldMetadata.children as any,
+                                newMetadata.children as any,
+                                cacheManager
+                            );
+
+                            // DISCARD newRoot as we've synced oldRoot to replace it
+                            // But we should NOT destroy it yet, just don't use it.
+                        } else {
+                            // Fallback to manual sync or replacement if metadata missing
+                            oldRoot.replaceWith(newRoot);
+                        }
+                    } else {
+                        oldRoot.replaceWith(newRoot);
+                    }
                 }
-            }
 
-            // 4. 重新渲染JSX
-            const content = RenderContext.runInContext(this, () => this.render());
+                // 4.3 Check styles (auto-detect)
+                const hasStylesOriginal =
+                    (this.shadowRoot.adoptedStyleSheets &&
+                        this.shadowRoot.adoptedStyleSheets.length > 0) ||
+                    Array.from(this.shadowRoot.childNodes).some(
+                        (c) => c instanceof HTMLStyleElement
+                    );
 
-            // 5. 在添加到 DOM 之前恢复值
-            if (focusState && focusState.key && focusState.value !== undefined) {
-                const target = content.querySelector(
-                    `[data-wsx-key="${focusState.key}"]`
-                ) as HTMLElement;
+                if (!hasStylesOriginal) {
+                    const stylesToApply = this._autoStyles || this.config.styles;
+                    if (stylesToApply) {
+                        const styleName = this.config.styleName || this.constructor.name;
+                        StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
+                    }
+                }
+            } else {
+                // 5. Fallback: Full Replacement (for Fragment root or type mismatch)
+                // This mimics the old "Nuke & Pave" but strictly for the content part
 
-                if (target) {
-                    if (
-                        target instanceof HTMLInputElement ||
-                        target instanceof HTMLTextAreaElement
-                    ) {
-                        target.value = focusState.value;
+                // Remove old content
+                oldChildren.forEach((child) => child.remove());
+
+                // Append new content
+                if (content.parentNode !== this.shadowRoot) {
+                    this.shadowRoot.appendChild(content);
+                }
+
+                // Restore styles if missing
+                const hasStylesAfter =
+                    (this.shadowRoot.adoptedStyleSheets &&
+                        this.shadowRoot.adoptedStyleSheets.length > 0) ||
+                    Array.from(this.shadowRoot.children).some((c) => c instanceof HTMLStyleElement);
+
+                if (!hasStylesAfter) {
+                    const stylesToApply = this._autoStyles || this.config.styles;
+                    if (stylesToApply) {
+                        const styleName = this.config.styleName || this.constructor.name;
+                        StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
                     }
                 }
             }
 
-            // 6. 执行 DOM 操作（同步，不使用 RAF，因为已经在 scheduleRerender 的 RAF 中）
-            // 关键修复 (RFC-0042)：检查 content 是否已经在 shadowRoot 中（元素复用场景）
-            // 如果 content 已经在 shadowRoot 中，不需要再次添加
-            // 这样可以避免移动元素，导致文本节点更新丢失
-            const isContentAlreadyInShadowRoot = content.parentNode === this.shadowRoot;
-
-            if (!isContentAlreadyInShadowRoot) {
-                // 添加新内容（仅在不在 shadowRoot 中时）
-                this.shadowRoot.appendChild(content);
+            // 6. Restore Focus (Safety Net)
+            if (this._pendingFocusState) {
+                this.restoreFocusState(this._pendingFocusState);
+                this._pendingFocusState = null;
             }
 
-            // 移除旧内容（保留样式元素、未标记元素和新渲染的内容）
-            // 关键修复 (RFC-0042): 使用 childNodes 而不是 children，确保文本节点也被清理
-            // 否则，在 Shadow DOM 根部的文本节点会发生泄漏
-            const oldNodes = Array.from(this.shadowRoot.childNodes).filter((child) => {
-                // 保留新添加的内容（或已经在 shadowRoot 中的 content）
-                if (child === content) {
-                    return false;
-                }
-                // 保留样式元素
-                if (child instanceof HTMLStyleElement) {
-                    return false;
-                }
-                // 保留未标记的元素（第三方库注入的元素、自定义元素）
-                // 对于文本节点，shouldPreserveElement 逻辑已在 element-marking.ts 中优化
-                if (shouldPreserveElement(child)) {
-                    return false;
-                }
-                return true;
-            });
-            oldNodes.forEach((node) => node.remove());
-
-            // 7. 恢复 adopted stylesheets（在 DOM 操作之后，确保样式不被意外移除）
-            // 关键修复：在 DOM 操作之后恢复样式，防止样式在 DOM 操作过程中被意外清空
-            // 自动检测模式：检查实际的样式状态，确保样式正确恢复
-            const hasStylesAfterDOM =
-                this.shadowRoot.adoptedStyleSheets && this.shadowRoot.adoptedStyleSheets.length > 0;
-            const hasStyleElementAfterDOM = Array.from(this.shadowRoot.children).some(
-                (child) => child instanceof HTMLStyleElement
-            );
-
-            if (adoptedStyleSheets.length > 0) {
-                // 恢复保存的 adoptedStyleSheets
-                this.shadowRoot.adoptedStyleSheets = adoptedStyleSheets;
-            } else if (!hasStylesAfterDOM && !hasStyleElementAfterDOM) {
-                // 自动检测模式：如果 DOM 操作后没有样式，自动重新应用（防止样式丢失）
-                // 关键修复：在元素复用场景中，如果 _autoStyles 存在但样式未应用，需要重新应用
-                const stylesToApply = this._autoStyles || this.config.styles;
-                if (stylesToApply) {
-                    const styleName = this.config.styleName || this.constructor.name;
-                    StyleManager.applyStyles(this.shadowRoot, styleName, stylesToApply);
-                }
-            }
-
-            // 8. 恢复焦点状态并清除渲染标志
-            this.restoreFocusState(focusState);
-            this._pendingFocusState = null;
-
-            // 9. 调用 onRendered 生命周期钩子
             this.onRendered?.();
-
-            // 10. 清除渲染标志，允许后续的 scheduleRerender()
             this._isRendering = false;
         } catch (error) {
             logger.error("Error in _rerender:", error);
             this.renderError(error);
-            // 即使出错也要清除渲染标志，允许后续的 scheduleRerender()
             this._isRendering = false;
         }
     }

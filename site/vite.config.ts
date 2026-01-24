@@ -78,6 +78,16 @@ export default defineConfig({
         outDir: "dist",
         sourcemap: process.env.NODE_ENV !== "production", // No source maps in production
     },
+    optimizeDeps: {
+        exclude: [
+            "@wsxjs/wsx-core",
+            "@wsxjs/wsx-base-components",
+            "@wsxjs/wsx-i18next",
+            "@wsxjs/wsx-router",
+            "@wsxjs/wsx-store",
+            "@calenderjs/calendar",
+        ],
+    },
     // Source maps are enabled by default in dev mode
     // Resolve workspace packages to source files in development mode
     // This allows hot reload without needing to build dependencies first

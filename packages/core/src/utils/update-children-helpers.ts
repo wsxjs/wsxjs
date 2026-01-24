@@ -93,10 +93,10 @@ export function findTextNode(
         const node = parent.childNodes[i];
         if (
             node.nodeType === Node.TEXT_NODE &&
-            (node as any).__wsxManaged === true &&
-            !processedNodes.has(node)
+            (node as Text & { __wsxManaged?: boolean }).__wsxManaged === true &&
+            (!processedNodes || !processedNodes.has(node))
         ) {
-            domIndex.value = i + 1;
+            domIndex.value = i; // 指向找到的节点位置
             return node;
         }
     }
@@ -162,7 +162,7 @@ export function updateOrCreateTextNode(
         // 如果 oldNode 为 null，说明在当前位置没有找到对应的文本节点，应该创建新节点
 
         const newTextNode = document.createTextNode(newText);
-        (newTextNode as any).__wsxManaged = true; // 标记为框架管理
+        (newTextNode as Text & { __wsxManaged?: boolean }).__wsxManaged = true; // 标记为框架管理
         if (oldNode && !shouldPreserveElement(oldNode)) {
             parent.replaceChild(newTextNode, oldNode);
         } else {
@@ -292,12 +292,6 @@ export function replaceOrInsertElementAtPosition(
                     ) {
                         // 找到相同内容的元素（且都没有 cache key），不需要插入 newChild
                         // 这是从 HTML 字符串解析而来的重复元素
-                        // 关键修复：必须将其标记为已处理，否则会被 shouldRemoveNode 移除
-                        console.log(
-                            "[WSX Debug] Found duplicate content, keeping existing:",
-                            existingNode.tagName,
-                            existingNode.textContent
-                        );
                         if (processedNodes) processedNodes.add(existingNode);
                         return;
                     }
@@ -323,7 +317,7 @@ export function appendNewChild(
 
     if (typeof child === "string" || typeof child === "number") {
         const newTextNode = document.createTextNode(String(child));
-        (newTextNode as any).__wsxManaged = true; // 标记为框架管理
+        (newTextNode as Text & { __wsxManaged?: boolean }).__wsxManaged = true; // 标记为框架管理
         parent.appendChild(newTextNode);
         // 关键修复：标记新创建的文本节点为已处理，防止在移除阶段被误删
         if (processedNodes) {
@@ -351,41 +345,61 @@ export function appendNewChild(
         // 关键修复：记录 Fragment 中的所有子节点为已处理
         // 否则它们会被后续的 collectNodesToRemove 误删
         if (processedNodes) {
-            for (let i = 0; i < child.childNodes.length; i++) {
-                processedNodes.add(child.childNodes[i]);
+            const fragmentChildren = Array.from(child.childNodes);
+            for (const fragmentChild of fragmentChildren) {
+                processedNodes.add(fragmentChild);
             }
         }
         parent.appendChild(child);
+    } else if (child instanceof Node) {
+        // 处理其他类型的 Node (如 Text 节点)
+        if (child.parentNode && child.parentNode !== parent) {
+            child.parentNode.removeChild(child);
+        }
+        if (child.parentNode !== parent) {
+            parent.appendChild(child);
+        }
+        if (processedNodes) {
+            processedNodes.add(child);
+        }
     }
 }
 
 /**
  * 构建新子元素的引用集合和 cache key 映射
  */
-export function buildNewChildrenMaps(flatNew: JSXChildren[]): {
+/**
+ * 构建节点映射，用于快速查找
+ */
+export function buildNodeMaps(flatNodes: JSXChildren[]): {
     elementSet: Set<HTMLElement | SVGElement | DocumentFragment>;
     cacheKeyMap: Map<string, HTMLElement | SVGElement>;
+    nodeSet: Set<Node>;
 } {
     const elementSet = new Set<HTMLElement | SVGElement | DocumentFragment>();
     const cacheKeyMap = new Map<string, HTMLElement | SVGElement>();
+    const nodeSet = new Set<Node>();
 
-    for (const child of flatNew) {
-        if (
-            child instanceof HTMLElement ||
-            child instanceof SVGElement ||
-            child instanceof DocumentFragment
-        ) {
-            elementSet.add(child);
-            if (child instanceof HTMLElement || child instanceof SVGElement) {
-                const cacheKey = getElementCacheKey(child);
-                if (cacheKey) {
-                    cacheKeyMap.set(cacheKey, child);
+    for (const child of flatNodes) {
+        if (child instanceof Node) {
+            nodeSet.add(child);
+            if (
+                child instanceof HTMLElement ||
+                child instanceof SVGElement ||
+                child instanceof DocumentFragment
+            ) {
+                elementSet.add(child);
+                if (child instanceof HTMLElement || child instanceof SVGElement) {
+                    const cacheKey = getElementCacheKey(child as HTMLElement | SVGElement);
+                    if (cacheKey) {
+                        cacheKeyMap.set(cacheKey, child as HTMLElement | SVGElement);
+                    }
                 }
             }
         }
     }
 
-    return { elementSet, cacheKeyMap };
+    return { elementSet, cacheKeyMap, nodeSet };
 }
 
 /**
@@ -393,70 +407,47 @@ export function buildNewChildrenMaps(flatNew: JSXChildren[]): {
  */
 export function shouldRemoveNode(
     node: Node,
-    elementSet: Set<HTMLElement | SVGElement | DocumentFragment>,
-    cacheKeyMap: Map<string, HTMLElement | SVGElement>,
-    processedNodes?: Set<Node>
+    _elementSet: Set<HTMLElement | SVGElement | DocumentFragment>, // 保持签名兼容
+    _cacheKeyMap: Map<string, HTMLElement | SVGElement>, // 保持签名兼容
+    processedNodes?: Set<Node>,
+    nodeSet?: Set<Node>
 ): boolean {
-    // RFC 0048 & RFC 0053 关键修复：文本节点应该由框架管理，不应该被 shouldPreserveElement 保留
-    // 文本节点本身不是元素，shouldPreserveElement 对文本节点总是返回 true
-    // 但是，如果文本节点的父元素是由框架管理的，文本节点也应该由框架管理
-    // 只有当文本节点的父元素是保留元素时，文本节点才应该被保留
-    if (node.nodeType === Node.TEXT_NODE) {
-        // 如果是框架管理的文本节点
-        if ((node as any).__wsxManaged === true) {
-            // 如果已被处理过，保留
-            if (processedNodes && processedNodes.has(node)) {
-                return false;
-            }
-            // 否则移除
-            return true;
-        }
-
-        // 如果是非框架管理的文本节点（第三方注入）
-        // 检查其父元素是否被保留
-        const parent = node.parentNode;
-        if (parent && (parent instanceof HTMLElement || parent instanceof SVGElement)) {
-            if (shouldPreserveElement(parent)) {
-                // 如果父元素是保留元素，文本节点也应该被保留
-                return false;
-            }
-        }
-        // 对于未标记且父元素未保留的文本，默认移除以防止泄漏
-        return true;
-    } else {
-        // 对于元素节点，使用原有的逻辑
-        if (shouldPreserveElement(node)) {
-            return false;
-        }
-    }
-
-    const isProcessed = processedNodes && processedNodes.has(node);
-
-    if (isProcessed) {
+    // 规则 1: 如果节点在 processedNodes 中，说明它已被处理（复用或新插入），绝对不要删除
+    if (processedNodes && processedNodes.has(node)) {
         return false;
     }
 
+    // 规则 2: 如果节点在 nodeSet 中，说明它是新状态的一部分（引用匹配），不要删除
+    if (nodeSet && nodeSet.has(node)) {
+        return false;
+    }
+
+    // 规则 3: 处理文本节点
+    if (node.nodeType === Node.TEXT_NODE) {
+        // 如果是框架管理的文本节点，且没在 processedNodes/nodeSet 中，移除
+        if ((node as Text & { __wsxManaged?: boolean }).__wsxManaged === true) {
+            return true;
+        }
+
+        // 非框架管理的文本节点（如空白），如果父元素是保留元素，则保留
+        const parent = node.parentNode;
+        if (parent && (parent instanceof HTMLElement || parent instanceof SVGElement)) {
+            if (shouldPreserveElement(parent)) {
+                return false;
+            }
+        }
+
+        // 默认移除，防止泄漏
+        return true;
+    }
+
+    // 规则 4: 处理元素节点
+    // 如果显式指定了保留，不要删除
     if (shouldPreserveElement(node)) {
         return false;
     }
 
-    if (
-        node instanceof HTMLElement ||
-        node instanceof SVGElement ||
-        node instanceof DocumentFragment
-    ) {
-        if (elementSet.has(node)) {
-            return false;
-        }
-
-        if (node instanceof HTMLElement || node instanceof SVGElement) {
-            const cacheKey = getElementCacheKey(node);
-            if (cacheKey && cacheKeyMap.has(cacheKey)) {
-                return false;
-            }
-        }
-    }
-
+    // 其他情况：不在新状态且非保留，移除
     return true;
 }
 
@@ -499,20 +490,18 @@ export function deduplicateCacheKeys(
     }
 }
 
-/**
- * 收集需要移除的节点
- */
 export function collectNodesToRemove(
     parent: HTMLElement | SVGElement,
     elementSet: Set<HTMLElement | SVGElement | DocumentFragment>,
     cacheKeyMap: Map<string, HTMLElement | SVGElement>,
-    processedNodes?: Set<Node>
+    processedNodes?: Set<Node>,
+    nodeSet?: Set<Node>
 ): Node[] {
     const nodesToRemove: Node[] = [];
 
     for (let i = 0; i < parent.childNodes.length; i++) {
         const node = parent.childNodes[i];
-        const removed = shouldRemoveNode(node, elementSet, cacheKeyMap, processedNodes);
+        const removed = shouldRemoveNode(node, elementSet, cacheKeyMap, processedNodes, nodeSet);
         if (removed) {
             nodesToRemove.push(node);
         }

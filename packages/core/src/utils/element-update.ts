@@ -8,7 +8,7 @@
 import { shouldUseSVGNamespace, getSVGAttributeName } from "./svg-utils";
 import { type JSXChildren } from "./dom-utils";
 import { setSmartProperty, isFrameworkInternalProp } from "./props-utils";
-import { shouldPreserveElement } from "./element-marking";
+import { shouldPreserveElement, getElementCacheKey } from "./element-marking";
 import type { DOMCacheManager } from "../dom-cache-manager";
 import {
     collectPreservedElements,
@@ -17,7 +17,7 @@ import {
     updateOrCreateTextNode,
     removeNodeIfNotPreserved,
     appendNewChild,
-    buildNewChildrenMaps,
+    buildNodeMaps,
     deduplicateCacheKeys,
     collectNodesToRemove,
     removeNodes,
@@ -321,11 +321,18 @@ export function updateChildren(
     // 收集需要保留的元素（第三方库注入的元素）
     const preservedElements = collectPreservedElements(element);
 
+    // 步骤 1: 构建节点映射
+    // 获取旧状态的 Key -> Node 映射，用于在循环中查找复用节点 ( matchedOld )
+    const { cacheKeyMap: oldKeyMap } = buildNodeMaps(flatOld);
+
+    // 获取新状态的集合（用于清理判断）
+    const newMaps = buildNodeMaps(flatNew);
+
     // 更新现有子节点
     const minLength = Math.min(flatOld.length, flatNew.length);
-    const domIndex = { value: 0 }; // 搜索旧节点的索引
+    const domIndex = { value: 0 }; // 搜索旧节点的文本节点索引
     const insertionIndex = { value: 0 }; // 逻辑插入位置的索引
-    // 跟踪已处理的节点，用于确定正确的位置
+    // 跟踪所有在新状态中被“承认”的节点（无论是复用的还是新增加的）
     const processedNodes = new Set<Node>();
 
     for (let i = 0; i < minLength; i++) {
@@ -334,173 +341,124 @@ export function updateChildren(
 
         // 查找对应的 DOM 节点
         let oldNode: Node | null = null;
-        if (oldChild instanceof HTMLElement || oldChild instanceof SVGElement) {
-            oldNode = findElementNode(oldChild, element);
-            // 关键修复：当处理元素节点时，需要更新 domIndex 以跳过该元素
-            // 这样，下一个文本节点的查找位置才是正确的
-            if (oldNode && oldNode.parentNode === element) {
-                // 找到 oldNode 在 DOM 中的位置
-                const nodeIndex = Array.from(element.childNodes).indexOf(oldNode as ChildNode);
-                if (nodeIndex !== -1 && nodeIndex >= domIndex.value) {
-                    // 更新 domIndex 到 oldNode 之后的位置
-                    domIndex.value = nodeIndex + 1;
+
+        // 1. 优先尝试使用 Key 匹配 (RFC 0048)
+        if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
+            const key = getElementCacheKey(newChild);
+            if (key) {
+                // 从旧状态映射中查找
+                const matchedOld = oldKeyMap.get(key);
+                if (matchedOld && matchedOld.parentNode === element) {
+                    oldNode = matchedOld;
                 }
             }
-        } else if (typeof oldChild === "string" || typeof oldChild === "number") {
-            // RFC 0048 & RFC 0053 关键修复：如果 element 是保留元素（第三方组件），跳过文本节点查找
-            // 防止框架错误地管理第三方组件内部的文本节点
-            if (shouldPreserveElement(element)) {
-                // 对于保留元素，不查找文本节点，直接设置为 null
-                oldNode = null;
-            } else {
+        }
+
+        // 2. 如果没有 Key 匹配，尝试按顺序匹配相同类型的容器/节点
+        if (!oldNode) {
+            if (oldChild instanceof HTMLElement || oldChild instanceof SVGElement) {
+                // 如果 oldChild 是元素，尝试寻找它的 DOM 引用
+                oldNode = findElementNode(oldChild, element);
+            } else if (
+                typeof oldChild === "string" ||
+                typeof oldChild === "number" ||
+                oldChild instanceof Node
+            ) {
+                // 如果是文本或通用 Node，从当前偏移位置查找第一个匹配的文本节点
                 oldNode = findTextNode(element, domIndex, processedNodes);
-                if (oldNode) {
-                    const nodeIndex = Array.from(element.childNodes).indexOf(oldNode as ChildNode);
-                    if (nodeIndex !== -1 && nodeIndex >= domIndex.value) {
-                        domIndex.value = nodeIndex + 1;
-                    }
-                }
-                // RFC 0048 & RFC 0053 关键修复：移除 fallback 内容匹配搜索
-                // ...
             }
         }
 
-        // 处理文本节点（oldChild 是字符串/数字）
-        if (typeof oldChild === "string" || typeof oldChild === "number") {
-            if (typeof newChild === "string" || typeof newChild === "number") {
-                const newText = String(newChild);
-
-                // RFC 0048 & RFC 0053 关键修复：在调用 updateOrCreateTextNode 之前，检查 element 是否是保留元素
-                if (shouldPreserveElement(element)) {
-                    // 跳过保留元素的文本节点处理
-                    continue;
-                }
-
-                // 计算插入位置
-                const insertBeforeNode =
-                    insertionIndex.value < element.childNodes.length
-                        ? element.childNodes[insertionIndex.value]
-                        : null;
-
-                const updatedNode = updateOrCreateTextNode(
-                    element,
-                    oldNode,
-                    newText,
-                    insertBeforeNode
-                );
-                if (updatedNode) {
-                    processedNodes.add(updatedNode);
-                    // 无论是否复用旧节点，逻辑上我们都占据了一个位置
-                    insertionIndex.value++;
-                }
-            } else {
-                // 类型变化：文本 -> 元素/Fragment
-                const targetNode =
-                    insertionIndex.value < element.childNodes.length
-                        ? element.childNodes[insertionIndex.value]
-                        : null;
-
-                if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
-                    // 如果 oldNode 就在当前位置，直接替换
-                    if (oldNode && oldNode === targetNode && oldNode.parentNode === element) {
-                        element.replaceChild(newChild, oldNode);
-                    } else {
-                        // 否则在目标位置插入，然后移除旧节点（如果需要）
-                        element.insertBefore(newChild, targetNode);
-                        removeNodeIfNotPreserved(element, oldNode);
-                    }
-                    processedNodes.add(newChild);
-                    insertionIndex.value++;
-                } else if (newChild instanceof DocumentFragment) {
-                    // 关键修复：跟踪 Fragment 中的所有子节点
-                    if (processedNodes) {
-                        for (let i = 0; i < newChild.childNodes.length; i++) {
-                            processedNodes.add(newChild.childNodes[i]);
-                        }
-                    }
-                    element.insertBefore(newChild, targetNode);
-                    removeNodeIfNotPreserved(element, oldNode);
-                }
+        // 重要：如果找到了匹配的 oldNode，跳转 domIndex 以便下一次搜索跳过它
+        if (oldNode && oldNode.parentNode === element) {
+            const childrenArray = Array.from(element.childNodes);
+            const nodeIndex = childrenArray.indexOf(oldNode as ChildNode);
+            if (nodeIndex !== -1 && nodeIndex >= domIndex.value) {
+                domIndex.value = nodeIndex + 1;
             }
         }
-        // 处理元素节点（oldChild 是元素）
-        else if (oldChild instanceof HTMLElement || oldChild instanceof SVGElement) {
-            if (oldNode && shouldPreserveElement(oldNode)) {
-                continue; // 跳过保留的元素
-            }
 
-            if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
-                // 计算目标插入位置 (insertBeforeNode)
-                const insertBeforeNode =
-                    insertionIndex.value < element.childNodes.length
-                        ? element.childNodes[insertionIndex.value]
-                        : null;
+        // 确定插入位置
+        const targetNode =
+            insertionIndex.value < element.childNodes.length
+                ? element.childNodes[insertionIndex.value]
+                : null;
 
-                // 甚至 newChild === oldNode，如果位置不对也需要移动
-                // 使用 helper 处理元素替换和插入，支持 HTML 解析内容的自动等价性匹配
-                replaceOrInsertElementAtPosition(
-                    element,
-                    newChild as HTMLElement | SVGElement,
-                    oldNode,
-                    insertBeforeNode,
-                    processedNodes
-                );
+        // --- 开始协调 ---
 
+        // 情况 A: newChild 是文本或数值 (转文本)
+        const isNewTextChild =
+            typeof newChild === "string" ||
+            typeof newChild === "number" ||
+            (newChild instanceof Node && newChild.nodeType === Node.TEXT_NODE);
+
+        if (isNewTextChild) {
+            const newTextContent =
+                newChild instanceof Node ? newChild.textContent || "" : String(newChild);
+
+            // 如果当前父元素被保留，由于我们正在更新它的内容，我们继续
+            if (shouldPreserveElement(element)) continue;
+
+            const targetMatchingNode = newChild instanceof Node ? (newChild as Node) : oldNode;
+
+            const updatedNode = updateOrCreateTextNode(
+                element,
+                targetMatchingNode,
+                newTextContent,
+                targetNode
+            );
+            if (updatedNode) {
+                processedNodes.add(updatedNode);
                 insertionIndex.value++;
-            } else {
-                // 类型变化：元素 -> 文本/Fragment
-                const targetNode =
-                    insertionIndex.value < element.childNodes.length
-                        ? element.childNodes[insertionIndex.value]
-                        : null;
-
-                if (typeof newChild === "string" || typeof newChild === "number") {
-                    const newTextNode = document.createTextNode(String(newChild));
-                    (newTextNode as any).__wsxManaged = true; // 标记为框架管理
-                    // 优先替换或插入
-                    if (oldNode && oldNode === targetNode && oldNode.parentNode === element) {
-                        element.replaceChild(newTextNode, oldNode);
-                    } else {
-                        element.insertBefore(newTextNode, targetNode);
-                        removeNodeIfNotPreserved(element, oldNode);
-                    }
-                    processedNodes.add(newTextNode);
-                    insertionIndex.value++;
-                } else if (newChild instanceof DocumentFragment) {
-                    // 关键修复：跟踪 Fragment 中的所有子节点，防止被误删
-                    if (processedNodes) {
-                        for (let i = 0; i < newChild.childNodes.length; i++) {
-                            processedNodes.add(newChild.childNodes[i]);
-                        }
-                    }
-                    element.insertBefore(newChild, targetNode);
-                    removeNodeIfNotPreserved(element, oldNode);
-                }
             }
+        }
+        // 情况 B: newChild 是 HTMLElement/SVGElement
+        else if (newChild instanceof HTMLElement || newChild instanceof SVGElement) {
+            replaceOrInsertElementAtPosition(
+                element,
+                newChild,
+                oldNode,
+                targetNode,
+                processedNodes
+            );
+            insertionIndex.value++;
+        }
+        // 情况 C: newChild 是 DocumentFragment (兼容性回退)
+        else if (newChild instanceof DocumentFragment) {
+            const fragmentChildren = Array.from(newChild.childNodes);
+            for (const fc of fragmentChildren) {
+                processedNodes.add(fc);
+            }
+            element.insertBefore(newChild, targetNode);
+            if (oldNode && !processedNodes.has(oldNode)) {
+                removeNodeIfNotPreserved(element, oldNode);
+            }
+            insertionIndex.value++;
         }
     }
 
-    // 添加新子节点
+    // 步骤 2: 添加超出 minLength 的新子节点
     for (let i = minLength; i < flatNew.length; i++) {
         appendNewChild(element, flatNew[i], processedNodes);
     }
 
-    // 移除多余子节点（使用纯函数简化逻辑）
-    // 步骤 1: 构建新子元素的引用集合和 cache key 映射
-    const { elementSet, cacheKeyMap } = buildNewChildrenMaps(flatNew);
+    // 步骤 3: 清理旧的冗余节点
+    // 处理掉新状态中重复的 cache key（如果有）
+    deduplicateCacheKeys(element, newMaps.cacheKeyMap);
 
-    // 步骤 2: 处理重复的 cache key（确保每个 cache key 在 DOM 中只出现一次）
-    deduplicateCacheKeys(element, cacheKeyMap);
+    // 收集需要彻底移除的节点（不在 processedNodes 中且非 3rd-party 保留）
+    const nodesToRemove = collectNodesToRemove(
+        element,
+        newMaps.elementSet,
+        newMaps.cacheKeyMap,
+        processedNodes,
+        newMaps.nodeSet
+    );
 
-    // 步骤 3: 收集需要移除的节点（跳过保留元素和新子元素）
-    const nodesToRemove = collectNodesToRemove(element, elementSet, cacheKeyMap, processedNodes);
-
-    // 步骤 4: 批量移除节点（从后往前，避免索引变化）
-    // 传递 cacheManager 以便在移除元素时调用 ref 回调
+    // 执行批量删除
     removeNodes(element, nodesToRemove, _cacheManager);
 
-    // 步骤 5: 重新插入所有保留的元素到 DOM 末尾
-    // 这确保了第三方库注入的元素不会丢失
+    // 步骤 4: 重新插入保留元素，确保它们位于末尾
     reinsertPreservedElements(element, preservedElements);
 }
 
@@ -533,86 +491,4 @@ export function updateElement(
 
     // 更新 children
     updateChildren(element, oldChildren, newChildren, cacheManager);
-}
-
-/**
- * Recursively reconciles an old element to match a new element's structure.
- * This is a pure function that updates the oldParent in-place to match newParent.
- *
- * Used by LightComponent to update DOM without full replacement, preserving:
- * - Element references (important for event listeners, focus state)
- * - User-added JSX children
- * - Third-party library injected elements
- *
- * @param oldParent - The existing DOM element to update
- * @param newParent - The new element structure to match
- */
-export function reconcileElement(oldParent: HTMLElement, newParent: HTMLElement): void {
-    const oldChildren = Array.from(oldParent.childNodes);
-    const newChildren = Array.from(newParent.childNodes);
-
-    const maxLength = Math.max(oldChildren.length, newChildren.length);
-
-    for (let i = 0; i < maxLength; i++) {
-        const oldChild = oldChildren[i];
-        const newChild = newChildren[i];
-
-        if (!newChild) {
-            // 新的子节点不存在，删除旧的
-            oldChild?.remove();
-        } else if (!oldChild) {
-            // 旧的子节点不存在，添加新的
-            oldParent.appendChild(newChild.cloneNode(true));
-        } else if (oldChild.nodeType !== newChild.nodeType) {
-            // 节点类型不同，替换
-            oldParent.replaceChild(newChild.cloneNode(true), oldChild);
-        } else if (oldChild.nodeType === Node.TEXT_NODE) {
-            // 文本节点，更新内容
-            if (oldChild.textContent !== newChild.textContent) {
-                oldChild.textContent = newChild.textContent;
-            }
-        } else if (oldChild.nodeType === Node.ELEMENT_NODE) {
-            const oldEl = oldChild as HTMLElement;
-            const newEl = newChild as HTMLElement;
-
-            // 元素节点
-            if (oldEl.tagName !== newEl.tagName) {
-                // 标签不同，替换
-                oldParent.replaceChild(newEl.cloneNode(true), oldEl);
-            } else {
-                // 标签相同，更新属性
-                // 1. 移除旧属性
-                Array.from(oldEl.attributes).forEach((attr) => {
-                    if (!newEl.hasAttribute(attr.name)) {
-                        oldEl.removeAttribute(attr.name);
-                    }
-                });
-
-                // 2. 设置/更新新属性
-                Array.from(newEl.attributes).forEach((attr) => {
-                    if (oldEl.getAttribute(attr.name) !== attr.value) {
-                        oldEl.setAttribute(attr.name, attr.value);
-                    }
-                });
-
-                // 3. 特殊处理：className 是 property，不是 attribute
-                if (oldEl.className !== newEl.className) {
-                    oldEl.className = newEl.className;
-                }
-
-                // 4. 特殊处理：对于 input 元素，更新 checked 和 value 属性
-                if (oldEl instanceof HTMLInputElement && newEl instanceof HTMLInputElement) {
-                    if (oldEl.checked !== newEl.checked) {
-                        oldEl.checked = newEl.checked;
-                    }
-                    if (oldEl.value !== newEl.value) {
-                        oldEl.value = newEl.value;
-                    }
-                }
-
-                // 5. 递归更新子元素
-                reconcileElement(oldEl, newEl);
-            }
-        }
-    }
 }
