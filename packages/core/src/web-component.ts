@@ -172,11 +172,8 @@ export abstract class WebComponent extends BaseComponent {
             return;
         }
 
-        // 1. (Optional) Capture focus state as a safety net
-        // RFC 0058: With true reconciliation, this is mostly redundant but kept for edge cases
-        // RFC 0061 Evaluation: Disable focus capture
-        // const focusState = this.captureFocusState();
-        // this._pendingFocusState = focusState;
+        // 1. (已移除) 捕获焦点状态
+        // 根据 RFC 0061，手动焦点管理已被弃用。
 
         // 2. Render new content
         const content = RenderContext.runInContext(this, () => this.render());
@@ -284,11 +281,12 @@ export abstract class WebComponent extends BaseComponent {
                 }
             }
 
-            // 6. Restore Focus (Safety Net)
-            if (this._pendingFocusState) {
-                this.restoreFocusState(this._pendingFocusState);
-                this._pendingFocusState = null;
-            }
+            // 6. (已移除) 恢复焦点状态
+            // 根据 RFC 0061，手动焦点管理已被弃用。
+            // if (this._pendingFocusState) {
+            //    this.restoreFocusState(this._pendingFocusState);
+            //    this._pendingFocusState = null;
+            // }
 
             this.onRendered?.();
             this._isRendering = false;

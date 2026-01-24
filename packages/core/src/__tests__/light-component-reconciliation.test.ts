@@ -106,7 +106,6 @@ class TestFocusStress extends LightComponent {
                 type: "text",
                 id: "test-input",
                 value: this.value,
-                "data-wsx-key": "input-1",
                 onInput: (e: Event) => this.setValue((e.target as HTMLInputElement).value),
             }),
             h("div", { id: "count" }, `Rendered: ${this.renderCount}`),

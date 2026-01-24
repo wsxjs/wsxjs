@@ -53,7 +53,9 @@ export default class UserProfile extends WebComponent {
             <div class="user-profile">
                 <div class="profile-header">
                     <h2>👤 User Profile (WebComponent)</h2>
-                    <p class="subtitle">Demonstrates @state decorator with objects</p>
+                    <p class="subtitle">
+                        Demonstrates @state decorator with real-time updates (Focus Proof)
+                    </p>
                 </div>
 
                 <div class="profile-content">
@@ -152,38 +154,33 @@ export default class UserProfile extends WebComponent {
 
     private handleNameChange = (event: Event) => {
         const input = event.target as HTMLInputElement;
-        // Update non-reactive property - no rerender
-        this.profile.name = input.value;
+        // Real-time update - triggers rerender on every keystroke
+        // This validates that the framework preserves focus correctly during re-renders
+        this.profile = { ...this.profile, name: input.value };
     };
 
     private handleNameBlur = () => {
-        // Update reactive profile when input loses focus
-        this.profile = { ...this.profile, name: this.profile.name };
-        logger.debug("Name updated", { name: this.profile.name });
+        logger.debug("Name confirmed (blur)", { name: this.profile.name });
     };
 
     private handleEmailChange = (event: Event) => {
         const input = event.target as HTMLInputElement;
-        // Update non-reactive property - no rerender
-        this.profile.email = input.value;
+        // Real-time update - triggers rerender
+        this.profile = { ...this.profile, email: input.value };
     };
 
     private handleEmailBlur = () => {
-        // Update reactive profile when input loses focus
-        this.profile = { ...this.profile, email: this.profile.email };
-        logger.debug("Email updated", { email: this.profile.email });
+        logger.debug("Email confirmed (blur)", { email: this.profile.email });
     };
 
     private handleAgeChange = (event: Event) => {
         const input = event.target as HTMLInputElement;
-        // Update non-reactive property - no rerender
-        this.profile.age = parseInt(input.value, 10) || 0;
+        // Real-time update - triggers rerender
+        this.profile = { ...this.profile, age: parseInt(input.value, 10) || 0 };
     };
 
     private handleAgeBlur = () => {
-        // Update reactive profile when input loses focus
-        this.profile = { ...this.profile, age: this.profile.age };
-        logger.debug("Age updated", { age: this.profile.age });
+        logger.debug("Age confirmed (blur)", { age: this.profile.age });
     };
 
     private handleThemeChange = (event: Event) => {

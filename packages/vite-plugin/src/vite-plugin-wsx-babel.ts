@@ -12,7 +12,6 @@ import { existsSync } from "fs";
 import { dirname, join, basename } from "path";
 import babelPluginWSXState from "./babel-plugin-wsx-state";
 import babelPluginWSXStyle from "./babel-plugin-wsx-style";
-import babelPluginWSXFocus from "./babel-plugin-wsx-focus";
 
 export interface WSXPluginOptions {
     jsxFactory?: string;
@@ -131,9 +130,6 @@ export function vitePluginWSXWithBabel(options: WSXPluginOptions = {}): Plugin {
                               ],
                           ]
                         : []),
-                    // Focus key generation plugin runs early to add data-wsx-key attributes
-                    // This must run before JSX is transformed to h() calls
-                    babelPluginWSXFocus,
                     // CRITICAL: State decorator transformation must run BEFORE @babel/plugin-proposal-decorators
                     // This allows the plugin to detect @state decorators in their original form and throw errors if needed
                     // The plugin removes @state decorators after processing, so the decorator plugin won't see them

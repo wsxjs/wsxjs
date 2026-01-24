@@ -175,10 +175,8 @@ export abstract class LightComponent extends BaseComponent {
             return;
         }
 
-        // 1. 捕获焦点状态（在 DOM 替换之前）
-        // const focusState = this.captureFocusState();
-        // this._pendingFocusState = focusState;
-        const focusState: any = null; // RFC 0061 Evaluation: Disable focus capture
+        // 1. (已移除) 捕获焦点状态
+        // 根据 RFC 0061，手动焦点管理已被弃用，核心协调引擎现在负责通过 DOM 复用来保持焦点。
 
         // 2. 保存 JSX children（通过 JSX factory 直接添加的 children）
         // 这些 children 不是 render() 返回的内容，应该保留
@@ -187,22 +185,6 @@ export abstract class LightComponent extends BaseComponent {
         try {
             // 3. 重新渲染JSX内容
             const newContent = RenderContext.runInContext(this, () => this.render());
-
-            // 4. 在添加到 DOM 之前恢复值，避免浏览器渲染状态值
-            if (focusState && focusState.key && focusState.value !== undefined) {
-                const target = newContent.querySelector(
-                    `[data-wsx-key="${focusState.key}"]`
-                ) as HTMLElement;
-
-                if (target) {
-                    if (
-                        target instanceof HTMLInputElement ||
-                        target instanceof HTMLTextAreaElement
-                    ) {
-                        target.value = focusState.value;
-                    }
-                }
-            }
 
             // 5. 确保样式元素存在
             const stylesToApply = this._autoStyles || this.config.styles;
@@ -308,9 +290,9 @@ export abstract class LightComponent extends BaseComponent {
                 }
             }
 
-            // 恢复焦点状态
-            this.restoreFocusState(focusState);
-            this._pendingFocusState = null;
+            // 恢复焦点状态 (已根据 RFC 0061 移除)
+            // this.restoreFocusState(focusState);
+            // this._pendingFocusState = null;
             // 调用 onRendered 生命周期钩子
             this.onRendered?.();
             // 在 onRendered() 完成后清除渲染标志，允许后续的 scheduleRerender()
