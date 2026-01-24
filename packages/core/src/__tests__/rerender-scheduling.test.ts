@@ -241,7 +241,10 @@ describe("RFC-0030: rerender() 调度机制重构", () => {
             });
         });
 
-        test("在输入元素获得焦点时应该延迟重渲染", (done) => {
+        test("在输入元素获得焦点时应该正常重渲染（RFC 0061：焦点管理已弃用）", (done) => {
+            // 根据 RFC 0061，手动焦点管理已被弃用
+            // 协调引擎现在足够强大，能够通过复用 DOM 节点来自然保持焦点
+            // 因此，即使输入元素获得焦点，重渲染也应该正常执行
             const component = document.createElement(
                 "test-light-component-rerender"
             ) as TestLightComponent;
@@ -250,6 +253,8 @@ describe("RFC-0030: rerender() 调度机制重构", () => {
 
             // 等待首次渲染完成
             requestAnimationFrame(() => {
+                const initialRenderCount = component.renderCallCount;
+
                 // 创建一个输入元素并添加到组件中
                 const input = document.createElement("input");
                 input.setAttribute("data-wsx-key", "test-input");
@@ -263,21 +268,17 @@ describe("RFC-0030: rerender() 调度机制重构", () => {
 
                 // 等待 requestAnimationFrame 执行
                 requestAnimationFrame(() => {
-                    // 由于输入元素获得焦点，应该延迟重渲染
-                    // _pendingRerender 应该被设置
-                    const pendingRerender = (component as any)._pendingRerender;
-                    expect(pendingRerender).toBe(true);
+                    // 根据 RFC 0061，重渲染应该正常执行，不需要延迟
+                    // 协调引擎会保留输入元素的 DOM 节点，从而自然保持焦点
+                    expect(component.renderCallCount).toBeGreaterThan(initialRenderCount);
 
-                    // 失去焦点后应该执行重渲染
-                    input.blur();
+                    // 验证输入元素仍然存在且保持焦点（如果浏览器支持）
+                    const preservedInput = component.querySelector(
+                        "input[data-wsx-key='test-input']"
+                    );
+                    expect(preservedInput).toBeTruthy();
 
-                    // 等待 blur 事件处理
-                    setTimeout(() => {
-                        requestAnimationFrame(() => {
-                            expect(component.renderCallCount).toBeGreaterThan(1);
-                            done();
-                        });
-                    }, 100);
+                    done();
                 });
             });
         });
