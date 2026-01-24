@@ -1,7 +1,6 @@
 import { LightComponent } from "../light-component";
 import { autoRegister } from "../index";
 import { h } from "../jsx-factory";
-import { markElement } from "../utils/element-marking";
 
 @autoRegister({ tagName: "test-light-reconcile" })
 class TestLightReconcile extends LightComponent {

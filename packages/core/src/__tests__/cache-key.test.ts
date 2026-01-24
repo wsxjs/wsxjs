@@ -168,8 +168,8 @@ describe("Cache Key Generation", () => {
 
             RenderContext.runInContext(component, () => {
                 const componentId = getComponentId();
-                // 现在是用 auto-incremental ID，格式为 MockComponent:inst-<number>
-                expect(componentId).toMatch(/^MockComponent:inst-\d+/);
+                // 现在是用 auto-incremental ID，格式为 MockComponent:<number>
+                expect(componentId).toMatch(/^MockComponent:\d+/);
             });
         });
 
@@ -197,7 +197,7 @@ describe("Cache Key Generation", () => {
             const component = new MockComponent();
 
             RenderContext.runInContext(component, () => {
-                expect(getComponentId()).toMatch(/^MockComponent:inst-\d+/);
+                expect(getComponentId()).toMatch(/^MockComponent:\d+/);
             });
 
             expect(getComponentId()).toBe("unknown");

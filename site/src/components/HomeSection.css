@@ -562,7 +562,7 @@ wsx-link.btn-primary::part(link)::after {
     align-items: center;
     gap: 0.5rem;
     padding: 1rem 2rem;
-/* ... rest of shared styles ... */
+    /* ... rest of shared styles ... */
     background: rgba(255, 255, 255, 0.1);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
