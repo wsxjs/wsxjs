@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-ai",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Apply WSXJS skills: wsx-press, wsx-theme, wsx base-components",
     "type": "module",
     "bin": {
