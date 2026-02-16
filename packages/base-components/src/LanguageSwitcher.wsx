@@ -28,11 +28,12 @@ export default class LanguageSwitcher extends WebComponent {
 
     protected onConnected(): void {
         super.onConnected?.();
-        this.currentLanguage = (
+        const fallbackLng = i18nInstance.options?.fallbackLng;
+        const lng =
             i18nInstance.language ||
-            i18nInstance.options?.fallbackLng ||
-            "en"
-        ).split("-")[0];
+            (Array.isArray(fallbackLng) ? fallbackLng[0] : fallbackLng) ||
+            "en";
+        this.currentLanguage = String(lng).split("-")[0];
         i18nInstance.off("languageChanged", this.onLanguageChanged);
         i18nInstance.on("languageChanged", this.onLanguageChanged);
     }
