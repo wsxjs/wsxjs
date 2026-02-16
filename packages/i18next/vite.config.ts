@@ -10,7 +10,7 @@ export default defineConfig({
             entry: path.resolve(__dirname, "src/index.ts"),
             name: "WSXI18next",
             formats: ["es", "cjs"],
-            fileName: (format) => `index.${format === "es" ? "js" : "cjs"}`,
+            fileName: (format) => `index.${format === "es" ? "mjs" : "cjs"}`,
         },
         rollupOptions: {
             external: [

@@ -1,0 +1,312 @@
+/**
+ * WSXJS 设计系统 - 设计令牌 (Design Tokens)
+ * 单一数据源：颜色、间距、排版、圆角、阴影、动效、布局
+ * 支持亮/暗模式与 data-theme 显式覆盖
+ * 使用 @layer design-system 控制层叠优先级，便于组件层覆盖
+ */
+
+@layer design-system {
+    /* ==========================================================================
+   1. 原始令牌 (Primitives) - 品牌与中性色阶，不随主题变化
+   ========================================================================== */
+
+    :root {
+        /* ----- 品牌色阶 (深红橘色主题) ----- */
+        --ds-color-brand-50: #fff7ed;
+        --ds-color-brand-100: #ffedd5;
+        --ds-color-brand-200: #fed7aa;
+        --ds-color-brand-300: #fdba74;
+        --ds-color-brand-400: #fb923c;
+        --ds-color-brand-500: #ea580c;
+        --ds-color-brand-600: #dc2626; /* 主色 Primary */
+        --ds-color-brand-700: #b91c1c; /* 主色 Hover */
+        --ds-color-brand-800: #991b1b;
+        --ds-color-brand-900: #7c2d12;
+
+        /* ----- 间距比例 (4px base) ----- */
+        --ds-space-0: 0;
+        --ds-space-1: 0.25rem; /* 4px */
+        --ds-space-2: 0.5rem; /* 8px */
+        --ds-space-3: 0.75rem; /* 12px */
+        --ds-space-4: 1rem; /* 16px */
+        --ds-space-5: 1.25rem; /* 20px */
+        --ds-space-6: 1.5rem; /* 24px */
+        --ds-space-8: 2rem; /* 32px */
+        --ds-space-10: 2.5rem; /* 40px */
+        --ds-space-12: 3rem; /* 48px */
+        --ds-space-16: 4rem; /* 64px */
+        --ds-space-20: 5rem; /* 80px */
+        --ds-space-24: 6rem; /* 96px */
+        --ds-space-40: 10rem; /* 160px */
+
+        /* ----- 圆角 ----- */
+        --ds-radius-sm: 0.25rem; /* 4px */
+        --ds-radius-md: 0.5rem; /* 8px */
+        --ds-radius-lg: 0.75rem; /* 12px */
+        --ds-radius-xl: 1rem; /* 16px */
+        --ds-radius-2xl: 1.25rem; /* 20px */
+
+        /* ----- 字体族 ----- */
+        --ds-font-sans:
+            -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+            sans-serif;
+        --ds-font-mono:
+            "SF Mono", Monaco, "Menlo", "Ubuntu Mono", Consolas, "Courier New", monospace;
+
+        /* ----- 字号 (Type scale) ----- */
+        --ds-font-size-xs: 0.75rem; /* 12px */
+        --ds-font-size-sm: 0.875rem; /* 14px */
+        --ds-font-size-base: 1rem; /* 16px */
+        --ds-font-size-lg: 1.125rem; /* 18px */
+        --ds-font-size-xl: 1.25rem; /* 20px */
+        --ds-font-size-2xl: 1.5rem; /* 24px */
+        --ds-font-size-3xl: 1.875rem; /* 30px */
+        --ds-font-size-4xl: 2.25rem; /* 36px */
+        --ds-font-size-5xl: 3rem; /* 48px */
+
+        /* ----- 字重 ----- */
+        --ds-font-weight-normal: 400;
+        --ds-font-weight-medium: 500;
+        --ds-font-weight-semibold: 600;
+        --ds-font-weight-bold: 700;
+
+        /* ----- 行高 ----- */
+        --ds-line-height-tight: 1.25;
+        --ds-line-height-normal: 1.5;
+        --ds-line-height-relaxed: 1.6;
+        --ds-line-height-loose: 1.75;
+
+        /* ----- 动效时长 ----- */
+        --ds-duration-fast: 150ms;
+        --ds-duration-base: 200ms;
+        --ds-duration-slow: 300ms;
+        --ds-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+        /* ----- 阴影 (中性，供语义层引用) ----- */
+        --ds-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --ds-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --ds-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --ds-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+        /* ----- 布局常量 ----- */
+        --ds-nav-height: 70px;
+        --ds-container-max: 1200px;
+        --ds-content-max: 800px;
+    }
+
+    /* ==========================================================================
+   2. 语义令牌 (Semantic) - 亮色模式默认
+   ========================================================================== */
+
+    :root {
+        /* 主色 / CTA */
+        --ds-color-primary: var(--ds-color-brand-600);
+        --ds-color-primary-hover: var(--ds-color-brand-700);
+        --ds-color-primary-muted: var(--ds-color-brand-200);
+        --ds-color-accent: var(--ds-color-brand-500);
+        --ds-color-accent-light: var(--ds-color-brand-400);
+
+        /* 表面与背景 */
+        --ds-color-bg-primary: #fef2e5;
+        --ds-color-bg-secondary: #fde8d1;
+        --ds-color-bg-elevated: #ffffff;
+
+        /* 文字 */
+        --ds-color-text-primary: #2c3e50;
+        --ds-color-text-secondary: #7f8c8d;
+        --ds-color-text-muted: #95a5a6;
+
+        /* 边框 */
+        --ds-color-border: #fed7aa;
+        --ds-color-border-strong: #fdba74;
+
+        /* 链接 */
+        --ds-color-link: var(--ds-color-primary);
+        --ds-color-link-hover: var(--ds-color-primary-hover);
+
+        /* 焦点环 */
+        --ds-color-focus-ring: var(--ds-color-primary);
+        --ds-color-focus-ring-offset: rgba(220, 38, 38, 0.2);
+
+        /* 阴影（带主题色） */
+        --ds-shadow-card: rgba(220, 38, 38, 0.1);
+        --ds-shadow-card-hover: rgba(220, 38, 38, 0.15);
+        --ds-shadow-button: rgba(220, 38, 38, 0.4);
+        --ds-shadow-button-hover: rgba(220, 38, 38, 0.5);
+    }
+
+    /* ==========================================================================
+   3. 深色模式 (prefers-color-scheme: dark)
+   ========================================================================== */
+
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+            --ds-color-bg-primary: #1a1a1a;
+            --ds-color-bg-secondary: #2d2d2d;
+            --ds-color-bg-elevated: #262626;
+
+            --ds-color-text-primary: #ffffff;
+            --ds-color-text-secondary: #b0b0b0;
+            --ds-color-text-muted: #737373;
+
+            --ds-color-border: #404040;
+            --ds-color-border-strong: #525252;
+
+            --ds-shadow-card: rgba(0, 0, 0, 0.3);
+            --ds-shadow-card-hover: rgba(0, 0, 0, 0.5);
+        }
+    }
+
+    /* ==========================================================================
+   4. 显式主题类（强制覆盖系统偏好）
+   ========================================================================== */
+
+    [data-theme="light"],
+    .light {
+        --ds-color-bg-primary: #fef2e5;
+        --ds-color-bg-secondary: #fde8d1;
+        --ds-color-bg-elevated: #ffffff;
+
+        --ds-color-text-primary: #2c3e50;
+        --ds-color-text-secondary: #7f8c8d;
+        --ds-color-text-muted: #95a5a6;
+
+        --ds-color-border: #fed7aa;
+        --ds-color-border-strong: #fdba74;
+
+        --ds-shadow-card: rgba(220, 38, 38, 0.1);
+        --ds-shadow-card-hover: rgba(220, 38, 38, 0.15);
+    }
+
+    [data-theme="dark"],
+    .dark {
+        --ds-color-bg-primary: #1a1a1a;
+        --ds-color-bg-secondary: #2d2d2d;
+        --ds-color-bg-elevated: #262626;
+
+        --ds-color-text-primary: #ffffff;
+        --ds-color-text-secondary: #b0b0b0;
+        --ds-color-text-muted: #737373;
+
+        --ds-color-border: #404040;
+        --ds-color-border-strong: #525252;
+
+        --ds-shadow-card: rgba(0, 0, 0, 0.3);
+        --ds-shadow-card-hover: rgba(0, 0, 0, 0.5);
+    }
+
+    /* ==========================================================================
+   5. 兼容层 - 站点现有变量名映射到设计系统（保持现有 CSS 可用）
+   ========================================================================== */
+
+    :root {
+        --primary-red: var(--ds-color-primary);
+        --secondary-red: var(--ds-color-primary-hover);
+        --accent-orange: var(--ds-color-accent);
+        --dark-red: var(--ds-color-brand-800);
+        --light-orange: var(--ds-color-accent-light);
+
+        --hero-gradient-start: var(--ds-color-primary);
+        --hero-gradient-end: var(--ds-color-accent);
+        --btn-primary-bg: var(--ds-color-primary);
+        --btn-primary-hover: var(--ds-color-primary-hover);
+        --btn-primary-shadow: var(--ds-shadow-button);
+        --btn-primary-shadow-hover: var(--ds-shadow-button-hover);
+
+        --text-primary: var(--ds-color-text-primary);
+        --text-secondary: var(--ds-color-text-secondary);
+        --bg-primary: var(--ds-color-bg-primary);
+        --bg-secondary: var(--ds-color-bg-secondary);
+        --border-color: var(--ds-color-border);
+        --card-shadow: var(--ds-shadow-card);
+        --card-shadow-hover: var(--ds-shadow-card-hover);
+
+        --wsx-theme-focus-color: var(--ds-color-focus-ring);
+        --wsx-theme-link-focus-color: var(--ds-color-focus-ring);
+        --wsx-theme-dropdown-focus-color: var(--ds-color-focus-ring);
+        --wsx-theme-language-switcher-focus-color: var(--ds-color-focus-ring);
+        --wsx-theme-combobox-focus-border: var(--ds-color-focus-ring);
+        --wsx-theme-combobox-focus-outline: var(--ds-color-focus-ring-offset);
+
+        --nav-height: var(--ds-nav-height);
+        --doc-section-padding: var(--ds-space-40);
+        --doc-section-padding-top: var(--ds-nav-height);
+        --doc-layout-main-padding-y: var(--ds-space-6);
+        --doc-layout-main-padding-x: var(--ds-space-8);
+        --doc-page-padding-y: var(--ds-space-4);
+        --doc-page-padding-x: var(--ds-space-8);
+
+        --wsx-theme-btn-display: inline-flex;
+        --wsx-theme-btn-align-items: center;
+        --wsx-theme-btn-justify-content: center;
+        --wsx-theme-btn-gap: var(--ds-space-2);
+        --wsx-theme-btn-padding-y: var(--ds-space-4);
+        --wsx-theme-btn-padding-x: var(--ds-space-8);
+        --wsx-theme-btn-padding: var(--wsx-theme-btn-padding-y) var(--wsx-theme-btn-padding-x);
+        --wsx-theme-btn-border-radius: var(--ds-radius-md);
+        --wsx-theme-btn-font-size: var(--ds-font-size-base);
+        --wsx-theme-btn-font-weight: var(--ds-font-weight-semibold);
+        --wsx-theme-btn-line-height: var(--ds-line-height-normal);
+        --wsx-theme-btn-box-sizing: border-box;
+        --wsx-theme-btn-margin: 0;
+        --wsx-theme-btn-vertical-align: middle;
+        --wsx-theme-btn-white-space: nowrap;
+        --wsx-theme-btn-min-width: fit-content;
+
+        --wsx-theme-card-padding: var(--ds-space-6) var(--ds-space-5);
+        --wsx-theme-card-padding-y: var(--ds-space-6);
+        --wsx-theme-card-padding-x: var(--ds-space-5);
+        --wsx-theme-card-border-radius: var(--ds-radius-lg);
+        --wsx-theme-card-shadow: var(--ds-shadow-md);
+        --wsx-theme-card-shadow-hover: var(--ds-shadow-lg);
+        --wsx-theme-card-border: 1px solid var(--ds-color-border);
+        --wsx-theme-card-gap: var(--ds-space-3);
+        --wsx-theme-card-icon-size: var(--ds-font-size-xl);
+        --wsx-theme-card-icon-gap: var(--ds-space-2);
+        --wsx-theme-card-title-size: var(--ds-font-size-xl);
+        --wsx-theme-card-title-line-height: var(--ds-line-height-tight);
+        --wsx-theme-card-badge-margin-top: 0;
+        --wsx-theme-card-description-size: var(--ds-font-size-sm);
+        --wsx-theme-card-link-size: var(--ds-font-size-sm);
+
+        /* ThemeSwitcher 使用主色 */
+        --theme-switcher-width: 2.5rem;
+        --theme-switcher-height: 2.5rem;
+        --theme-switcher-padding: var(--ds-space-2);
+        --theme-switcher-border-radius: var(--ds-radius-md);
+        --theme-switcher-bg: var(--ds-color-primary);
+        --theme-switcher-border: none;
+        --theme-switcher-color: white;
+        --theme-switcher-transition: var(--ds-duration-slow) ease;
+        --theme-switcher-shadow: 0 4px 15px var(--ds-shadow-button);
+        --theme-switcher-font-weight: var(--ds-font-weight-semibold);
+        --theme-switcher-font-family: inherit;
+        --theme-switcher-hover-bg: var(--ds-color-primary-hover);
+        --theme-switcher-hover-transform: translateY(-2px);
+        --theme-switcher-hover-shadow: 0 8px 25px var(--ds-shadow-button-hover);
+        --theme-switcher-active-transform: translateY(0);
+        --theme-switcher-icon-size: var(--ds-font-size-base);
+        --theme-switcher-icon-transition: var(--ds-duration-slow) ease;
+        --theme-switcher-icon-hover-transform: rotate(360deg);
+        --theme-switcher-light-bg: var(--ds-color-primary);
+        --theme-switcher-light-color: white;
+        --theme-switcher-light-hover-bg: var(--ds-color-primary-hover);
+        --theme-switcher-dark-bg: var(--ds-color-primary);
+        --theme-switcher-dark-color: white;
+        --theme-switcher-dark-hover-bg: var(--ds-color-primary-hover);
+        --theme-switcher-auto-bg: linear-gradient(
+            135deg,
+            var(--ds-color-primary),
+            var(--ds-color-primary-hover)
+        );
+        --theme-switcher-auto-color: white;
+        --theme-switcher-auto-hover-bg: linear-gradient(
+            135deg,
+            var(--ds-color-primary-hover),
+            var(--ds-color-brand-800)
+        );
+        --theme-switcher-mobile-width: 2rem;
+        --theme-switcher-mobile-height: 2rem;
+        --theme-switcher-mobile-icon-size: 0.9rem;
+    }
+} /* end @layer design-system */

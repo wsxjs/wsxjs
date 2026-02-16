@@ -15,6 +15,8 @@ export type { NavItem, ResponsiveNavConfig } from "./ResponsiveNav.types";
 export { default as SvgIcon } from "./SvgIcon.wsx";
 export { default as CodeBlock } from "./CodeBlock.wsx";
 export type { CodeBlockConfig, CodeSegment } from "./CodeBlock.types";
+export { default as LanguageSwitcher } from "./LanguageSwitcher.wsx";
+export type { LanguageOption } from "./LanguageSwitcher.types";
 export { OverflowDetector } from "./OverflowDetector";
 export type { OverflowDetectorConfig, OverflowResult } from "./OverflowDetector";
 

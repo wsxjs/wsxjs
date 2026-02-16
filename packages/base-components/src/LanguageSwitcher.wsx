@@ -1,175 +1,80 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 /**
- * LanguageSwitcher Component
- * 语言切换器组件，用于切换 i18next 的语言
- * 不使用国旗图标，使用语言名称显示
+ * LanguageSwitcher — 基于 wsx-dropdown 的薄封装，仅负责 i18n 与「立即 UI 更新」（RFC-0042）。
+ * 下拉交互（toggle、outside click、aria）完全由 wsx-dropdown 提供。
  */
 import { WebComponent, autoRegister, state } from "@wsxjs/wsx-core";
 import { i18nInstance } from "@wsxjs/wsx-i18next";
-/**
- * 语言选项接口
- */
-export interface LanguageOption {
-    /** 语言代码（如 'en', 'zh'） */
-    code: string;
-    /** 语言显示名称（如 'English', '中文'） */
-    name: string;
-}
+import "./Dropdown.wsx";
+import type { LanguageOption } from "./LanguageSwitcher.types";
+
+const DEFAULT_LANGUAGES: LanguageOption[] = [
+    { code: "en", name: "English" },
+    { code: "zh", name: "中文" },
+    { code: "es", name: "Español" },
+    { code: "fr", name: "Français" },
+    { code: "de", name: "Deutsch" },
+    { code: "ja", name: "日本語" },
+    { code: "ko", name: "한국어" },
+];
 
 @autoRegister({ tagName: "wsx-language-switcher" })
 export default class LanguageSwitcher extends WebComponent {
-    /** 支持的语言列表 */
-    private languages: LanguageOption[] = [
-        { code: "en", name: "English" },
-        { code: "zh", name: "中文" },
-        { code: "es", name: "Español" },
-        { code: "fr", name: "Français" },
-        { code: "de", name: "Deutsch" },
-        { code: "ja", name: "日本語" },
-        { code: "ko", name: "한국어" },
-    ];
+    private languages: LanguageOption[] = [...DEFAULT_LANGUAGES];
 
-    /** 当前选中的语言代码 */
-    @state private currentLanguage: string = "en";
+    @state private currentLanguage = "en";
 
-    /** 下拉菜单是否打开 */
-    @state private isOpen: boolean = false;
+    private dropdownRef: HTMLElement | null = null;
 
-    /** 下拉菜单元素引用 */
-    private dropdownElement?: HTMLElement;
-    private buttonElement?: HTMLElement;
-
-    render(): HTMLElement {
-        const currentLang = this.languages.find((lang) => lang.code === this.currentLanguage);
-        const displayName = currentLang?.name || this.currentLanguage.toUpperCase();
-
-        return (
-            <div class="language-switcher-container">
-                <button
-                    ref={(el) => (this.buttonElement = el)}
-                    class="language-switcher-btn"
-                    onClick={this.toggleDropdown}
-                    aria-label={`Current language: ${displayName}`}
-                    aria-expanded={this.isOpen}
-                    aria-haspopup="listbox"
-                >
-                    <span class="language-switcher-icon">🌐</span>
-                    <span class="language-switcher-text">{displayName}</span>
-                    <span class="language-switcher-arrow">{this.isOpen ? "▲" : "▼"}</span>
-                </button>
-
-                {this.isOpen && (
-                    <div
-                        ref={(el) => (this.dropdownElement = el)}
-                        class="language-switcher-dropdown"
-                        role="listbox"
-                    >
-                        {this.languages.map((lang) => (
-                            <button
-                                key={lang.code}
-                                class={`language-switcher-option ${
-                                    lang.code === this.currentLanguage ? "active" : ""
-                                }`}
-                                onClick={() => this.selectLanguage(lang.code)}
-                                role="option"
-                                aria-selected={lang.code === this.currentLanguage}
-                            >
-                                <span class="language-name">{lang.name}</span>
-                                <span class="language-code">{lang.code.toUpperCase()}</span>
-                            </button>
-                        ))}
-                    </div>
-                )}
-            </div>
-        );
+    protected onConnected(): void {
+        super.onConnected?.();
+        this.currentLanguage = (
+            i18nInstance.language ||
+            i18nInstance.options?.fallbackLng ||
+            "en"
+        ).split("-")[0];
+        i18nInstance.off("languageChanged", this.onLanguageChanged);
+        i18nInstance.on("languageChanged", this.onLanguageChanged);
     }
 
-    /**
-     * 切换下拉菜单
-     */
-    private toggleDropdown = (): void => {
-        this.isOpen = !this.isOpen;
+    protected onDisconnected(): void {
+        super.onDisconnected?.();
+        i18nInstance.off("languageChanged", this.onLanguageChanged);
+        this.dropdownRef = null;
+    }
 
-        if (this.isOpen) {
-            document.addEventListener("click", this.handleOutsideClick, true);
-        }
+    private onLanguageChanged = (lng: string): void => {
+        const base = lng.split("-")[0];
+        if (this.currentLanguage !== base) this.currentLanguage = base;
     };
 
-    /**
-     * 处理点击外部区域
-     */
-    private handleOutsideClick = (event: Event): void => {
-        const target = event.target as Node;
-        if (
-            this.dropdownElement &&
-            this.buttonElement &&
-            !this.dropdownElement.contains(target) &&
-            !this.buttonElement.contains(target)
-        ) {
-            this.isOpen = false;
-            document.removeEventListener("click", this.handleOutsideClick, true);
-        }
-    };
-
-    /**
-     * 选择语言
-     */
-    private selectLanguage = (languageCode: string): void => {
-        if (languageCode === this.currentLanguage) {
-            this.isOpen = false;
-            return;
-        }
-
-        // 更改 i18next 语言
-        i18nInstance.changeLanguage(languageCode).then(() => {
-            this.currentLanguage = languageCode;
-            this.isOpen = false;
-
-            // 保存到 localStorage
-            localStorage.setItem("wsx-language", languageCode);
+    /** RFC-0042：先同步更新 UI，再在下一帧切换 i18n */
+    private onDropdownChange = (e: Event): void => {
+        const code = (e as CustomEvent<{ value: string }>).detail?.value ?? "";
+        if (!code || code === this.currentLanguage) return;
+        this.currentLanguage = code;
+        requestAnimationFrame(() => {
+            i18nInstance.changeLanguage(code);
         });
     };
 
-    /**
-     * 组件连接时初始化
-     */
-    onConnected(): void {
-        super.onConnected?.();
-        // 从 localStorage 或 i18next 获取当前语言
-        const savedLanguage = localStorage.getItem("wsx-language");
-        const i18nLanguage = i18nInstance.language || i18nInstance.options.fallbackLng || "en";
+    render(): HTMLElement {
+        const options = this.languages.map((lang) => ({
+            value: lang.code,
+            label: lang.name,
+        }));
 
-        // 获取基础语言代码（处理 'en-US' -> 'en' 的情况）
-        const baseLanguage = (savedLanguage || i18nLanguage).split("-")[0];
-
-        if (baseLanguage !== this.currentLanguage) {
-            this.currentLanguage = baseLanguage;
-            // 如果 localStorage 中的语言与 i18next 不一致，更新 i18next
-            if (savedLanguage && savedLanguage !== i18nLanguage) {
-                i18nInstance.changeLanguage(savedLanguage);
-            }
-        }
-
-        // 监听 i18next 语言变化事件
-        i18nInstance.on("languageChanged", this.handleLanguageChanged);
+        return (
+            <wsx-dropdown
+                ref={(el) => {
+                    this.dropdownRef = el;
+                    if (el && "value" in el) (el as { value: string }).value = this.currentLanguage;
+                }}
+                icon="🌐"
+                options={options}
+                value={this.currentLanguage}
+                onChange={this.onDropdownChange}
+            />
+        );
     }
-
-    /**
-     * 组件断开连接时清理
-     */
-    onDisconnected(): void {
-        super.onDisconnected?.();
-        i18nInstance.off("languageChanged", this.handleLanguageChanged);
-        document.removeEventListener("click", this.handleOutsideClick, true);
-    }
-
-    /**
-     * 处理 i18next 语言变化事件
-     */
-    private handleLanguageChanged = (lng: string): void => {
-        const baseLanguage = lng.split("-")[0];
-        if (baseLanguage !== this.currentLanguage) {
-            this.currentLanguage = baseLanguage;
-        }
-    };
 }

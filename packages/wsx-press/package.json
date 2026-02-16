@@ -4,18 +4,18 @@
     "description": "A VitePress-like documentation system built with WSXJS",
     "type": "module",
     "main": "./dist/index.cjs",
-    "module": "./dist/index.js",
+    "module": "./dist/index.mjs",
     "exports": {
         ".": {
-            "import": "./dist/index.js",
+            "import": "./dist/index.mjs",
             "require": "./dist/index.cjs"
         },
         "./client": {
-            "import": "./dist/client.js",
+            "import": "./dist/client.mjs",
             "require": "./dist/client.cjs"
         },
         "./node": {
-            "import": "./dist/node.js",
+            "import": "./dist/node.mjs",
             "require": "./dist/node.cjs"
         }
     },

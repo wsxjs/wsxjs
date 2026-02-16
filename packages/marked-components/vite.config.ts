@@ -11,7 +11,7 @@ export default defineConfig({
             entry: "src/index.ts",
             name: "WSXMarkedComponents",
             formats: ["es", "cjs"],
-            fileName: (format) => `index.${format === "es" ? "js" : "cjs"}`,
+            fileName: (format) => `index.${format === "es" ? "mjs" : "cjs"}`,
         },
         rollupOptions: {
             external: ["@wsxjs/wsx-core", "marked"],

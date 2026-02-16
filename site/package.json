@@ -30,6 +30,7 @@
         "@wsxjs/wsx-marked-components": "workspace:*",
         "@wsxjs/wsx-press": "workspace:*",
         "@wsxjs/wsx-router": "workspace:*",
+        "@wsxjs/wsx-theme": "workspace:*",
         "i18next": "^23.0.0",
         "i18next-browser-languagedetector": "^7.0.0",
         "i18next-http-backend": "^2.0.0",

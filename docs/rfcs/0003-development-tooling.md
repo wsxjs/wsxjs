@@ -4,7 +4,7 @@
 - **开始日期**: 2025-01-20
 - **RFC PR**: [待提交]
 - **WSX Issue**: [待创建]
-- **状态**: Draft
+- **状态**: Superseded by [RFC-0062](./0062-dx-and-vscode-support.md)
 
 ## 摘要
 

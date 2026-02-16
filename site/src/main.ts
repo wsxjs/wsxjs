@@ -32,7 +32,6 @@ function initApp() {
         return;
     }
 
-    // Mount the WSX App component
     const appElement = document.createElement("wsx-app");
     appContainer.appendChild(appElement);
 

@@ -1,18 +1,40 @@
 /**
- * LanguageSwitcher 组件测试
- * 验证语言切换时按钮标签立即更新的修复
+ * LanguageSwitcher 组件测试（使用 base 的 wsx-language-switcher，基于 wsx-dropdown）
+ * 验证语言切换时按钮标签立即更新（RFC-0042）
  */
 
 import { describe, test, expect, beforeEach, afterEach } from "vitest";
-// Import to register the component
-import "../LanguageSwitcher.wsx";
+import { LanguageSwitcher } from "@wsxjs/wsx-base-components";
 import { i18nInstance } from "@wsxjs/wsx-i18next";
+
+if (!customElements.get("wsx-language-switcher")) {
+    customElements.define("wsx-language-switcher", LanguageSwitcher);
+}
+
+/** 从 wsx-language-switcher 的 shadow 内取 wsx-dropdown 的触发按钮 */
+function getDropdownButton(el: HTMLElement): HTMLButtonElement | null {
+    const dropdown = el.shadowRoot?.querySelector("wsx-dropdown");
+    return (dropdown?.shadowRoot?.querySelector(".dropdown-button") as HTMLButtonElement) ?? null;
+}
+
+/** 从 wsx-dropdown 内取当前显示文本 */
+function getDisplayText(el: HTMLElement): string | null {
+    const dropdown = el.shadowRoot?.querySelector("wsx-dropdown");
+    const text = dropdown?.shadowRoot?.querySelector(".dropdown-text");
+    return text?.textContent ?? null;
+}
+
+/** 从 wsx-dropdown 内取选项列表 */
+function getDropdownOptions(el: HTMLElement): Element[] {
+    const dropdown = el.shadowRoot?.querySelector("wsx-dropdown");
+    const menu = dropdown?.shadowRoot?.querySelector(".dropdown-menu");
+    return menu ? Array.from(menu.querySelectorAll(".dropdown-option")) : [];
+}
 
 describe("LanguageSwitcher - 语言切换立即更新修复", () => {
     let component: HTMLElement;
 
     beforeEach(async () => {
-        // Initialize i18n keys if needed for tests
         if (!i18nInstance.isInitialized) {
             await i18nInstance.init({
                 lng: "en",
@@ -22,23 +44,13 @@ describe("LanguageSwitcher - 语言切换立即更新修复", () => {
                 },
             });
         }
-
-        // 清理 DOM
         while (document.body.firstChild) {
             document.body.removeChild(document.body.firstChild);
         }
-
-        // 创建组件（使用正确的标签名）
         component = document.createElement("wsx-language-switcher");
         document.body.appendChild(component);
-        // 确保组件已连接（在 happy-dom 环境中可能需要手动触发）
-        if (component.connectedCallback) {
-            component.connectedCallback();
-        }
-        // 等待组件连接和渲染
-        await new Promise((resolve) => {
-            setTimeout(resolve, 100);
-        });
+        if (component.connectedCallback) component.connectedCallback();
+        await new Promise((r) => setTimeout(r, 100));
     });
 
     afterEach(() => {
@@ -46,113 +58,52 @@ describe("LanguageSwitcher - 语言切换立即更新修复", () => {
         i18nInstance.changeLanguage("en");
     });
 
-    // 移除不稳定的测试，将重新构建
     test("选择新语言后，按钮标签应该立即更新", async () => {
-        // 等待组件连接和渲染
-        await new Promise((resolve) => {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        resolve(undefined);
-                    }, 50);
-                });
-            });
-        });
+        await new Promise((r) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 50)))
+        );
 
-        // 获取 shadow root
-        const shadowRoot = component.shadowRoot;
-        expect(shadowRoot).toBeTruthy();
-        if (!shadowRoot) return;
-
-        // 获取按钮
-        const button = shadowRoot.querySelector(".language-switcher-btn");
+        const button = getDropdownButton(component);
         expect(button).toBeTruthy();
         if (!button) return;
 
-        // 获取初始语言文本
-        const textSpan = button!.querySelector(".language-switcher-text");
-        expect(textSpan).not.toBeNull();
-        const initialText = textSpan!.textContent;
+        const initialText = getDisplayText(component);
+        expect(initialText).toBeTruthy();
 
-        // 点击按钮打开下拉菜单
-        (button as HTMLButtonElement).click();
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        button.click();
+        await new Promise((r) => setTimeout(r, 50));
 
-        // 验证下拉菜单已打开
-        const dropdown = shadowRoot!.querySelector(".language-switcher-dropdown");
-        expect(dropdown).not.toBeNull();
-
-        // 选择不同的语言（假设初始是 English，选择中文）
-        const options = dropdown!.querySelectorAll(".language-switcher-option");
+        const options = getDropdownOptions(component);
         expect(options.length).toBeGreaterThan(1);
 
-        // 找到中文选项（第二个选项）
-        const zhOption = Array.from(options).find(
-            (opt) => opt.querySelector(".language-code")?.textContent === "ZH"
-        );
+        const zhOption = options.find((opt) => opt.textContent?.trim() === "中文");
         expect(zhOption).not.toBeNull();
-
-        // 点击中文选项
         (zhOption as HTMLButtonElement).click();
 
-        // 关键验证：语言文本应该立即更新，不需要等待异步 i18next.changeLanguage
-        await new Promise((resolve) => {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setTimeout(() => resolve(undefined), 100);
-                });
-            });
-        });
-        const updatedText = textSpan!.textContent;
+        await new Promise((r) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 100)))
+        );
+
+        const updatedText = getDisplayText(component);
         expect(updatedText).not.toBe(initialText);
         expect(updatedText).toBe("中文");
-
-        // 验证下拉菜单已关闭
-        const dropdownAfter = shadowRoot!.querySelector(".language-switcher-dropdown");
-        expect(dropdownAfter).toBeNull();
     });
 
-    // 移除不稳定的测试，将重新构建
-    test("render 方法应该使用响应式状态 currentLanguage 而不是 i18nInstance.language", async () => {
-        // 等待组件连接和渲染
-        await new Promise((resolve) => {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        resolve(undefined);
-                    }, 50);
-                });
-            });
-        });
+    test("render 使用响应式 currentLanguage，状态更新后显示正确", async () => {
+        await new Promise((r) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 50)))
+        );
 
-        const shadowRoot = component.shadowRoot;
-        expect(shadowRoot).toBeTruthy();
-        if (!shadowRoot) return;
-        const button = shadowRoot.querySelector(".language-switcher-btn");
-        expect(button).toBeTruthy();
-        if (!button) return;
-        const textSpan = button.querySelector(".language-switcher-text");
-        expect(textSpan).toBeTruthy();
-        if (!textSpan) return;
+        expect(getDisplayText(component)).toBe("English");
 
-        // 验证初始状态
-        expect(textSpan.textContent).toBe("English");
+        const instance = component as unknown as { currentLanguage: string; rerender: () => void };
+        instance.currentLanguage = "zh";
+        instance.rerender();
 
-        // 模拟状态更新（通过内部 API）
-        // 注意：这是测试内部实现，生产代码不应该直接访问
-        const componentInstance = component as any;
-        componentInstance.currentLanguage = "zh";
-        componentInstance.rerender();
+        await new Promise((r) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 100)))
+        );
 
-        await new Promise((resolve) => {
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    setTimeout(() => resolve(undefined), 100);
-                });
-            });
-        });
-
-        // 验证文本已更新
-        expect(textSpan!.textContent).toBe("中文");
+        expect(getDisplayText(component)).toBe("中文");
     });
 });

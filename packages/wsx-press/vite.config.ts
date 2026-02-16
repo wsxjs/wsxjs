@@ -14,7 +14,7 @@ export default defineConfig({
                 node: "src/node/index.ts",
             },
             formats: ["es", "cjs"],
-            fileName: (format, entryName) => `${entryName}.${format === "es" ? "js" : "cjs"}`,
+            fileName: (format, entryName) => `${entryName}.${format === "es" ? "mjs" : "cjs"}`,
         },
         rollupOptions: {
             external: [

@@ -1,6 +1,7 @@
 /**
  * WSX-Press 主题变量定义
- * 支持亮/暗模式，与 wsxjs 网站主题集成
+ * 支持亮/暗模式，与 WSXJS 设计系统对齐
+ * 主色与 design-system/tokens.css 一致；无 tokens 时使用回退值
  */
 
 :root {
@@ -19,8 +20,9 @@
     --wsx-press-link: #0969da;
     --wsx-press-link-hover: #0550ae;
 
-    --wsx-press-accent: #dc2626; /* 继承 wsxjs 主色 */
-    --wsx-press-accent-hover: #b91c1c;
+    /* 与站点设计系统主色一致（若已加载 tokens 则引用） */
+    --wsx-press-accent: var(--ds-color-primary, #dc2626);
+    --wsx-press-accent-hover: var(--ds-color-primary-hover, #b91c1c);
 
     /* 代码高亮 */
     --wsx-press-code-bg: #f6f8fa;
@@ -131,8 +133,8 @@
     --wsx-press-link: #0969da;
     --wsx-press-link-hover: #0550ae;
 
-    --wsx-press-accent: #dc2626;
-    --wsx-press-accent-hover: #b91c1c;
+    --wsx-press-accent: var(--ds-color-primary, #dc2626);
+    --wsx-press-accent-hover: var(--ds-color-primary-hover, #b91c1c);
 
     --wsx-press-code-bg: #f6f8fa;
     --wsx-press-code-text: #24292f;

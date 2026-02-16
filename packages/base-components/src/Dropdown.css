@@ -47,6 +47,19 @@
     cursor: not-allowed;
 }
 
+/* 触发按钮内容容器（包裹 icon + text + arrow，保持 flex 布局） */
+.dropdown-trigger-inner {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.dropdown-icon {
+    flex-shrink: 0;
+    margin-right: 0.25rem;
+}
+
 .dropdown-text {
     flex: 1;
     overflow: hidden;

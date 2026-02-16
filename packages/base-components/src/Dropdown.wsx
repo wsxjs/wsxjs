@@ -1,7 +1,7 @@
 /** @jsxImportSource @wsxjs/wsx-core */
 /**
  * Dropdown Component
- * 通用下拉菜单组件，用于构建各种下拉选择器
+ * 通用下拉菜单组件；通过 attributes/properties 设置 options、value，通过 change 事件接收选中变化。
  */
 import { WebComponent, autoRegister, state } from "@wsxjs/wsx-core";
 import styles from "./Dropdown.css?inline";
@@ -10,16 +10,15 @@ export type { DropdownOption, DropdownConfig };
 
 @autoRegister({ tagName: "wsx-dropdown" })
 export default class Dropdown extends WebComponent {
-    /** 选项列表 */
-    private options: DropdownOption[] = [];
-    /** 当前选中的值 */
+    /** 选项列表（@state：由 property options 或 setOptions 写入，触发重渲染） */
+    @state private optionsList: DropdownOption[] = [];
+    /** 当前选中值（@state） */
     @state private selectedValue = "";
-    /** 下拉菜单是否打开 */
-    @state private isOpen: boolean = false;
-    /** 配置选项 */
-    private config: DropdownConfig = {};
+    /** 下拉是否打开（@state） */
+    @state private isOpen = false;
+    /** 构造时配置（placeholder、align、position、trigger、disabled、icon、renderTrigger） */
+    private dropdownConfig: DropdownConfig = {};
 
-    /** 元素引用 */
     private buttonElement?: HTMLElement;
     private dropdownElement?: HTMLElement;
     private outsideClickHandler?: (event: Event) => void;
@@ -29,7 +28,7 @@ export default class Dropdown extends WebComponent {
             styles,
             styleName: "wsx-dropdown",
         });
-        this.config = {
+        this.dropdownConfig = {
             placeholder: "Select...",
             align: "left",
             position: "bottom",
@@ -38,20 +37,29 @@ export default class Dropdown extends WebComponent {
         };
     }
 
-    /**
-     * 设置选项列表
-     */
-    public setOptions(options: DropdownOption[]): void {
-        this.options = options;
-        this.rerender();
+    /** 选项列表：由外部通过 property 设置；setOptions 为便捷封装，等价于 this.options = options */
+    public get options(): DropdownOption[] {
+        return this.optionsList;
+    }
+    public set options(value: DropdownOption[]) {
+        this.optionsList = value ?? [];
     }
 
-    /**
-     * 设置选中的值
-     */
+    public setOptions(options: DropdownOption[]): void {
+        this.options = options;
+    }
+
+    /** 当前值：由外部通过 property 设置时仅更新 UI，不派发 change 事件 */
+    public get value(): string {
+        return this.selectedValue;
+    }
+    public set value(v: string) {
+        this.selectedValue = v ?? "";
+    }
+
+    /** 以编程方式设置选中值并派发 change 事件（与用户点击选项行为一致） */
     public setValue(value: string): void {
         this.selectedValue = value;
-        this.rerender();
         this.dispatchEvent(
             new CustomEvent("change", {
                 detail: { value },
@@ -60,53 +68,71 @@ export default class Dropdown extends WebComponent {
         );
     }
 
-    /**
-     * 获取选中的值
-     */
     public getValue(): string | undefined {
         return this.selectedValue || undefined;
     }
 
     render(): HTMLElement {
-        const selectedOption = this.options.find(
+        const opts = this.optionsList;
+        const selectedOption = opts.find(
             (opt) => opt.value === this.selectedValue && this.selectedValue !== ""
         );
-        const displayText = selectedOption?.label || this.config.placeholder || "Select...";
+        const displayText = selectedOption?.label || this.dropdownConfig.placeholder || "Select...";
+        const icon = this.getAttribute("icon") ?? this.dropdownConfig.icon;
+        const renderTrigger = this.dropdownConfig.renderTrigger;
+
+        const triggerContent =
+            renderTrigger != null ? renderTrigger(selectedOption, this.isOpen) : null;
 
         return (
             <div class="dropdown-container">
                 <button
                     ref={(el) => (this.buttonElement = el)}
                     class={`dropdown-button ${this.isOpen ? "open" : ""} ${
-                        this.config.disabled ? "disabled" : ""
+                        this.dropdownConfig.disabled ? "disabled" : ""
                     }`}
-                    onClick={this.config.trigger === "click" ? this.toggleDropdown : undefined}
-                    onMouseEnter={this.config.trigger === "hover" ? this.openDropdown : undefined}
-                    onMouseLeave={this.config.trigger === "hover" ? this.closeDropdown : undefined}
-                    disabled={this.config.disabled}
+                    onClick={
+                        this.dropdownConfig.trigger === "click" ? this.toggleDropdown : undefined
+                    }
+                    onMouseEnter={
+                        this.dropdownConfig.trigger === "hover" ? this.openDropdown : undefined
+                    }
+                    onMouseLeave={
+                        this.dropdownConfig.trigger === "hover" ? this.closeDropdown : undefined
+                    }
+                    disabled={this.dropdownConfig.disabled}
                     aria-expanded={this.isOpen}
                     aria-haspopup="listbox"
                 >
-                    <span class="dropdown-text">{displayText}</span>
-                    <span class="dropdown-arrow">{this.isOpen ? "▲" : "▼"}</span>
+                    {triggerContent !== null ? (
+                        triggerContent
+                    ) : (
+                        <span class="dropdown-trigger-inner">
+                            {icon != null && icon !== "" && (
+                                <span class="dropdown-icon">{icon}</span>
+                            )}
+                            <span class="dropdown-text">{displayText}</span>
+                            <span class="dropdown-arrow">{this.isOpen ? "▲" : "▼"}</span>
+                        </span>
+                    )}
                 </button>
 
                 {this.isOpen && (
                     <div
                         ref={(el) => (this.dropdownElement = el)}
-                        class={`dropdown-menu dropdown-${this.config.position} dropdown-${this.config.align}`}
+                        class={`dropdown-menu dropdown-${this.dropdownConfig.position} dropdown-${this.dropdownConfig.align}`}
                         role="listbox"
                         onMouseEnter={
-                            this.config.trigger === "hover" ? this.openDropdown : undefined
+                            this.dropdownConfig.trigger === "hover" ? this.openDropdown : undefined
                         }
                         onMouseLeave={
-                            this.config.trigger === "hover" ? this.closeDropdown : undefined
+                            this.dropdownConfig.trigger === "hover" ? this.closeDropdown : undefined
                         }
                     >
-                        {this.options.length === 0 ? (
+                        {opts.length === 0 ? (
                             <div class="dropdown-empty">No options</div>
                         ) : (
-                            this.options.map((option) => (
+                            opts.map((option) => (
                                 <button
                                     key={option.value}
                                     class={`dropdown-option ${
@@ -135,57 +161,35 @@ export default class Dropdown extends WebComponent {
         );
     }
 
-    /**
-     * 切换下拉菜单
-     */
     private toggleDropdown = (): void => {
-        if (this.config.disabled) return;
+        if (this.dropdownConfig.disabled) return;
         this.isOpen = !this.isOpen;
-        this.rerender();
-
         if (this.isOpen) {
-            setTimeout(() => {
-                this.attachOutsideClickHandler();
-            }, 0);
+            setTimeout(() => this.attachOutsideClickHandler(), 0);
         } else {
             this.detachOutsideClickHandler();
         }
     };
 
-    /**
-     * 打开下拉菜单
-     */
     private openDropdown = (): void => {
-        if (this.config.disabled || this.isOpen) return;
+        if (this.dropdownConfig.disabled || this.isOpen) return;
         this.isOpen = true;
-        this.rerender();
     };
 
-    /**
-     * 关闭下拉菜单
-     */
     private closeDropdown = (): void => {
         if (!this.isOpen) return;
         this.isOpen = false;
-        this.rerender();
         this.detachOutsideClickHandler();
     };
 
-    /**
-     * 选择选项
-     */
+    /** 用户选择某一项：更新 value 并派发 change，click 模式下关闭下拉 */
     private selectOption = (value: string): void => {
         this.setValue(value);
-        if (this.config.trigger === "click") {
-            this.closeDropdown();
-        }
+        if (this.dropdownConfig.trigger === "click") this.closeDropdown();
     };
 
-    /**
-     * 附加外部点击处理器
-     */
     private attachOutsideClickHandler = (): void => {
-        if (this.config.trigger === "hover") return;
+        if (this.dropdownConfig.trigger === "hover") return;
 
         this.outsideClickHandler = (event: Event) => {
             const target = event.target as Node;
@@ -202,9 +206,6 @@ export default class Dropdown extends WebComponent {
         document.addEventListener("click", this.outsideClickHandler, true);
     };
 
-    /**
-     * 移除外部点击处理器
-     */
     private detachOutsideClickHandler = (): void => {
         if (this.outsideClickHandler) {
             document.removeEventListener("click", this.outsideClickHandler, true);
@@ -212,9 +213,6 @@ export default class Dropdown extends WebComponent {
         }
     };
 
-    /**
-     * 组件断开连接时清理
-     */
     protected onDisconnected(): void {
         super.onDisconnected?.();
         this.detachOutsideClickHandler();

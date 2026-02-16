@@ -140,6 +140,9 @@ importers:
       '@wsxjs/wsx-core':
         specifier: workspace:*
         version: link:../core
+      '@wsxjs/wsx-i18next':
+        specifier: workspace:*
+        version: link:../i18next
       '@wsxjs/wsx-logger':
         specifier: workspace:*
         version: link:../logger
@@ -427,6 +430,22 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.19.3)(@vitest/ui@2.1.9)(happy-dom@18.0.1)(jsdom@26.1.0)
 
+  packages/theme:
+    dependencies:
+      '@wsxjs/wsx-core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      '@wsxjs/wsx-vite-plugin':
+        specifier: workspace:*
+        version: link:../vite-plugin
+      typescript:
+        specifier: ^5.0.0
+        version: 5.8.3
+      vite:
+        specifier: ^7.3.1
+        version: 7.3.1(@types/node@22.19.3)(jiti@2.4.2)(yaml@2.8.0)
+
   packages/tsconfig: {}
 
   packages/vite-plugin:
@@ -483,6 +502,22 @@ importers:
       vite:
         specifier: ^7.3.1
         version: 7.3.1(@types/node@20.19.9)(jiti@2.4.2)(yaml@2.8.0)
+
+  packages/wsx-ai:
+    dependencies:
+      commander:
+        specifier: ^11.0.0
+        version: 11.1.0
+    devDependencies:
+      typescript:
+        specifier: ^5.0.0
+        version: 5.8.3
+      vite:
+        specifier: ^7.3.1
+        version: 7.3.1(@types/node@22.19.3)(jiti@2.4.2)(yaml@2.8.0)
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.19.3)(@vitest/ui@2.1.9)(happy-dom@18.0.1)(jsdom@26.1.0)
 
   packages/wsx-press:
     dependencies:
@@ -628,6 +663,9 @@ importers:
       '@wsxjs/wsx-router':
         specifier: workspace:*
         version: link:../packages/router
+      '@wsxjs/wsx-theme':
+        specifier: workspace:*
+        version: link:../packages/theme
       i18next:
         specifier: ^23.0.0
         version: 23.16.8

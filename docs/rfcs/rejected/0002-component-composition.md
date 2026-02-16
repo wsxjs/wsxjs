@@ -4,7 +4,9 @@
 - **开始日期**: 2025-01-20
 - **RFC PR**: [待提交]
 - **WSX Issue**: [待创建]
-- **状态**: Draft
+- **状态**: Rejected
+- **拒绝日期**: 2026-01
+- **拒绝原因**: 与当前 WSX 类组件模型及已有能力重复。when/unless/each 可由 JSX 与 key-based reconciliation 覆盖；useEventBus/useLocalStorage 等 Hooks 风格与类组件不符。若仅保留 emit/listen 与 slot fallback 可后续以更小范围单独提案。
 
 ## 摘要
 

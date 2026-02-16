@@ -54,14 +54,15 @@ import "./marked/MarkedBuilder.wsx";
 // Import new use case components
 import "./slidejs/SlideJSDemo.wsx";
 import "./calendarjs/CalendarJSDemo.wsx";
-// Import LanguageSwitcher component
-import "./components/LanguageSwitcher.wsx";
+// LanguageSwitcher 来自 @wsxjs/wsx-base-components（已由上方 import 注册）
 // Import NotFound component
 import "./components/NotFoundSection.wsx";
 // Import DocSection component
 import "./components/DocSection.wsx";
 // Import WSX-Press components
 import "@wsxjs/wsx-press/client";
+// 主题/品牌：声明式包裹，子节点继承设计令牌
+import "@wsxjs/wsx-theme";
 
 export interface AppConfig {
     title?: string;
@@ -81,42 +82,47 @@ export default class App extends LightComponent {
 
     render() {
         return (
-            <div class="app-container">
-                {/* Navigation */}
-                {this.renderNavigation()}
-                <div class="app-content">
-                    {/* Router Container */}
-                    <wsx-router>
-                        <wsx-view route="/" component="home-section"></wsx-view>
-                        <wsx-view route="/features" component="features-section"></wsx-view>
-                        <wsx-view route="/quick-start" component="quick-start-section"></wsx-view>
-                        <wsx-view route="/examples" component="examples-section"></wsx-view>
-                        <wsx-view route="/use-cases" component="use-case-section"></wsx-view>
-                        <wsx-view
-                            route="/webcomponent-examples"
-                            component="webcomponent-examples"
-                        ></wsx-view>
-                        <wsx-view
-                            route="/lightcomponent-examples"
-                            component="lightcomponent-examples"
-                        ></wsx-view>
-                        <wsx-view route="/slot-examples" component="slot-examples"></wsx-view>
-                        <wsx-view route="/editorjs" component="editorjs-demo"></wsx-view>
-                        <wsx-view route="/marked" component="marked-builder"></wsx-view>
-                        <wsx-view route="/slidejs" component="slidejs-demo"></wsx-view>
-                        <wsx-view route="/calendarjs" component="calendarjs-demo"></wsx-view>
-                        <wsx-view route="/ecosystem" component="ecosystem-section"></wsx-view>
-                        <wsx-view route="/privacy" component="privacy-policy"></wsx-view>
-                        <wsx-view route="/terms" component="terms-of-service"></wsx-view>
-                        {/* Documentation routes - must be before 404 */}
-                        <wsx-view route="/docs/*" component="doc-section"></wsx-view>
-                        {/* 404 页面 - 通配符路由，必须放在最后 */}
-                        <wsx-view route="*" component="not-found-section"></wsx-view>
-                    </wsx-router>
+            <wsx-branding>
+                <div class="app-container">
+                    {/* Navigation */}
+                    {this.renderNavigation()}
+                    <div class="app-content">
+                        {/* Router Container */}
+                        <wsx-router>
+                            <wsx-view route="/" component="home-section"></wsx-view>
+                            <wsx-view route="/features" component="features-section"></wsx-view>
+                            <wsx-view
+                                route="/quick-start"
+                                component="quick-start-section"
+                            ></wsx-view>
+                            <wsx-view route="/examples" component="examples-section"></wsx-view>
+                            <wsx-view route="/use-cases" component="use-case-section"></wsx-view>
+                            <wsx-view
+                                route="/webcomponent-examples"
+                                component="webcomponent-examples"
+                            ></wsx-view>
+                            <wsx-view
+                                route="/lightcomponent-examples"
+                                component="lightcomponent-examples"
+                            ></wsx-view>
+                            <wsx-view route="/slot-examples" component="slot-examples"></wsx-view>
+                            <wsx-view route="/editorjs" component="editorjs-demo"></wsx-view>
+                            <wsx-view route="/marked" component="marked-builder"></wsx-view>
+                            <wsx-view route="/slidejs" component="slidejs-demo"></wsx-view>
+                            <wsx-view route="/calendarjs" component="calendarjs-demo"></wsx-view>
+                            <wsx-view route="/ecosystem" component="ecosystem-section"></wsx-view>
+                            <wsx-view route="/privacy" component="privacy-policy"></wsx-view>
+                            <wsx-view route="/terms" component="terms-of-service"></wsx-view>
+                            {/* Documentation routes - must be before 404 */}
+                            <wsx-view route="/docs/*" component="doc-section"></wsx-view>
+                            {/* 404 页面 - 通配符路由，必须放在最后 */}
+                            <wsx-view route="*" component="not-found-section"></wsx-view>
+                        </wsx-router>
+                    </div>
+                    {/* Footer */}
+                    {this.renderFooter()}
                 </div>
-                {/* Footer */}
-                {this.renderFooter()}
-            </div>
+            </wsx-branding>
         );
     }
 

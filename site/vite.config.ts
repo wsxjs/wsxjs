@@ -132,6 +132,10 @@ export default defineConfig({
                 find: "@wsxjs/wsx-router",
                 replacement: path.resolve(__dirname, "../packages/router/src/index.ts"),
             },
+            {
+                find: "@wsxjs/wsx-theme",
+                replacement: path.resolve(__dirname, "../packages/theme/src/index.ts"),
+            },
         ],
     },
     // 开发环境代理配置，解决 CORS 问题

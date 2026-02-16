@@ -1,0 +1,50 @@
+/** @jsxImportSource @wsxjs/wsx-core */
+/**
+ * wsx-branding — 设计令牌载体，默认主题以 @layer theme-default 提供，preset 与 API 可覆盖。
+ * 子节点（插槽内容）通过继承获得 CSS 变量。:host { display: contents } 不参与布局。
+ */
+import { WebComponent, autoRegister } from "@wsxjs/wsx-core";
+import styles from "./tokens-host.css?inline";
+
+@autoRegister({ tagName: "wsx-branding" })
+export default class WsxBranding extends WebComponent {
+    private themeObserver: MutationObserver | null = null;
+
+    constructor() {
+        super({
+            styles,
+            styleName: "wsx-branding",
+        });
+    }
+
+    /** 从文档根读取当前主题并同步到 data-theme */
+    private syncDataTheme(): void {
+        const isDark = document.documentElement.classList.contains("dark");
+        const value = isDark ? "dark" : "light";
+        if (this.getAttribute("data-theme") !== value) {
+            this.setAttribute("data-theme", value);
+        }
+    }
+
+    protected onConnected(): void {
+        super.onConnected?.();
+        this.syncDataTheme();
+        this.themeObserver = new MutationObserver(() => this.syncDataTheme());
+        this.themeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+    }
+
+    protected onDisconnected(): void {
+        super.onDisconnected?.();
+        if (this.themeObserver) {
+            this.themeObserver.disconnect();
+            this.themeObserver = null;
+        }
+    }
+
+    render(): HTMLElement {
+        return <slot />;
+    }
+}

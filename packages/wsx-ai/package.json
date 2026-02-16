@@ -1,0 +1,61 @@
+{
+    "name": "@wsxjs/wsx-ai",
+    "version": "0.1.0",
+    "description": "Apply WSXJS skills: wsx-press, wsx-theme, wsx base-components",
+    "type": "module",
+    "bin": {
+        "wsx-ai": "./dist/cli.mjs"
+    },
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "dist",
+        "src",
+        "!**/__tests__",
+        "!**/*.test.ts"
+    ],
+    "dependencies": {
+        "commander": "^11.0.0"
+    },
+    "scripts": {
+        "build": "vite build && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist src/index.ts --moduleResolution node --esModuleInterop",
+        "clean": "rm -rf dist",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "test": "vitest --run",
+        "test:watch": "vitest watch"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0",
+        "vite": "^7.3.1",
+        "vitest": "^2.1.8"
+    },
+    "keywords": [
+        "wsx",
+        "ai",
+        "skill",
+        "press",
+        "theme",
+        "components",
+        "scaffold"
+    ],
+    "author": "WSXJS Team",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wsxjs/wsxjs.git",
+        "directory": "packages/wsx-ai"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

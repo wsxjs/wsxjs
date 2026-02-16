@@ -4,10 +4,10 @@
     "description": "Base UI components built with WSXJS",
     "type": "module",
     "main": "./dist/index.cjs",
-    "module": "./dist/index.js",
+    "module": "./dist/index.mjs",
     "exports": {
         ".": {
-            "import": "./dist/index.js",
+            "import": "./dist/index.mjs",
             "require": "./dist/index.cjs"
         }
     },
@@ -32,7 +32,8 @@
     "dependencies": {
         "@wsxjs/wsx-core": "workspace:*",
         "@wsxjs/wsx-logger": "workspace:*",
-        "prismjs": "^1.30.0"
+        "prismjs": "^1.30.0",
+        "@wsxjs/wsx-i18next": "workspace:*"
     },
     "devDependencies": {
         "@types/prismjs": "^1.26.5",

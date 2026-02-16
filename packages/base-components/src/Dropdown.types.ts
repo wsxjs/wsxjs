@@ -25,4 +25,8 @@ export interface DropdownConfig {
     align?: "left" | "right" | "center";
     /** 触发方式（click/hover） */
     trigger?: "click" | "hover";
+    /** 触发按钮前缀图标（如 "🌐"） */
+    icon?: string;
+    /** 自定义触发按钮内容；若提供则忽略 icon 与默认 displayText+arrow */
+    renderTrigger?: (selectedOption: DropdownOption | undefined, isOpen: boolean) => HTMLElement;
 }

@@ -1,0 +1,48 @@
+{
+    "name": "@wsxjs/wsx-theme",
+    "version": "0.1.0",
+    "description": "Theme and branding component for WSXJS design tokens",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.mjs",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "dist",
+        "src"
+    ],
+    "scripts": {
+        "build": "vite build",
+        "clean": "rm -rf dist",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@wsxjs/wsx-core": "workspace:*"
+    },
+    "devDependencies": {
+        "@wsxjs/wsx-vite-plugin": "workspace:*",
+        "typescript": "^5.0.0",
+        "vite": "^7.3.1"
+    },
+    "keywords": [
+        "wsx",
+        "theme",
+        "branding",
+        "design-tokens",
+        "web-components"
+    ],
+    "author": "WSXJS Team",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wsxjs/wsxjs.git",
+        "directory": "packages/theme"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}
