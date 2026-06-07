@@ -79,7 +79,7 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 
 | RFC | 标题 | 状态 | 提议人 |
 |-----|------|------|--------|
-| [RFC-0010](./0010-eslint-rules-enhancement.md) | ESLint 规则增强 | Draft | Claude |
+| 无 | - | - | - |
 
 ## RFC原则
 

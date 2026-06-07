@@ -15,6 +15,14 @@ import { noInnerHTML } from "./rules/no-inner-html";
 import { i18nAfterAutoRegister } from "./rules/i18n-after-autoregister";
 import { noDuplicateKeys } from "./rules/no-duplicate-keys";
 import { lifecycleMustCallSuper } from "./rules/lifecycle-must-call-super";
+import { preferClassOverClassName } from "./rules/prefer-class-over-classname";
+import { requireAutoRegister } from "./rules/require-auto-register";
+import { observedAttributesConsistency } from "./rules/observed-attributes-consistency";
+import { noDirectDOMManipulationInRender } from "./rules/no-direct-dom-manipulation-in-render";
+import { reactiveStateUsage } from "./rules/reactive-state-usage";
+import { lifecycleHookNaming } from "./rules/lifecycle-hook-naming";
+import { componentBaseClass } from "./rules/component-base-class";
+import { noInlineStylesInJSX } from "./rules/no-inline-styles-in-jsx";
 import { recommendedConfig } from "./configs/recommended";
 import { createFlatConfig } from "./configs/flat";
 import { WSXPlugin } from "./types";
@@ -38,6 +46,14 @@ const plugin: WSXPlugin = {
         "i18n-after-autoregister": i18nAfterAutoRegister,
         "no-duplicate-keys": noDuplicateKeys,
         "lifecycle-must-call-super": lifecycleMustCallSuper,
+        "prefer-class-over-classname": preferClassOverClassName,
+        "require-auto-register": requireAutoRegister,
+        "observed-attributes-consistency": observedAttributesConsistency,
+        "no-direct-dom-manipulation-in-render": noDirectDOMManipulationInRender,
+        "reactive-state-usage": reactiveStateUsage,
+        "lifecycle-hook-naming": lifecycleHookNaming,
+        "component-base-class": componentBaseClass,
+        "no-inline-styles-in-jsx": noInlineStylesInJSX,
     },
 
     // 配置预设

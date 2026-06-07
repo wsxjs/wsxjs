@@ -31,6 +31,14 @@ export const recommendedConfig: WSXConfig = {
         "wsx/i18n-after-autoregister": "error",
         "wsx/no-duplicate-keys": "error",
         "wsx/lifecycle-must-call-super": "error",
+        "wsx/prefer-class-over-classname": "warn",
+        "wsx/require-auto-register": "error",
+        "wsx/observed-attributes-consistency": "warn",
+        "wsx/no-direct-dom-manipulation-in-render": "error",
+        "wsx/reactive-state-usage": "warn",
+        "wsx/lifecycle-hook-naming": "warn",
+        "wsx/component-base-class": "error",
+        "wsx/no-inline-styles-in-jsx": "off",
 
         // TypeScript 规则（推荐）
         "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],

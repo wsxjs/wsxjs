@@ -59,6 +59,14 @@ describe("WSX ESLint Plugin Integration", () => {
                 "i18n-after-autoregister",
                 "no-duplicate-keys",
                 "lifecycle-must-call-super",
+                "prefer-class-over-classname",
+                "require-auto-register",
+                "observed-attributes-consistency",
+                "no-direct-dom-manipulation-in-render",
+                "reactive-state-usage",
+                "lifecycle-hook-naming",
+                "component-base-class",
+                "no-inline-styles-in-jsx",
             ];
 
             expect(Object.keys(wsxPlugin.rules)).toEqual(expectedRules);

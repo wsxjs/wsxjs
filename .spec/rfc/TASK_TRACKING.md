@@ -12,6 +12,7 @@
 | [RFC-0006](./completed/0006-light-dom-components.md) | Light DOM 组件 | Completed | Claude |
 | [RFC-0007](./completed/0007-reactive-decorator.md) | 响应式装饰器 | Completed | Claude |
 | [RFC-0008](./completed/0008-auto-style-injection.md) | 自动样式注入 | Completed | Claude |
+| [RFC-0010](./completed/0010-eslint-rules-enhancement.md) | ESLint 规则增强 | Implemented | Claude |
 | [RFC-0011](./completed/0011-focus-preservation.md) | 焦点保持机制 | Completed | Claude |
 | [RFC-0012](./completed/0012-babel-transform-error-handling.md) | Babel Transform 错误处理策略 | Completed | Claude |
 | [RFC-0013](./completed/0013-state-initial-value-validation.md) | @state 装饰器初始值验证 | Completed | Claude |
