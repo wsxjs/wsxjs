@@ -2,7 +2,7 @@
 
 - **RFC编号**: 0009
 - **开始日期**: 2025-12-10
-- **状态**: Draft (Future Enhancement)
+- **状态**: Rejected (CSS is considered cleaner and better / 原生 CSS 更加简洁且更好用)
 - **关联**: Extracted from RFC 0008
 
 ## 摘要
@@ -233,4 +233,4 @@ if (usingSCSS && !sassInstalled) {
 
 ---
 
-**状态**: 本 RFC 目前处于 Draft 状态，等待 RFC 0008 实现并稳定后再启动。
+**状态**: Rejected. 原生 CSS 更加简洁且易于维护。

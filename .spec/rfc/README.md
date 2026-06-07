@@ -136,19 +136,19 @@ RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文
 |-----|------|------|--------|------|
 | [RFC-0018](./completed/0018-wsx-dts-package-exposure.md) | 统一暴露 wsx.d.ts 类型定义 | Rejected | WSX Team | TypeScript 模块类型解析机制限制 |
 | [RFC-0002](./rejected/0002-component-composition.md) | 组件组合和Slot增强 | Rejected | Claude | 与当前 WSX 类组件模型及已有能力重复；Hooks 风格与类组件不符 |
+| [RFC-0009](./rejected/0009-scss-sass-preprocessing.md) | SCSS/SASS 预处理支持 | Rejected | Claude | 原生 CSS 更加简洁且更好用 |
 
 ### 草稿RFCs
 
 | RFC | 标题 | 状态 | 提议人 |
 |-----|------|------|--------|
-| [RFC-0009](./0009-scss-sass-preprocessing.md) | SCSS/SASS 预处理支持 | Draft (Future) | Claude |
 | [RFC-0010](./0010-eslint-rules-enhancement.md) | ESLint 规则增强 | Draft | Claude |
 
 ### 已废弃的RFCs
 
 | RFC | 标题 | 状态 | 提议人 | 原因 |
 |-----|------|------|--------|------|
-| [RFC-0003](./0003-development-tooling.md) | 开发工具链增强 | Superseded | Claude | 被 [RFC-0062](./0062-dx-and-vscode-support.md) 取代 |
+| [RFC-0003](./completed/0003-development-tooling.md) | 开发工具链增强 | Completed | Claude | 被 [RFC-0062](./0062-dx-and-vscode-support.md) 取代 |
 
 ## RFC原则
 
