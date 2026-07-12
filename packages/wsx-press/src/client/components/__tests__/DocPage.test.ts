@@ -2,11 +2,13 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 // @ts-expect-error - .wsx files are handled by Vite plugin at build time
 import DocPage, { metadataCache } from "../DocPage.wsx";
 import { RouterUtils } from "@wsxjs/wsx-router";
+import { resetPressBase, configurePressBase } from "../../paths";
 
 describe("DocPage 组件", () => {
     let mockFetch: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
+        resetPressBase();
         mockFetch = vi.fn();
         global.fetch = mockFetch;
         // 重置元数据缓存
@@ -450,6 +452,52 @@ describe("DocPage 组件", () => {
         expect(page.loadingState).toBe("idle");
         // @ts-expect-error - 访问私有状态用于测试
         expect(page.markdown).toBe("");
+
+        document.body.removeChild(page);
+    });
+
+    it("子路径 base 下应请求带前缀的元数据与 markdown", async () => {
+        configurePressBase("/productivity/");
+
+        mockFetch.mockImplementation((url: string) => {
+            if (url === "/productivity/.wsx-press/docs-meta.json") {
+                return Promise.resolve({
+                    ok: true,
+                    json: () =>
+                        Promise.resolve({
+                            "guide/intro": {
+                                title: "介绍",
+                                category: "guide",
+                                route: "/docs/guide/intro",
+                            },
+                        }),
+                } as Response);
+            }
+            if (url === "/productivity/docs/guide/intro.md") {
+                return Promise.resolve({
+                    ok: true,
+                    text: () => Promise.resolve("# 介绍\n内容"),
+                } as Response);
+            }
+            return Promise.reject(new Error(`Unexpected fetch: ${url}`));
+        });
+
+        RouterUtils._setCurrentRoute({
+            path: "/productivity/docs/guide/intro",
+            params: {},
+            query: {},
+            hash: "",
+        });
+
+        const page = document.createElement("wsx-doc-page") as DocPage;
+        document.body.appendChild(page);
+
+        await new Promise((resolve) => setTimeout(resolve, 200));
+
+        expect(mockFetch.mock.calls[0]?.[0]).toBe("/productivity/.wsx-press/docs-meta.json");
+        expect(
+            mockFetch.mock.calls.some((call) => call[0] === "/productivity/docs/guide/intro.md")
+        ).toBe(true);
 
         document.body.removeChild(page);
     });

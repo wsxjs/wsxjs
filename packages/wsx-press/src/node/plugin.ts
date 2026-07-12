@@ -136,28 +136,31 @@ export function wsxPress(options: WSXPressOptions): Plugin {
 
         /**
          * 配置开发服务器
-         * 在开发模式下通过 /.wsx-press 路径提供元数据和搜索索引
+         * Vite 会在中间件之前剥离 config.base，因此始终挂载在 /.wsx-press（非 pressAssetMountPath）
          */
         configureServer(server) {
-            // 添加中间件，在开发模式下提供元数据和搜索索引
             server.middlewares.use("/.wsx-press", async (req, res, next) => {
                 try {
-                    const url = new URL(req.url || "/", `http://${req.headers.host}`);
-                    // 当中间件挂载在 /.wsx-press 下时，url.pathname 会是 /.wsx-press/docs-meta.json
-                    // 需要提取文件名部分（移除 /.wsx-press 前缀）
-                    const fullPath = url.pathname;
-                    // 移除 /.wsx-press 前缀，处理有/无尾部斜杠的情况
-                    const fileName = fullPath.replace(/^\/\.wsx-press\/?/, "").replace(/^\//, "");
+                    // Connect 挂载后 req.url 为相对路径，如 /docs-meta.json
+                    const urlPath = (req.url || "/").split("?")[0];
+                    const fileName = urlPath.replace(/^\//, "") || null;
 
                     // 检查是否是支持的文件
                     if (
-                        fileName === "docs-meta.json" ||
-                        fileName === "search-index.json" ||
-                        fileName === "docs-toc.json"
+                        fileName &&
+                        (fileName === "docs-meta.json" ||
+                            fileName === "search-index.json" ||
+                            fileName === "docs-toc.json")
                     ) {
-                        const file = path.join(absoluteOutputDir, fileName);
-                        if (await fs.pathExists(file)) {
-                            const content = await fs.readFile(file, "utf-8");
+                        // 开发模式下 docs-toc.json 始终重新生成，便于 TOC 逻辑改动后刷新即生效
+                        const serveFromFile =
+                            fileName !== "docs-toc.json" &&
+                            (await fs.pathExists(path.join(absoluteOutputDir, fileName)));
+                        if (serveFromFile) {
+                            const content = await fs.readFile(
+                                path.join(absoluteOutputDir, fileName),
+                                "utf-8"
+                            );
                             res.setHeader("Content-Type", "application/json");
                             res.end(content);
                             return;

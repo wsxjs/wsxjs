@@ -28,5 +28,18 @@ export { default as DocLayout } from "./components/DocLayout.wsx";
 export { default as DocSidebar } from "./components/DocSidebar.wsx";
 export { default as DocTOC } from "./components/DocTOC.wsx";
 
-// Components will be exported here as they are implemented
-// export { DocBreadcrumb } from "./components/DocBreadcrumb.wsx";
+export {
+    configurePressBase,
+    DOCS_ROUTE_PREFIX,
+    extractPressAssetFileName,
+    getDocsRelativePath,
+    getPressBase,
+    normalizeSiteBase,
+    pressAsset,
+    pressAssetMountPath,
+    pressDocMarkdownUrl,
+    pressSitePath,
+    PRESS_ASSET_DIR,
+    resetPressBase,
+    stripPressBase,
+} from "./paths";

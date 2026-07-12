@@ -11,6 +11,7 @@ export default defineConfig({
             entry: {
                 index: "src/index.ts",
                 client: "src/client/index.ts",
+                "client/paths": "src/client/paths.ts",
                 node: "src/node/index.ts",
             },
             formats: ["es", "cjs"],

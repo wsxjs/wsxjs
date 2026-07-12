@@ -127,6 +127,21 @@ ESLint rules for WSX components
 
 Shared TypeScript configuration for WSXJS projects. Includes all required compiler options for JSX, decorators, and type safety.
 
+#### @wsxjs/wsx-ai
+Apply WSXJS skills (press, theme, components, site) via your AI assistant. CLI adds **all skills** for **Claude**, **Cursor**, and **Antigravity**:
+
+```bash
+# Add all skills to all AIs (one command)
+npx @wsxjs/wsx-ai init
+
+# Add all skills for one AI only
+npx @wsxjs/wsx-ai init --cursor
+npx @wsxjs/wsx-ai init --claude
+npx @wsxjs/wsx-ai init --antigravity
+```
+
+See [packages/wsx-ai/README.md](packages/wsx-ai/README.md) for options and files written per AI.
+
 ### Development Package
 - **@wsxjs/wsx-examples** - Interactive showcase application with example components
 
@@ -567,9 +582,10 @@ MIT
 All packages are published under the `@wsxjs` npm organization:
 
 - Core: `npm install @wsxjs/wsx-core`
-- Vite Plugin: `npm install @wsxjs/wsx-vite-plugin` 
+- Vite Plugin: `npm install @wsxjs/wsx-vite-plugin`
 - ESLint Plugin: `npm install @wsxjs/eslint-plugin-wsx`
 - Components: `npm install @wsxjs/wsx-base-components`
+- **AI support**: `npx @wsxjs/wsx-ai init` — add WSX skills for Claude, Cursor, Antigravity ([wsx-ai README](packages/wsx-ai/README.md))
 
 ## Links
 

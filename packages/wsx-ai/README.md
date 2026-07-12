@@ -1,63 +1,97 @@
 # @wsxjs/wsx-ai
 
-Apply WSXJS skills in code or via your AI assistant: **Press** (docs), **Theme** (branding), **Components** (base UI), **Site** (router). Includes a CLI to add the apply skill for **Claude**, **Cursor**, and **Antigravity**.
+Apply WSXJS skills in code or via your AI assistant: **Press** (docs), **Theme** (branding), **Components** (base UI), **Site** (router). Includes a CLI that adds **all skills** for **Claude**, **Cursor**, and **Antigravity**.
 
 ## Quick start (CLI)
 
 Run once in your project root — no install required:
 
 ```bash
-npx @wsxjs/wsx-ai init --ai all
-```
+# 1) Add all skills to all AIs (one command)
+npx @wsxjs/wsx-ai init
+npx @wsxjs/wsx-ai init --all
+npx @wsxjs/wsx-ai init --all-ais
 
-Or target one AI: `claude` | `cursor` | `antigravity`.
+# 2) Add all skills for one AI only
+npx @wsxjs/wsx-ai init --cursor
+npx @wsxjs/wsx-ai init --claude
+npx @wsxjs/wsx-ai init --antigravity
+```
 
 ---
 
 ## CLI
 
+### What init adds (all skills)
+
+For each chosen AI, `init` writes **5 items**:
+
+| Item | Purpose |
+|------|--------|
+| **apply** (combined) | Use `applySkill(name)` or `applyAll()` for any skill |
+| **press** | Docs / wsx-press |
+| **theme** | Branding / wsx-theme |
+| **components** | Base UI / wsx-base-components |
+| **site** | Router / wsx-router |
+
 ### Commands
 
 | Command | Description |
 |--------|-------------|
-| `wsx-ai init` | Add WSX apply skill for the chosen AI. Creates the config file(s) so the AI can apply press/theme/components/site when you ask. |
+| `wsx-ai init` | Add **all** WSX skills (apply + press, theme, components, site) for the chosen AI(s). Default: all AIs. |
 
 ### Options (init)
 
 | Option | Description |
 |--------|-------------|
-| `-a, --ai <target>` | `claude` \| `cursor` \| `antigravity` \| `all` (default: `all`) |
+| `--all`, `--all-ais` | Add all skills to **all AIs** (Claude + Cursor + Antigravity). Default when no option given. |
+| `--claude` | Add all skills for **Claude** only |
+| `--cursor` | Add all skills for **Cursor** only |
+| `--antigravity` | Add all skills for **Antigravity** only |
+| `-a, --ai <target>` | Same as above: `claude` \| `cursor` \| `antigravity` \| `all` |
 | `-c, --cwd <dir>` | Project directory (default: current directory) |
+
+### One command: all skills → all AIs
+
+```bash
+npx @wsxjs/wsx-ai init
+# or
+npx @wsxjs/wsx-ai init --all
+npx @wsxjs/wsx-ai init --all-ais
+```
+
+Adds all 5 skills (apply, press, theme, components, site) to Claude, Cursor, and Antigravity in one go.
+
+### Dedicated AI (one AI only)
+
+```bash
+npx @wsxjs/wsx-ai init --cursor
+npx @wsxjs/wsx-ai init --claude
+npx @wsxjs/wsx-ai init --antigravity
+npx @wsxjs/wsx-ai init --ai cursor
+```
 
 ### Run with npx
 
 ```bash
-npx @wsxjs/wsx-ai init --ai claude
+npx @wsxjs/wsx-ai init
+npx @wsxjs/wsx-ai init --all-ais
+npx @wsxjs/wsx-ai init --cursor
+npx @wsxjs/wsx-ai init --claude
+npx @wsxjs/wsx-ai init --antigravity
 npx @wsxjs/wsx-ai init --ai cursor
-npx @wsxjs/wsx-ai init --ai antigravity
-npx @wsxjs/wsx-ai init --ai all
 npx @wsxjs/wsx-ai init --cwd ./my-app
 ```
 
-With npm: `npx @wsxjs/wsx-ai init`. With yarn: `yarn dlx @wsxjs/wsx-ai init`.
+With yarn: `yarn dlx @wsxjs/wsx-ai init`.
 
-### Run after install
+### Files written by init (per AI)
 
-```bash
-pnpm add -D @wsxjs/wsx-ai
-pnpm exec wsx-ai init --ai all
-```
-
-Or: `pnpm dlx @wsxjs/wsx-ai init --ai all` (one-off, no install).
-
-### Files written by init
-
-| Target | File |
-|--------|------|
-| `claude` | `.claude/skills/wsx-apply/SKILL.md` |
-| `cursor` | `.cursor/commands/wsx-ai-apply.md` |
-| `antigravity` | `.antigravity/wsx-apply.md` |
-| `all` | All three |
+| AI | Files (5 per AI) |
+|----|-------------------|
+| **Cursor** | `.cursor/commands/wsx-ai-apply.md`, `wsx-ai-press.md`, `wsx-ai-theme.md`, `wsx-ai-components.md`, `wsx-ai-site.md` |
+| **Claude** | `.claude/skills/wsx-apply/SKILL.md`, `wsx-apply-press/SKILL.md`, `wsx-apply-theme/SKILL.md`, `wsx-apply-components/SKILL.md`, `wsx-apply-site/SKILL.md` |
+| **Antigravity** | `.antigravity/wsx-apply.md`, `wsx-apply-press.md`, `wsx-apply-theme.md`, `wsx-apply-components.md`, `wsx-apply-site.md` |
 
 After `init`, your AI will use these to apply press, theme, components, and site via `@wsxjs/wsx-ai` when you ask to add docs, theme, components, or routing.
 

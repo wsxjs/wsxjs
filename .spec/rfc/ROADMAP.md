@@ -1,131 +1,194 @@
-# WSXJS RFCs
+# WSXJS 发展路线图
 
-RFC（Request for Comments）是WSX框架重要功能和设计变更的设计文档。
+## 愿景
+WSXJS 致力于成为构建原生 Web Components 的最佳开发体验，在保持 Web 标准的同时提供现代 JSX 语法支持。
 
-## RFC 流程
+## 核心原则
+- **标准优先** - 遵循 Web Components 标准，不重新发明轮子
+- **原生性能** - 利用浏览器优化，零运行时开销
+- **组件纯粹性** - 每个功能都是标准的自定义元素
+- **开发者体验** - 让 Web Components 开发充满乐趣
+- **示例驱动** - 通过丰富的示例展示框架能力，而非构建完整 UI 库
 
-### 什么时候需要RFC？
+## 开发时间线
 
-以下情况需要RFC：
-- 新的核心API设计
-- 重大的架构变更
-- 破坏性变更
-- 新的开发工具或插件
-- 影响开发者体验的重要功能
+### ✅ 已完成 (v0.0.x)
+- **核心框架** - WebComponent 和 LightComponent 基类
+- **JSX 语法支持** - 完整的 JSX 编译和运行时支持
+- **TypeScript 集成** - 完整的类型定义和类型安全
+- **Vite 插件** - 自动注入 JSX 和样式处理
+- **ESLint 插件** - 100% 测试覆盖率，包含 15+ 规则
+- **响应式系统** - `@state` 装饰器、`reactive()` 和 `useState()` API
+- **路由系统** - `@wsxjs/wsx-router` 基于 History API 的路由
+- **国际化支持** - `@wsxjs/wsx-i18next` 集成 i18next
+- **日志系统** - `@wsxjs/wsx-logger` 零依赖的原生浏览器日志工具
+- **文档生成器** - `@wsxjs/wsx-press` 静态文档站点生成
+- **Markdown 组件** - `@wsxjs/wsx-marked-components` Markdown 渲染组件
+- **基础组件库** - Button, ColorPicker, Dropdown, Combobox, CodeBlock, ThemeSwitcher, ResponsiveNav, SvgIcon, ButtonGroup, LanguageSwitcher
+- **完整的测试配置** - Jest/Vitest 配置和测试工具链
 
-### 什么时候不需要RFC？
+### 🚀 短期目标 (1-3个月)
 
-以下情况不需要RFC：
-- Bug修复
-- 文档改进
-- 内部重构（不影响公开API）
-- 测试改进
-- 小的功能增强
+#### 1. 示例组件优化与扩展
+基于现有 base-components，创建更多展示 WSX 能力的示例组件：
 
-## RFC生命周期
+**表单相关示例**
+- **`<wsx-form-demo>`** - 展示表单状态管理和验证
+- **`<wsx-validation-demo>`** - 演示 Constraint Validation API 集成
+- **`<wsx-controlled-input>`** - 受控组件模式示例
 
-```
-[构思] -> [草稿] -> [审核] -> [接受] -> [实现] -> [完成]
-   |         |        |       |        |        |
-   |         |        |       |        |        |-> 功能上线
-   |         |        |       |        |-> 开发实现
-   |         |        |       |-> 正式采用
-   |         |        |-> 社区审核讨论
-   |         |-> 提交PR
-   |-> 创建RFC文档
-```
+**交互组件示例**
+- **`<wsx-modal-demo>`** - 使用 `<dialog>` 元素的模态框
+- **`<wsx-dropdown-demo>`** - Popover API 使用示例
+- **`<wsx-tooltip-demo>`** - 自定义定位逻辑展示
 
-### 状态说明
+**数据展示示例**
+- **`<wsx-list-demo>`** - 列表渲染和事件处理
+- **`<wsx-table-demo>`** - 插槽使用和数据绑定
+- **`<wsx-tabs-demo>`** - 组件通信模式
 
-- **Draft（草稿）**: RFC正在编写中
-- **Proposed（提议）**: RFC已提交，等待审核
-- **Active（激活）**: RFC已被接受，正在实现
-- **Implemented（已实现）**: RFC功能已实现并发布
-- **Withdrawn（撤回）**: RFC被撤回，不再考虑
-- **Rejected（拒绝）**: RFC被拒绝
-- **Superseded（废弃）**: RFC被更新的RFC取代
+重点：每个示例组件都要展示 WSX 的核心特性：
+- JSX 语法的便利性
+- Shadow DOM 样式隔离
+- 自定义元素生命周期
+- 事件处理和组件通信
+- TypeScript 类型支持
 
-## 如何编写RFC
+#### 2. 框架核心增强
+- **高级生命周期钩子** - 扩展 WebComponent 基类功能（基础生命周期已实现）
+- **计算属性装饰器** - `@computed` 装饰器（`@state` 已实现）
+- **组件组合模式** - mixins 和 composition API
+- **性能优化工具** - 渲染优化和批量更新（基础批量更新已实现）
 
-1. **复制模板**：复制 `0000-template.md` 到 `rfcs/` 目录
-2. **命名文件**：使用格式 `YYYY-MM-DD-brief-description.md`
-3. **填写内容**：按模板填写所有必需章节
-4. **提交PR**：提交到 `main` 分支
-5. **讨论迭代**：在PR中收集反馈并改进
-6. **等待决定**：维护者会决定接受、拒绝或推迟
+#### 3. CLI 工具 (`create-wsx-app`)
+- 项目脚手架模板（包含示例组件）
+- 组件生成器 (`wsx generate component`)
+- 示例代码片段库
+- TypeScript 配置优化器
+- 最佳实践模板
 
-## RFC目录 / 路线图
+### 📅 中期目标 (3-6个月)
 
-### 激活的RFCs
+#### 1. 高级示例应用
+- **组件展示应用** - 类似 Storybook 的组件文档站点
+- **TodoMVC 实现** - 展示状态管理和组件通信
+- **仪表板示例** - 复杂布局和数据可视化
+- **表单构建器** - 动态组件和验证
+- **主题编辑器** - CSS 变量和样式系统
 
-| RFC | 标题 | 状态 | 提议人 |
-|-----|------|------|--------|
-| [RFC-0062](./0062-dx-and-vscode-support.md) | Developer Experience & VS Code Support | Proposed | WSX Team |
-| [RFC-0063](./0063-site-to-base-components.md) | Site to Base Components — Deep Review & Migration | Draft | WSX Team |
-| [RFC-0064](./0064-theme-package-and-branding-override-api.md) | Theme 包与 wsx-branding 及覆盖 API | Draft | WSX Team |
+#### 2. 性能示例组件
+展示 WSX 处理性能挑战的能力：
+- **`<wsx-virtual-list-demo>`** - 虚拟滚动实现
+- **`<wsx-lazy-demo>`** - 懒加载和代码分割
+- **`<wsx-worker-demo>`** - Web Worker 集成
+- **`<wsx-canvas-demo>`** - Canvas 与 Web Components 结合
 
-### 提议中的RFCs
+#### 3. 测试库 (`@wsxjs/wsx-testing`)
+- Shadow DOM 查询工具
+- 自定义元素模拟助手
+- 事件模拟工具
+- 异步组件测试
+- 快照测试支持
 
-| RFC | 标题 | 状态 | 提议人 |
-|-----|------|------|--------|
-| [RFC-0019](./0019-zero-config-initialization.md) | 零配置初始化方案 | Proposed | WSX Team |
-| [RFC-0021](./0021-framework-website-enhancement.md) | 框架网站增强计划（根 RFC） | In Progress | WSX Team |
-| [RFC-0025](./0025-code-playground.md) | 代码 Playground（M3） | Proposed | WSX Team |
-| [RFC-0026](./0026-performance-optimization.md) | 性能优化（M4） | Proposed | WSX Team |
-| [RFC-0027](./0027-community-features.md) | 社区功能（M5） | Proposed | WSX Team |
-| [RFC-0028](./0028-advanced-features.md) | 高级功能（M6） | Proposed | WSX Team |
+#### 4. 文档生成器增强
+- JSDoc 转组件文档（基础文档生成已实现：`@wsxjs/wsx-press`）
+- 实时 playground 生成
+- API 文档自动化增强
+- Storybook Web Components 集成
+- 交互式示例
 
-### 草稿RFCs
+#### 5. 开发者工具
+- VS Code 扩展
+  - 组件代码片段
+  - 属性自动完成
+  - Shadow DOM 树视图
+- Chrome DevTools 扩展
+  - 组件检查器
+  - 性能分析器
+  - 事件调试器
 
-| RFC | 标题 | 状态 | 提议人 |
-|-----|------|------|--------|
-| 无 | - | - | - |
+### 🎯 长期目标 (6-12个月)
 
-## RFC原则
+#### 1. 完整示例生态系统
+- **组件模板库** - 各种场景的最佳实践模板
+- **集成示例** - 与 React/Vue/Angular 集成案例
+- **企业应用模板** - 大型应用架构示例
+- **性能基准套件** - 对比测试和优化指南
+- **教程系列** - 从入门到高级的完整教程
 
-### 1. 保持WSX核心理念
-- **JSX语法糖优先**：任何功能都不应偏离"JSX让WebComponent更好写"的核心目标
-- **信任浏览器**：优先使用浏览器原生能力，而不是重新发明轮子
-- **零运行时开销**：新功能不应增加运行时负担
+#### 2. 高级功能示例
+- **微前端示例** - 展示组件联邦和动态加载
+- **国际化示例增强** - 多语言支持模式（基础 i18next 集成已实现）
+- **无障碍示例** - ARIA 和键盘导航最佳实践
+- **安全示例** - CSP 和沙箱隔离
+- **实时协作示例** - WebSocket 集成
 
-### 2. 向后兼容
-- 尽量避免破坏性变更
-- 如果必须破坏兼容性，提供清晰的迁移路径
-- 考虑渐进式采用策略
+#### 3. 开发者体验提升
+- **交互式 Playground** - 在线编辑和预览
+- **VSCode 集成示例** - 自定义编辑器功能
+- **调试工具示例** - 性能分析和错误追踪
+- **自动化测试示例** - E2E 和单元测试模式
+- **CI/CD 模板** - 部署和发布流程
 
-### 3. 开发者体验
-- 功能应该简化开发工作流
-- 提供良好的错误信息和调试体验
-- 保持API的一致性和可预测性
+### 🔮 未来展望
 
-### 4. 质量标准
-- 必须包含完整的测试覆盖
-- 必须包含文档和示例
-- 考虑性能影响 and 边界情况
+#### 高级功能
+- GraphQL 数据组件
+- WebAssembly 集成
+- AI 驱动的组件生成
+- 可视化组件构建器
+- 实时协作工具
 
-## 维护者指南
+#### 生态系统发展
+- 框架桥接器 (React/Vue/Angular 适配器)
+- 构建工具集成 (Webpack, Rollup, esbuild)
+- 测试框架插件
+- CI/CD 模板
+- Docker 容器
 
-### 审核标准
+## 社区参与
 
-审核RFC时考虑：
-- **是否符合WSX理念**：与框架核心价值一致
-- **技术可行性**：实现复杂度和维护成本
-- **社区需求**：是否解决真实的开发痛点
-- **质量标准**：设计是否完整和合理
+### 如何贡献
+1. **功能请求** - 在 GitHub Discussions 中开启讨论
+2. **Bug 报告** - 在 GitHub Issues 中提供复现步骤
+3. **代码贡献** - 欢迎提交包含测试的 PR
+4. **文档改进** - 帮助完善文档和示例
+5. **组件贡献** - 向组件库提交新组件
 
-### 决策过程
+### 反馈渠道
+- GitHub Discussions: 功能讨论和问答
+- GitHub Issues: Bug 报告和功能请求
+- Twitter: @wsxjs (即将推出)
+- Discord: 社区聊天 (计划中)
 
-1. **初步审核**：检查RFC格式和基本要求
-2. **技术讨论**：评估技术可行性和设计质量
-3. **社区反馈**：收集社区意见（至少2周）
-4. **最终决定**：维护者团队投票决定
+## 版本规划
 
-## 联系方式
+### v0.1.0 (2025年Q1)
+- 表单组件示例
+- 增强错误处理
+- 性能改进
+- CLI 工具 (`create-wsx-app`)
 
-- **GitHub Issues**: 技术讨论和问题报告
-- **GitHub Discussions**: 功能想法和社区讨论
-- **RFC Pull Requests**: 正式RFC提案
+### v0.2.0 (2025年Q2)
+- UI 组件库扩展
+- 测试工具 (`@wsxjs/wsx-testing`)
+- 开发者工具增强
+
+### v1.0.0 (2025年Q3-Q4)
+- 声明式 Shadow DOM 支持
+- SSR 支持
+- 组件市场 beta 版
+- 稳定 API 和完整文档
+
+## 成功指标
+- npm 下载量增长
+- GitHub stars 和社区参与度
+- 组件库规模
+- 性能基准测试
+- 开发者满意度调查
 
 ---
 
-*WSX框架RFC流程参考了Rust、Vue.js等开源项目的最佳实践。*
+最后更新: 2024年12月
+
+这是一份持续更新的文档。欢迎在 [GitHub Discussions](https://github.com/wsxjs/wsxjs/discussions) 参与讨论，共同塑造 WSX 的未来！

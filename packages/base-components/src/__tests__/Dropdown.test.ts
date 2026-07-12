@@ -263,6 +263,79 @@ describe("Dropdown", () => {
             document.body.removeChild(configuredDropdown);
         });
 
+        // RFC 0063 Phase 1 — Dropdown 增强：不传 icon/renderTrigger 时行为与增强前一致（T.7）
+        it("不传 icon 与 renderTrigger 时应使用默认触发按钮（含 dropdown-text、dropdown-arrow，无 dropdown-icon）", async () => {
+            const plainDropdown = document.createElement("wsx-dropdown") as Dropdown;
+            document.body.appendChild(plainDropdown);
+            await ensureComponentConnected(plainDropdown);
+            plainDropdown.rerender();
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            const inner = plainDropdown.shadowRoot?.querySelector(".dropdown-trigger-inner");
+            const text = plainDropdown.shadowRoot?.querySelector(".dropdown-text");
+            const arrow = plainDropdown.shadowRoot?.querySelector(".dropdown-arrow");
+            const iconEl = plainDropdown.shadowRoot?.querySelector(".dropdown-icon");
+            expect(inner).toBeTruthy();
+            expect(text).toBeTruthy();
+            expect(arrow).toBeTruthy();
+            expect(iconEl).toBeFalsy();
+            document.body.removeChild(plainDropdown);
+        });
+
+        // RFC 0063 Phase 1 — 设置 icon 时触发按钮显示 icon + displayText + arrow（T.8）
+        it("设置 icon 时触发按钮应显示 dropdown-icon + displayText + arrow", async () => {
+            const configuredDropdown = new Dropdown({ icon: "🌐", placeholder: "Select..." });
+            document.body.appendChild(configuredDropdown);
+            await ensureComponentConnected(configuredDropdown);
+            configuredDropdown.rerender();
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            const iconEl = configuredDropdown.shadowRoot?.querySelector(".dropdown-icon");
+            const textEl = configuredDropdown.shadowRoot?.querySelector(".dropdown-text");
+            const arrowEl = configuredDropdown.shadowRoot?.querySelector(".dropdown-arrow");
+            expect(iconEl).toBeTruthy();
+            expect(iconEl?.textContent?.trim()).toBe("🌐");
+            expect(textEl).toBeTruthy();
+            expect(arrowEl).toBeTruthy();
+            document.body.removeChild(configuredDropdown);
+        });
+
+        // RFC 0063 Phase 1 — 通过 attribute 设置 icon 时同样显示 icon（T.8）
+        it("通过 setAttribute 设置 icon 时触发按钮应显示 icon", async () => {
+            const elDropdown = document.createElement("wsx-dropdown") as Dropdown;
+            elDropdown.setAttribute("icon", "🔧");
+            document.body.appendChild(elDropdown);
+            await ensureComponentConnected(elDropdown);
+            elDropdown.rerender();
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            const iconEl = elDropdown.shadowRoot?.querySelector(".dropdown-icon");
+            expect(iconEl).toBeTruthy();
+            expect(iconEl?.textContent?.trim()).toBe("🔧");
+            document.body.removeChild(elDropdown);
+        });
+
+        // RFC 0063 Phase 1 — 设置 renderTrigger 时触发按钮使用自定义渲染（T.9）
+        it("设置 renderTrigger 时触发按钮应使用自定义渲染内容", async () => {
+            const customMarker = "custom-trigger-marker";
+            const configuredDropdown = new Dropdown({
+                renderTrigger: () => {
+                    const span = document.createElement("span");
+                    span.className = customMarker;
+                    span.textContent = "Custom Trigger";
+                    return span;
+                },
+            });
+            document.body.appendChild(configuredDropdown);
+            await ensureComponentConnected(configuredDropdown);
+            configuredDropdown.rerender();
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            const customEl = configuredDropdown.shadowRoot?.querySelector(`.${customMarker}`);
+            const defaultInner =
+                configuredDropdown.shadowRoot?.querySelector(".dropdown-trigger-inner");
+            expect(customEl).toBeTruthy();
+            expect(customEl?.textContent).toBe("Custom Trigger");
+            expect(defaultInner).toBeFalsy();
+            document.body.removeChild(configuredDropdown);
+        });
+
         // 移除不稳定的测试，将重新构建
         it.skip("应该处理 hover trigger", async () => {
             const configuredDropdown = new Dropdown({ trigger: "hover" });

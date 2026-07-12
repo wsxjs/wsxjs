@@ -9,6 +9,7 @@ import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
 import { createLogger } from "@wsxjs/wsx-logger";
 import { RouterUtils } from "@wsxjs/wsx-router";
 import type { TOCItem } from "../../types";
+import { getDocsRelativePath, pressAsset } from "../paths";
 import styles from "./DocTOC.css?inline";
 
 const logger = createLogger("DocTOC");
@@ -38,7 +39,7 @@ async function loadTOCData(): Promise<Record<string, TOCItem[]>> {
 
     tocCache.promise = (async () => {
         try {
-            const response = await fetch("/.wsx-press/docs-toc.json");
+            const response = await fetch(pressAsset("docs-toc.json"));
             if (!response.ok) {
                 throw new Error(`Failed to load TOC data: ${response.statusText}`);
             }
@@ -105,16 +106,14 @@ export default class DocTOC extends LightComponent {
     private async loadTOC(): Promise<void> {
         try {
             const routeInfo = RouterUtils.getCurrentRoute();
-            // 从路径中提取 docPath（移除 /docs/ 前缀）
-            let docPath: string;
-            if (routeInfo.path.startsWith("/docs/")) {
-                docPath = routeInfo.path.slice(6); // 移除 "/docs/" 前缀
-            } else {
+            const docPath = getDocsRelativePath(routeInfo.path);
+
+            if (!docPath) {
                 this.items = [];
                 return;
             }
 
-            if (!docPath || docPath.trim() === "") {
+            if (docPath.trim() === "") {
                 this.items = [];
                 return;
             }
@@ -263,7 +262,7 @@ export default class DocTOC extends LightComponent {
                     class={`doc-toc-link ${isActive ? "active" : ""}`}
                     onClick={(e) => this.handleTOCClick(item.id, e)}
                 >
-                    {item.text}
+                    {item.text ?? item.id ?? "Untitled"}
                 </a>
                 {hasChildren && (
                     <ul class="doc-toc-list doc-toc-sublist">

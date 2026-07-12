@@ -13,6 +13,7 @@ import "@wsxjs/wsx-marked-components";
 import { RouterUtils } from "@wsxjs/wsx-router";
 import type { DocMetadata, LoadingState } from "../../types";
 import { DocumentLoadError } from "../../types";
+import { getDocsRelativePath, pressAsset, pressDocMarkdownUrl } from "../paths";
 import styles from "./DocPage.css?inline";
 
 const logger = createLogger("DocPage");
@@ -111,7 +112,7 @@ async function loadMetadata(): Promise<Record<string, DocMetadata>> {
     // 创建新的加载请求（带超时）
     metadataCache.promise = (async () => {
         try {
-            const response = await fetchWithTimeout("/.wsx-press/docs-meta.json", {}, 5000);
+            const response = await fetchWithTimeout(pressAsset("docs-meta.json"), {}, 5000);
             if (!response.ok) {
                 throw new Error(`Failed to load metadata: ${response.statusText}`);
             }
@@ -267,13 +268,9 @@ export default class DocPage extends LightComponent {
             // 从 RouterUtils 获取当前路由信息
             const routeInfo = RouterUtils.getCurrentRoute();
 
-            // 从路径中提取文档路径（支持多级路径）
-            // 例如：/docs/guide/essentials/getting-started -> guide/essentials/getting-started
-            let docPath: string;
-            if (routeInfo.path.startsWith("/docs/")) {
-                // 移除 /docs/ 前缀，得到文档路径
-                docPath = routeInfo.path.slice(6); // 移除 "/docs/"
-            } else {
+            // 从路径中提取文档路径（支持站点 base 与多级路径）
+            let docPath = getDocsRelativePath(routeInfo.path);
+            if (!docPath) {
                 // 尝试从 params 获取（向后兼容）
                 const params = routeInfo.params as { category?: string; page?: string };
                 if (params.category && params.page) {
@@ -345,7 +342,7 @@ export default class DocPage extends LightComponent {
             this.metadata = meta;
 
             // 加载 Markdown 内容（带超时和取消支持）
-            const markdownPath = `/docs/${docPath}.md`;
+            const markdownPath = pressDocMarkdownUrl(docPath);
             const response = await this.fetchWithTimeout(
                 markdownPath,
                 { signal: this.loadingAbortController.signal },

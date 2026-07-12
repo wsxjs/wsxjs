@@ -67,3 +67,5 @@ Thumbs.db
 site/src/components/ExamplesSection.css
 .gitignore
 __pycache__/
+.nuwa/
+.codegraph/

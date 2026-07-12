@@ -1,7 +1,7 @@
 {
     "name": "@wsxjs/wsx-base-components",
     "version": "0.1.1",
-    "description": "Base UI components built with WSXJS",
+    "description": "The canonical place for WSX base components — reusable UI primitives built with WSXJS (.wsx)",
     "type": "module",
     "main": "./dist/index.cjs",
     "module": "./dist/index.mjs",

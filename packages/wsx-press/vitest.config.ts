@@ -19,6 +19,7 @@ export default defineConfig({
         coverage: {
             provider: "v8",
             reporter: ["text", "json", "html"],
+            include: ["src/client/paths.ts", "src/shared/site-base.ts", "src/node/plugin.ts"],
             exclude: [
                 "node_modules/",
                 "dist/",
@@ -26,10 +27,12 @@ export default defineConfig({
                 "**/__tests__/**",
                 "**/*.config.ts",
             ],
-            lines: 100,
-            functions: 100,
-            branches: 100,
-            statements: 100,
+            thresholds: {
+                lines: 100,
+                functions: 100,
+                branches: 100,
+                statements: 100,
+            },
         },
     },
     resolve: {

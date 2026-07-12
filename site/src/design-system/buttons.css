@@ -1,0 +1,76 @@
+/**
+ * RFC 0063 第二期：Design System 按钮层
+ * 定义 .ds-btn-primary、.ds-btn-secondary、.ds-btn-ghost
+ * 统一引用 tokens，与现有 .btn-primary 等视觉一致
+ */
+
+@layer design-system {
+    .ds-btn-primary,
+    .ds-btn-secondary,
+    .ds-btn-ghost,
+    .btn-primary,
+    .btn-secondary,
+    .btn-ghost {
+        display: var(--wsx-theme-btn-display, inline-flex);
+        align-items: var(--wsx-theme-btn-align-items, center);
+        justify-content: var(--wsx-theme-btn-justify-content, center);
+        gap: var(--wsx-theme-btn-gap);
+        padding: var(--wsx-theme-btn-padding);
+        border-radius: var(--wsx-theme-btn-border-radius);
+        font-weight: var(--wsx-theme-btn-font-weight);
+        font-size: var(--wsx-theme-btn-font-size);
+        line-height: var(--wsx-theme-btn-line-height);
+        font-family: inherit;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        box-sizing: var(--wsx-theme-btn-box-sizing);
+        margin: var(--wsx-theme-btn-margin);
+        vertical-align: var(--wsx-theme-btn-vertical-align);
+        white-space: var(--wsx-theme-btn-white-space);
+        min-width: var(--wsx-theme-btn-min-width);
+        transition: all var(--ds-duration-base) var(--ds-ease);
+    }
+
+    .ds-btn-primary,
+    .btn-primary {
+        background: var(--ds-color-primary);
+        color: white;
+        box-shadow: 0 4px 15px var(--ds-shadow-button);
+    }
+
+    .ds-btn-primary:hover,
+    .btn-primary:hover {
+        background: var(--ds-color-primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--ds-shadow-button-hover);
+    }
+
+    .ds-btn-secondary,
+    .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+    }
+
+    .ds-btn-secondary:hover,
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .ds-btn-ghost,
+    .btn-ghost {
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+    .ds-btn-ghost:hover,
+    .btn-ghost:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+}

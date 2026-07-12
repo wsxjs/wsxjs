@@ -25,6 +25,8 @@ describe("applyPress", () => {
         assertApplyResult(out);
         expect(out.packageJsonAdditions["@wsxjs/wsx-press"]).toBe("workspace:*");
         expect(out.viteConfigSnippet).toBeDefined();
+        expect(out.instructions.some((i) => i.includes("configurePressBase"))).toBe(true);
+        expect(out.instructions.some((i) => i.includes("press-init"))).toBe(true);
     });
 });
 

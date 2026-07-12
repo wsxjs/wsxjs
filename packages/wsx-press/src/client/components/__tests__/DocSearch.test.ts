@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 // @ts-expect-error - .wsx files are handled by Vite plugin at build time
 import DocSearch, { searchIndexCache } from "../DocSearch.wsx";
 import type { SearchIndex } from "../../../types";
+import { configurePressBase, resetPressBase } from "../../paths";
 
 // 注册组件
 if (!customElements.get("wsx-doc-search")) {
@@ -12,6 +13,7 @@ describe("DocSearch 组件", () => {
     let mockFetch: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
+        resetPressBase();
         mockFetch = vi.fn();
         global.fetch = mockFetch;
         // 重置搜索索引缓存
@@ -379,5 +381,41 @@ describe("DocSearch 组件", () => {
 
         document.body.removeChild(search1);
         document.body.removeChild(search2);
+    });
+
+    it("子路径 base 下应请求带前缀的搜索索引", async () => {
+        configurePressBase("/productivity/");
+
+        const mockIndex: SearchIndex = {
+            documents: [
+                {
+                    id: "guide/test",
+                    title: "测试",
+                    content: "内容",
+                    category: "guide",
+                    route: "/docs/guide/test",
+                },
+            ],
+            options: {
+                keys: ["title", "content"],
+                threshold: 0.3,
+                includeScore: true,
+                includeMatches: true,
+            },
+        };
+
+        mockFetch.mockResolvedValue({
+            ok: true,
+            json: () => Promise.resolve(mockIndex),
+        } as Response);
+
+        const search = document.createElement("wsx-doc-search") as DocSearch;
+        document.body.appendChild(search);
+
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        expect(mockFetch).toHaveBeenCalledWith("/productivity/.wsx-press/search-index.json");
+
+        document.body.removeChild(search);
     });
 });

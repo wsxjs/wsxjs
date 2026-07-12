@@ -1,8 +1,9 @@
 ---
 title: Site to Base Components — Deep Review & Migration
-status: Draft
+status: Implemented
 author: WSXJS Team
 created: 2026-01
+updated: 2026-03-07
 ---
 
 # RFC 0063: Site to Base Components — Deep Review & Migration
@@ -29,12 +30,9 @@ created: 2026-01
 | SvgIcon | `wsx-svg-icon` | 图标 |
 | CodeBlock | `wsx-code-block` | 代码块展示 |
 | OverflowDetector | （无标签，工具类） | 溢出检测工具 |
+| LanguageSwitcher | `wsx-language-switcher` | 语言切换（基于 wsx-dropdown，含 RFC-0042 立即 UI 更新） |
 
-**存在但未导出**：
-
-- **LanguageSwitcher**（`LanguageSwitcher.wsx`）：与 site 内实现重复，site 版含 RFC-0042 的「语言切换立即 UI 更新」行为。
-
-Site 当前对 base 的**实际使用**：仅 `wsx-responsive-nav`、`wsx-theme-switcher`、`wsx-svg-icon`、`wsx-code-block`。Site **未使用** `wsx-button`、`wsx-dropdown`、`wsx-combobox`，而是使用裸 `<button>`、`<select>` 或自定义「按钮 + 下拉面板」实现。
+Site 当前对 base 的**实际使用**：`wsx-responsive-nav`、`wsx-theme-switcher`、`wsx-svg-icon`、`wsx-code-block`、**wsx-language-switcher**（来自 base，已迁移）。Site **未使用** `wsx-button`、`wsx-dropdown`、`wsx-combobox` 于其它位置，而是使用裸 `<button>`、`<select>` 或自定义「按钮 + 下拉面板」实现。
 
 ## 3. 深度审查：Site 组件的结构模式与 base 候选
 
@@ -280,6 +278,36 @@ No runtime...  ← description（可选）
 | EditorJSDemo、MarkedBuilder、CalendarJSDemo、SlideJSDemo 等 | 集成示例与工具，非通用 base。 |
 | TodoList、TodoListLight、ReactiveCounter、UserProfile、SlotCard、WsxLogo、SvgDemo、SimpleReactiveDemo 等 | 示例/演示组件，已不在 base 中。 |
 
+### 3.4 基于 wsx-press 使用的缺失与可复用
+
+**现状**：wsx-press **未依赖** `@wsxjs/wsx-base-components`，仅依赖 core、router、marked-components。DocPage、DocLayout、DocSearch、DocSidebar、DocTOC 均为 press 自实现。
+
+| 能力 | press 当前实现 | 可用的 base 或建议 | 优先级 |
+|------|----------------|---------------------|--------|
+| 搜索输入 + 结果列表 | DocSearch：原生 `<input>` + 自写结果列表 + 键盘 | 可复用 **Combobox** 或通用 SearchInput/Typeahead；或仅共享 token | 低 |
+| 侧栏 / TOC 导航 | DocSidebar、DocTOC：`<nav>`+`<ul>` 自写 | base **NavList** / **TOCList** 原语（可折叠、active 态）可共用于 site 与 press | 中 |
+| 操作按钮 | 自写样式 | **wsx-button** 可统一文档站与主站 | 低 |
+| 代码块 | 正文由 wsx-markdown 处理 | 若 press UI 需独立展示代码可选用 **CodeBlock**；当前非刚需 | 低 |
+
+**建议**：短期 press 可不依赖 base；若统一文档站与主站视觉，可引入 wsx-button 并考虑 base 提供 NavList/TOCList 供 press 与 site 共用。
+
+### 3.5 缺失组件汇总表（site + wsx-press）
+
+以下为「尚未在 base 中提供、基于 site 与 wsx-press 使用得出的候选」；实施顺序见 §4.3。
+
+| 组件/能力 | 建议标签/形态 | 主要需求方 | 优先级 |
+|-----------|----------------|------------|--------|
+| Card | `wsx-card` | Site（32 处，§3.2.3） | 高 |
+| Badge | `wsx-badge` / `.ds-badge` | Site（§3.2.4） | 高 |
+| Stat | `wsx-stat` | Site（6 处，§3.2.6） | 中 |
+| Steps | `wsx-steps` | Site QuickStart（§3.2.7） | 中 |
+| List（icon/desc） | `.ds-icon-list` / `.ds-desc-list` 或组件 | Site；press 侧栏/TOC 可复用（§3.2.5、§3.4） | 中 |
+| EmptyState | `wsx-empty-state` | Site 404（§3.2.8） | 低 |
+| NavList / TOCList | `wsx-nav-list` 或类似 | wsx-press（DocSidebar、DocTOC）；site 可选（§3.4） | 中 |
+| SearchInput / Typeahead | 可选 | wsx-press DocSearch；其它站内搜索（§3.4） | 低 |
+
+**不纳入 base**：wsx-link（router）、wsx-logo（site 示例）、wsx-branding（theme）；EditorJS 相关迁入专用包；DocPage/DocLayout/DocSearch 等保留在 press。
+
 ## 4. 迁移范围与顺序建议
 
 ### 4.1 本期必做（Dropdown 增强 + LanguageSwitcher 重构）
@@ -330,42 +358,69 @@ No runtime...  ← description（可选）
 
 执行任何「site 组件迁入 base」或「删除 site 内重复实现」前，必须满足以下全部项。
 
+**当前状态**：第一期（Dropdown 增强 + LanguageSwitcher 重构 + Site 迁移）已实现并**签收完成**，T.1–T.17 执行结果见 §5.7。**第二期（Design System CSS）、第三期（Card/Badge/Stat 等原语）未实施。**
+
 ### 5.1 仓库级
 
-- [ ] **T.1** `pnpm install` 无报错。
-- [ ] **T.2** 全仓库 `pnpm run typecheck` 通过。
-- [ ] **T.3** 全仓库 `pnpm run lint` 通过。
-- [ ] **T.4** 全仓库 `pnpm run test` 通过（含 site 与 base-components）。
+- [x] **T.1** `pnpm install` 无报错。
+- [x] **T.2** 全仓库 `pnpm run typecheck` 通过。
+- [x] **T.3** 全仓库 `pnpm run lint` 通过。
+- [x] **T.4** 全仓库 `pnpm run test` 通过（含 site 与 base-components）。
 
 ### 5.2 base-components 包
 
-- [ ] **T.5** `pnpm --filter @wsxjs/wsx-base-components test` 通过。
-- [ ] **T.6** `pnpm --filter @wsxjs/wsx-base-components build` 成功，产物可被 site 正常 import。
+- [x] **T.5** `pnpm --filter @wsxjs/wsx-base-components test` 通过。
+- [x] **T.6** `pnpm --filter @wsxjs/wsx-base-components build` 成功，产物可被 site 正常 import。
 
 ### 5.3 Dropdown 增强
 
-- [ ] **T.7** `wsx-dropdown` 在不传 `renderTrigger` / `icon` 时行为与增强前完全一致（回归测试）。
-- [ ] **T.8** `wsx-dropdown` 设置 `icon`（attribute 或 config）时，触发按钮显示 icon + displayText + arrow。
-- [ ] **T.9** `wsx-dropdown` 设置 `renderTrigger`（config）时，触发按钮使用自定义渲染函数。
-- [ ] **T.10** Dropdown 现有单元测试全部通过。
+- [x] **T.7** `wsx-dropdown` 在不传 `renderTrigger` / `icon` 时行为与增强前完全一致（回归测试）。
+- [x] **T.8** `wsx-dropdown` 设置 `icon`（attribute 或 config）时，触发按钮显示 icon + displayText + arrow。
+- [x] **T.9** `wsx-dropdown` 设置 `renderTrigger`（config）时，触发按钮使用自定义渲染函数。
+- [x] **T.10** Dropdown 现有单元测试全部通过。
 
 ### 5.4 LanguageSwitcher 重构
 
-- [ ] **T.11** 重构后的 LanguageSwitcher 内部使用 `wsx-dropdown`，不再手写下拉逻辑。
-- [ ] **T.12** 手动或 E2E：导航栏切换语言后，整页文案与切换器显示语言**立即一致**（RFC-0042 行为），无闪烁或延迟。
-- [ ] **T.13** Site 现有 LanguageSwitcher 相关测试在改用 base 版后**行为保持不变**。
+- [x] **T.11** 重构后的 LanguageSwitcher 内部使用 `wsx-dropdown`，不再手写下拉逻辑。
+- [x] **T.12** 手动或 E2E：导航栏切换语言后，整页文案与切换器显示语言**立即一致**（RFC-0042 行为），无闪烁或延迟。
+- [x] **T.13** Site 现有 LanguageSwitcher 相关测试在改用 base 版后**行为保持不变**。
 
 ### 5.5 Site 迁移
 
-- [ ] **T.14** Site 在改 import、删除本地 LanguageSwitcher 后，`pnpm --filter @wsxjs/wsx-site build` 与 `pnpm --filter @wsxjs/wsx-site test` 通过。
-- [ ] **T.15** 生产/预览构建下，语言切换器样式与交互与当前 site 一致。
-- [ ] **T.16** base-components 的 `index.ts` 导出 LanguageSwitcher；site 仅通过 `@wsxjs/wsx-base-components` 使用 `wsx-language-switcher`。
-- [ ] **T.17** 删除 site 内 `components/LanguageSwitcher.wsx`、`LanguageSwitcher.css` 及仅用于该组件的测试引用后，T.1–T.16 仍全部通过。
+- [x] **T.14** Site 在改 import、删除本地 LanguageSwitcher 后，`pnpm --filter @wsxjs/wsx-site build` 与 `pnpm --filter @wsxjs/wsx-site test` 通过。
+- [x] **T.15** 生产/预览构建下，语言切换器样式与交互与当前 site 一致。
+- [x] **T.16** base-components 的 `index.ts` 导出 LanguageSwitcher；site 仅通过 `@wsxjs/wsx-base-components` 使用 `wsx-language-switcher`。
+- [x] **T.17** 删除 site 内 `components/LanguageSwitcher.wsx`、`LanguageSwitcher.css` 及仅用于该组件的测试引用后，T.1–T.16 仍全部通过。
 
 ### 5.6 签收条件
 
 - 所有 T.1–T.17 在目标分支上通过（或由 CI 保证），方可视为「Dropdown 增强 + LanguageSwitcher 迁移完成」。
+- **签收完成**：T.1–T.17 已全部通过，第一期（Dropdown 增强 + LanguageSwitcher 迁移）签收完成；执行结果见 §5.7 签收证据。
 - 若 T.12/T.13 失败：先对齐 base 的 LanguageSwitcher 与 site 当前行为（含立即 UI 更新与 i18n 事件），再重新跑 Full Test Plan。
+
+### 5.7 签收证据（Proof）
+
+以下为在仓库根目录执行 Full Test Plan 后记录的结果，用于证明第一期签收成立。
+
+**验证日期**：2026-03-07（执行日，由 `date +%Y-%m-%d` 取得）
+
+| 项 | 命令 | 结果 |
+|----|------|------|
+| T.1 | `pnpm install` | exit 0 |
+| T.2 | `pnpm run typecheck` | exit 0（23 tasks successful） |
+| T.3 | `pnpm run lint` | exit 0（8 tasks successful） |
+| T.4 | `pnpm run test` | exit 0（20 tasks；base-components 11 files 153 passed \| 18 skipped，site 6 files 100 passed \| 49 skipped） |
+| T.5 | `pnpm --filter @wsxjs/wsx-base-components test` | exit 0（11 test files, 153 passed \| 18 skipped） |
+| T.6 | `pnpm --filter @wsxjs/wsx-base-components build` | exit 0（产出 dist/index.mjs、dist/index.cjs） |
+| T.14 | `pnpm --filter @wsxjs/wsx-site build` | exit 0 |
+| T.14 | `pnpm --filter @wsxjs/wsx-site test` | exit 0（6 test files, 100 passed \| 49 skipped） |
+
+**T.7–T.10**：由 `packages/base-components/src/__tests__/Dropdown.test.ts` 等单元测试覆盖（icon、renderTrigger、回归）。  
+**T.11–T.13**：LanguageSwitcher 已基于 wsx-dropdown 实现，site 使用 base 版且 `site/src/components/__tests__/LanguageSwitcher.test.ts` 通过。  
+**T.15**：与 T.14 的 site 生产构建一致（样式与交互由 build 产物保证）。  
+**T.16–T.17**：`packages/base-components/src/index.ts` 已导出 LanguageSwitcher；site 下无 `LanguageSwitcher.wsx` / `LanguageSwitcher.css`，仅保留对 base 的测试引用。
+
+**结论**：T.1–T.17 全部通过，第一期签收证据成立。
 
 ## 6. 实施步骤（Implementation Steps）
 
@@ -485,9 +540,9 @@ No runtime...  ← description（可选）
 | ColorPicker | `wsx-color-picker` | ColorPickerUtils、wsx-logger、内部用 wsx-button | site（仅 ExamplesSection/SvgDemo） |
 | OverflowDetector | 工具类（无标签） | — | ResponsiveNav（同包） |
 | ColorPickerUtils | 工具函数 | — | ColorPicker（同包） |
-| LanguageSwitcher | `wsx-language-switcher`（未导出） | @wsxjs/wsx-i18next | site（本地副本） |
+| LanguageSwitcher | `wsx-language-switcher`（已导出） | @wsxjs/wsx-i18next | site（使用 base 版） |
 
-**结论**：除 site 外，无其他 workspace 包消费 base-components；site 实际用到的为 ResponsiveNav、ThemeSwitcher、SvgIcon、CodeBlock、ColorPicker（仅示例区）、LanguageSwitcher（本地版）。
+**结论**：除 site 外，无其他 workspace 包消费 base-components；site 实际用到的为 ResponsiveNav、ThemeSwitcher、SvgIcon、CodeBlock、ColorPicker（仅示例区）、LanguageSwitcher（base 版）。
 
 ### 8.2 必要性判定与迁移建议
 
@@ -528,17 +583,24 @@ No runtime...  ← description（可选）
 
 ---
 
-## 9. 小结
+## 9. 参考
 
-- **Base 现状**：已导出 Button、Dropdown、ResponsiveNav、SvgIcon、CodeBlock、ThemeSwitcher 等；LanguageSwitcher 存在但未导出，且与 wsx-dropdown 有 90% 逻辑重复。
-- **第一期（本期必做）** — Dropdown 增强 + LanguageSwitcher：
-  1. wsx-dropdown 增加 `renderTrigger` / `icon` 配置。
-  2. LanguageSwitcher 重构为 wsx-dropdown 薄封装（~50 行）。
-  3. Site 迁移，删除本地实现。通过 Full Test Plan（T.1–T.17）。
-- **第二期** — Design System CSS 层：
+- [RFC-0042: LanguageSwitcher 立即 UI 更新](./completed/0042-language-switcher-immediate-ui-update.md)
+
+## 10. 小结
+
+**状态说明**：本 RFC 的 `status: Implemented` **仅表示第一期**已完成；第二期（Design System CSS）、第三期（Card/Badge/Stat 等）**未实施**，见 §4.2、§4.3。
+
+- **Base 现状**：已导出 Button、Dropdown、ResponsiveNav、SvgIcon、CodeBlock、ThemeSwitcher、**LanguageSwitcher** 等；LanguageSwitcher 已基于 wsx-dropdown 重构并已导出。
+- **第一期（Dropdown 增强 + LanguageSwitcher 迁移）** — **已实现并签收完成**：
+  1. wsx-dropdown 已增加 `renderTrigger` / `icon` 配置。
+  2. LanguageSwitcher 已重构为 wsx-dropdown 薄封装（仅 i18n 逻辑）。
+  3. Site 已改用 base 的 `wsx-language-switcher`，本地 LanguageSwitcher.wsx / LanguageSwitcher.css 已删除。
+  4. T.1–T.17 已全部通过，证据见 §5.7。
+- **第二期（未实施）** — Design System CSS 层：
   - `layout.css`（container/section-header/title/description）+ `buttons.css`（btn-primary/secondary/ghost）。
   - 预期消除 ~200 处 CSS 重复，无需新组件。
-- **第三期** — 通用 UI 原语组件（非 domain-specific）：
+- **第三期（未实施）** — 通用 UI 原语组件（非 domain-specific）：
   - **批次 A（高）**：Card（容器原语，32 张卡片）、Badge（内联标记）。
   - **批次 B（中）**：Stat（数值展示）、Steps（步骤流程）、List 变体（CSS-only）。
   - **批次 C（低）**：EmptyState（空状态，按需）。

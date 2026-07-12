@@ -10,6 +10,7 @@ import { LightComponent, autoRegister, state } from "@wsxjs/wsx-core";
 import { createLogger } from "@wsxjs/wsx-logger";
 import Fuse from "fuse.js";
 import type { SearchIndex, SearchResult, SearchDocument } from "../../types";
+import { pressAsset } from "../paths";
 import styles from "./DocSearch.css?inline";
 
 const logger = createLogger("DocSearch");
@@ -43,7 +44,7 @@ async function loadSearchIndex(): Promise<SearchIndex> {
     // 创建新的加载请求
     searchIndexCache.promise = (async () => {
         try {
-            const response = await fetch("/.wsx-press/search-index.json");
+            const response = await fetch(pressAsset("search-index.json"));
             if (!response.ok) {
                 throw new Error(`Failed to load search index: ${response.statusText}`);
             }

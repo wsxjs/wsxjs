@@ -23,50 +23,63 @@ describe("init-writers", () => {
     }
 
     describe("writeForClaude", () => {
-        it("creates .claude/skills/wsx-apply/SKILL.md", () => {
+        it("creates .claude/skills/wsx-apply and per-skill SKILL.md", () => {
             const dir = makeTempDir();
-            const { path: outPath } = writeForClaude(dir);
-            expect(outPath).toContain(".claude");
-            expect(outPath).toContain("wsx-apply");
-            expect(outPath.endsWith("SKILL.md")).toBe(true);
-            const content = readFileSync(outPath, "utf8");
+            const results = writeForClaude(dir);
+            expect(results.length).toBeGreaterThanOrEqual(5); // 1 combined + 4 skills
+            const applyPath = results.find((r) => r.path.includes("/wsx-apply/SKILL.md"));
+            expect(applyPath).toBeDefined();
+            const content = readFileSync(applyPath!.path, "utf8");
             expect(content).toContain("wsx-apply");
             expect(content).toContain("@wsxjs/wsx-ai");
+            const pressPath = results.find((r) => r.path.includes("wsx-apply-press"));
+            expect(pressPath).toBeDefined();
+            expect(readFileSync(pressPath!.path, "utf8")).toContain('applySkill("press")');
         });
     });
 
     describe("writeForCursor", () => {
-        it("creates .cursor/commands/wsx-ai-apply.md", () => {
+        it("creates .cursor/commands/wsx-ai-apply and per-skill commands", () => {
             const dir = makeTempDir();
-            const { path: outPath } = writeForCursor(dir);
-            expect(outPath).toContain(".cursor");
-            expect(outPath).toContain("commands");
-            expect(outPath.endsWith("wsx-ai-apply.md")).toBe(true);
-            const content = readFileSync(outPath, "utf8");
+            const results = writeForCursor(dir);
+            expect(results.length).toBe(5); // 1 combined + 4 skills
+            const applyPath = results.find((r) => r.path.endsWith("wsx-ai-apply.md"));
+            expect(applyPath).toBeDefined();
+            const content = readFileSync(applyPath!.path, "utf8");
             expect(content).toContain("wsx-ai apply");
             expect(content).toContain("applyAll");
+            const pressPath = results.find((r) => r.path.endsWith("wsx-ai-press.md"));
+            expect(pressPath).toBeDefined();
+            expect(readFileSync(pressPath!.path, "utf8")).toContain('applySkill("press")');
         });
     });
 
     describe("writeForAntigravity", () => {
-        it("creates .antigravity/wsx-apply.md", () => {
+        it("creates .antigravity/wsx-apply and per-skill md", () => {
             const dir = makeTempDir();
-            const { path: outPath } = writeForAntigravity(dir);
-            expect(outPath).toContain(".antigravity");
-            expect(outPath.endsWith("wsx-apply.md")).toBe(true);
-            const content = readFileSync(outPath, "utf8");
+            const results = writeForAntigravity(dir);
+            expect(results.length).toBeGreaterThanOrEqual(5);
+            const applyPath = results.find((r) => r.path.endsWith("wsx-apply.md"));
+            expect(applyPath).toBeDefined();
+            const content = readFileSync(applyPath!.path, "utf8");
             expect(content).toContain("wsx-apply");
             expect(content).toContain("@wsxjs/wsx-ai");
+            const pressPath = results.find((r) => r.path.endsWith("wsx-apply-press.md"));
+            expect(pressPath).toBeDefined();
         });
     });
 
     describe("writeFor", () => {
-        it("writes for each AI target", () => {
+        it("writes for each AI target (multiple files per target)", () => {
             const dir = makeTempDir();
             for (const target of AI_TARGETS) {
-                const { path: outPath } = writeFor(dir, target);
-                expect(existsSync(outPath)).toBe(true);
-                expect(readFileSync(outPath, "utf8").length).toBeGreaterThan(0);
+                const results = writeFor(dir, target);
+                expect(Array.isArray(results)).toBe(true);
+                expect(results.length).toBeGreaterThanOrEqual(1);
+                for (const { path: outPath } of results) {
+                    expect(existsSync(outPath)).toBe(true);
+                    expect(readFileSync(outPath, "utf8").length).toBeGreaterThan(0);
+                }
             }
         });
         it("throws for unknown target", () => {

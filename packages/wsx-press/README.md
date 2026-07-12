@@ -40,12 +40,29 @@ export default defineConfig({
 });
 ```
 
-### 2. Import Client Components
+### 2. Configure site base (subpath / GitHub Pages)
+
+Create `src/press-init.ts` (or `press-init.ts` beside `main.ts`) **imported first** from `main.ts`:
+
+```typescript
+// press-init.ts — runs before doc components connect
+import { configurePressBase } from "@wsxjs/wsx-press/client/paths";
+
+configurePressBase(import.meta.env.BASE_URL);
+```
 
 ```typescript
 // main.ts
+import "./press-init";
 import "@wsxjs/wsx-press/client";
+// …then mount app (DOMContentLoaded / createElement)
 ```
+
+- Vite `base` must match (e.g. `base: "/productivity/"` for `*.github.io/productivity/`).
+- `configurePressBase` must run **before** the app mounts doc components (side-effect init module or top of `main` before `initApp()`).
+- Router views still need the same base: `sitePath("/docs/*")` (wsx-router is out of scope for wsx-press).
+
+Root deploy (`base: "/"`, custom domain): `configurePressBase("/")` is optional (default).
 
 ### 3. Use Components in HTML
 

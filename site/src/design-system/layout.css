@@ -1,0 +1,61 @@
+/**
+ * RFC 0063 第二期：Design System 布局层
+ * 定义 .ds-container、.ds-section-header、.ds-section-title、.ds-section-description
+ * 使用 tokens.css 中的 --ds-*，与现有 section 视觉一致
+ */
+
+@layer design-system {
+    /* 内容最大宽度容器，与现有 .container 一致 */
+    .ds-container,
+    .container {
+        max-width: var(--ds-container-max);
+        margin: 0 auto;
+        padding: 0 var(--ds-space-8);
+    }
+
+    /* 区块标题容器：居中、下边距 */
+    .ds-section-header {
+        text-align: center;
+        margin-bottom: var(--ds-space-16);
+    }
+
+    /* 区块主标题：字号、字重、颜色 */
+    .ds-section-title {
+        font-size: var(--ds-font-size-5xl);
+        font-weight: var(--ds-font-weight-bold);
+        color: var(--ds-color-text-primary);
+        margin-bottom: var(--ds-space-4);
+    }
+
+    /* 区块描述：居中、次要色、最大宽度 */
+    .ds-section-description {
+        font-size: var(--ds-font-size-lg);
+        text-align: center;
+        color: var(--ds-color-text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: var(--ds-line-height-relaxed);
+    }
+
+    /* 兼容现有 class 名（与 .ds-* 同义） */
+    .section-header {
+        text-align: center;
+        margin-bottom: var(--ds-space-16);
+    }
+
+    .section-title {
+        font-size: var(--ds-font-size-5xl);
+        font-weight: var(--ds-font-weight-bold);
+        color: var(--ds-color-text-primary);
+        margin-bottom: var(--ds-space-4);
+    }
+
+    .section-description {
+        font-size: var(--ds-font-size-lg);
+        text-align: center;
+        color: var(--ds-color-text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: var(--ds-line-height-relaxed);
+    }
+}

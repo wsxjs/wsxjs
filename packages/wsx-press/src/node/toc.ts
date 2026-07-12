@@ -59,13 +59,17 @@ export function extractTOCFromMarkdown(markdown: string): TOCItem[] {
             if (token.type === "heading") {
                 const headingToken = token as Tokens.Heading;
                 const level = headingToken.depth;
-                const text = extractTextFromTokens(headingToken.tokens);
+                // marked v12 Heading 有 .text；无则从 inline tokens 提取，最后用 raw 兜底
+                const text =
+                    (headingToken.text && headingToken.text.trim()) ||
+                    extractTextFromTokens(headingToken.tokens ?? []) ||
+                    (headingToken.raw || "").replace(/^#+\s*/, "").trim();
                 const id = generateId(text);
 
                 const item: TOCItem = {
                     level,
-                    text: text.trim(),
-                    id,
+                    text: text.trim() || id || "Untitled",
+                    id: id || generateId(String(level)),
                     children: [],
                 };
 
@@ -92,18 +96,24 @@ export function extractTOCFromMarkdown(markdown: string): TOCItem[] {
 }
 
 /**
- * 从 tokens 中提取纯文本
+ * 从 inline tokens 提取纯文本（支持 text / strong / em / link 等）
  */
 function extractTextFromTokens(tokens: Token[]): string {
+    if (!Array.isArray(tokens)) return "";
     return tokens
         .map((token) => {
             if (token.type === "text") {
-                return (token as Tokens.Text).text;
-            } else if (token.type === "strong" || token.type === "em") {
+                return (token as Tokens.Text).text ?? "";
+            }
+            if (token.type === "strong" || token.type === "em") {
                 const inlineToken = token as Tokens.Generic;
                 if ("tokens" in inlineToken && Array.isArray(inlineToken.tokens)) {
                     return extractTextFromTokens(inlineToken.tokens);
                 }
+            }
+            // link/image 等带 text 的 token
+            if ("text" in token && typeof (token as Tokens.Generic).text === "string") {
+                return (token as Tokens.Generic).text;
             }
             return "";
         })

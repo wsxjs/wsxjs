@@ -1,0 +1,50 @@
+{
+    "name": "@wsxjs/wsx-tsc",
+    "version": "0.1.0",
+    "description": "TypeScript type checker for .wsx files using TypeScript Compiler API",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "bin": {
+        "wsx-tsc": "./bin/wsx-tsc.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wsxjs/wsxjs.git",
+        "directory": "packages/wsx-tsc"
+    },
+    "author": "WSXJS Team",
+    "license": "MIT",
+    "files": [
+        "dist",
+        "bin",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "tsup src/index.ts --format esm --dts --clean",
+        "dev": "tsup src/index.ts --format esm --dts --watch",
+        "test": "jest",
+        "test:coverage": "jest --coverage",
+        "typecheck": "tsc --noEmit"
+    },
+    "keywords": [
+        "wsx",
+        "typescript",
+        "type-check",
+        "web-components"
+    ],
+    "peerDependencies": {
+        "typescript": ">=5.0.0"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.0.0",
+        "@types/node": "^20.0.0",
+        "jest": "^29.0.0",
+        "ts-jest": "^29.0.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

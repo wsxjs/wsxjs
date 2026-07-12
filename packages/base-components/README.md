@@ -1,5 +1,7 @@
 # @wsxjs/wsx-base-components
 
+**WSX 基座组件库** — 本包是存放 WSX 基座组件（base components）的**唯一位置**：所有可复用的、与业务无关的 UI 原语均在此以 `.wsx` 实现并导出，供 site、文档站及其它消费方使用。
+
 现代化的 Web Components 基础组件库，基于 WSXJS 构建。
 
 ## 🚀 快速开始
