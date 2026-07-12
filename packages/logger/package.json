@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-logger",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "description": "WSXJS Logger - Browser-optimized logging utility for WSXJS",
     "type": "module",
     "main": "./dist/index.cjs",
