@@ -16,7 +16,8 @@ export const requireAutoRegister: WSXRuleModule = {
             recommended: true,
         },
         messages: {
-            missingAutoRegister: "WSX Component '{{componentName}}' must use @autoRegister decorator",
+            missingAutoRegister:
+                "WSX Component '{{componentName}}' must use @autoRegister decorator",
         },
         schema: [],
     },
@@ -38,9 +39,7 @@ export const requireAutoRegister: WSXRuleModule = {
                             specifier.imported.name === "autoRegister"
                         ) {
                             const localName =
-                                specifier.local.type === "Identifier"
-                                    ? specifier.local.name
-                                    : null;
+                                specifier.local.type === "Identifier" ? specifier.local.name : null;
                             if (localName) {
                                 autoRegisterImports.add(localName);
                             }

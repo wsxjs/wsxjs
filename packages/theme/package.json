@@ -1,6 +1,6 @@
 {
     "name": "@wsxjs/wsx-theme",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Theme and branding component for WSXJS design tokens",
     "type": "module",
     "main": "./dist/index.cjs",

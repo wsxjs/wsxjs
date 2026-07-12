@@ -46,9 +46,7 @@ export const reactiveStateUsage: WSXRuleModule = {
                             specifier.imported.name === "state"
                         ) {
                             const localName =
-                                specifier.local.type === "Identifier"
-                                    ? specifier.local.name
-                                    : null;
+                                specifier.local.type === "Identifier" ? specifier.local.name : null;
                             if (localName) {
                                 stateImports.add(localName);
                             }
@@ -130,7 +128,10 @@ export const reactiveStateUsage: WSXRuleModule = {
                 while (current) {
                     if (current.type === "MethodDefinition") {
                         inMethod = true;
-                        if (current.key.type === "Identifier" && current.key.name === "constructor") {
+                        if (
+                            current.key.type === "Identifier" &&
+                            current.key.name === "constructor"
+                        ) {
                             inConstructor = true;
                         }
                         break;
@@ -175,7 +176,10 @@ export const reactiveStateUsage: WSXRuleModule = {
                 while (current) {
                     if (current.type === "MethodDefinition") {
                         inMethod = true;
-                        if (current.key.type === "Identifier" && current.key.name === "constructor") {
+                        if (
+                            current.key.type === "Identifier" &&
+                            current.key.name === "constructor"
+                        ) {
                             inConstructor = true;
                         }
                         break;
@@ -187,7 +191,10 @@ export const reactiveStateUsage: WSXRuleModule = {
 
                 // Check if target is this.propertyName
                 const argument = node.argument;
-                if (argument.type === "MemberExpression" && argument.object.type === "ThisExpression") {
+                if (
+                    argument.type === "MemberExpression" &&
+                    argument.object.type === "ThisExpression"
+                ) {
                     const propertyName =
                         argument.property.type === "Identifier"
                             ? argument.property.name

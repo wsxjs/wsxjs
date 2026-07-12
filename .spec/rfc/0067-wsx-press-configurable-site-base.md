@@ -262,13 +262,13 @@ flowchart LR
 
 1. **Public API 命名**：`configurePressBase` vs `setBaseUrl` vs `initPress({ base })`？
 2. **是否 export `normalizeSiteBase`** 供 node plugin 复用（避免 duplicate）？
-3. **minor vs patch**：仅 additive API + bugfix 性质 → 建议 **minor** `0.2.0`。
+3. **minor vs patch**：仅 additive API + bugfix 性质 → 发布 **patch** `0.1.2`。
 4. **wsx-router base** 是否与本 RFC 同批实现，还是单独 RFC？
 
 ## 13. 变更历史
 
 - 2026-07-11: 初稿（Proposed），来自 luban-ws/productivity GitHub Pages 部署实践与 wsxPressBasePlugin workaround 复盘。
-- 2026-07-11: Implemented — `client/paths`, `shared/site-base`, 组件与 dev middleware；`@wsxjs/wsx-press@0.2.0` 导出 `./client/paths`。
+- 2026-07-11: Implemented — `client/paths`, `shared/site-base`, 组件与 dev middleware；`@wsxjs/wsx-press@0.1.2` 导出 `./client/paths`。
 
 ---
 

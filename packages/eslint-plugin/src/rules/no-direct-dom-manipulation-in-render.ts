@@ -16,7 +16,8 @@ export const noDirectDOMManipulationInRender: WSXRuleModule = {
             recommended: true,
         },
         messages: {
-            noDirectDOMManipulation: "Do not manipulate DOM directly in render(). Return JSX elements instead.",
+            noDirectDOMManipulation:
+                "Do not manipulate DOM directly in render(). Return JSX elements instead.",
         },
         schema: [],
     },
@@ -71,11 +72,15 @@ export const noDirectDOMManipulationInRender: WSXRuleModule = {
                     // Traverse children
                     for (const key in astNode) {
                         if (key === "parent") continue;
-                        if (astNode.hasOwnProperty(key)) {
+                        if (Object.prototype.hasOwnProperty.call(astNode, key)) {
                             const child = astNode[key];
                             if (Array.isArray(child)) {
                                 child.forEach(traverse);
-                            } else if (child && typeof child === "object" && typeof child.type === "string") {
+                            } else if (
+                                child &&
+                                typeof child === "object" &&
+                                typeof child.type === "string"
+                            ) {
                                 traverse(child);
                             }
                         }

@@ -19,7 +19,8 @@ export const lifecycleHookNaming: WSXRuleModule = {
             useOnConnected: "Did you mean 'onConnected' instead of '{{invalidName}}'?",
             useOnDisconnected: "Did you mean 'onDisconnected' instead of '{{invalidName}}'?",
             useOnRendered: "Did you mean 'onRendered' instead of '{{invalidName}}'?",
-            useOnAttributeChanged: "Did you mean 'onAttributeChanged' instead of '{{invalidName}}'?",
+            useOnAttributeChanged:
+                "Did you mean 'onAttributeChanged' instead of '{{invalidName}}'?",
         },
         schema: [],
     },
@@ -29,13 +30,24 @@ export const lifecycleHookNaming: WSXRuleModule = {
             onConnectedCallback: { messageId: "useOnConnected", suggestion: "onConnected" },
 
             componentWillUnmount: { messageId: "useOnDisconnected", suggestion: "onDisconnected" },
-            onDisconnectedCallback: { messageId: "useOnDisconnected", suggestion: "onDisconnected" },
+            onDisconnectedCallback: {
+                messageId: "useOnDisconnected",
+                suggestion: "onDisconnected",
+            },
 
             componentDidUpdate: { messageId: "useOnRendered", suggestion: "onRendered" },
 
-            onAttributeChange: { messageId: "useOnAttributeChanged", suggestion: "onAttributeChanged" },
-            onAttributechanged: { messageId: "useOnAttributeChanged", suggestion: "onAttributeChanged" },
+            onAttributeChange: {
+                messageId: "useOnAttributeChanged",
+                suggestion: "onAttributeChanged",
+            },
+            onAttributechanged: {
+                messageId: "useOnAttributeChanged",
+                suggestion: "onAttributeChanged",
+            },
         };
+
+        const invalidKeys = new Set(Object.keys(invalidMappings));
 
         return {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,13 +61,11 @@ export const lifecycleHookNaming: WSXRuleModule = {
                 if (!isWSXComponent) return;
 
                 node.body.body.forEach((member: any) => {
-                    if (
-                        member.type === "MethodDefinition" &&
-                        member.key.type === "Identifier"
-                    ) {
+                    if (member.type === "MethodDefinition" && member.key.type === "Identifier") {
                         const methodName = member.key.name;
-                        if (invalidMappings[methodName]) {
-                            const { messageId } = invalidMappings[methodName];
+                        if (invalidKeys.has(methodName)) {
+                            const { messageId } =
+                                invalidMappings[methodName as keyof typeof invalidMappings];
                             context.report({
                                 node: member.key,
                                 messageId,

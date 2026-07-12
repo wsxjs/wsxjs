@@ -11,7 +11,8 @@ export const componentBaseClass: WSXRuleModule = {
     meta: {
         type: "problem",
         docs: {
-            description: "require @autoRegister components to extend WebComponent or LightComponent",
+            description:
+                "require @autoRegister components to extend WebComponent or LightComponent",
             category: "Possible Errors",
             recommended: true,
         },
@@ -38,9 +39,7 @@ export const componentBaseClass: WSXRuleModule = {
                             specifier.imported.name === "autoRegister"
                         ) {
                             const localName =
-                                specifier.local.type === "Identifier"
-                                    ? specifier.local.name
-                                    : null;
+                                specifier.local.type === "Identifier" ? specifier.local.name : null;
                             if (localName) {
                                 autoRegisterImports.add(localName);
                             }

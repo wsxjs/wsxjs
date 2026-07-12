@@ -16,8 +16,10 @@ export const observedAttributesConsistency: WSXRuleModule = {
             recommended: true,
         },
         messages: {
-            missingHandlerMethod: "observedAttributes are defined but 'onAttributeChanged' method is missing.",
-            unhandledAttribute: "Attribute '{{attribute}}' is observed but not handled in onAttributeChanged.",
+            missingHandlerMethod:
+                "observedAttributes are defined but 'onAttributeChanged' method is missing.",
+            unhandledAttribute:
+                "Attribute '{{attribute}}' is observed but not handled in onAttributeChanged.",
         },
         schema: [],
     },
@@ -104,11 +106,15 @@ export const observedAttributesConsistency: WSXRuleModule = {
                     // Traverse children
                     for (const key in astNode) {
                         if (key === "parent") continue;
-                        if (astNode.hasOwnProperty(key)) {
+                        if (Object.prototype.hasOwnProperty.call(astNode, key)) {
                             const child = astNode[key];
                             if (Array.isArray(child)) {
                                 child.forEach(traverse);
-                            } else if (child && typeof child === "object" && typeof child.type === "string") {
+                            } else if (
+                                child &&
+                                typeof child === "object" &&
+                                typeof child.type === "string"
+                            ) {
                                 traverse(child);
                             }
                         }

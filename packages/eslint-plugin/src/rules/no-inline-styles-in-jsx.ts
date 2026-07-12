@@ -16,7 +16,8 @@ export const noInlineStylesInJSX: WSXRuleModule = {
             recommended: false,
         },
         messages: {
-            noInlineStyle: "Do not use inline styles in JSX. Use styles configuration and auto style injection instead.",
+            noInlineStyle:
+                "Do not use inline styles in JSX. Use styles configuration and auto style injection instead.",
         },
         schema: [],
     },
